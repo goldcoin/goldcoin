@@ -154,8 +154,8 @@
         <translation>Blokai iš naujo indeksuojami...</translation>
     </message>
     <message>
-        <source>Send coins to a Litecoin address</source>
-        <translation>Siųsti monetas Litecoin adresui</translation>
+        <source>Send coins to a Goldcoin address</source>
+        <translation>Siųsti monetas Goldcoin adresui</translation>
     </message>
     <message>
         <source>Backup wallet to another location</source>
@@ -178,8 +178,8 @@
         <translation>&amp;Tikrinti žinutę...</translation>
     </message>
     <message>
-        <source>Litecoin</source>
-        <translation>Litecoin</translation>
+        <source>Goldcoin</source>
+        <translation>Goldcoin</translation>
     </message>
     <message>
         <source>Wallet</source>
@@ -418,8 +418,8 @@
         <translation>Piniginė</translation>
     </message>
     <message>
-        <source>Automatically open the Litecoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>Automatiškai atidaryti Litecoin kliento prievadą maršrutizatoriuje. Tai veikia tik tada, kai jūsų maršrutizatorius palaiko UPnP ir ji įjungta.</translation>
+        <source>Automatically open the Goldcoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
+        <translation>Automatiškai atidaryti Goldcoin kliento prievadą maršrutizatoriuje. Tai veikia tik tada, kai jūsų maršrutizatorius palaiko UPnP ir ji įjungta.</translation>
     </message>
     <message>
         <source>Map port using &amp;UPnP</source>
@@ -847,7 +847,7 @@
         <translation>Įveskite pranešimą, kurį norite pasirašyti čia</translation>
     </message>
     <message>
-        <source>Sign the message to prove you own this Litecoin address</source>
+        <source>Sign the message to prove you own this Goldcoin address</source>
         <translation>Registruotis žinute įrodymuii, kad turite šį adresą</translation>
     </message>
     <message>
@@ -863,8 +863,8 @@
         <translation>&amp;Patikrinti žinutę</translation>
     </message>
     <message>
-        <source>Verify the message to ensure it was signed with the specified Litecoin address</source>
-        <translation>Patikrinkite žinutę, jog įsitikintumėte, kad ją pasirašė nurodytas Litecoin adresas</translation>
+        <source>Verify the message to ensure it was signed with the specified Goldcoin address</source>
+        <translation>Patikrinkite žinutę, jog įsitikintumėte, kad ją pasirašė nurodytas Goldcoin adresas</translation>
     </message>
     <message>
         <source>Verify &amp;Message</source>
@@ -936,8 +936,8 @@
         <translation>Dirbti fone kaip šešėlyje ir priimti komandas</translation>
     </message>
     <message>
-        <source>Litecoin Core</source>
-        <translation>Litecoin branduolys</translation>
+        <source>Goldcoin Core</source>
+        <translation>Goldcoin branduolys</translation>
     </message>
     <message>
         <source>Error opening block database</source>
