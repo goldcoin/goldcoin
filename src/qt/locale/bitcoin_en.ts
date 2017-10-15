@@ -4752,11 +4752,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+26"/>
-        <source>Sets the serialization of raw transaction or block hex returned in non-verbose mode, non-segwit(0) or segwit(1) (default: %d)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location line="+3"/>
         <source>Support filtering of blocks and transaction with bloom filters (default: %u)</source>
         <translation type="unfinished"></translation>

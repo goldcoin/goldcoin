@@ -3698,10 +3698,6 @@
         <translation>Při nedostatku adres získat další protějšky z DNS (výchozí: 1, pokud není použito -connect/-noconnect)</translation>
     </message>
     <message>
-        <source>Sets the serialization of raw transaction or block hex returned in non-verbose mode, non-segwit(0) or segwit(1) (default: %d)</source>
-        <translation>Nastaví serializaci surových transakcí nebo bloků, jak jsou vraceny v méně povídavém módu: ne-segwit (0) nebo segwit (1) (výchozí: %d)</translation>
-    </message>
-    <message>
         <source>Support filtering of blocks and transaction with bloom filters (default: %u)</source>
         <translation>Umožnit filtrování bloků a transakcí pomocí Bloomova filtru (výchozí: %u)</translation>
     </message>

@@ -186,19 +186,10 @@ struct CNodeState {
     bool fPreferHeaderAndIDs;
     /**
       * Whether this peer will send us cmpctblocks if we request them.
-      * This is not used to gate request logic, as we really only care about fSupportsDesiredCmpctVersion,
-      * but is used as a flag to "lock in" the version of compact blocks (fWantsCmpctWitness) we send.
+      * This is not used to gate request logic, 
+      * but is used as a flag to "lock in" the version of compact blocks we send.
       */
     bool fProvidesHeaderAndIDs;
-    //! Whether this peer can give us witnesses
-    bool fHaveWitness;
-    //! Whether this peer wants witnesses in cmpctblocks/blocktxns
-    bool fWantsCmpctWitness;
-    /**
-     * If we've announced NODE_WITNESS to this peer: whether the peer sends witnesses in cmpctblocks/blocktxns,
-     * otherwise: whether this peer sends non-witnesses in cmpctblocks/blocktxns.
-     */
-    bool fSupportsDesiredCmpctVersion;
 
     CNodeState(CAddress addrIn, std::string addrNameIn) : address(addrIn), name(addrNameIn) {
         fCurrentlyConnected = false;
@@ -218,9 +209,6 @@ struct CNodeState {
         fPreferHeaders = false;
         fPreferHeaderAndIDs = false;
         fProvidesHeaderAndIDs = false;
-        fHaveWitness = false;
-        fWantsCmpctWitness = false;
-        fSupportsDesiredCmpctVersion = false;
     }
 };
 
@@ -402,10 +390,7 @@ void UpdateBlockAvailability(NodeId nodeid, const uint256 &hash) {
 void MaybeSetPeerAsAnnouncingHeaderAndIDs(NodeId nodeid, CConnman& connman) {
     AssertLockHeld(cs_main);
     CNodeState* nodestate = State(nodeid);
-    if (!nodestate || !nodestate->fSupportsDesiredCmpctVersion) {
-        // Never ask from peers who can't provide witnesses.
-        return;
-    }
+
     if (nodestate->fProvidesHeaderAndIDs) {
         for (std::list<NodeId>::iterator it = lNodesAnnouncingHeaderAndIDs.begin(); it != lNodesAnnouncingHeaderAndIDs.end(); it++) {
             if (*it == nodeid) {
@@ -526,10 +511,6 @@ void FindNextBlocksToDownload(NodeId nodeid, unsigned int count, std::vector<con
         BOOST_FOREACH(const CBlockIndex* pindex, vToFetch) {
             if (!pindex->IsValid(BLOCK_VALID_TREE)) {
                 // We consider the chain that this peer is on invalid.
-                return;
-            }
-            if (!State(nodeid)->fHaveWitness && IsWitnessEnabled(pindex->pprev, consensusParams)) {
-                // We wouldn't download this block or its descendants from this peer.
                 return;
             }
             if (pindex->nStatus & BLOCK_HAVE_DATA || chainActive.Contains(pindex)) {
@@ -790,7 +771,6 @@ void PeerLogicValidation::NewPoWValidBlock(const CBlockIndex *pindex, const std:
         return;
     nHighestFastAnnounce = pindex->nHeight;
 
-    bool fWitnessEnabled = IsWitnessEnabled(pindex->pprev, Params().GetConsensus());
     uint256 hashBlock(pblock->GetHash());
 
     {
@@ -1043,8 +1023,6 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                         assert(!"cannot load block from disk");
                     if (inv.type == MSG_BLOCK)
                         connman.PushMessage(pfrom, msgMaker.Make(SERIALIZE_TRANSACTION_NO_WITNESS, NetMsgType::BLOCK, block));
-                    else if (inv.type == MSG_WITNESS_BLOCK)
-                        connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::BLOCK, block));
                     else if (inv.type == MSG_FILTERED_BLOCK)
                     {
                         bool sendMerkleBlock = false;
@@ -1077,8 +1055,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                         // they won't have a useful mempool to match against a compact block,
                         // and we don't feel like constructing the object for them, so
                         // instead we respond with the full, non-compact block.
-                        bool fPeerWantsWitness = State(pfrom->GetId())->fWantsCmpctWitness;
-                        int nSendFlags = fPeerWantsWitness ? 0 : SERIALIZE_TRANSACTION_NO_WITNESS;
+                        int nSendFlags = SERIALIZE_TRANSACTION_NO_WITNESS;
                         if (CanDirectFetch(consensusParams) && mi->second->nHeight >= chainActive.Height() - MAX_CMPCTBLOCK_DEPTH) {
                             CBlockHeaderAndShortTxIDs cmpctblock(block, fPeerWantsWitness);
                             connman.PushMessage(pfrom, msgMaker.Make(nSendFlags, NetMsgType::CMPCTBLOCK, cmpctblock));
@@ -1104,7 +1081,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                 // Send stream from relay memory
                 bool push = false;
                 auto mi = mapRelay.find(inv.hash);
-                int nSendFlags = (inv.type == MSG_TX ? SERIALIZE_TRANSACTION_NO_WITNESS : 0);
+                int nSendFlags = SERIALIZE_TRANSACTION_NO_WITNESS;
                 if (mi != mapRelay.end()) {
                     connman.PushMessage(pfrom, msgMaker.Make(nSendFlags, NetMsgType::TX, *mi->second));
                     push = true;
@@ -1165,7 +1142,7 @@ inline void static SendBlockTransactions(const CBlock& block, const BlockTransac
     }
     LOCK(cs_main);
     const CNetMsgMaker msgMaker(pfrom->GetSendVersion());
-    int nSendFlags = State(pfrom->GetId())->fWantsCmpctWitness ? 0 : SERIALIZE_TRANSACTION_NO_WITNESS;
+    int nSendFlags = SERIALIZE_TRANSACTION_NO_WITNESS;
     connman.PushMessage(pfrom, msgMaker.Make(nSendFlags, NetMsgType::BLOCKTXN, resp));
 }
 
@@ -1494,22 +1471,6 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         bool fAnnounceUsingCMPCTBLOCK = false;
         uint64_t nCMPCTBLOCKVersion = 0;
         vRecv >> fAnnounceUsingCMPCTBLOCK >> nCMPCTBLOCKVersion;
-        if (nCMPCTBLOCKVersion == 1 || ((pfrom->GetLocalServices() & NODE_WITNESS) && nCMPCTBLOCKVersion == 2)) {
-            LOCK(cs_main);
-            // fProvidesHeaderAndIDs is used to "lock in" version of compact blocks we send (fWantsCmpctWitness)
-            if (!State(pfrom->GetId())->fProvidesHeaderAndIDs) {
-                State(pfrom->GetId())->fProvidesHeaderAndIDs = true;
-                State(pfrom->GetId())->fWantsCmpctWitness = nCMPCTBLOCKVersion == 2;
-            }
-            if (State(pfrom->GetId())->fWantsCmpctWitness == (nCMPCTBLOCKVersion == 2)) // ignore later version announces
-                State(pfrom->GetId())->fPreferHeaderAndIDs = fAnnounceUsingCMPCTBLOCK;
-            if (!State(pfrom->GetId())->fSupportsDesiredCmpctVersion) {
-                if (pfrom->GetLocalServices() & NODE_WITNESS)
-                    State(pfrom->GetId())->fSupportsDesiredCmpctVersion = (nCMPCTBLOCKVersion == 2);
-                else
-                    State(pfrom->GetId())->fSupportsDesiredCmpctVersion = (nCMPCTBLOCKVersion == 1);
-            }
-        }
     }
 
 
@@ -1859,9 +1820,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
                         // Probably non-standard or insufficient fee/priority
                         LogPrint("mempool", "   removed orphan tx %s\n", orphanHash.ToString());
                         vEraseQueue.push_back(orphanHash);
-                        if (!orphanTx.HasWitness() && !stateDummy.CorruptionPossible()) {
-                            // Do not use rejection cache for witness transactions or
-                            // witness-stripped transactions, as they can have been malleated.
+                        if (!stateDummy.CorruptionPossible()) {
                             // See https://github.com/bitcoin/bitcoin/issues/8279 for details.
                             assert(recentRejects);
                             recentRejects->insert(orphanHash);
@@ -1904,17 +1863,13 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
                 recentRejects->insert(tx.GetHash());
             }
         } else {
-            if (!tx.HasWitness() && !state.CorruptionPossible()) {
-                // Do not use rejection cache for witness transactions or
-                // witness-stripped transactions, as they can have been malleated.
+            if (!state.CorruptionPossible()) {
                 // See https://github.com/bitcoin/bitcoin/issues/8279 for details.
                 assert(recentRejects);
                 recentRejects->insert(tx.GetHash());
                 if (RecursiveDynamicUsage(*ptx) < 100000) {
                     AddToCompactExtraTransactions(ptx);
                 }
-            } else if (tx.HasWitness() && RecursiveDynamicUsage(*ptx) < 100000) {
-                AddToCompactExtraTransactions(ptx);
             }
 
             if (pfrom->fWhitelisted && GetBoolArg("-whitelistforcerelay", DEFAULT_WHITELISTFORCERELAY)) {
@@ -2031,12 +1986,6 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             return true;
 
         CNodeState *nodestate = State(pfrom->GetId());
-
-        if (IsWitnessEnabled(pindex->pprev, chainparams.GetConsensus()) && !nodestate->fSupportsDesiredCmpctVersion) {
-            // Don't bother trying to process compact blocks from v1 peers
-            // after segwit activates.
-            return true;
-        }
 
         // We want to be a bit conservative just to be extra careful about DoS
         // possibilities in compact block processing...
@@ -2323,8 +2272,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             // Calculate all the blocks we'd need to switch to pindexLast, up to a limit.
             while (pindexWalk && !chainActive.Contains(pindexWalk) && vToFetch.size() <= MAX_BLOCKS_IN_TRANSIT_PER_PEER) {
                 if (!(pindexWalk->nStatus & BLOCK_HAVE_DATA) &&
-                        !mapBlocksInFlight.count(pindexWalk->GetBlockHash()) &&
-                        (!IsWitnessEnabled(pindexWalk->pprev, chainparams.GetConsensus()) || State(pfrom->GetId())->fHaveWitness)) {
+                        !mapBlocksInFlight.count(pindexWalk->GetBlockHash())) {
                     // We don't have this block, and it's not yet in flight.
                     vToFetch.push_back(pindexWalk);
                 }
@@ -2357,10 +2305,6 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
                             pindexLast->GetBlockHash().ToString(), pindexLast->nHeight);
                 }
                 if (vGetData.size() > 0) {
-                    if (nodestate->fSupportsDesiredCmpctVersion && vGetData.size() == 1 && mapBlocksInFlight.size() == 1 && pindexLast->pprev->IsValid(BLOCK_VALID_CHAIN)) {
-                        // In any case, we want to download using a compact block, not a regular one
-                        vGetData[0] = CInv(MSG_CMPCT_BLOCK, vGetData[0].hash);
-                    }
                     connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::GETDATA, vGetData));
                 }
             }

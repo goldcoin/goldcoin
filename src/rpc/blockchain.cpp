@@ -112,7 +112,7 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
         confirmations = chainActive.Height() - blockindex->nHeight + 1;
     result.push_back(Pair("confirmations", confirmations));
     result.push_back(Pair("strippedsize", (int)::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS)));
-    result.push_back(Pair("size", (int)::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION)));
+    result.push_back(Pair("size", (int)::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS)));
     result.push_back(Pair("weight", (int)::GetBlockWeight(block)));
     result.push_back(Pair("height", blockindex->nHeight));
     result.push_back(Pair("version", block.nVersion));
@@ -331,7 +331,7 @@ UniValue getdifficulty(const JSONRPCRequest& request)
 
 std::string EntryDescriptionString()
 {
-    return "    \"size\" : n,             (numeric) virtual transaction size as defined in BIP 141. This is different from actual serialized size for witness transactions as witness data is discounted.\n"
+    return "    \"size\" : n,             (numeric) actual transaction size\n"
            "    \"fee\" : n,              (numeric) transaction fee in " + CURRENCY_UNIT + "\n"
            "    \"modifiedfee\" : n,      (numeric) transaction fee with fee deltas used for mining priority\n"
            "    \"time\" : n,             (numeric) local time transaction entered pool in seconds since 1 Jan 1970 GMT\n"
@@ -342,7 +342,7 @@ std::string EntryDescriptionString()
            "    \"descendantsize\" : n,   (numeric) virtual transaction size of in-mempool descendants (including this one)\n"
            "    \"descendantfees\" : n,   (numeric) modified fees (see above) of in-mempool descendants (including this one)\n"
            "    \"ancestorcount\" : n,    (numeric) number of in-mempool ancestor transactions (including this one)\n"
-           "    \"ancestorsize\" : n,     (numeric) virtual transaction size of in-mempool ancestors (including this one)\n"
+           "    \"ancestorsize\" : n,     (numeric) transaction size of in-mempool ancestors (including this one)\n"
            "    \"ancestorfees\" : n,     (numeric) modified fees (see above) of in-mempool ancestors (including this one)\n"
            "    \"depends\" : [           (array) unconfirmed transactions used as inputs for this transaction\n"
            "        \"transactionid\",    (string) parent transaction id\n"
@@ -702,7 +702,6 @@ UniValue getblock(const JSONRPCRequest& request)
             "  \"hash\" : \"hash\",     (string) the block hash (same as provided)\n"
             "  \"confirmations\" : n,   (numeric) The number of confirmations, or -1 if the block is not on the main chain\n"
             "  \"size\" : n,            (numeric) The block size\n"
-            "  \"strippedsize\" : n,    (numeric) The block size excluding witness data\n"
             "  \"weight\" : n           (numeric) The block weight as defined in BIP 141\n"
             "  \"height\" : n,          (numeric) The block height or index\n"
             "  \"version\" : n,         (numeric) The block version\n"
@@ -1134,7 +1133,6 @@ UniValue getblockchaininfo(const JSONRPCRequest& request)
     softforks.push_back(SoftForkDesc("bip66", 3, tip, consensusParams));
     softforks.push_back(SoftForkDesc("bip65", 4, tip, consensusParams));
     BIP9SoftForkDescPushBack(bip9_softforks, "csv", consensusParams, Consensus::DEPLOYMENT_CSV);
-    BIP9SoftForkDescPushBack(bip9_softforks, "segwit", consensusParams, Consensus::DEPLOYMENT_SEGWIT);
     obj.push_back(Pair("softforks",             softforks));
     obj.push_back(Pair("bip9_softforks", bip9_softforks));
 
@@ -1289,7 +1287,7 @@ UniValue getmempoolinfo(const JSONRPCRequest& request)
             "\nResult:\n"
             "{\n"
             "  \"size\": xxxxx,               (numeric) Current tx count\n"
-            "  \"bytes\": xxxxx,              (numeric) Sum of all virtual transaction sizes as defined in BIP 141. Differs from actual serialized size because witness data is discounted\n"
+            "  \"bytes\": xxxxx,              (numeric) Sum of all serialized transaction sizes\n"
             "  \"usage\": xxxxx,              (numeric) Total memory usage for the mempool\n"
             "  \"maxmempool\": xxxxx,         (numeric) Maximum memory usage for the mempool\n"
             "  \"mempoolminfee\": xxxxx       (numeric) Minimum fee for tx to be accepted\n"

@@ -168,8 +168,6 @@ bool operator<(const CInv& a, const CInv& b)
 std::string CInv::GetCommand() const
 {
     std::string cmd;
-    if (type & MSG_WITNESS_FLAG)
-        cmd.append("witness-");
     int masked = type & MSG_TYPE_MASK;
     switch (masked)
     {

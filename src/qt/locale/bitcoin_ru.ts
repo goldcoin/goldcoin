@@ -3694,10 +3694,6 @@
         <translation>Запрашивать адреса участников с помощью DNS, если адресов мало (по умолчанию: 1, если не указан -connect/-noconnect)</translation>
     </message>
     <message>
-        <source>Sets the serialization of raw transaction or block hex returned in non-verbose mode, non-segwit(0) or segwit(1) (default: %d)</source>
-        <translation>Задаёт сериализацию сырой транзакции или хекса блока, возвращённого в не подробном режиме, non-segwit(0) или segwit(1) (по умолчанию: %d)</translation>
-    </message>
-    <message>
         <source>Support filtering of blocks and transaction with bloom filters (default: %u)</source>
         <translation>Поддерживать фильтрацию блоков и транзакций с помощью фильтра Блума (по умолчанию: %u)</translation>
     </message>

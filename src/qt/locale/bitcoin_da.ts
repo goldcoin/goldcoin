@@ -3698,10 +3698,6 @@
         <translation>Forespørg knudeadresser via DNS-opslag hvis antallet af adresser er lavt (standard: 1 med mindre -connect/-noconnect)</translation>
     </message>
     <message>
-        <source>Sets the serialization of raw transaction or block hex returned in non-verbose mode, non-segwit(0) or segwit(1) (default: %d)</source>
-        <translation>Indstiller serialiseringen af rå transaktioner eller blok-hex returneret i ikke-verbose tilstand, non-segwit(0) eller sigwit(1) (standard: %d)</translation>
-    </message>
-    <message>
         <source>Support filtering of blocks and transaction with bloom filters (default: %u)</source>
         <translation>Understøt filtrering af blokke og transaktioner med Bloom-filtre (standard: %u)</translation>
     </message>

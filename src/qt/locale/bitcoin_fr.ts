@@ -3694,10 +3694,6 @@
         <translation>Requête d'adresses de paires par recherche DNS, si il y a peu d'adresses (par défaut : 1 sauf si -connect/-noconnect)</translation>
     </message>
     <message>
-        <source>Sets the serialization of raw transaction or block hex returned in non-verbose mode, non-segwit(0) or segwit(1) (default: %d)</source>
-        <translation>Définit la sérialisation de la transaction brute ou les données hexa de bloc retournées en mode non-verbose, non-segwit(0) ou segwit(1) (par défaut : %d)</translation>
-    </message>
-    <message>
         <source>Support filtering of blocks and transaction with bloom filters (default: %u)</source>
         <translation>Prendre en charge le filtrage des blocs et des transactions avec les filtres bloom (par défaut : %u)</translation>
     </message>
