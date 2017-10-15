@@ -1054,7 +1054,7 @@ public:
         if (pwalletMain) {
             CScript basescript = GetScriptForDestination(keyID);
             isminetype typ;
-            typ = IsMine(*pwalletMain, basescript, SIGVERSION_WITNESS_V0);
+            typ = IsMine(*pwalletMain, basescript);
             if (typ != ISMINE_SPENDABLE && typ != ISMINE_WATCH_SOLVABLE)
                 return false;
             CScript witscript = GetScriptForWitness(basescript);
@@ -1075,7 +1075,7 @@ public:
                 return true;
             }
             isminetype typ;
-            typ = IsMine(*pwalletMain, subscript, SIGVERSION_WITNESS_V0);
+            typ = IsMine(*pwalletMain, subscript);
             if (typ != ISMINE_SPENDABLE && typ != ISMINE_WATCH_SOLVABLE)
                 return false;
             CScript witscript = GetScriptForWitness(subscript);
@@ -1086,50 +1086,6 @@ public:
         return false;
     }
 };
-
-UniValue addwitnessaddress(const JSONRPCRequest& request)
-{
-    if (!EnsureWalletIsAvailable(request.fHelp))
-        return NullUniValue;
-
-    if (request.fHelp || request.params.size() < 1 || request.params.size() > 1)
-    {
-        string msg = "addwitnessaddress \"address\"\n"
-            "\nAdd a witness address for a script (with pubkey or redeemscript known).\n"
-            "It returns the witness script.\n"
-
-            "\nArguments:\n"
-            "1. \"address\"       (string, required) An address known to the wallet\n"
-
-            "\nResult:\n"
-            "\"witnessaddress\",  (string) The value of the new address (P2SH of witness script).\n"
-            "}\n"
-        ;
-        throw runtime_error(msg);
-    }
-
-    {
-        LOCK(cs_main);
-        if (!IsWitnessEnabled(chainActive.Tip(), Params().GetConsensus()) && !GetBoolArg("-walletprematurewitness", false)) {
-            throw JSONRPCError(RPC_WALLET_ERROR, "Segregated witness not enabled on network");
-        }
-    }
-
-    CBitcoinAddress address(request.params[0].get_str());
-    if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Goldcoin address");
-
-    Witnessifier w;
-    CTxDestination dest = address.Get();
-    bool ret = boost::apply_visitor(w, dest);
-    if (!ret) {
-        throw JSONRPCError(RPC_WALLET_ERROR, "Public key or redeemscript not known to wallet, or the key is uncompressed");
-    }
-
-    pwalletMain->SetAddressBook(w.result, "", "receive");
-
-    return CBitcoinAddress(w.result).ToString();
-}
 
 struct tallyitem
 {

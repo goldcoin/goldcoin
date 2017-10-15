@@ -159,9 +159,6 @@ QT_TRANSLATE_NOOP("bitcoin-core", ""
 "Set the number of script verification threads (%u to %d, 0 = auto, <0 = "
 "leave that many cores free, default: %d)"),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
-"Sets the serialization of raw transaction or block hex returned in non-"
-"verbose mode, non-segwit(0) or segwit(1) (default: %d)"),
-QT_TRANSLATE_NOOP("bitcoin-core", ""
 "Support filtering of blocks and transaction with bloom filters (default: %u)"),
 QT_TRANSLATE_NOOP("bitcoin-core", ""
 "The block database contains a block which appears to be from the future. "
