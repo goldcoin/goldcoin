@@ -21,7 +21,7 @@ using namespace std;
 
 typedef std::vector<unsigned char> valtype;
 
-TransactionSignatureCreator::TransactionSignatureCreator(const CKeyStore* keystoreIn, const CTransaction* txToIn, unsigned int nInIn, const CAmount& amountIn, int nHashTypeIn) : BaseSignatureCreator(keystoreIn), txTo(txToIn), nIn(nInIn), nHashType(nHashTypeIn), amount(amountIn), checker(txTo, nIn, amountIn) {}
+TransactionSignatureCreator::TransactionSignatureCreator(const CKeyStore* keystoreIn, const CTransaction* txToIn, unsigned int nInIn, int nHashTypeIn) : BaseSignatureCreator(keystoreIn), txTo(txToIn), nIn(nInIn), nHashType(nHashTypeIn), checker(txTo, nIn) {}
 
 bool TransactionSignatureCreator::CreateSig(std::vector<unsigned char>& vchSig, const CKeyID& address, const CScript& scriptCode) const
 {
@@ -29,7 +29,7 @@ bool TransactionSignatureCreator::CreateSig(std::vector<unsigned char>& vchSig, 
     if (!keystore->GetKey(address, key))
         return false;
 
-    uint256 hash = SignatureHash(scriptCode, *txTo, nIn, nHashType, amount);
+    uint256 hash = SignatureHash(scriptCode, *txTo, nIn, nHashType);
     if (!key.Sign(hash, vchSig))
         return false;
     vchSig.push_back((unsigned char)nHashType);
@@ -133,10 +133,9 @@ bool ProduceSignature(const BaseSignatureCreator& creator, const CScript& fromPu
     bool solved = true;
     std::vector<valtype> result;
     txnouttype whichType;
-    solved = SignStep(creator, script, result, whichType, SIGVERSION_BASE);
+    solved = SignStep(creator, script, result, whichType);
     bool P2SH = false;
     CScript subscript;
-    sigdata.scriptWitness.stack.clear();
 
     if (solved && whichType == TX_SCRIPTHASH)
     {
@@ -144,7 +143,7 @@ bool ProduceSignature(const BaseSignatureCreator& creator, const CScript& fromPu
         // the final scriptSig is the signatures from that
         // and then the serialized subscript:
         script = subscript = CScript(result[0].begin(), result[0].end());
-        solved = solved && SignStep(creator, script, result, whichType, SIGVERSION_BASE) && whichType != TX_SCRIPTHASH;
+        solved = solved && SignStep(creator, script, result, whichType) && whichType != TX_SCRIPTHASH;
         P2SH = true;
     }
 
@@ -154,7 +153,7 @@ bool ProduceSignature(const BaseSignatureCreator& creator, const CScript& fromPu
     sigdata.scriptSig = PushAll(result);
 
     // Test solution
-    return solved && VerifyScript(sigdata.scriptSig, fromPubKey, &sigdata.scriptWitness, STANDARD_SCRIPT_VERIFY_FLAGS, creator.Checker());
+    return solved && VerifyScript(sigdata.scriptSig, fromPubKey, STANDARD_SCRIPT_VERIFY_FLAGS, creator.Checker());
 }
 
 SignatureData DataFromTransaction(const CMutableTransaction& tx, unsigned int nIn)
@@ -162,7 +161,6 @@ SignatureData DataFromTransaction(const CMutableTransaction& tx, unsigned int nI
     SignatureData data;
     assert(tx.vin.size() > nIn);
     data.scriptSig = tx.vin[nIn].scriptSig;
-    data.scriptWitness = tx.vin[nIn].scriptWitness;
     return data;
 }
 
@@ -170,7 +168,6 @@ void UpdateTransaction(CMutableTransaction& tx, unsigned int nIn, const Signatur
 {
     assert(tx.vin.size() > nIn);
     tx.vin[nIn].scriptSig = data.scriptSig;
-    tx.vin[nIn].scriptWitness = data.scriptWitness;
 }
 
 bool SignSignature(const CKeyStore &keystore, const CScript& fromPubKey, CMutableTransaction& txTo, unsigned int nIn, const CAmount& amount, int nHashType)
@@ -178,7 +175,7 @@ bool SignSignature(const CKeyStore &keystore, const CScript& fromPubKey, CMutabl
     assert(nIn < txTo.vin.size());
 
     CTransaction txToConst(txTo);
-    TransactionSignatureCreator creator(&keystore, &txToConst, nIn, amount, nHashType);
+    TransactionSignatureCreator creator(&keystore, &txToConst, nIn, nHashType);
 
     SignatureData sigdata;
     bool ret = ProduceSignature(creator, fromPubKey, sigdata);
@@ -262,6 +259,13 @@ struct Stacks
         result.scriptSig = PushAll(script);
         return result;
     }
+    Stacks() {}
+    explicit Stacks(const std::vector<valtype>& scriptSigStack_) : script(scriptSigStack_) {}
+
+    //TODO: This might cause an error!
+    explicit Stacks(const SignatureData& data) {
+        EvalScript(script, data.scriptSig, SCRIPT_VERIFY_STRICTENC, BaseSignatureChecker());
+    }
 };
 }
 
@@ -317,7 +321,7 @@ SignatureData CombineSignatures(const CScript& scriptPubKey, const BaseSignature
     vector<vector<unsigned char> > vSolutions;
     Solver(scriptPubKey, txType, vSolutions);
 
-    return CombineSignatures(scriptPubKey, checker, txType, vSolutions, Stacks(scriptSig1), Stacks(scriptSig2), SIGVERSION_BASE).Output();
+    return CombineSignatures(scriptPubKey, checker, txType, vSolutions, Stacks(scriptSig1), Stacks(scriptSig2)).Output();
 }
 
 namespace {

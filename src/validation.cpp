@@ -483,7 +483,7 @@ int64_t GetTransactionSigOpCost(const CTransaction& tx, const CCoinsViewCache& i
     for (unsigned int i = 0; i < tx.vin.size(); i++)
     {
         const CTxOut &prevout = inputs.GetOutputFor(tx.vin[i]);
-        nSigOps += CountWitnessSigOps(tx.vin[i].scriptSig, prevout.scriptPubKey, &tx.vin[i].scriptWitness, flags);
+        nSigOps += 0;//CountWitnessSigOps(tx.vin[i].scriptSig, prevout.scriptPubKey, &tx.vin[i].scriptWitness, flags);
     }
     return nSigOps;
 }
@@ -940,8 +940,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
 
         // Check against previous transactions
         // This is done last to help prevent CPU exhaustion denial-of-service attacks.
-        PrecomputedTransactionData txdata(tx);
-        if (!CheckInputs(tx, state, view, true, scriptVerifyFlags, true, txdata)) {
+        if (!CheckInputs(tx, state, view, true, scriptVerifyFlags, true)) {
             return false; // state filled in by CheckInputs
         }
 
@@ -954,7 +953,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
         // There is a similar check in CreateNewBlock() to prevent creating
         // invalid blocks, however allowing such transactions into the mempool
         // can be exploited as a DoS attack.
-        if (!CheckInputs(tx, state, view, true, MANDATORY_SCRIPT_VERIFY_FLAGS, true, txdata))
+        if (!CheckInputs(tx, state, view, true, MANDATORY_SCRIPT_VERIFY_FLAGS, true))
         {
             return error("%s: BUG! PLEASE REPORT THIS! ConnectInputs failed against MANDATORY but not STANDARD flags %s, %s",
                 __func__, hash.ToString(), FormatStateMessage(state));
@@ -1337,7 +1336,7 @@ void UpdateCoins(const CTransaction& tx, CCoinsViewCache& inputs, int nHeight)
 
 bool CScriptCheck::operator()() {
     const CScript &scriptSig = ptxTo->vin[nIn].scriptSig;
-    if (!VerifyScript(scriptSig, scriptPubKey, nFlags, CachingTransactionSignatureChecker(ptxTo, nIn, amount, cacheStore, *txdata), &error)) {
+    if (!VerifyScript(scriptSig, scriptPubKey, nFlags, CachingTransactionSignatureChecker(ptxTo, nIn, cacheStore), &error)) {
         return false;
     }
     return true;
@@ -1396,7 +1395,7 @@ bool CheckTxInputs(const CTransaction& tx, CValidationState& state, const CCoins
 }
 }// namespace Consensus
 
-bool CheckInputs(const CTransaction& tx, CValidationState &state, const CCoinsViewCache &inputs, bool fScriptChecks, unsigned int flags, bool cacheStore, PrecomputedTransactionData& txdata, std::vector<CScriptCheck> *pvChecks)
+bool CheckInputs(const CTransaction& tx, CValidationState &state, const CCoinsViewCache &inputs, bool fScriptChecks, unsigned int flags, bool cacheStore, std::vector<CScriptCheck> *pvChecks)
 {
     if (!tx.IsCoinBase())
     {
@@ -1422,7 +1421,7 @@ bool CheckInputs(const CTransaction& tx, CValidationState &state, const CCoinsVi
                 assert(coins);
 
                 // Verify signature
-                CScriptCheck check(*coins, tx, i, flags, cacheStore, &txdata);
+                CScriptCheck check(*coins, tx, i, flags, cacheStore);
                 if (pvChecks) {
                     pvChecks->push_back(CScriptCheck());
                     check.swap(pvChecks->back());
@@ -1435,7 +1434,7 @@ bool CheckInputs(const CTransaction& tx, CValidationState &state, const CCoinsVi
                         // avoid splitting the network between upgraded and
                         // non-upgraded nodes.
                         CScriptCheck check2(*coins, tx, i,
-                                flags & ~STANDARD_NOT_MANDATORY_VERIFY_FLAGS, cacheStore, &txdata);
+                                flags & ~STANDARD_NOT_MANDATORY_VERIFY_FLAGS, cacheStore);
                         if (check2())
                             return state.Invalid(false, REJECT_NONSTANDARD, strprintf("non-mandatory-script-verify-flag (%s)", ScriptErrorString(check.GetScriptError())));
                     }
@@ -1843,8 +1842,6 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     std::vector<std::pair<uint256, CDiskTxPos> > vPos;
     vPos.reserve(block.vtx.size());
     blockundo.vtxundo.reserve(block.vtx.size() - 1);
-    std::vector<PrecomputedTransactionData> txdata;
-    txdata.reserve(block.vtx.size()); // Required so that pointers to individual PrecomputedTransactionData don't get invalidated
     for (unsigned int i = 0; i < block.vtx.size(); i++)
     {
         const CTransaction &tx = *(block.vtx[i]);
@@ -1879,14 +1876,13 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             return state.DoS(100, error("ConnectBlock(): too many sigops"),
                              REJECT_INVALID, "bad-blk-sigops");
 
-        txdata.emplace_back(tx);
         if (!tx.IsCoinBase())
         {
             nFees += view.GetValueIn(tx)-tx.GetValueOut();
 
             std::vector<CScriptCheck> vChecks;
             bool fCacheResults = fJustCheck; /* Don't cache results if we're actually connecting blocks (still consult the cache, though) */
-            if (!CheckInputs(tx, state, view, fScriptChecks, flags, fCacheResults, txdata[i], nScriptCheckThreads ? &vChecks : NULL))
+            if (!CheckInputs(tx, state, view, fScriptChecks, flags, fCacheResults, nScriptCheckThreads ? &vChecks : NULL))
                 return error("ConnectBlock(): CheckInputs on %s failed with %s",
                     tx.GetHash().ToString(), FormatStateMessage(state));
             control.Add(vChecks);
@@ -3565,6 +3561,89 @@ bool CVerifyDB::VerifyDB(const CChainParams& chainparams, CCoinsView *coinsview,
     return true;
 }
 
+bool RewindBlockIndex(const CChainParams& params)
+{
+    LOCK(cs_main);
+
+    int nHeight = 1;
+    //while (nHeight <= chainActive.Height()) {
+    //    if (IsWitnessEnabled(chainActive[nHeight - 1], params.GetConsensus()) && !(chainActive[nHeight]->nStatus & BLOCK_OPT_WITNESS)) {
+    //        break;
+    //    }
+    //    nHeight++;
+    //}
+
+    // nHeight is now the height of the first insufficiently-validated block, or tipheight + 1
+    CValidationState state;
+    CBlockIndex* pindex = chainActive.Tip();
+    while (chainActive.Height() >= nHeight) {
+        if (fPruneMode && !(chainActive.Tip()->nStatus & BLOCK_HAVE_DATA)) {
+            // If pruning, don't try rewinding past the HAVE_DATA point;
+            // since older blocks can't be served anyway, there's
+            // no need to walk further, and trying to DisconnectTip()
+            // will fail (and require a needless reindex/redownload
+            // of the blockchain).
+            break;
+        }
+        if (!DisconnectTip(state, params, true)) {
+            return error("RewindBlockIndex: unable to disconnect block at height %i", pindex->nHeight);
+        }
+        // Occasionally flush state to disk.
+        if (!FlushStateToDisk(state, FLUSH_STATE_PERIODIC))
+            return false;
+    }
+
+    // Reduce validity flag and have-data flags.
+    // We do this after actual disconnecting, otherwise we'll end up writing the lack of data
+    // to disk before writing the chainstate, resulting in a failure to continue if interrupted.
+    for (BlockMap::iterator it = mapBlockIndex.begin(); it != mapBlockIndex.end(); it++) {
+        CBlockIndex* pindexIter = it->second;
+
+        // Note: If we encounter an insufficiently validated block that
+        // is on chainActive, it must be because we are a pruning node, and
+        // this block or some successor doesn't HAVE_DATA, so we were unable to
+        // rewind all the way.  Blocks remaining on chainActive at this point
+        // must not have their validity reduced.
+        if (false /*IsWitnessEnabled(pindexIter->pprev, params.GetConsensus()) && !(pindexIter->nStatus & BLOCK_OPT_WITNESS) && !chainActive.Contains(pindexIter)*/) {
+            // Reduce validity
+            pindexIter->nStatus = std::min<unsigned int>(pindexIter->nStatus & BLOCK_VALID_MASK, BLOCK_VALID_TREE) | (pindexIter->nStatus & ~BLOCK_VALID_MASK);
+            // Remove have-data flags.
+            pindexIter->nStatus &= ~(BLOCK_HAVE_DATA | BLOCK_HAVE_UNDO);
+            // Remove storage location.
+            pindexIter->nFile = 0;
+            pindexIter->nDataPos = 0;
+            pindexIter->nUndoPos = 0;
+            // Remove various other things
+            pindexIter->nTx = 0;
+            pindexIter->nChainTx = 0;
+            pindexIter->nSequenceId = 0;
+            // Make sure it gets written.
+            setDirtyBlockIndex.insert(pindexIter);
+            // Update indexes
+            setBlockIndexCandidates.erase(pindexIter);
+            std::pair<std::multimap<CBlockIndex*, CBlockIndex*>::iterator, std::multimap<CBlockIndex*, CBlockIndex*>::iterator> ret = mapBlocksUnlinked.equal_range(pindexIter->pprev);
+            while (ret.first != ret.second) {
+                if (ret.first->second == pindexIter) {
+                    mapBlocksUnlinked.erase(ret.first++);
+                } else {
+                    ++ret.first;
+                }
+            }
+        } else if (pindexIter->IsValid(BLOCK_VALID_TRANSACTIONS) && pindexIter->nChainTx) {
+            setBlockIndexCandidates.insert(pindexIter);
+        }
+    }
+
+    PruneBlockIndexCandidates();
+
+    CheckBlockIndex(params.GetConsensus());
+
+    if (!FlushStateToDisk(state, FLUSH_STATE_ALWAYS)) {
+        return false;
+    }
+
+    return true;
+}
 
 // May NOT be used after any connections are up as much
 // of the peer-processing logic assumes a consistent

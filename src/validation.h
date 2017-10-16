@@ -47,7 +47,6 @@ class CValidationInterface;
 class CValidationState;
 struct ChainTxData;
 
-struct PrecomputedTransactionData;
 struct LockPoints;
 
 /** Default for DEFAULT_WHITELISTRELAY. */
@@ -215,7 +214,7 @@ static const unsigned int DEFAULT_CHECKLEVEL = 3;
 // Setting the target to > than 550MB will make it likely we can respect the target.
 static const uint64_t MIN_DISK_SPACE_FOR_BLOCK_FILES = 550 * 1024 * 1024;
 
-/** 
+/**
  * Process an incoming block. This only returns after the best known valid
  * block is made active. Note that it does not, however, guarantee that the
  * specific block passed to it has been checked for validity!
@@ -226,7 +225,7 @@ static const uint64_t MIN_DISK_SPACE_FOR_BLOCK_FILES = 550 * 1024 * 1024;
  *
  * Note that we guarantee that either the proof-of-work is valid on pblock, or
  * (and possibly also) BlockChecked will have been called.
- * 
+ *
  * Call without cs_main held.
  *
  * @param[in]   pblock  The block we want to process.
@@ -341,7 +340,7 @@ ThresholdState VersionBitsTipState(const Consensus::Params& params, Consensus::D
 /** Get the block height at which the BIP9 deployment switched into the state for the block building on the current tip. */
 int VersionBitsTipStateSinceHeight(const Consensus::Params& params, Consensus::DeploymentPos pos);
 
-/** 
+/**
  * Count ECDSA signature operations the old-fashioned (pre-0.6) way
  * @return number of sigops this transaction's outputs will produce when spent
  * @see CTransaction::FetchInputs
@@ -350,7 +349,7 @@ unsigned int GetLegacySigOpCount(const CTransaction& tx);
 
 /**
  * Count ECDSA signature operations in pay-to-script-hash inputs.
- * 
+ *
  * @param[in] mapInputs Map of previous transactions that have outputs we're spending
  * @return maximum number of sigops required to validate this transaction's inputs
  * @see CTransaction::FetchInputs
@@ -372,7 +371,7 @@ int64_t GetTransactionSigOpCost(const CTransaction& tx, const CCoinsViewCache& i
  * instead of being performed inline.
  */
 bool CheckInputs(const CTransaction& tx, CValidationState &state, const CCoinsViewCache &view, bool fScriptChecks,
-                 unsigned int flags, bool cacheStore, PrecomputedTransactionData& txdata, std::vector<CScriptCheck> *pvChecks = NULL);
+                 unsigned int flags, bool cacheStore, std::vector<CScriptCheck> *pvChecks = NULL);
 
 /** Apply the effects of this transaction on the UTXO set represented by view */
 void UpdateCoins(const CTransaction& tx, CCoinsViewCache& inputs, int nHeight);
@@ -434,7 +433,7 @@ bool CheckSequenceLocks(const CTransaction &tx, int flags, LockPoints* lp = NULL
 
 /**
  * Closure representing one script verification
- * Note that this stores references to the spending transaction 
+ * Note that this stores references to the spending transaction
  */
 class CScriptCheck
 {
@@ -446,13 +445,12 @@ private:
     unsigned int nFlags;
     bool cacheStore;
     ScriptError error;
-    PrecomputedTransactionData *txdata;
 
 public:
     CScriptCheck(): amount(0), ptxTo(0), nIn(0), nFlags(0), cacheStore(false), error(SCRIPT_ERR_UNKNOWN_ERROR) {}
-    CScriptCheck(const CCoins& txFromIn, const CTransaction& txToIn, unsigned int nInIn, unsigned int nFlagsIn, bool cacheIn, PrecomputedTransactionData* txdataIn) :
+    CScriptCheck(const CCoins& txFromIn, const CTransaction& txToIn, unsigned int nInIn, unsigned int nFlagsIn, bool cacheIn) :
         scriptPubKey(txFromIn.vout[txToIn.vin[nInIn].prevout.n].scriptPubKey), amount(txFromIn.vout[txToIn.vin[nInIn].prevout.n].nValue),
-        ptxTo(&txToIn), nIn(nInIn), nFlags(nFlagsIn), cacheStore(cacheIn), error(SCRIPT_ERR_UNKNOWN_ERROR), txdata(txdataIn) { }
+        ptxTo(&txToIn), nIn(nInIn), nFlags(nFlagsIn), cacheStore(cacheIn), error(SCRIPT_ERR_UNKNOWN_ERROR) { }
 
     bool operator()();
 
@@ -464,7 +462,6 @@ public:
         std::swap(nFlags, check.nFlags);
         std::swap(cacheStore, check.cacheStore);
         std::swap(error, check.error);
-        std::swap(txdata, check.txdata);
     }
 
     ScriptError GetScriptError() const { return error; }
@@ -503,8 +500,8 @@ bool DisconnectBlock(const CBlock& block, CValidationState& state, const CBlockI
 /** Check a block is completely valid from start to finish (only works on top of our current best block, with cs_main held) */
 bool TestBlockValidity(CValidationState& state, const CChainParams& chainparams, const CBlock& block, CBlockIndex* pindexPrev, bool fCheckPOW = true, bool fCheckMerkleRoot = true);
 
-/** Produce the necessary coinbase commitment for a block (modifies the hash, don't call for mined blocks). */
-std::vector<unsigned char> GenerateCoinbaseCommitment(CBlock& block, const CBlockIndex* pindexPrev, const Consensus::Params& consensusParams);
+/** When there are blocks in the active chain with missing data, rewind the chainstate and remove them from the block index */
+bool RewindBlockIndex(const CChainParams& params);
 
 /** RAII wrapper for VerifyDB: Verify consistency of the block and coin databases */
 class CVerifyDB {
