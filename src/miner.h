@@ -1,9 +1,10 @@
-// Copyright (c) 2009-2010 Satoshi Nakamoto
+// Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2015 The Bitcoin Core developers
 // Copyright (c) 2011-2017 The Litecoin Core developers
 // Copyright (c) 2013-2017 The Goldcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
 
 #ifndef BITCOIN_MINER_H
 #define BITCOIN_MINER_H
@@ -30,7 +31,7 @@ struct CBlockTemplate
 {
     CBlock block;
     std::vector<CAmount> vTxFees;
-    std::vector<int64_t> vTxSigOps;
+    std::vector<int64_t> vTxSigOpsCost;
 };
 
 // Container for tracking updates to ancestor feerate as we include (parent)
@@ -41,13 +42,13 @@ struct CTxMemPoolModifiedEntry {
         iter = entry;
         nSizeWithAncestors = entry->GetSizeWithAncestors();
         nModFeesWithAncestors = entry->GetModFeesWithAncestors();
-        nSigOpCountWithAncestors = entry->GetSigOpCountWithAncestors();
+        nSigOpCostWithAncestors = entry->GetSigOpCostWithAncestors();
     }
 
     CTxMemPool::txiter iter;
     uint64_t nSizeWithAncestors;
     CAmount nModFeesWithAncestors;
-    unsigned int nSigOpCountWithAncestors;
+    int64_t nSigOpCostWithAncestors;
 };
 
 /** Comparator for CTxMemPool::txiter objects.
@@ -125,7 +126,7 @@ struct update_for_parent_inclusion
     {
         e.nModFeesWithAncestors -= iter->GetFee();
         e.nSizeWithAncestors -= iter->GetTxSize();
-        e.nSigOpCountWithAncestors -= iter->GetSigOpCount();
+        e.nSigOpCostWithAncestors -= iter->GetSigOpCost();
     }
 
     CTxMemPool::txiter iter;
@@ -141,12 +142,16 @@ private:
     CBlock* pblock;
 
     // Configuration parameters for the block size
-    unsigned int nBlockMaxSize, nBlockMinSize;
+    bool fIncludeWitness;
+    unsigned int nBlockMaxWeight, nBlockMaxSize;
+    bool fNeedSizeAccounting;
+    CFeeRate blockMinFeeRate;
 
     // Information on the current status of the block
+    uint64_t nBlockWeight;
     uint64_t nBlockSize;
     uint64_t nBlockTx;
-    unsigned int nBlockSigOps;
+    uint64_t nBlockSigOpsCost;
     CAmount nFees;
     CTxMemPool::setEntries inBlock;
 
@@ -155,7 +160,7 @@ private:
     int64_t nLockTimeCutoff;
     const CChainParams& chainparams;
 
-    // Variables used for addScoreTxs and addPriorityTxs
+    // Variables used for addPriorityTxs
     int lastFewTxs;
     bool blockFinished;
 
@@ -172,14 +177,14 @@ private:
     void AddToBlock(CTxMemPool::txiter iter);
 
     // Methods for how to add transactions to a block.
-    /** Add transactions based on modified feerate */
-    void addScoreTxs();
     /** Add transactions based on tx "priority" */
     void addPriorityTxs();
-    /** Add transactions based on feerate including unconfirmed ancestors */
-    void addPackageTxs();
+    /** Add transactions based on feerate including unconfirmed ancestors
+      * Increments nPackagesSelected / nDescendantsUpdated with corresponding
+      * statistics from the package selection (for logging statistics). */
+    void addPackageTxs(int &nPackagesSelected, int &nDescendantsUpdated);
 
-    // helper function for addScoreTxs and addPriorityTxs
+    // helper function for addPriorityTxs
     /** Test if tx will still "fit" in the block */
     bool TestForBlock(CTxMemPool::txiter iter);
     /** Test if tx still has unconfirmed parents not yet in block */
@@ -189,17 +194,21 @@ private:
     /** Remove confirmed (inBlock) entries from given set */
     void onlyUnconfirmed(CTxMemPool::setEntries& testSet);
     /** Test if a new package would "fit" in the block */
-    bool TestPackage(uint64_t packageSize, unsigned int packageSigOps);
-    /** Test if a set of transactions are all final */
-    bool TestPackageFinality(const CTxMemPool::setEntries& package);
+    bool TestPackage(uint64_t packageSize, int64_t packageSigOpsCost);
+    /** Perform checks on each transaction in a package:
+      * locktime, premature-witness, serialized size (if necessary)
+      * These checks should always succeed, and they're here
+      * only as an extra check in case of suboptimal node configuration */
+    bool TestPackageTransactions(const CTxMemPool::setEntries& package);
     /** Return true if given transaction from mapTx has already been evaluated,
       * or if the transaction's cached data in mapTx is incorrect. */
     bool SkipMapTxEntry(CTxMemPool::txiter it, indexed_modified_transaction_set &mapModifiedTx, CTxMemPool::setEntries &failedTx);
     /** Sort the package in an order that is valid to appear in a block */
     void SortForBlock(const CTxMemPool::setEntries& package, CTxMemPool::txiter entry, std::vector<CTxMemPool::txiter>& sortedEntries);
     /** Add descendants of given transactions to mapModifiedTx with ancestor
-      * state updated assuming given transactions are inBlock. */
-    void UpdatePackagesForAdded(const CTxMemPool::setEntries& alreadyAdded, indexed_modified_transaction_set &mapModifiedTx);
+      * state updated assuming given transactions are inBlock. Returns number
+      * of updated descendants. */
+    int UpdatePackagesForAdded(const CTxMemPool::setEntries& alreadyAdded, indexed_modified_transaction_set &mapModifiedTx);
 };
 
 /** Modify the extranonce in a block */

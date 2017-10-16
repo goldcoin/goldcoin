@@ -46,4 +46,4 @@ static CMutableTransaction BuildSpendingTransaction(const CScript& scriptSig, co
     return txSpend;
 }
 
-BENCHMARK(VerifyScriptBench);
+//BENCHMARK(VerifyScriptBench);
