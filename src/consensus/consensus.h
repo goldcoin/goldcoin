@@ -12,7 +12,7 @@
 #include <stdint.h>
 
 /** The maximum allowed size for a serialized block, in bytes (only for buffer size limits) */
-static const unsigned int MAX_BLOCK_SERIALIZED_SIZE = 4000000;
+static const unsigned int MAX_BLOCK_SERIALIZED_SIZE = 2000000;
 /** The maximum allowed size for a block, in bytes (network rule) */
 static const unsigned int MAX_BLOCK_BASE_SIZE = 2000000;
 /** The maximum allowed number of signature check operations in a block (network rule) */
