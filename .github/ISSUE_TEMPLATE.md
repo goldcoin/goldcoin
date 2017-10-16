@@ -11,11 +11,11 @@ For reporting security issues, please contact the Goldcoin developers on the gol
 ### Is this a bug in the codebase(not a usage issue) that needs to be fixed?
 #### If not please skip to below, otherwise answer the following.
 
-What files need to be fixed? (Please list them all)
+#### What files need to be fixed? (Please list them all)
 
-What needs to be done?
+#### What needs to be done?
 
-Why?
+#### Why?
 
 #
 
