@@ -96,7 +96,7 @@ bool DecodeHexTx(CMutableTransaction& tx, const std::string& strHexTx)
     std::vector<unsigned char> txData(ParseHex(strHexTx));
 
 
-    CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS);
+    /*DataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS);
     try {
         ssData >> tx;
         if (ssData.eof()) {
@@ -105,7 +105,7 @@ bool DecodeHexTx(CMutableTransaction& tx, const std::string& strHexTx)
     }
     catch (const std::exception&) {
         // Fall through.
-    }
+    }*/
 
     CDataStream ssData(txData, SER_NETWORK, PROTOCOL_VERSION);
     try {
