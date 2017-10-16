@@ -1,12 +1,23 @@
 <!--- Remove sections that do not apply -->
 
-This issue tracker is only for technical issues related to goldcoin-core.
+This issue tracker is only for technical/code issues related to goldcoin-core.
 
-General goldcoin questions and/or support requests and are best directed to the [goldcointalk.io forums](https://goldcointalk.io/).
+General goldcoin questions and/or support requests and are best directed to the [https://www.goldcointalk.org/ forums](https://www.goldcointalk.org/).
 
-For reporting security issues, please contact the Goldcoin developers on the #goldcoin-dev Freenode IRC channel or alternatively you can email us at contact@goldcoin.org.
+For reporting security issues, please contact the Goldcoin developers on the goldcoinproject.slack.com slack channel.
 
 ### Describe the issue
+
+### Is this a bug in the codebase(not a usage issue) that needs to be fixed?
+#### If not please skip to below, otherwise answer the following.
+
+What files need to be fixed? (Please list them all)
+
+What needs to be done?
+
+Why?
+
+#
 
 ### Can you reliably reproduce the issue?
 #### If so, please list the steps to reproduce below:
