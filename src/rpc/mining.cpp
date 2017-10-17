@@ -594,11 +594,8 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
         int index_in_template = i - 1;
         entry.push_back(Pair("fee", pblocktemplate->vTxFees[index_in_template]));
         int64_t nTxSigOps = pblocktemplate->vTxSigOpsCost[index_in_template];
-        if (fPreSegWit) {
-            assert(nTxSigOps % WITNESS_SCALE_FACTOR == 0);
-            nTxSigOps /= WITNESS_SCALE_FACTOR;
-        }
         entry.push_back(Pair("sigops", nTxSigOps));
+        entry.push_back(Pair("size", GetTransactionWeight(tx)));
 
         transactions.push_back(entry);
     }
@@ -691,9 +688,6 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     result.push_back(Pair("bits", strprintf("%08x", pblock->nBits)));
     result.push_back(Pair("height", (int64_t)(pindexPrev->nHeight+1)));
 
-    //if (!pblocktemplate->vchCoinbaseCommitment.empty() && fSupportsSegwit) {
-    //    result.push_back(Pair("default_witness_commitment", HexStr(pblocktemplate->vchCoinbaseCommitment.begin(), pblocktemplate->vchCoinbaseCommitment.end())));
-    //}
 
     return result;
 }
@@ -759,14 +753,6 @@ UniValue submitblock(const JSONRPCRequest& request)
                 return "duplicate-invalid";
             // Otherwise, we might only have the header - process the block before returning
             fBlockPresent = true;
-        }
-    }
-
-    {
-        LOCK(cs_main);
-        BlockMap::iterator mi = mapBlockIndex.find(block.hashPrevBlock);
-        if (mi != mapBlockIndex.end()) {
-            //UpdateUncommittedBlockStructures(block, mi->second, Params().GetConsensus());
         }
     }
 
