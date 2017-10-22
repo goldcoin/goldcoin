@@ -678,10 +678,6 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     result.push_back(Pair("mutable", aMutable));
     result.push_back(Pair("noncerange", "00000000ffffffff"));
     int64_t nSigOpLimit = MAX_BLOCK_SIGOPS_COST;
-    if (fPreSegWit) {
-        assert(nSigOpLimit % WITNESS_SCALE_FACTOR == 0);
-        nSigOpLimit /= WITNESS_SCALE_FACTOR;
-    }
     result.push_back(Pair("sigoplimit", nSigOpLimit));
     result.push_back(Pair("sizelimit", (int64_t)MAX_BLOCK_BASE_SIZE));
     result.push_back(Pair("curtime", pblock->GetBlockTime()));
