@@ -35,7 +35,10 @@ private:
     bool corruptionPossible;
     std::string strDebugMessage;
 public:
-    CValidationState() : mode(MODE_VALID), nDoS(0), chRejectCode(0), corruptionPossible(false) {}
+    void* pfrom;
+    CValidationState(void* pfromSet = nullptr) : mode(MODE_VALID), nDoS(0), chRejectCode(0), corruptionPossible(false) {
+        prfom = pfromSet;
+    }
     bool DoS(int level, bool ret = false,
              unsigned int chRejectCodeIn=0, const std::string &strRejectReasonIn="",
              bool corruptionIn=false,
