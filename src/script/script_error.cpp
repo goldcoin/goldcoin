@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2007-2010 Satoshi Nakamoto
+// Copyright (c) 2007-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin Core developers
 // Copyright (c) 2011-2017 The Litecoin Core developers
 // Copyright (c) 2013-2017 The Goldcoin Core developers
