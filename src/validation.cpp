@@ -1142,14 +1142,34 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus
 
 CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
 {
-    int halvings = nHeight / consensusParams.nSubsidyHalvingInterval;
-    // Force block reward to zero when right shift is undefined.
-    if (halvings >= 64)
-        return 0;
+    CAmount nSubsidy = 50 * COIN;//First block is worth a ceremonial 50 coins.
 
-    CAmount nSubsidy = 50 * COIN;
-    // Subsidy is cut in half every 210,000 blocks which will occur approximately every 4 years.
-    nSubsidy >>= halvings;
+    if (nHeight > 0 && nHeight <= 200)
+    {
+        nSubsidy = 10000 * COIN;//Super blocks most of which were given away as bounties
+    }
+    else if (nHeight > 200 && nHeight <= 2200)
+    {
+        nSubsidy = 1000 * COIN;//Most of these are what caused GLD to break all coin record LTC volume on Cryptsy
+    }
+    else if (nHeight > 2200 && nHeight < consensusParams.julyFork)
+    {
+        nSubsidy = 500 * COIN;//Was at this reward level for several months!
+    }
+    else if (nHeight >= consensusParams.julyFork && nHeight <= 26325000)
+    {
+        consensusParams.hardForkedJuly = true;
+        if (nHeight >= consensusParams.febFork) {
+            nSubsidy = (int64)(50.0 / (1.1 + 0.49 * ((nHeight + 4884000 - consensusParams.julyFork) / 262800))) * COIN;
+        } else {
+            nSubsidy = (int64)(50.0 / (1.1 + 0.49 * ((nHeight - consensusParams.julyFork) / 262800))) * COIN;
+        }
+        if (nHeight >= consensusParams.novemberFork) {
+            consensusParams.hardForkedNovember = true;
+        }
+    } else {
+        nSubsidy = 0;
+    }
     return nSubsidy;
 }
 
