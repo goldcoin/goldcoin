@@ -22,6 +22,11 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 	arith_uint256 bnProofOfWorkLimit = UintToArith256(params.powLimit);
 	unsigned int nProofOfWorkLimit = bnProofOfWorkLimit.GetCompact();
 
+	// Genesis block
+	if (pindexLast == NULL) {
+		return nProofOfWorkLimit;
+	}
+
 	arith_uint256 bnNew;
 	// FeatherCoin difficulty adjustment protocol switch
 	static const int nDifficultySwitchHeight = 21000;
