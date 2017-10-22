@@ -41,7 +41,28 @@ struct BIP9Deployment {
  */
 struct Params {
     uint256 hashGenesisBlock;
-    int nSubsidyHalvingInterval;
+
+    /** Block height for first difficulty fork */
+    int julyFork;
+    /** Block height for 2nd difficulty fork - 51% defense */
+    int octoberFork;
+    /** Block height for 3rd difficulty fork */
+    int novemberFork;
+    /** Block height for 4th difficulty fork */
+    int novemberFork2;
+    /** Block height for 5th difficulty fork */
+    int mayFork;
+    /** Block height for 6th difficulty fork - Majority of Golden River*/
+    int julyFork2;
+    /** Coin generation adjustment fork */
+    int febFork;
+
+    /** Whether the client has already processed up to the july fork */
+    bool hardForkedJuly = false;
+    /** Whether the client has already processed up to the november fork */
+    bool hardForkedNovember = false;
+
+
     /** Block height and hash at which BIP34 becomes active */
     int BIP34Height;
     uint256 BIP34Hash;
@@ -65,7 +86,6 @@ struct Params {
     int64_t nPowTargetTimespan;
     int64_t DifficultyAdjustmentInterval() const { return nPowTargetTimespan / nPowTargetSpacing; }
     uint256 nMinimumChainWork;
-    uint256 defaultAssumeValid;
 };
 } // namespace Consensus
 
