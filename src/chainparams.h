@@ -27,10 +27,14 @@ struct SeedSpec6 {
     uint16_t port;
 };
 
-typedef std::map<int, uint256> MapCheckpoints;
+typedef std::map<int64_t, uint256> MapCheckpoints;
 
 struct CCheckpointData {
     MapCheckpoints mapCheckpoints;
+};
+
+struct CBadpointData {
+    MapCheckpoints mapBadpoints;
 };
 
 struct ChainTxData {
@@ -80,6 +84,7 @@ public:
     const std::vector<unsigned char>& Base58Prefix(Base58Type type) const { return base58Prefixes[type]; }
     const std::vector<SeedSpec6>& FixedSeeds() const { return vFixedSeeds; }
     const CCheckpointData& Checkpoints() const { return checkpointData; }
+    const CBadpointData& Badpoints() const { return badpointData; }
     const ChainTxData& TxData() const { return chainTxData; }
 protected:
     CChainParams() {}
@@ -98,6 +103,7 @@ protected:
     bool fRequireStandard;
     bool fMineBlocksOnDemand;
     CCheckpointData checkpointData;
+    CBadpointData badpointData;
     ChainTxData chainTxData;
 };
 

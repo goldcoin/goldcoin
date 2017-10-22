@@ -34,6 +34,9 @@
 
 #include <boost/unordered_map.hpp>
 #include <boost/filesystem/path.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/local_time_adjustor.hpp>
+#include <boost/date_time/c_local_time_adjustor.hpp>
 
 class CBlockIndex;
 class CBlockTreeDB;
@@ -187,6 +190,14 @@ extern uint256 hashAssumeValid;
 
 /** Best header we've seen so far (used for getheaders queries' starting points). */
 extern CBlockIndex *pindexBestHeader;
+
+//Schedule CheckPoint Block
+//0 if no checkpoint is to be done.
+static int64_t checkpointBlockNum = 0;
+
+//Delay block-transmittance by 14 minutes flag (51% defence)
+static bool defenseDelayActive = false;
+static time_t defenseStartTime;
 
 /** Minimum disk space required - used in CheckDiskSpace() */
 static const uint64_t nMinDiskSpace = 52428800;
@@ -474,6 +485,9 @@ bool ReadBlockFromDisk(CBlock& block, const CDiskBlockPos& pos, const Consensus:
 bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus::Params& consensusParams);
 
 /** Functions for validating blocks and updating the block tree */
+
+std::shared_ptr<CBlockIndex> GetPreviousBlock(const CBlock& block, int64_t numBlocksBefore);
+void QueuedBlockHandler(const boost::system::error_code& /*e*/, std::shared_ptr<const CBlock> block);
 
 /** Context-independent validity checks */
 bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true);

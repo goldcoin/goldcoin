@@ -29,4 +29,29 @@ namespace Checkpoints {
         return NULL;
     }
 
+    //Memory only!
+    void AddCheckPoint(const CCheckpointData& data, int64_t height, uint256& hash)
+    {
+        const MapCheckpoints& checkpoints = data.mapCheckpoints;
+        checkpoints.insert(std::pair<int64_t,uint256>(height, hash));
+    }
+
+    //Memory only!
+    bool IsBadpoint(const CBadpointData& data, int64_t height, uint256& hash) 
+    {
+        const MapCheckpoints& badpoints = data.mapBadpoints;
+    }
+
+    //Memory only!
+    void AddBadPoint(const CBadpointData& data, int64_t height, uint256& hash) 
+    {
+        if(data.mapBadpoints) {
+            badpoints.insert(std::pair<int64_t,uint256>(height, hash));
+        } else {
+            data.mapBadpoints = (CCheckpointData){
+                boost::assign::map_list_of(height, hash)
+            };
+        }
+    }
+
 } // namespace Checkpoints

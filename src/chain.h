@@ -299,6 +299,23 @@ public:
 
     enum { nMedianTimeSpan=11 };
 
+    int64_t GetMinTimeNext() const
+    {
+        int64_t minTime = GetMedianTimePast() + 1;
+        const CBlockIndex* pindex = this;
+        CBlockIndex* cur = pindex;
+        for(int x = 0; x < 5; x++) {
+            cur = cur->pprev;
+            if(!cur) {
+                return minTime;
+            }
+        }
+        if((int64_t)cur->nTime + 60 * 10 > minTime) {
+            minTime += ((int64_t)cur->nTime + 60 * 10) - minTime;
+        }
+        return minTime;
+    }
+
     int64_t GetMedianTimePast() const
     {
         int64_t pmedian[nMedianTimeSpan];
