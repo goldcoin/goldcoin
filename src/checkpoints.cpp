@@ -14,6 +14,7 @@
 #include <boost/foreach.hpp>
 
 namespace Checkpoints {
+    
 
     CBlockIndex* GetLastCheckpoint(const CCheckpointData& data)
     {
@@ -30,28 +31,26 @@ namespace Checkpoints {
     }
 
     //Memory only!
-    void AddCheckPoint(const CCheckpointData& data, int64_t height, uint256& hash)
+    void AddCheckPoint(const CCheckpointData& data, int64_t height, uint256 hash)
     {
-        const MapCheckpoints& checkpoints = data.mapCheckpoints;
+        MapCheckpoints& checkpoints = const_cast<MapCheckpoints&>(data.mapCheckpoints);
         checkpoints.insert(std::pair<int64_t,uint256>(height, hash));
     }
 
     //Memory only!
-    bool IsBadpoint(const CBadpointData& data, int64_t height, uint256& hash) 
+    bool IsBadpoint(const CBadpointData& data, int64_t height, uint256 hash) 
     {
         const MapCheckpoints& badpoints = data.mapBadpoints;
+        std::map<int64_t, uint256>::iterator result = const_cast<MapCheckpoints&>(badpoints).find(height);
+        if(result != badpoints.end())
+            return result->second == hash;
+        return false;        
     }
 
     //Memory only!
-    void AddBadPoint(const CBadpointData& data, int64_t height, uint256& hash) 
+    void AddBadPoint(const CBadpointData& data, int64_t height, uint256 hash) 
     {
-        if(data.mapBadpoints) {
-            badpoints.insert(std::pair<int64_t,uint256>(height, hash));
-        } else {
-            data.mapBadpoints = (CCheckpointData){
-                boost::assign::map_list_of(height, hash)
-            };
-        }
+        const_cast<MapCheckpoints&>(data.mapBadpoints).insert(std::pair<int64_t,uint256>(height, hash));
     }
 
 } // namespace Checkpoints

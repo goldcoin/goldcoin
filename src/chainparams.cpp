@@ -178,7 +178,6 @@ public:
     (     372000, uint256S("0xe3d2857896d0f52ac502eb056ac23f416cb7eddb0a6eba68785b940cca8257ee"))
     (     564000, uint256S("0x9d67ce445d6b513074ef061066bb331871901b953b3bdeaa4dc0a4043cf189f8"))
     };
-    badpointData = nullptr;
 
         chainTxData = ChainTxData{
             // Data as of block b44bc5ae41d1be67227ba9ad875d7268aa86c965b1d64b47c35be6e8d5c352f4 (height 1155626).
@@ -272,7 +271,6 @@ public:
             ( 0, uint256S("0x530827f38f93b43ed12af0b3ad25a288dc02ed74d6d7857862df51fc56c416f9"))
         };
 
-        badpointData = nullptr;
 
         chainTxData = ChainTxData{
             0,
@@ -350,7 +348,6 @@ public:
             ( 0, uint256S("0x530827f38f93b43ed12af0b3ad25a288dc02ed74d6d7857862df51fc56c416f9"))
         };
 
-        badpointData = nullptr;
 
         chainTxData = ChainTxData{
             0,

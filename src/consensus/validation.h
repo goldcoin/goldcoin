@@ -37,7 +37,7 @@ private:
 public:
     void* pfrom;
     CValidationState(void* pfromSet = nullptr) : mode(MODE_VALID), nDoS(0), chRejectCode(0), corruptionPossible(false) {
-        prfom = pfromSet;
+        pfrom = pfromSet;
     }
     bool DoS(int level, bool ret = false,
              unsigned int chRejectCodeIn=0, const std::string &strRejectReasonIn="",
