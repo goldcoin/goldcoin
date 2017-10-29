@@ -147,7 +147,7 @@ enum BlockStatus: uint32_t {
     BLOCK_FAILED_VALID       =   32, //!< stage after last reached validness failed
     BLOCK_FAILED_CHILD       =   64, //!< descends from failed block
     BLOCK_FAILED_MASK        =   BLOCK_FAILED_VALID | BLOCK_FAILED_CHILD,
-    
+
 };
 
 /** The block chain is a tree shaped structure starting with the
@@ -303,7 +303,7 @@ public:
     {
         int64_t minTime = GetMedianTimePast() + 1;
         const CBlockIndex* pindex = this;
-        CBlockIndex* cur = pindex;
+        const CBlockIndex* cur = pindex;
         for(int x = 0; x < 5; x++) {
             cur = cur->pprev;
             if(!cur) {

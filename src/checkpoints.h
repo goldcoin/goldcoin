@@ -19,18 +19,18 @@ struct CBadpointData;
  */
 namespace Checkpoints
 {
-
+    
 //! Returns last CBlockIndex* in mapBlockIndex that is a checkpoint
 CBlockIndex* GetLastCheckpoint(const CCheckpointData& data);
 
 //! Add an in-memory checkpoint
-void AddCheckPoint(const CCheckpointData& data, int64_t height, uint256& hash);
+void AddCheckPoint(const CCheckpointData& data, int64_t height, uint256 hash);
 
 //! Returns whether or not the specified hash is in the list of badpoints
-bool IsBadpoint(const CBadpointData& data, int64_t height, uint256& hash);
+bool IsBadpoint(const CBadpointData& data, int64_t height, uint256 hash);
 
 //! Add an in-memory badpoint
-void AddBadPoint(const CBadpointData& data, int64_t height, uint256& hash);
+void AddBadPoint(const CBadpointData& data, int64_t height, uint256 hash);
 
 } //namespace Checkpoints
 

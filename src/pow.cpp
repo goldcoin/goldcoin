@@ -14,7 +14,7 @@
 #include "uint256.h"
 #include "util.h"
 
-bool comp64(const int64& num1, const int64& num2) {
+bool comp64(const int64_t& num1, const int64_t& num2) {
 	return num1 > num2;
 }
 
@@ -119,7 +119,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 
 	} else
 		if (nHeight > params.novemberFork) {
-			hardForkedNovember = true;
+			const_cast<Consensus::Params&>(params).hardForkedNovember = true;
 
 			int64_t nTargetTimespanCurrent = fNewDifficultyProtocol ? params.nPowTargetTimespan : (params.nPowTargetTimespan * 4);
 			int64_t nInterval = nTargetTimespanCurrent / params.nPowTargetSpacing;
@@ -402,8 +402,8 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 				// We want to limit the possible difficulty raise/fall over 60 and 240 blocks here
 				// So we get the difficulty at 60 and 240 blocks ago
 
-				int64_t nbits60ago = NULL;
-				int64_t nbits240ago = NULL;
+				int64_t nbits60ago = 0ULL;
+				int64_t nbits240ago = 0ULL;
 				int counter = 0;
 
 				//Note: 0 is the current block, we want 60 past current
@@ -494,7 +494,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 			LogPrintf("After:  %08x  %s\n", bnNew.GetCompact(), bnNew.ToString().c_str());
 
 		} else {
-			hardForkedJuly = true;
+			const_cast<Consensus::Params&>(params).hardForkedJuly = true;
 			int64_t nTargetTimespanCurrent = fNewDifficultyProtocol ? params.nPowTargetTimespan : (params.nPowTargetTimespan * 4);
 			int64_t nInterval = nTargetTimespanCurrent / params.nPowTargetSpacing;
 

@@ -48,6 +48,7 @@ class CScriptCheck;
 class CTxMemPool;
 class CValidationInterface;
 class CValidationState;
+class CNode;
 struct ChainTxData;
 
 struct LockPoints;
@@ -244,7 +245,7 @@ static const uint64_t MIN_DISK_SPACE_FOR_BLOCK_FILES = 550 * 1024 * 1024;
  * @param[out]  fNewBlock A boolean which is set to indicate if the block was first received via this call
  * @return True if state.IsValid()
  */
-bool ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<const CBlock> pblock, bool fForceProcessing, bool* fNewBlock);
+bool ProcessNewBlock(CNode * pfrom, const CChainParams& chainparams, const std::shared_ptr<const CBlock> pblock, bool fForceProcessing, bool* fNewBlock);
 
 /**
  * Process incoming block headers.
@@ -486,8 +487,12 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus
 
 /** Functions for validating blocks and updating the block tree */
 
-std::shared_ptr<CBlockIndex> GetPreviousBlock(const CBlock& block, int64_t numBlocksBefore);
-void QueuedBlockHandler(const boost::system::error_code& /*e*/, std::shared_ptr<const CBlock> block);
+CBlockIndex * GetPreviousBlock(const CBlock& block, int64_t numBlocksBefore);
+struct QueuedBlockData {
+    std::shared_ptr<const CBlock> block;
+    CNode * pfrom;
+};
+void QueuedBlockHandler(const boost::system::error_code& /*e*/, QueuedBlockData * data);
 
 /** Context-independent validity checks */
 bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true);
