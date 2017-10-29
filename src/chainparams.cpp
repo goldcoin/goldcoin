@@ -126,10 +126,10 @@ public:
         vSeeds.push_back(CDNSSeedData("seed.gldcoin.com", "seed.gldcoin.com", true));
         vSeeds.push_back(CDNSSeedData("vps.gldcoin.com", "vps.gldcoin.com", true));
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,48);
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,32);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
         base58Prefixes[SCRIPT_ADDRESS2] = std::vector<unsigned char>(1,50);
-        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,176);
+        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,32+128);
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x88)(0xB2)(0x1E).convert_to_container<std::vector<unsigned char> >();
         base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x88)(0xAD)(0xE4).convert_to_container<std::vector<unsigned char> >();
 
@@ -178,7 +178,6 @@ public:
     (     372000, uint256S("0xe3d2857896d0f52ac502eb056ac23f416cb7eddb0a6eba68785b940cca8257ee"))
     (     564000, uint256S("0x9d67ce445d6b513074ef061066bb331871901b953b3bdeaa4dc0a4043cf189f8"))
     };
-    badpointData = nullptr;
 
         chainTxData = ChainTxData{
             // Data as of block b44bc5ae41d1be67227ba9ad875d7268aa86c965b1d64b47c35be6e8d5c352f4 (height 1155626).
@@ -272,7 +271,6 @@ public:
             ( 0, uint256S("0x530827f38f93b43ed12af0b3ad25a288dc02ed74d6d7857862df51fc56c416f9"))
         };
 
-        badpointData = nullptr;
 
         chainTxData = ChainTxData{
             0,
@@ -350,7 +348,6 @@ public:
             ( 0, uint256S("0x530827f38f93b43ed12af0b3ad25a288dc02ed74d6d7857862df51fc56c416f9"))
         };
 
-        badpointData = nullptr;
 
         chainTxData = ChainTxData{
             0,
