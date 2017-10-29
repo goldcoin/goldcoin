@@ -1051,10 +1051,10 @@ bool AppInitParameterInteraction()
     if (GetBoolArg("-peerbloomfilters", DEFAULT_PEERBLOOMFILTERS))
         nLocalServices = ServiceFlags(nLocalServices | NODE_BLOOM);
 
-    if (etBoolArg("-rpcserialversion", DEFAULT_RPC_SERIALIZE_VERSION) < 0)
+    if (GetBoolArg("-rpcserialversion", DEFAULT_RPC_SERIALIZE_VERSION) < 0)
         return InitError("rpcserialversion must be non-negative.");
 
-    if (etBoolArg("-rpcserialversion", DEFAULT_RPC_SERIALIZE_VERSION) > 0) //No segwit! (command itself is kept to keep compatibility)
+    if (GetBoolArg("-rpcserialversion", DEFAULT_RPC_SERIALIZE_VERSION) > 0) //No segwit! (command itself is kept to keep compatibility)
         return InitError("unknown rpcserialversion requested.");
 
     nMaxTipAge = GetArg("-maxtipage", DEFAULT_MAX_TIP_AGE);
