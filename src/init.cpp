@@ -495,7 +495,7 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-rpcauth=<userpw>", _("Username and hashed password for JSON-RPC connections. The field <userpw> comes in the format: <USERNAME>:<SALT>$<HASH>. A canonical python script is included in share/rpcuser. The client then connects normally using the rpcuser=<USERNAME>/rpcpassword=<PASSWORD> pair of arguments. This option can be specified multiple times"));
     strUsage += HelpMessageOpt("-rpcport=<port>", strprintf(_("Listen for JSON-RPC connections on <port> (default: %u or testnet: %u)"), BaseParams(CBaseChainParams::MAIN).RPCPort(), BaseParams(CBaseChainParams::TESTNET).RPCPort()));
     strUsage += HelpMessageOpt("-rpcallowip=<ip>", _("Allow JSON-RPC connections from specified source. Valid for <ip> are a single IP (e.g. 1.2.3.4), a network/netmask (e.g. 1.2.3.4/255.255.255.0) or a network/CIDR (e.g. 1.2.3.4/24). This option can be specified multiple times"));
-    strUsage += HelpMessageOpt("-rpcserialversion", strprintf(_("Sets the serialization of raw transaction or block hex returned in non-verbose mode, currently enforced to non-segwit (0)"), DEFAULT_RPC_SERIALIZE_VERSION));
+    strUsage += HelpMessageOpt("-rpcserialversion", strprintf(_("Sets the serialization of raw transaction or block hex returned in non-verbose mode, currently enforced to non-segwit (%d)"), DEFAULT_RPC_SERIALIZE_VERSION));
     strUsage += HelpMessageOpt("-rpcthreads=<n>", strprintf(_("Set the number of threads to service RPC calls (default: %d)"), DEFAULT_HTTP_THREADS));
     if (showDebug) {
         strUsage += HelpMessageOpt("-rpcworkqueue=<n>", strprintf("Set the depth of the work queue to service RPC calls (default: %d)", DEFAULT_HTTP_WORKQUEUE));
