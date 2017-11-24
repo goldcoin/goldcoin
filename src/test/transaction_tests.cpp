@@ -150,6 +150,24 @@ BOOST_AUTO_TEST_CASE(tx_valid)
             BOOST_CHECK_MESSAGE(CheckTransaction(tx, state), strTest);
             BOOST_CHECK(state.IsValid());
 
+            for (unsigned int i = 0; i < tx.vin.size(); i++)
+            {
+                if (!mapprevOutScriptPubKeys.count(tx.vin[i].prevout))
+                {
+                    BOOST_ERROR("Bad test: " << strTest);
+                    break;
+                }
+
+                CAmount amount = 0;
+                if (mapprevOutValues.count(tx.vin[i].prevout)) {
+                    amount = mapprevOutValues[tx.vin[i].prevout];
+                }
+                unsigned int verify_flags = ParseScriptFlags(test[2].get_str());
+                BOOST_CHECK_MESSAGE(VerifyScript(tx.vin[i].scriptSig, mapprevOutScriptPubKeys[tx.vin[i].prevout],
+                                                 verify_flags, TransactionSignatureChecker(&tx, i), &err),
+                                    strTest);
+                BOOST_CHECK_MESSAGE(err == SCRIPT_ERR_OK, ScriptErrorString(err));
+            }
         }
     }
 }
@@ -181,8 +199,8 @@ BOOST_AUTO_TEST_CASE(tx_invalid)
             std::map<COutPoint, int64_t> mapprevOutValues;
             UniValue inputs = test[0].get_array();
             bool fValid = true;
-	    for (unsigned int inpIdx = 0; inpIdx < inputs.size(); inpIdx++) {
-	        const UniValue& input = inputs[inpIdx];
+            for (unsigned int inpIdx = 0; inpIdx < inputs.size(); inpIdx++) {
+                const UniValue& input = inputs[inpIdx];
                 if (!input.isArray())
                 {
                     fValid = false;
@@ -214,6 +232,22 @@ BOOST_AUTO_TEST_CASE(tx_invalid)
             CValidationState state;
             fValid = CheckTransaction(tx, state) && state.IsValid();
 
+            for (unsigned int i = 0; i < tx.vin.size() && fValid; i++)
+            {
+                if (!mapprevOutScriptPubKeys.count(tx.vin[i].prevout))
+                {
+                    BOOST_ERROR("Bad test: " << strTest);
+                    break;
+                }
+
+                unsigned int verify_flags = ParseScriptFlags(test[2].get_str());
+                CAmount amount = 0;
+                if (mapprevOutValues.count(tx.vin[i].prevout)) {
+                    amount = mapprevOutValues[tx.vin[i].prevout];
+                }
+                fValid = VerifyScript(tx.vin[i].scriptSig, mapprevOutScriptPubKeys[tx.vin[i].prevout],
+                                      verify_flags, TransactionSignatureChecker(&tx, i), &err);
+            }
             BOOST_CHECK_MESSAGE(!fValid, strTest);
             BOOST_CHECK_MESSAGE(err != SCRIPT_ERR_OK, ScriptErrorString(err));
         }
