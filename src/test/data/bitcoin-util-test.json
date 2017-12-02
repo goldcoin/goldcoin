@@ -172,11 +172,6 @@
     "description": "Create a new transaction with a single output script (OP_DROP) in a P2SH (output as json)"
   },
   { "exec": "./goldcoin-tx",
-    "args": ["-json", "-create", "outscript=0:OP_DROP:WS", "nversion=1"],
-    "output_cmp": "txcreatescript4.json",
-    "description": "Create a new transaction with a single output script (OP_DROP) in a P2SH, wrapped in a P2SH (output as json)"
-  },
-  { "exec": "./goldcoin-tx",
     "args":
     ["-create", "nversion=1",
      "in=6c2789243608b46f750f49ff24f6f79a78c3010f7e56951e045e5b7ea5d07bf7:0",
@@ -221,12 +216,6 @@
     ["-json", "-create", "outpubkey=0:02a5613bd857b7048924264d1e70e08fb2a7e6527d32b7ab1bb993ac59964ff397", "nversion=1"],
     "output_cmp": "txcreateoutpubkey1.json",
     "description": "Creates a new transaction with a single pay-to-pubkey output (output as json)"
-  },
-  { "exec": "./goldcoin-tx",
-    "args":
-    ["-json", "-create", "outpubkey=0:02a5613bd857b7048924264d1e70e08fb2a7e6527d32b7ab1bb993ac59964ff397:WS", "nversion=1"],
-    "output_cmp": "txcreateoutpubkey3.json",
-    "description": "Creates a new transaction with a single pay-to-pub-key output, wrapped in P2SH (output as json)"
   },
   { "exec": "./goldcoin-tx",
     "args":
