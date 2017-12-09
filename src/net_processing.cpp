@@ -190,6 +190,11 @@ struct CNodeState {
       * but is used as a flag to "lock in" the version of compact blocks we send.
       */
     bool fProvidesHeaderAndIDs;
+    /**
+     * If we've announced NODE_WITNESS to this peer: whether the peer sends witnesses in cmpctblocks/blocktxns,
+     * otherwise: whether this peer sends non-witnesses in cmpctblocks/blocktxns.
+     */
+    bool fSupportsDesiredCmpctVersion;
 
     CNodeState(CAddress addrIn, std::string addrNameIn) : address(addrIn), name(addrNameIn) {
         fCurrentlyConnected = false;
@@ -209,6 +214,7 @@ struct CNodeState {
         fPreferHeaders = false;
         fPreferHeaderAndIDs = false;
         fProvidesHeaderAndIDs = false;
+        fSupportsDesiredCmpctVersion = false;
     }
 };
 
@@ -1468,6 +1474,20 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             bool fAnnounceUsingCMPCTBLOCK = false;
             uint64_t nCMPCTBLOCKVersion = 0;
             vRecv >> fAnnounceUsingCMPCTBLOCK >> nCMPCTBLOCKVersion;
+		if (nCMPCTBLOCKVersion == 1) {
+		    LOCK(cs_main);
+		    // fProvidesHeaderAndIDs is used to "lock in" version of compact
+		    // blocks we send.
+		    if (!State(pfrom->GetId())->fProvidesHeaderAndIDs) {
+		        State(pfrom->GetId())->fProvidesHeaderAndIDs = true;
+		    }
+
+		    State(pfrom->GetId())->fPreferHeaderAndIDs =
+		        fAnnounceUsingCMPCTBLOCK;
+		    if (!State(pfrom->GetId())->fSupportsDesiredCmpctVersion) {
+		        State(pfrom->GetId())->fSupportsDesiredCmpctVersion = true;
+		    }
+		}
         } else {
             time_t now;
             time(&now);
@@ -2333,6 +2353,10 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
                             pindexLast->GetBlockHash().ToString(), pindexLast->nHeight);
                 }
                 if (vGetData.size() > 0) {
+                    if (nodestate->fSupportsDesiredCmpctVersion && vGetData.size() == 1 && mapBlocksInFlight.size() == 1 && pindexLast->pprev->IsValid(BLOCK_VALID_CHAIN)) {
+                        // In any case, we want to download using a compact block, not a regular one
+                        vGetData[0] = CInv(MSG_CMPCT_BLOCK, vGetData[0].hash);
+                    }
                     connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::GETDATA, vGetData));
                 }
             }
