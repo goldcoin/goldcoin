@@ -1,5 +1,8 @@
 *.tar.gz
 
+# Mav remove this before pushing
+test/
+
 *.exe
 src/goldcoin
 src/goldcoind
