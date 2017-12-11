@@ -3714,7 +3714,7 @@ bool RewindBlockIndex(const CChainParams& params)
 {
     LOCK(cs_main);
 
-    int nHeight = chainActive.Height();
+    int nHeight = chainActive.Height() + 1;
 
     // nHeight is now the height of the first insufficiently-validated block, or tipheight + 1
     CValidationState state;
