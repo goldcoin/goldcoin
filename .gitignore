@@ -1,5 +1,16 @@
 *.tar.gz
 
+# Mav remove this before pushing
+src/bench/bench_litecoin
+src/litecoin-cli
+src/litecoin-tx
+src/litecoind
+src/qt/litecoin-qt
+src/qt/test/test_litecoin-qt
+src/test/test_litecoin
+src/test/test_litecoin_fuzzy
+test/
+
 *.exe
 src/goldcoin
 src/goldcoind
