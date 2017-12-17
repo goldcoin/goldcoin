@@ -176,7 +176,7 @@ class FullBlockTest(ComparisonTestFramework):
         create_and_sign_tx = self.create_and_sign_transaction
 
         # these must be updated if consensus changes
-        MAX_BLOCK_SIGOPS = 20000
+        MAX_BLOCK_SIGOPS = 40000
 
 
         # Create a new block
@@ -672,7 +672,8 @@ class FullBlockTest(ComparisonTestFramework):
         b48 = block(48, solve=False)
         b48.nTime = int(time.time()) + 60 * 60 * 3
         b48.solve()
-        yield rejected(RejectResult(16, b'time-too-new'))
+        #yield rejected(RejectResult(16, b'time-too-new'))
+        yield rejected(RejectResult(16, b'rejected-by-def'))  #Goldcoin 51% Defense
 
         # A block with an invalid merkle hash
         tip(44)
@@ -816,7 +817,7 @@ class FullBlockTest(ComparisonTestFramework):
         # tx with output value > input value out of range
         tip(57)
         b59 = block(59)
-        tx = create_and_sign_tx(out[17].tx, out[17].n, 51*COIN)
+        tx = create_and_sign_tx(out[17].tx, out[17].n, 10001*COIN)
         b59 = update_block(59, [tx])
         yield rejected(RejectResult(16, b'bad-txns-in-belowout'))
 

@@ -142,6 +142,19 @@ ReadStatus PartiallyDownloadedBlock::InitData(const CBlockHeaderAndShortTxIDs& c
                 have_txn[idit->second]  = true;
                 mempool_count++;
                 extra_count++;
+            } else {
+                // If we find two mempool/extra txn that match the short id, just
+                // request it.
+                // This should be rare enough that the extra bandwidth doesn't matter,
+                // but eating a round-trip due to FillBlock failure would be annoying
+                // Note that we dont want duplication between extra_txn and mempool to
+                // trigger this case, so we compare witness hashes first
+                if (txn_available[idit->second] &&
+                        txn_available[idit->second]->GetHash() != extra_txn[i].second->GetHash()) {
+                    txn_available[idit->second].reset();
+                    mempool_count--;
+                    extra_count--;
+                }
             }
         }
         // Though ideally we'd continue scanning for the two-txn-match-shortid case,
