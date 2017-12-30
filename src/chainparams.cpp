@@ -189,7 +189,7 @@ public:
     }
 };
 static CMainParams mainParams;
-
+#include "arith_uint256.h"
 /**
  * Testnet (v3)
  */
@@ -198,17 +198,17 @@ public:
     CTestNetParams() {
         strNetworkID = "test";
 
-        consensus.julyFork = 10;
-        consensus.octoberFork = 25;
-        consensus.novemberFork = 30;
-        consensus.novemberFork2 = 35;
-        consensus.mayFork = 160;
-        consensus.julyFork2 = 200;
-        consensus.febFork = 205;
+        consensus.julyFork = 2016;
+        consensus.octoberFork = 2016;
+        consensus.novemberFork = 2016;
+        consensus.novemberFork2 = 2016;
+        consensus.mayFork = 2016;
+        consensus.julyFork2 = 2016;
+        consensus.febFork = 2016;
 
-        consensus.BIP34Height = 210;
-        consensus.BIP65Height = 220;
-        consensus.BIP66Height = 230;
+        consensus.BIP34Height = 1000000; // not activiated
+        consensus.BIP65Height = 1000000;
+        consensus.BIP66Height = 1000000;
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 2.0 * 60 * 60; // Difficulty changes every 60 blocks
         consensus.nPowTargetSpacing = 2.0 * 60;
@@ -233,17 +233,21 @@ public:
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
          * a large 32-bit integer with any alignment.
          */
-        pchMessageStart[0] = 0xfd;
-        pchMessageStart[1] = 0xc2;
+        pchMessageStart[0] = 0xfc;
+        pchMessageStart[1] = 0xc5;
         pchMessageStart[2] = 0xb4;
         pchMessageStart[3] = 0xdd;
+
         nDefaultPort = 18121;
         nPruneAfterHeight = 1000;
 
-        genesis = CreateGenesisBlock(1296688602, 0, 0x207fffff, 1, 50 * COIN);
+        genesis = CreateGenesisBlock(1513056232, 2702105, 0x1e0ffff0, 1, 50 * COIN);
+
         consensus.hashGenesisBlock = genesis.GetHash();
-        //assert(consensus.hashGenesisBlock == uint256S("0x530827f38f93b43ed12af0b3ad25a288dc02ed74d6d7857862df51fc56c416f9"));
-        //assert(genesis.hashMerkleRoot == uint256S("0x97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9"));
+
+
+        assert(consensus.hashGenesisBlock == uint256S("0x63ee26429068a53a39ab251fb3d611bbac9539651f1bae5d7e73adac3767e513"));
+        assert(genesis.hashMerkleRoot == uint256S("0xa215e67ba165202f75b6458d22fedd1a3ec4f03449a4c6b2a4b8130bfebd3b15"));
 
         vFixedSeeds.clear();
         vSeeds.clear();
@@ -268,7 +272,7 @@ public:
 
         checkpointData = (CCheckpointData){
             boost::assign::map_list_of
-            ( 0, uint256S("0x530827f38f93b43ed12af0b3ad25a288dc02ed74d6d7857862df51fc56c416f9"))
+            ( 0, uint256S("0x63ee26429068a53a39ab251fb3d611bbac9539651f1bae5d7e73adac3767e513"))
         };
 
 

@@ -31,7 +31,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 	// FeatherCoin difficulty adjustment protocol switch
 	static const int nDifficultySwitchHeight = 21000;
 	int nHeight = pindexLast->nHeight + 1;
-	bool fNewDifficultyProtocol = (nHeight >= nDifficultySwitchHeight /*|| fTestNet*/);
+    bool fNewDifficultyProtocol = (nHeight >= nDifficultySwitchHeight || params.fPowAllowMinDifficultyBlocks);
 
 	//julyFork2 whether or not we had a massive difficulty fall authorized
 	bool didHalfAdjust = false;
