@@ -81,9 +81,9 @@ public:
         consensus.julyFork2 = 251230;
         consensus.febFork = 372000;
 
-        consensus.BIP34Height = 751500;
-        consensus.BIP65Height = 751800;
-        consensus.BIP66Height = 752000;
+        consensus.BIP34Height = 10000000;
+        consensus.BIP65Height = 10000000;
+        consensus.BIP66Height = 10000000;
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 2.0 * 60 * 60; // Difficulty changes every 60 blocks
         consensus.nPowTargetSpacing = 2.0 * 60;
