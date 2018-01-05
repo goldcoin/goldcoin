@@ -840,7 +840,7 @@ UniValue signrawtransaction(const JSONRPCRequest& request)
         UpdateTransaction(mergedTx, i, sigdata);
 
         ScriptError serror = SCRIPT_ERR_OK;
-        if (!VerifyScript(txin.scriptSig, prevPubKey, STANDARD_SCRIPT_VERIFY_FLAGS, TransactionSignatureChecker(&txConst, i), &serror)) {
+        if (!VerifyScript(txin.scriptSig, prevPubKey, getSTANDARD_SCRIPT_VERIFY_FLAGS(), TransactionSignatureChecker(&txConst, i), &serror)) {
             TxInErrorToJSON(txin, vErrors, ScriptErrorString(serror));
         }
     }

@@ -20,7 +20,7 @@ class CCoinsViewCache;
 /** Default for -blockmaxsize, which controls the maximum size of block the mining code will create **/
 static const unsigned int DEFAULT_BLOCK_MAX_SIZE = 2000000;
 /** Default for -blockprioritysize, maximum space for zero/low-fee transactions **/
-static const unsigned int DEFAULT_BLOCK_PRIORITY_SIZE = 0;
+static const unsigned int DEFAULT_BLOCK_PRIORITY_SIZE = 27000;
 /** Default for -blockmintxfee, which sets the minimum feerate for a transaction in blocks created by mining code **/
 static const unsigned int DEFAULT_BLOCK_MIN_TX_FEE = 1000;
 /** The maximum weight (size in bytes) for transactions we're willing to relay/mine */
@@ -44,6 +44,23 @@ static const unsigned int DUST_RELAY_TX_FEE = 100000;
 /**
  * Standard script verification flags that standard transactions will comply
  * with. However scripts violating these flags may still be present in valid
+ * blocks and we must accept those blocks.  This Compatability set of flags
+ * will allow GoldCoin 0.7.5 transactions to be valid in the mempool and mined.
+ */
+static const unsigned int STANDARD_SCRIPT_VERIFY_FLAGS_COMPAT = MANDATORY_SCRIPT_VERIFY_FLAGS |
+                                                         SCRIPT_VERIFY_DERSIG |
+                                                         SCRIPT_VERIFY_STRICTENC |
+                                                         SCRIPT_VERIFY_MINIMALDATA |
+                                                         SCRIPT_VERIFY_NULLDUMMY |
+                                                         SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS |
+                                                         SCRIPT_VERIFY_CLEANSTACK |
+                                                         SCRIPT_VERIFY_NULLFAIL |
+                                                         SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY |
+                                                         SCRIPT_VERIFY_CHECKSEQUENCEVERIFY;
+
+/**
+ * Standard script verification flags that standard transactions will comply
+ * with. However scripts violating these flags may still be present in valid
  * blocks and we must accept those blocks.
  */
 static const unsigned int STANDARD_SCRIPT_VERIFY_FLAGS = MANDATORY_SCRIPT_VERIFY_FLAGS |
@@ -57,6 +74,17 @@ static const unsigned int STANDARD_SCRIPT_VERIFY_FLAGS = MANDATORY_SCRIPT_VERIFY
                                                          SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY |
                                                          SCRIPT_VERIFY_CHECKSEQUENCEVERIFY |
                                                          SCRIPT_VERIFY_LOW_S;
+/**
+ * Returns the proper set of verification flags to maintain compatibility with
+ * older GoldCoin transactions until January 31, 2019
+ */
+int64_t GetTime();
+//1548892800 = 31 January 2019
+inline unsigned int getSTANDARD_SCRIPT_VERIFY_FLAGS() {
+    return GetTime() > 1548892800 ? STANDARD_SCRIPT_VERIFY_FLAGS : STANDARD_SCRIPT_VERIFY_FLAGS_COMPAT;
+}
+
+
 
 /** For convenience, standard but not mandatory verify flags. */
 static const unsigned int STANDARD_NOT_MANDATORY_VERIFY_FLAGS = STANDARD_SCRIPT_VERIFY_FLAGS & ~MANDATORY_SCRIPT_VERIFY_FLAGS;
