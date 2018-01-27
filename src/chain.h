@@ -14,6 +14,7 @@
 #include "pow.h"
 #include "tinyformat.h"
 #include "uint256.h"
+#include "consensus/params.h"
 
 #include <vector>
 
@@ -367,6 +368,14 @@ public:
     //! Efficiently find an ancestor of this block.
     CBlockIndex* GetAncestor(int height);
     const CBlockIndex* GetAncestor(int height) const;
+
+    /**
+     * Returns true if there are nRequired or more blocks of minVersion or above
+     * in the last Params().ToCheckBlockUpgradeMajority() blocks, starting at pstart
+     * and going backwards.
+     */
+    static bool IsSuperMajority(int minVersion, const CBlockIndex* pstart, const Consensus::Params & params,
+                                unsigned int nRequired);
 };
 
 arith_uint256 GetBlockProof(const CBlockIndex& block);
