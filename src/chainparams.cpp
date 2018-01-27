@@ -81,6 +81,9 @@ public:
         consensus.julyFork2 = 251230;
         consensus.febFork = 372000;
 
+        consensus.nEnforceBlockUpgradeMajority = 750;
+        consensus.nRejectBlockOutdatedMajority = 950;
+        consensus.nToCheckBlockUpgradeMajority = 1000;
         consensus.BIP34Height = 10000000;
         consensus.BIP65Height = 10000000;
         consensus.BIP66Height = 10000000;
@@ -206,6 +209,9 @@ public:
         consensus.julyFork2 = 2016;
         consensus.febFork = 2016;
 
+        consensus.nEnforceBlockUpgradeMajority = 75;
+        consensus.nRejectBlockOutdatedMajority = 95;
+        consensus.nToCheckBlockUpgradeMajority = 100;
         consensus.BIP34Height = 1000000; // not activiated
         consensus.BIP65Height = 1000000;
         consensus.BIP66Height = 1000000;
@@ -302,6 +308,9 @@ public:
         consensus.julyFork2 = 100000000;
         consensus.febFork = 100000001;
 
+        consensus.nEnforceBlockUpgradeMajority =  75000000;
+        consensus.nRejectBlockOutdatedMajority =  95000000;
+        consensus.nToCheckBlockUpgradeMajority = 100000000;
         consensus.BIP34Height = 100000000; // BIP34 has not activated on regtest (far in the future so block v1 are not rejected in tests)
         consensus.BIP34Hash = uint256();
         consensus.BIP65Height = 1351; // BIP65 activated on regtest (Used in rpc activation tests)
