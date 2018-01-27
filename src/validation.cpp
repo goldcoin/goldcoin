@@ -1831,12 +1831,12 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     unsigned int flags = fStrictPayToScriptHash ? SCRIPT_VERIFY_P2SH : SCRIPT_VERIFY_NONE;
 
     // Start enforcing the DERSIG (BIP66) rule
-    if (pindex->nHeight >= chainparams.GetConsensus().BIP66Height) {
+    if (pindex->nHeight >= chainparams.GetConsensus().BIP66Height || (block.nVersion >= 3 && CBlockIndex::IsSuperMajority(3, pindex->pprev, chainparams.GetConsensus(), chainparams.GetConsensus().nEnforceBlockUpgradeMajority))) {
         flags |= SCRIPT_VERIFY_DERSIG;
     }
 
     // Start enforcing CHECKLOCKTIMEVERIFY (BIP65) rule
-    if (pindex->nHeight >= chainparams.GetConsensus().BIP65Height) {
+    if (pindex->nHeight >= chainparams.GetConsensus().BIP65Height || (block.nVersion >= 4 && CBlockIndex::IsSuperMajority(4, pindex->pprev, chainparams.GetConsensus(), chainparams.GetConsensus().nEnforceBlockUpgradeMajority))) {
         flags |= SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY;
     }
 
@@ -3000,9 +3000,10 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
 
     // Reject outdated version blocks when 95% (75% on testnet) of the network has upgraded:
     // check for version 2, 3 and 4 upgrades
-    if((block.nVersion < 2 && nHeight >= consensusParams.BIP34Height) ||
-       (block.nVersion < 3 && nHeight >= consensusParams.BIP66Height) ||
-       (block.nVersion < 4 && nHeight >= consensusParams.BIP65Height))
+    bool hasSuperMajority = nHeight >= consensusParams.BIP65Height ? true : CBlockIndex::IsSuperMajority(4, pindexPrev, consensusParams, consensusParams.nRejectBlockOutdatedMajority);
+    if((block.nVersion < 2 && (nHeight >= consensusParams.BIP34Height || hasSuperMajority)) ||
+       (block.nVersion < 3 && (nHeight >= consensusParams.BIP66Height || hasSuperMajority)) ||
+       (block.nVersion < 4 && (nHeight >= consensusParams.BIP65Height || hasSuperMajority)))
             return state.Invalid(false, REJECT_OBSOLETE, strprintf("bad-version(0x%08x)", block.nVersion),
                                  strprintf("rejected nVersion=0x%08x block", block.nVersion));
 
@@ -3031,7 +3032,7 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const Co
     }
 
     // Enforce rule that the coinbase starts with serialized block height
-    if (nHeight >= consensusParams.BIP34Height)
+    if (nHeight >= consensusParams.BIP34Height || (block.nVersion >= 2 && CBlockIndex::IsSuperMajority(2, pindexPrev, consensusParams, consensusParams.nRejectBlockOutdatedMajority)))
     {
         CScript expect = CScript() << nHeight;
         if (block.vtx[0]->vin[0].scriptSig.size() < expect.size() ||

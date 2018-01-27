@@ -1014,16 +1014,18 @@ static UniValue SoftForkMajorityDesc(int version, CBlockIndex* pindex, const Con
 {
     UniValue rv(UniValue::VOBJ);
     bool activated = false;
+    bool hasSuperMajority = pindex->nHeight >= consensusParams.BIP65Height ? true
+                     : CBlockIndex::IsSuperMajority(4, pindex->pprev, consensusParams, consensusParams.nEnforceBlockUpgradeMajority);
     switch(version)
     {
         case 2:
-            activated = pindex->nHeight >= consensusParams.BIP34Height;
+            activated = pindex->nHeight >= consensusParams.BIP34Height || hasSuperMajority;
             break;
         case 3:
-            activated = pindex->nHeight >= consensusParams.BIP66Height;
+            activated = pindex->nHeight >= consensusParams.BIP66Height|| hasSuperMajority;
             break;
         case 4:
-            activated = pindex->nHeight >= consensusParams.BIP65Height;
+            activated = pindex->nHeight >= consensusParams.BIP65Height|| hasSuperMajority;
             break;
     }
     rv.push_back(Pair("status", activated));

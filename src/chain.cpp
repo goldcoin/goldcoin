@@ -151,3 +151,16 @@ int64_t GetBlockProofEquivalentTime(const CBlockIndex& to, const CBlockIndex& fr
     }
     return sign * r.GetLow64();
 }
+
+bool CBlockIndex::IsSuperMajority(int minVersion, const CBlockIndex* pstart, const Consensus::Params & params, unsigned int nRequired)
+{
+    unsigned int nToCheck = params.nToCheckBlockUpgradeMajority;
+    unsigned int nFound = 0;
+    for (unsigned int i = 0; i < nToCheck && nFound < nRequired && pstart != NULL; i++)
+    {
+        if (pstart->nVersion >= minVersion)
+            ++nFound;
+        pstart = pstart->pprev;
+    }
+    return (nFound >= nRequired);
+}
