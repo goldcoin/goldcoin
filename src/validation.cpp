@@ -2875,8 +2875,6 @@ void QueuedBlockHandler(QueuedBlockData * data)
 
 bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW, bool fCheckMerkleRoot)
 {
-    CNode* pfrom = (CNode*)state.pfrom;
-
     // These are checks that are independent of context.
 
     if (block.fChecked)
@@ -3267,7 +3265,6 @@ bool ProcessNewBlock(CNode * pfrom, const CChainParams& chainparams, const std::
                     if(pblock->nTime - theBlock->nTime < (60*10)) {
                         defenseDelayActive = true;
                         time(&defenseStartTime);
-                        //CNode* pfrom = (CNode*)state.pfrom;
                         //If the block being accepted isn't local
                         if (pfrom && pfrom->addr.ToString().find("local") == std::string::npos && pfrom->addr.ToString().find("127.0.0.") == std::string::npos) {
                             //We blacklist this block

@@ -990,7 +990,7 @@ void static ProcessGetData(CNode* pfrom, const Consensus::Params& consensusParam
                             LOCK(cs_most_recent_block);
                             a_recent_block = most_recent_block;
                         }
-                        CValidationState dummy(pfrom);
+                        CValidationState dummy;
                         ActivateBestChain(dummy, Params(), a_recent_block);
                     }
                     if (chainActive.Contains(mi->second)) {
@@ -1607,7 +1607,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
                     LOCK(cs_most_recent_block);
                     a_recent_block = most_recent_block;
                 }
-                CValidationState dummy(pfrom);
+            	CValidationState dummy;
                 ActivateBestChain(dummy, Params(), a_recent_block);
             }
 
@@ -1801,7 +1801,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         LOCK(cs_main);
 
         bool fMissingInputs = false;
-        CValidationState state(pfrom);
+        CValidationState state;
 
         pfrom->setAskFor.erase(inv.hash);
         mapAlreadyAskedFor.erase(inv.hash);
@@ -1841,7 +1841,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
                     // Use a dummy CValidationState so someone can't setup nodes to counter-DoS based on orphan
                     // resolution (that is, feeding people an invalid transaction based on LegitTxX in order to get
                     // anyone relaying LegitTxX banned)
-                    CValidationState stateDummy(pfrom);
+                    CValidationState stateDummy;
 
 
                     if (setMisbehaving.count(fromPeer))
@@ -1975,7 +1975,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         }
 
         const CBlockIndex *pindex = NULL;
-        CValidationState state(pfrom);
+        CValidationState state;
         if (!ProcessNewBlockHeaders({cmpctblock.header}, state, chainparams, &pindex)) {
             int nDoS;
             if (state.IsInvalid(nDoS)) {
@@ -2280,7 +2280,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         }
         }
 
-        CValidationState state(pfrom);
+        CValidationState state;
         if (!ProcessNewBlockHeaders(headers, state, chainparams, &pindexLast)) {
             int nDoS;
             if (state.IsInvalid(nDoS)) {
@@ -2962,15 +2962,13 @@ bool SendMessages(CNode* pto, CConnman& connman, const std::atomic<bool>& interr
                     LogPrint("net", "%s sending header-and-ids %s to peer=%d\n", __func__,
                             vHeaders.front().GetHash().ToString(), pto->id);
 
-                    int nSendFlags = /*state.fWantsCmpctWitness ? 0 :*/ SERIALIZE_TRANSACTION_NO_WITNESS;
+                    int nSendFlags = SERIALIZE_TRANSACTION_NO_WITNESS;
 
                     bool fGotBlockFromCache = false;
                     {
                         LOCK(cs_most_recent_block);
                         if (most_recent_block_hash == pBestIndex->GetBlockHash()) {
-                            /*if (state.fWantsCmpctWitness)
-                                connman.PushMessage(pto, msgMaker.Make(nSendFlags, NetMsgType::CMPCTBLOCK, *most_recent_compact_block));
-                            else*/ {
+                            {
                                 CBlockHeaderAndShortTxIDs cmpctblock(*most_recent_block);
                                 connman.PushMessage(pto, msgMaker.Make(nSendFlags, NetMsgType::CMPCTBLOCK, cmpctblock));
                             }
