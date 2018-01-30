@@ -2853,9 +2853,23 @@ CBlockIndex * GetPreviousBlock(const CBlock& block, int64_t numBlocksBefore) {
     return cur;
 }
 
-void QueuedBlockHandler(const boost::system::error_code& /*e*/, QueuedBlockData * data)
+bool waitingOnBlock = false;
+boost::asio::io_service ioService;
+
+void QueuedBlockHandler(QueuedBlockData * data)
 {
-    ProcessNewBlock(data->pfrom, Params(CBaseChainParams::MAIN), data->block, false, nullptr);
+    LogPrintf("QueuedBlockHandler: %d, %s\n", GetAdjustedTime(), data->block->GetHash().ToString());
+
+    ioService.reset();
+    boost::asio::deadline_timer timer(ioService, boost::posix_time::seconds(data->block->GetBlockTime() - (GetAdjustedTime() + 45)));
+    timer.wait();
+
+    LogPrintf("QueuedBlockHandler: waited until %d, %s\n", GetAdjustedTime(), data->block->GetHash().ToString());
+    if(!ProcessNewBlock(data->pfrom, data->chainparams, data->block, false, nullptr))
+    {
+        LogPrintf("QueuedBlock:  ProcessNewBlock: FAILED\n");
+    }
+    waitingOnBlock = false;
     delete data;
 }
 
@@ -2894,53 +2908,6 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
     // Size limits
     if (block.vtx.empty() || block.vtx.size() > MAX_BLOCK_BASE_SIZE || ::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION) > MAX_BLOCK_BASE_SIZE)
         return state.DoS(100, false, REJECT_INVALID, "bad-blk-length", false, "size limits failed");
-
-
-    /* 51 % Defense stuff */
-    // Check Timestamp
-    if (block.GetBlockTime() > (GetAdjustedTime() + 2 * 60 * 60) && chainActive.Height() <= consensusParams.octoberFork) {
-        return state.DoS(10, false, REJECT_INVALID, "rejected-by-def", false, "block timestamp too far in the future");
-    } else if (block.GetBlockTime() > GetAdjustedTime() + 45 && chainActive.Height() > consensusParams.octoberFork) {
-        //If the block was found locally then we want to queue it such that it will be processed and sent to other
-        //nodes once it's timestamp is able to be valid
-        //If this happens it means you've found the next block and are waiting to transmit (do not panic this is a good thing)
-        //If your block is accepted or rejected its status will be returned once processblock has finished doing its thing
-        if (!pfrom || (pfrom->addr.ToString().find("local") != std::string::npos || pfrom->addr.ToString().find("127.0.0.") != std::string::npos)) { //If its a local block
-            //First we check if its a valid block
-            if (CBlockIndex * theBlock = GetPreviousBlock(block, 5)) // 4 + 1 = 5th previous block (total duration of 6 blocks)
-                if ((block.nTime - theBlock->nTime) < (60 * 10)) {
-                    //The block is too far into the future but still not far enough to pass the 51% defense
-                    //Thus it is useless and will be rejected
-                    return error("CheckBlock() : block timestamp too far in the future 2, Seconds between blocks is: %d", block.nTime - theBlock->nTime);
-                } else if ((block.nTime - theBlock->nTime) >= (60 * 10)) {
-                    //A valid block has been found but the current network adjusted time will not permit it to be accepted by other peers
-                    //Thus we hold the block until GetAdjustedTime() is such that if(GetBlockTime() > GetAdjustedTime() + 45) is false
-                    
-                    //Since we know that GetBlockTime() is greater than GetAdjustedTime()
-                    //We use a timer to retry this process when the timestamp is right
-                    boost::asio::io_service io;
-                    boost::asio::deadline_timer timer(io, boost::posix_time::seconds(block.GetBlockTime() - (GetAdjustedTime() + 45)));
-                    QueuedBlockData * data = new QueuedBlockData;
-                    data->pfrom = pfrom;
-                    data->block = std::shared_ptr<const CBlock>(&block);
-                    timer.async_wait(boost::bind(QueuedBlockHandler, boost::asio::placeholders::error, data));
-
-                    //boost::thread t(&boost::asio::io_service::run, &io);
-                    //t.detach();
-
-                    //To return availability to current thread
-                    return state.DoS(0, false, REJECT_INVALID, "rejected-by-def", false, "block timestamp too far for current network time, block queued");
-                } else {
-                    //The block is too far into the future even when considering the defense
-                    //Thus it will be rejected
-                     return state.DoS(0, false, REJECT_INVALID, "rejected-by-def", false, "block timestamp too far in the future");
-                }
-        } else {
-             return state.DoS(10, false, REJECT_INVALID, "rejected-by-def", false, "block timestamp too far in the future");
-        }
-    }
-    /* End of 51% defense stuff */
-
 
     // First transaction must be coinbase, the rest must not be
     if (block.vtx.empty() || !block.vtx[0]->IsCoinBase())
@@ -2983,7 +2950,7 @@ static bool CheckIndexAgainstCheckpoint(const CBlockIndex* pindexPrev, CValidati
     return true;
 }
 
-bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, const CBlockIndex* pindexPrev, int64_t nAdjustedTime)
+bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, const CBlockIndex* pindexPrev, int64_t nAdjustedTime, bool fCheckTime51Defense)
 {
     const int nHeight = pindexPrev == NULL ? 0 : pindexPrev->nHeight + 1;
     // Check proof of work
@@ -2995,7 +2962,14 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
         return state.Invalid(false, REJECT_INVALID, "time-too-old", "block's timestamp is too early");
 
     // Check timestamp
-    if (block.GetBlockTime() > nAdjustedTime + 2 * 60 * 60)
+    if(fCheckTime51Defense)
+    {
+        if (block.GetBlockTime() > nAdjustedTime + 2 * 60 * 60 && pindexPrev->nHeight+1 <= consensusParams.octoberFork)
+            return state.Invalid(false, REJECT_INVALID, "time-too-new", "block timestamp too far in the future");
+        else if (block.GetBlockTime() > GetAdjustedTime() + 45 && pindexPrev->nHeight+1 > consensusParams.octoberFork)
+            return state.Invalid(false, REJECT_INVALID, "time-too-new", "block timestamp too far in the future (> 45 seconds)");
+    }
+    else if (block.GetBlockTime() > nAdjustedTime + 2 * 60 * 60)
         return state.Invalid(false, REJECT_INVALID, "time-too-new", "block timestamp too far in the future");
 
     // Reject outdated version blocks when 95% (75% on testnet) of the network has upgraded:
@@ -3079,7 +3053,7 @@ static bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state
         if (fCheckpointsEnabled && !CheckIndexAgainstCheckpoint(pindexPrev, state, chainparams, hash))
             return error("%s: CheckIndexAgainstCheckpoint(): %s", __func__, state.GetRejectReason().c_str());
 
-        if (!ContextualCheckBlockHeader(block, state, chainparams.GetConsensus(), pindexPrev, GetAdjustedTime()))
+        if (!ContextualCheckBlockHeader(block, state, chainparams.GetConsensus(), pindexPrev, GetAdjustedTime(), true))
             return error("%s: Consensus::ContextualCheckBlockHeader: %s, %s", __func__, hash.ToString(), FormatStateMessage(state));
     
         if (CBlockIndex * theBlock = GetPreviousBlock(block, 5)) // 4 + 1 = 5th previous block (total duration of 6 blocks)
@@ -3208,6 +3182,65 @@ static bool AcceptBlock(const std::shared_ptr<const CBlock>& pblock, CValidation
     return true;
 }
 
+bool CheckBlock51Percent(CNode * pfrom, const CBlock& block, CValidationState& state, const CChainParams & chainparams)
+{
+    /* 51 % Defense stuff */
+    // Check Timestamp
+   const Consensus::Params & consensusParams = chainparams.GetConsensus();
+   if (block.GetBlockTime() > (GetAdjustedTime() + 2 * 60 * 60) && chainActive.Height() <= consensusParams.octoberFork) {
+        return state.DoS(10, false, REJECT_INVALID, "rejected-by-def", false, "block timestamp too far in the future");
+    } else if (block.GetBlockTime() > GetAdjustedTime() + 45 && chainActive.Height() > consensusParams.octoberFork) {
+        //If the block was found locally then we want to queue it such that it will be processed and sent to other
+        //nodes once it's timestamp is able to be valid
+        //If this happens it means you've found the next block and are waiting to transmit (do not panic this is a good thing)
+        //If your block is accepted or rejected its status will be returned once processblock has finished doing its thing
+        if (!pfrom || (pfrom->addr.ToString().find("local") != std::string::npos || pfrom->addr.ToString().find("127.0.0.") != std::string::npos)) { //If its a local block
+            //First we check if its a valid block
+            if (CBlockIndex * theBlock = GetPreviousBlock(block, 5)) // 4 + 1 = 5th previous block (total duration of 6 blocks)
+                if ((block.nTime - theBlock->nTime) < (60 * 10)) {
+                    //The block is too far into the future but still not far enough to pass the 51% defense
+                    //Thus it is useless and will be rejected
+                    return error("CheckBlock() : block timestamp too far in the future 2, Seconds between blocks is: %d", block.nTime - theBlock->nTime);
+                } else if ((block.nTime - theBlock->nTime) >= (60 * 10) && !waitingOnBlock) {
+                    //A valid block has been found but the current network adjusted time will not permit it to be accepted by other peers
+                    //Thus we hold the block until GetAdjustedTime() is such that if(GetBlockTime() > GetAdjustedTime() + 45) is false
+
+                    //Since we know that GetBlockTime() is greater than GetAdjustedTime()
+                    //We use a timer to retry this process when the timestamp is right
+
+                    waitingOnBlock = true; //only allow one block to be queued
+
+                    QueuedBlockData * data = new QueuedBlockData(chainparams);
+
+                    //Copy the block so it is available in the waiting thread.
+                    CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
+                    block.Serialize(stream);
+                    std::shared_ptr<CBlock> copyBlock = std::make_shared<CBlock>();
+                    stream.Rewind(stream.size());
+                    copyBlock->Unserialize(stream);
+                    data->block = copyBlock;
+                    data->pfrom = pfrom;
+                    boost::thread thread(QueuedBlockHandler, data);
+                    thread.detach();
+
+                    LogPrintf("Local has found possible valid block... queueing (%d s) until timestamp is valid at %d: %s\n", block.GetBlockTime() - (GetAdjustedTime() + 45), block.GetBlockTime() - 45, block.GetHash().ToString());
+                    //To return availability to current thread
+                    return state.DoS(0, false, REJECT_INVALID, "rejected-by-def", false, "block timestamp too far for current network time, block queued");
+                } else {
+                    //The block is too far into the future even when considering the defense
+                    //Thus it will be rejected
+                    if(waitingOnBlock)
+                        return state.DoS(0, false, REJECT_INVALID, "rejected-by-def", false, "block timestamp too far in the future and waiting on another block");
+                    else return state.DoS(0, false, REJECT_INVALID, "rejected-by-def", false, "block timestamp too far in the future");
+                }
+        } else {
+             return state.DoS(10, false, REJECT_INVALID, "rejected-by-def", false, "block timestamp too far in the future");
+        }
+    }
+    /* End of 51% defense stuff */
+   return true;
+}
+
 bool ProcessNewBlock(CNode * pfrom, const CChainParams& chainparams, const std::shared_ptr<const CBlock> pblock, bool fForceProcessing, bool *fNewBlock)
 {
     {
@@ -3217,6 +3250,10 @@ bool ProcessNewBlock(CNode * pfrom, const CChainParams& chainparams, const std::
         // Ensure that CheckBlock() passes before calling AcceptBlock, as
         // belt-and-suspenders.
         bool ret = CheckBlock(*pblock, state, chainparams.GetConsensus());
+
+        // Check that the new block meets 51% rules
+        if (ret)
+            ret = CheckBlock51Percent(pfrom, *pblock, state, chainparams);
 
         LOCK(cs_main);
 
@@ -3283,7 +3320,7 @@ bool TestBlockValidity(CValidationState& state, const CChainParams& chainparams,
     indexDummy.nHeight = pindexPrev->nHeight + 1;
 
     // NOTE: CheckBlockHeader is called by CheckBlock
-    if (!ContextualCheckBlockHeader(block, state, chainparams.GetConsensus(), pindexPrev, GetAdjustedTime()))
+    if (!ContextualCheckBlockHeader(block, state, chainparams.GetConsensus(), pindexPrev, GetAdjustedTime(), false))
         return error("%s: Consensus::ContextualCheckBlockHeader: %s", __func__, FormatStateMessage(state));
     if (!CheckBlock(block, state, chainparams.GetConsensus(), fCheckPOW, fCheckMerkleRoot))
         return error("%s: Consensus::CheckBlock: %s", __func__, FormatStateMessage(state));

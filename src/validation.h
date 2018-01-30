@@ -490,9 +490,12 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus
 CBlockIndex * GetPreviousBlock(const CBlock& block, int64_t numBlocksBefore);
 struct QueuedBlockData {
     std::shared_ptr<const CBlock> block;
+    const CChainParams& chainparams;
     CNode * pfrom;
+
+    QueuedBlockData(const CChainParams & params) : chainparams(params) {}
 };
-void QueuedBlockHandler(const boost::system::error_code& /*e*/, QueuedBlockData * data);
+void QueuedBlockHandler(QueuedBlockData * data);
 
 /** Context-independent validity checks */
 bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true);
@@ -501,7 +504,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
 /** Context-dependent validity checks.
  *  By "context", we mean only the previous block headers, but not the UTXO
  *  set; UTXO-related validity checks are done in ConnectBlock(). */
-bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, const CBlockIndex* pindexPrev, int64_t nAdjustedTime);
+bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, const CBlockIndex* pindexPrev, int64_t nAdjustedTime, bool fCheckTime51Defense);
 bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const Consensus::Params& consensusParams, const CBlockIndex* pindexPrev);
 
 /** Apply the effects of this block (with given index) on the UTXO set represented by coins.
