@@ -149,7 +149,6 @@ testScripts = [
     'signmessages.py',
     'nulldummy.py',
     'import-rescan.py',
-    'bumpfee.py',
     'rpcnamedargs.py',
     'listsinceblock.py',
     'p2p-leaktests.py',
@@ -185,7 +184,6 @@ testScriptsExt = [
     'invalidateblock.py',
     'maxblocksinflight.py',
     'p2p-acceptblock.py',
-    'replace-by-fee.py',
 ]
 
 
