@@ -1185,7 +1185,7 @@
              <item>
               <widget class="QCheckBox" name="checkBoxFreeTx">
                <property name="text">
-                <string>Send as zero-fee transaction if possible</string>
+                <string>Send as zero-fee transaction</string>
                </property>
               </widget>
              </item>
