@@ -34,12 +34,13 @@ private:
     unsigned int chRejectCode;
     bool corruptionPossible;
     std::string strDebugMessage;
+    bool blockQueued;
 public:
-    CValidationState() : mode(MODE_VALID), nDoS(0), chRejectCode(0), corruptionPossible(false) {}
+    CValidationState() : mode(MODE_VALID), nDoS(0), chRejectCode(0), corruptionPossible(false), blockQueued(false) {}
     bool DoS(int level, bool ret = false,
              unsigned int chRejectCodeIn=0, const std::string &strRejectReasonIn="",
              bool corruptionIn=false,
-             const std::string &strDebugMessageIn="") {
+             const std::string &strDebugMessageIn="", bool fblockQueued = false) {
         chRejectCode = chRejectCodeIn;
         strRejectReason = strRejectReasonIn;
         corruptionPossible = corruptionIn;
@@ -48,6 +49,7 @@ public:
             return ret;
         nDoS += level;
         mode = MODE_INVALID;
+        blockQueued = fblockQueued;
         return ret;
     }
     bool Invalid(bool ret = false,
@@ -86,6 +88,8 @@ public:
     unsigned int GetRejectCode() const { return chRejectCode; }
     std::string GetRejectReason() const { return strRejectReason; }
     std::string GetDebugMessage() const { return strDebugMessage; }
+
+    bool GetBlockQueued() const { return blockQueued; }
 };
 
 #endif // BITCOIN_CONSENSUS_VALIDATION_H

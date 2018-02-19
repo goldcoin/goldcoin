@@ -3223,7 +3223,7 @@ bool CheckBlock51Percent(CNode * pfrom, const CBlock& block, CValidationState& s
 
                     LogPrintf("Local has found possible valid block... queueing (%d s) until timestamp is valid at %d: %s\n", block.GetBlockTime() - (GetAdjustedTime() + 45), block.GetBlockTime() - 45, block.GetHash().ToString());
                     //To return availability to current thread
-                    return state.DoS(0, false, REJECT_INVALID, "rejected-by-def", false, "block timestamp too far for current network time, block queued");
+                    return state.DoS(0, false, REJECT_INVALID, "rejected-by-def", false, "block timestamp too far for current network time, block queued", true);
                 } else {
                     //The block is too far into the future even when considering the defense
                     //Thus it will be rejected
@@ -3252,6 +3252,7 @@ bool ProcessNewBlock(CNode * pfrom, const CChainParams& chainparams, const std::
         // Check that the new block meets 51% rules
         if (ret)
             ret = CheckBlock51Percent(pfrom, *pblock, state, chainparams);
+
 
         LOCK(cs_main);
 
