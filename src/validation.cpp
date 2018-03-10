@@ -98,6 +98,14 @@ CScript COINBASE_FLAGS;
 
 const std::string strMessageMagic = "GoldCoin (GLD) Signed Message:\n";
 
+//Schedule CheckPoint Block
+//0 if no checkpoint is to be done.
+int64_t checkpointBlockNum = 0;
+
+//Delay block-transmittance by 14 minutes flag (51% defence)
+bool defenseDelayActive = false;
+time_t defenseStartTime;
+
 // Internal stuff
 namespace {
 
@@ -2855,22 +2863,54 @@ CBlockIndex * GetPreviousBlock(const CBlock& block, int64_t numBlocksBefore) {
 
 bool waitingOnBlock = false;
 boost::asio::io_service ioService;
+CCriticalSection cs_blockqueue;
+QueuedBlockData * queuedBlock = nullptr;
+
+std::shared_ptr<const CBlock> GetQueuedBlock()
+{
+    //LOCK(cs_blockqueue);
+    if(waitingOnBlock && queuedBlock != nullptr)
+    {
+        return queuedBlock->block;
+    }
+    return nullptr;
+}
+
+bool IsBlockQueued()
+{
+    //LOCK(cs_blockqueue);
+    if(waitingOnBlock && queuedBlock != nullptr)
+    {
+        return true;
+    }
+    return false;
+}
+
 
 void QueuedBlockHandler(QueuedBlockData * data)
 {
+    CBlockIndex * tip = chainActive.Tip();
     LogPrintf("QueuedBlockHandler: %d, %s\n", GetAdjustedTime(), data->block->GetHash().ToString());
 
     ioService.reset();
     boost::asio::deadline_timer timer(ioService, boost::posix_time::seconds(data->block->GetBlockTime() - (GetAdjustedTime() + 45)));
     timer.wait();
 
+
     LogPrintf("QueuedBlockHandler: waited until %d, %s\n", GetAdjustedTime(), data->block->GetHash().ToString());
-    if(!ProcessNewBlock(data->pfrom, data->chainparams, data->block, false, nullptr))
+    if(tip->GetBlockHash() == chainActive.Tip()->GetBlockHash())
     {
-        LogPrintf("QueuedBlock:  ProcessNewBlock: FAILED\n");
+        if(!ProcessNewBlock(data->pfrom, data->chainparams, data->block, false, nullptr))
+        {
+            LogPrintf("QueuedBlock:  ProcessNewBlock: FAILED\n");
+        }
     }
+    else LogPrintf("QueuedBlock:  FAILED, another block came in.");
+
+    //LOCK(cs_blockqueue);
     waitingOnBlock = false;
     delete data;
+    queuedBlock = nullptr;
 }
 
 bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW, bool fCheckMerkleRoot)
@@ -3206,6 +3246,8 @@ bool CheckBlock51Percent(CNode * pfrom, const CBlock& block, CValidationState& s
                     //Since we know that GetBlockTime() is greater than GetAdjustedTime()
                     //We use a timer to retry this process when the timestamp is right
 
+                    //LOCK(cs_blockqueue);
+
                     waitingOnBlock = true; //only allow one block to be queued
 
                     QueuedBlockData * data = new QueuedBlockData(chainparams);
@@ -3218,6 +3260,7 @@ bool CheckBlock51Percent(CNode * pfrom, const CBlock& block, CValidationState& s
                     copyBlock->Unserialize(stream);
                     data->block = copyBlock;
                     data->pfrom = pfrom;
+                    queuedBlock = data;
                     boost::thread thread(QueuedBlockHandler, data);
                     thread.detach();
 
@@ -3292,7 +3335,7 @@ bool ProcessNewBlock(CNode * pfrom, const CChainParams& chainparams, const std::
         CheckBlockIndex(chainparams.GetConsensus());
         if (!ret) {
             GetMainSignals().BlockChecked(*pblock, state);
-            return error("%s: AcceptBlock FAILED", __func__);
+            return error("%s: AcceptBlock FAILED - %d: %s", __func__, state.GetRejectCode(), state.GetRejectReason().c_str());
         }
     }
 
