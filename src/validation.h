@@ -194,11 +194,11 @@ extern CBlockIndex *pindexBestHeader;
 
 //Schedule CheckPoint Block
 //0 if no checkpoint is to be done.
-static int64_t checkpointBlockNum = 0;
+extern int64_t checkpointBlockNum;
 
 //Delay block-transmittance by 14 minutes flag (51% defence)
-static bool defenseDelayActive = false;
-static time_t defenseStartTime;
+extern bool defenseDelayActive;
+extern time_t defenseStartTime;
 
 /** Minimum disk space required - used in CheckDiskSpace() */
 static const uint64_t nMinDiskSpace = 52428800;
@@ -496,6 +496,9 @@ struct QueuedBlockData {
     QueuedBlockData(const CChainParams & params) : chainparams(params) {}
 };
 void QueuedBlockHandler(QueuedBlockData * data);
+extern CCriticalSection cs_blockqueue;
+std::shared_ptr<const CBlock> GetQueuedBlock();
+bool IsBlockQueued();
 
 /** Context-independent validity checks */
 bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true);
