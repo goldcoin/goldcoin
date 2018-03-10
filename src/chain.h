@@ -302,14 +302,15 @@ public:
 
     int64_t GetMinTimeNext() const
     {
+        int64_t medTime = GetMedianTimePast()+1;
         const CBlockIndex* cur = this;
         for(int x = 0; x < 4; x++) {
             cur = cur->pprev;
             if(!cur) {
-                return nTime;
+                return medTime;
             }
         }
-        return std::max(nTime, cur->nTime + 60 * 10);
+        return std::max(medTime, cur->nTime + 60 * 10);
     }
 
     int64_t GetMedianTimePast() const
