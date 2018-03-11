@@ -1513,6 +1513,10 @@
 <context>
     <name>SendCoinsDialog</name>
     <message>
+        <source>Send as zero-fee transaction if possible</source>
+        <translation>Изпрати с нулева такса за транзакция ако е възможно</translation>
+    </message>
+    <message>
         <source>Send Coins</source>
         <translation>Изпращане</translation>
     </message>

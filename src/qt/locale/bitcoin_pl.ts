@@ -1821,6 +1821,10 @@
 <context>
     <name>SendCoinsDialog</name>
     <message>
+        <source>Send as zero-fee transaction if possible</source>
+        <translation>Wyślij transakcję bez uiszczania opłat, jeśli jest to możliwe.</translation>
+    </message>
+    <message>
         <source>Send Coins</source>
         <translation>Wyślij monety</translation>
     </message>

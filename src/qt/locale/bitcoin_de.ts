@@ -1953,6 +1953,10 @@
 <context>
     <name>SendCoinsDialog</name>
     <message>
+        <source>Send as zero-fee transaction if possible</source>
+        <translation>Wenn möglich als gebührenfreie Transaktion versenden</translation>
+    </message>
+    <message>
         <source>Send Coins</source>
         <translation>Goldcoins überweisen</translation>
     </message>
