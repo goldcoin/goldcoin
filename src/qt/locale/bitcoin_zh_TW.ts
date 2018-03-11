@@ -1957,6 +1957,10 @@
 <context>
     <name>SendCoinsDialog</name>
     <message>
+        <source>Send as zero-fee transaction if possible</source>
+        <translation>如果可能的話，發送零手續費的交易</translation>
+    </message>
+    <message>
         <source>Send Coins</source>
         <translation>付款</translation>
     </message>

@@ -1939,6 +1939,10 @@
 <context>
     <name>SendCoinsDialog</name>
     <message>
+        <source>Send as zero-fee transaction if possible</source>
+        <translation>如果可能,发送零手续费的交易</translation>
+    </message>
+    <message>
         <source>Send Coins</source>
         <translation>发送莱特币</translation>
     </message>

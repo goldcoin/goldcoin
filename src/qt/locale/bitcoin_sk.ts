@@ -1938,6 +1938,10 @@
 <context>
     <name>SendCoinsDialog</name>
     <message>
+        <source>Send as zero-fee transaction if possible</source>
+        <translation>Ak je to možné, poslať transakciu bez poplatku</translation>
+    </message>
+    <message>
         <source>Send Coins</source>
         <translation>Poslať Goldcoins</translation>
     </message>

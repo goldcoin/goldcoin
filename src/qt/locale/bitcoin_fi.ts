@@ -1353,6 +1353,10 @@
 <context>
     <name>SendCoinsDialog</name>
     <message>
+        <source>Send as zero-fee transaction if possible</source>
+        <translation>Lähetä nolla siirtomaksulla jos mahdollista</translation>
+    </message>
+    <message>
         <source>Send Coins</source>
         <translation>Lähetä Goldcoineja</translation>
     </message>
