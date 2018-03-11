@@ -14,6 +14,7 @@
 #include "pow.h"
 #include "tinyformat.h"
 #include "uint256.h"
+#include "consensus/params.h"
 
 #include <vector>
 
@@ -301,19 +302,14 @@ public:
 
     int64_t GetMinTimeNext() const
     {
-        int64_t minTime = GetMedianTimePast() + 1;
-        const CBlockIndex* pindex = this;
-        const CBlockIndex* cur = pindex;
-        for(int x = 0; x < 5; x++) {
+        const CBlockIndex* cur = this;
+        for(int x = 0; x < 4; x++) {
             cur = cur->pprev;
             if(!cur) {
-                return minTime;
+                return nTime;
             }
         }
-        if((int64_t)cur->nTime + 60 * 10 > minTime) {
-            minTime += ((int64_t)cur->nTime + 60 * 10) - minTime;
-        }
-        return minTime;
+        return std::max(nTime, cur->nTime + 60 * 10);
     }
 
     int64_t GetMedianTimePast() const
@@ -367,6 +363,14 @@ public:
     //! Efficiently find an ancestor of this block.
     CBlockIndex* GetAncestor(int height);
     const CBlockIndex* GetAncestor(int height) const;
+
+    /**
+     * Returns true if there are nRequired or more blocks of minVersion or above
+     * in the last Params().ToCheckBlockUpgradeMajority() blocks, starting at pstart
+     * and going backwards.
+     */
+    static bool IsSuperMajority(int minVersion, const CBlockIndex* pstart, const Consensus::Params & params,
+                                unsigned int nRequired);
 };
 
 arith_uint256 GetBlockProof(const CBlockIndex& block);

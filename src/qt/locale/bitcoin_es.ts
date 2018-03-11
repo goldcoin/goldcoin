@@ -1957,6 +1957,10 @@
 <context>
     <name>SendCoinsDialog</name>
     <message>
+        <source>Send as zero-fee transaction if possible</source>
+        <translation>Enviar como transacción con cero comisiones si es posible</translation>
+    </message>
+    <message>
         <source>Send Coins</source>
         <translation>Enviar goldcoins</translation>
     </message>

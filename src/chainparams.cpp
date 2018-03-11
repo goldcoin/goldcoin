@@ -81,9 +81,12 @@ public:
         consensus.julyFork2 = 251230;
         consensus.febFork = 372000;
 
-        consensus.BIP34Height = 751500;
-        consensus.BIP65Height = 751800;
-        consensus.BIP66Height = 752000;
+        consensus.nEnforceBlockUpgradeMajority = 750;
+        consensus.nRejectBlockOutdatedMajority = 950;
+        consensus.nToCheckBlockUpgradeMajority = 1000;
+        consensus.BIP34Height = 10000000;
+        consensus.BIP65Height = 10000000;
+        consensus.BIP66Height = 10000000;
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 2.0 * 60 * 60; // Difficulty changes every 60 blocks
         consensus.nPowTargetSpacing = 2.0 * 60;
@@ -189,7 +192,7 @@ public:
     }
 };
 static CMainParams mainParams;
-
+#include "arith_uint256.h"
 /**
  * Testnet (v3)
  */
@@ -198,17 +201,20 @@ public:
     CTestNetParams() {
         strNetworkID = "test";
 
-        consensus.julyFork = 10;
-        consensus.octoberFork = 25;
-        consensus.novemberFork = 30;
-        consensus.novemberFork2 = 35;
-        consensus.mayFork = 160;
-        consensus.julyFork2 = 200;
-        consensus.febFork = 205;
+        consensus.julyFork = 2016;
+        consensus.octoberFork = 2016;
+        consensus.novemberFork = 2016;
+        consensus.novemberFork2 = 2016;
+        consensus.mayFork = 2016;
+        consensus.julyFork2 = 2016;
+        consensus.febFork = 2016;
 
-        consensus.BIP34Height = 210;
-        consensus.BIP65Height = 220;
-        consensus.BIP66Height = 230;
+        consensus.nEnforceBlockUpgradeMajority = 375;
+        consensus.nRejectBlockOutdatedMajority = 475;
+        consensus.nToCheckBlockUpgradeMajority = 500;
+        consensus.BIP34Height = 1000000; // not activiated
+        consensus.BIP65Height = 1000000;
+        consensus.BIP66Height = 1000000;
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 2.0 * 60 * 60; // Difficulty changes every 60 blocks
         consensus.nPowTargetSpacing = 2.0 * 60;
@@ -233,24 +239,27 @@ public:
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
          * a large 32-bit integer with any alignment.
          */
-        pchMessageStart[0] = 0xfd;
-        pchMessageStart[1] = 0xc2;
+        pchMessageStart[0] = 0xfc;
+        pchMessageStart[1] = 0xc5;
         pchMessageStart[2] = 0xb4;
         pchMessageStart[3] = 0xdd;
+
         nDefaultPort = 18121;
         nPruneAfterHeight = 1000;
 
-        genesis = CreateGenesisBlock(1296688602, 0, 0x207fffff, 1, 50 * COIN);
+        genesis = CreateGenesisBlock(1513056232, 2702105, 0x1e0ffff0, 1, 50 * COIN);
+
         consensus.hashGenesisBlock = genesis.GetHash();
-        //assert(consensus.hashGenesisBlock == uint256S("0x530827f38f93b43ed12af0b3ad25a288dc02ed74d6d7857862df51fc56c416f9"));
-        //assert(genesis.hashMerkleRoot == uint256S("0x97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9"));
+
+
+        assert(consensus.hashGenesisBlock == uint256S("0x63ee26429068a53a39ab251fb3d611bbac9539651f1bae5d7e73adac3767e513"));
+        assert(genesis.hashMerkleRoot == uint256S("0xa215e67ba165202f75b6458d22fedd1a3ec4f03449a4c6b2a4b8130bfebd3b15"));
 
         vFixedSeeds.clear();
         vSeeds.clear();
 
         // Note that of those with the service bits flag, most only support a subset of possible options
-        vSeeds.push_back(CDNSSeedData("test-seed.gldcoin.com", "test-seed.gldcoin.com", true));
-        vSeeds.push_back(CDNSSeedData("test-vps.gldcoin.com", "test-vps.gldcoin.com", true));
+        vSeeds.push_back(CDNSSeedData("testnet.gldcoin.com", "168.235.108.201", true));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
@@ -268,7 +277,7 @@ public:
 
         checkpointData = (CCheckpointData){
             boost::assign::map_list_of
-            ( 0, uint256S("0x530827f38f93b43ed12af0b3ad25a288dc02ed74d6d7857862df51fc56c416f9"))
+            ( 0, uint256S("0x63ee26429068a53a39ab251fb3d611bbac9539651f1bae5d7e73adac3767e513"))
         };
 
 
@@ -299,6 +308,9 @@ public:
         consensus.julyFork2 = 100000000;
         consensus.febFork = 100000001;
 
+        consensus.nEnforceBlockUpgradeMajority =  75000000;
+        consensus.nRejectBlockOutdatedMajority =  95000000;
+        consensus.nToCheckBlockUpgradeMajority = 100000000;
         consensus.BIP34Height = 100000000; // BIP34 has not activated on regtest (far in the future so block v1 are not rejected in tests)
         consensus.BIP34Hash = uint256();
         consensus.BIP65Height = 1351; // BIP65 activated on regtest (Used in rpc activation tests)
