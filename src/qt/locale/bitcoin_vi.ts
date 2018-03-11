@@ -115,6 +115,10 @@
 <context>
     <name>SendCoinsDialog</name>
     <message>
+        <source>Send as zero-fee transaction if possible</source>
+        <translation>Gửi như là giao dịch không phí nếu có thể</translation>
+    </message>
+    <message>
         <source>Amount:</source>
         <translation>Số lượng:</translation>
     </message>
