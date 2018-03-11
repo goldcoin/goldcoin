@@ -1846,6 +1846,10 @@ Per specificare più URL separarli con una barra verticale "|".</translation>
 <context>
     <name>SendCoinsDialog</name>
     <message>
+        <source>Send as zero-fee transaction if possible</source>
+        <translation>Se é possibile, inviare una transazione senza commissione, </translation>
+    </message>
+    <message>
         <source>Send Coins</source>
         <translation>Invia Goldcoin</translation>
     </message>
