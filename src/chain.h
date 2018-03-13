@@ -310,7 +310,7 @@ public:
                 return medTime;
             }
         }
-        return std::max(medTime, cur->nTime + 60 * 10);
+        return std::max((unsigned int)medTime, cur->nTime + 60 * 10);
     }
 
     int64_t GetMedianTimePast() const
