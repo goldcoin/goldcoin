@@ -73,6 +73,7 @@ public:
     CMainParams() {
         strNetworkID = "main";
 
+        consensus.useNewDifficultyProtocol = true;
         consensus.julyFork = 45000;
         consensus.octoberFork = 100000;
         consensus.novemberFork = 103000;
@@ -201,6 +202,7 @@ public:
     CTestNetParams() {
         strNetworkID = "test";
 
+        consensus.useNewDifficultyProtocol = true;
         consensus.julyFork = 2016;
         consensus.octoberFork = 2016;
         consensus.novemberFork = 2016;
@@ -300,6 +302,7 @@ public:
         strNetworkID = "regtest";
 
         //GoldCoin forks are not activated on RegTest
+        consensus.useNewDifficultyProtocol = false;
         consensus.julyFork = 100000000;
         consensus.octoberFork = 100000000;
         consensus.novemberFork = 100000000;

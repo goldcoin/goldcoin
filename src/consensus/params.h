@@ -42,6 +42,8 @@ struct BIP9Deployment {
 struct Params {
     uint256 hashGenesisBlock;
 
+    /** Sets Interval to 504 blocks < 21,000 for mainnet, < 2016 for testnet */
+    bool useNewDifficultyProtocol;
     /** Block height for first difficulty fork */
     int julyFork;
     /** Block height for 2nd difficulty fork - 51% defense */
