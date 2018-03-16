@@ -293,7 +293,7 @@ static UniValue BIP22ValidationResult(const CValidationState& state)
     if (state.IsValid())
         return NullUniValue;
 
-    if (state.GetBlockQueued())
+    if (fQueueBlocks && nReportQueuedBlocks > REPORT_NONE && state.GetBlockQueued())
         return NullUniValue;
 
     std::string strRejectReason = state.GetRejectReason();

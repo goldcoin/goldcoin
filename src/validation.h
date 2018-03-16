@@ -488,6 +488,25 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus
 /** Functions for validating blocks and updating the block tree */
 
 CBlockIndex * GetPreviousBlock(const CBlock& block, int64_t numBlocksBefore);
+
+/** Functions and flags for queuing blocks */
+
+/** Default for DEFAULT_QUEUEBLOCKS. -queueblocks */
+static const bool DEFAULT_QUEUEBLOCKS = true;
+
+enum {
+    REPORT_NONE = 0,
+    REPORT_QUEUED = 1,
+    REPORT_QUEUED_BLOCK_TRANSACTION = 2
+};
+
+/** Default for DEFAULT_REPORTQUEUEBLOCKS. -reportqueuedblocks */
+static const int DEFAULT_REPORTQUEUEDBLOCKS = REPORT_NONE;
+
+extern bool fQueueBlocks;
+extern int  nReportQueuedBlocks;
+
+
 struct QueuedBlockData {
     std::shared_ptr<const CBlock> block;
     const CChainParams& chainparams;

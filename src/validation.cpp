@@ -106,6 +106,10 @@ int64_t checkpointBlockNum = 0;
 bool defenseDelayActive = false;
 time_t defenseStartTime;
 
+// Block Queuing
+bool fQueueBlocks = DEFAULT_QUEUEBLOCKS;
+int  nReportQueuedBlocks = DEFAULT_REPORTQUEUEDBLOCKS;
+
 // Internal stuff
 namespace {
 
@@ -2868,8 +2872,7 @@ QueuedBlockData * queuedBlock = nullptr;
 
 std::shared_ptr<const CBlock> GetQueuedBlock()
 {
-    //LOCK(cs_blockqueue);
-    if(waitingOnBlock && queuedBlock != nullptr)
+    if(fQueueBlocks && waitingOnBlock && queuedBlock != nullptr)
     {
         return queuedBlock->block;
     }
@@ -2878,8 +2881,7 @@ std::shared_ptr<const CBlock> GetQueuedBlock()
 
 bool IsBlockQueued()
 {
-    //LOCK(cs_blockqueue);
-    if(waitingOnBlock && queuedBlock != nullptr)
+    if(fQueueBlocks && waitingOnBlock && queuedBlock != nullptr)
     {
         return true;
     }
@@ -3246,27 +3248,31 @@ bool CheckBlock51Percent(CNode * pfrom, const CBlock& block, CValidationState& s
                     //Since we know that GetBlockTime() is greater than GetAdjustedTime()
                     //We use a timer to retry this process when the timestamp is right
 
-                    //LOCK(cs_blockqueue);
+                    if(fQueueBlocks)
+                    {
 
-                    waitingOnBlock = true; //only allow one block to be queued
+                        waitingOnBlock = true; //only allow one block to be queued
 
-                    QueuedBlockData * data = new QueuedBlockData(chainparams);
+                        QueuedBlockData * data = new QueuedBlockData(chainparams);
 
-                    //Copy the block so it is available in the waiting thread.
-                    CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
-                    block.Serialize(stream);
-                    std::shared_ptr<CBlock> copyBlock = std::make_shared<CBlock>();
-                    stream.Rewind(stream.size());
-                    copyBlock->Unserialize(stream);
-                    data->block = copyBlock;
-                    data->pfrom = pfrom;
-                    queuedBlock = data;
-                    boost::thread thread(QueuedBlockHandler, data);
-                    thread.detach();
+                        //Copy the block so it is available in the waiting thread.
+                        CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
+                        block.Serialize(stream);
+                        std::shared_ptr<CBlock> copyBlock = std::make_shared<CBlock>();
+                        stream.Rewind(stream.size());
+                        copyBlock->Unserialize(stream);
+                        data->block = copyBlock;
+                        data->pfrom = pfrom;
+                        queuedBlock = data;
+                        boost::thread thread(QueuedBlockHandler, data);
+                        thread.detach();
 
-                    LogPrintf("Local has found possible valid block... queueing (%d s) until timestamp is valid at %d: %s\n", block.GetBlockTime() - (GetAdjustedTime() + 45), block.GetBlockTime() - 45, block.GetHash().ToString());
-                    //To return availability to current thread
-                    return state.DoS(0, false, REJECT_INVALID, "rejected-by-def", false, "block timestamp too far for current network time, block queued", true);
+                        LogPrintf("Local has found possible valid block... queueing (%d s) until timestamp is valid at %d: %s\n", block.GetBlockTime() - (GetAdjustedTime() + 45), block.GetBlockTime() - 45, block.GetHash().ToString());
+
+                        //To return availability to current thread
+                        return state.DoS(0, false, REJECT_INVALID, "rejected-by-def", false, "block timestamp too far for current network time, block queued", true);
+                    }
+                    return state.DoS(0, false, REJECT_INVALID, "rejected-by-def", false, "block timestamp too far for current network time", true);
                 } else {
                     //The block is too far into the future even when considering the defense
                     //Thus it will be rejected
