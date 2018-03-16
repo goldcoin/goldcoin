@@ -484,6 +484,8 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-blockmintxfee=<amt>", strprintf(_("Set lowest fee rate (in %s/kB) for transactions to be included in block creation. (default: %s)"), CURRENCY_UNIT, FormatMoney(DEFAULT_BLOCK_MIN_TX_FEE)));
     if (showDebug)
         strUsage += HelpMessageOpt("-blockversion=<n>", "Override block version to test forking scenarios");
+    strUsage += HelpMessageOpt("-queueblocks", strprintf(_("Allow one block to be queued if solved before it passes 51%% Defense rules.  The block will be submitted when its time is valid. (default: %d)"), DEFAULT_QUEUEBLOCKS));
+    strUsage += HelpMessageOpt("-reportqueuedblocks=<n>", strprintf(_("If block queuing is active and a block is queued: for a value => 1, submitblock returns successfully, for a value >= 2 gettransaction and getblock return info on queued block (default: %d)"), DEFAULT_REPORTQUEUEDBLOCKS));
 
     strUsage += HelpMessageGroup(_("RPC server options:"));
     strUsage += HelpMessageOpt("-server", _("Accept command line and JSON-RPC commands"));
@@ -1100,6 +1102,14 @@ bool AppInitParameterInteraction()
             if (!found) {
                 return InitError(strprintf("Invalid deployment (%s)", vDeploymentParams[0]));
             }
+        }
+    }
+    if(IsArgSet("-queueblocks"))
+    {
+        fQueueBlocks = GetBoolArg("-queueblocks", DEFAULT_QUEUEBLOCKS);
+        if(IsArgSet("-reportqueuedblocks"))
+        {
+            nReportQueuedBlocks = GetArg("-reportqueuedblocks", DEFAULT_REPORTQUEUEDBLOCKS);
         }
     }
     return true;

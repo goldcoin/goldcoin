@@ -734,7 +734,7 @@ UniValue getblock(const JSONRPCRequest& request)
 
     std::string strHash = request.params[0].get_str();
     uint256 hash(uint256S(strHash));
-    bool fBlockQueued = false;
+
     shared_ptr<const CBlock> queuedBlock;
 
     bool fVerbose = true;
@@ -744,7 +744,7 @@ UniValue getblock(const JSONRPCRequest& request)
     if (mapBlockIndex.count(hash) == 0)
     {
         queuedBlock = GetQueuedBlock();
-        if(queuedBlock == nullptr || queuedBlock->GetHash().Compare(hash) != 0)
+        if(queuedBlock == nullptr || queuedBlock->GetHash().Compare(hash) != 0 || nReportQueuedBlocks != REPORT_QUEUED_BLOCK_TRANSACTION)
             throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
     }
 
