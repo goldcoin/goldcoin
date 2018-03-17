@@ -114,6 +114,8 @@ SendCoinsDialog::SendCoinsDialog(const PlatformStyle *_platformStyle, QWidget *p
     ui->customFee->setValue(settings.value("nTransactionFee").toLongLong());
     ui->checkBoxMinimumFee->setChecked(settings.value("fPayOnlyMinFee").toBool());
     ui->checkBoxFreeTx->setChecked(settings.value("fSendFreeTransactions").toBool());
+    ui->checkBoxFreeTx->setVisible(false);
+    ui->labelFreeTx->setVisible(false);
     minimizeFeeSection(settings.value("fFeeSectionMinimized").toBool());
 }
 
@@ -622,8 +624,11 @@ void SendCoinsDialog::updateGlobalFeeVariables()
         // if user has selected to set a minimum absolute fee, pass the value to coincontrol
         // set nMinimumTotalFee to 0 in case of user has selected that the fee is per KB
         CoinControlDialog::coinControl->nMinimumTotalFee = ui->radioCustomAtLeast->isChecked() ? ui->customFee->value() : 0;
+
+        fSendFreeTransactions = ui->customFee->value() == CAmount(0);
     }
-    fSendFreeTransactions = ui->checkBoxFreeTx->isChecked();
+    if(ui->checkBoxFreeTx->isVisible())
+        fSendFreeTransactions = ui->checkBoxFreeTx->isChecked();
 }
 
 void SendCoinsDialog::updateFeeMinimizedLabel()
