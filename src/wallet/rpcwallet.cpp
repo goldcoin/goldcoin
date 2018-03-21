@@ -1054,7 +1054,6 @@ public:
     bool operator()(const CScriptID &scriptID) {
         CScript subscript;
         if (pwalletMain && pwalletMain->GetCScript(scriptID, subscript)) {
-            int witnessversion;
             std::vector<unsigned char> witprog;
             isminetype typ;
             typ = IsMine(*pwalletMain, subscript);
