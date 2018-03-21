@@ -336,7 +336,6 @@ static void MutateTxAddOutMultiSig(CMutableTransaction& tx, const std::string& s
     bool bScriptHash = false;
     if (vStrInputParts.size() == numkeys + 4) {
         std::string flags = vStrInputParts.back();
-        bSegWit = (flags.find("W") != std::string::npos);
         bScriptHash = (flags.find("S") != std::string::npos);
     }
     else if (vStrInputParts.size() > numkeys + 4) {
@@ -404,7 +403,6 @@ static void MutateTxAddOutScript(CMutableTransaction& tx, const std::string& str
     bool bScriptHash = false;
     if (vStrInputParts.size() == 3) {
         std::string flags = vStrInputParts.back();
-        bSegWit = (flags.find("W") != std::string::npos);
         bScriptHash = (flags.find("S") != std::string::npos);
     }
 
