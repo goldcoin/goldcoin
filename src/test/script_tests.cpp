@@ -392,14 +392,6 @@ public:
         return *this;
     }
 
-    TestBuilder& AsWit()
-    {
-        assert(havePush);
-        //scriptWitness.stack.push_back(push);
-        havePush = false;
-        return *this;
-    }
-
     UniValue GetJSON()
     {
         DoPush();
