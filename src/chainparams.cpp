@@ -82,9 +82,9 @@ public:
         consensus.julyFork2 = 251230;
         consensus.febFork = 372000;
 
-        consensus.nEnforceBlockUpgradeMajority = 750;
-        consensus.nRejectBlockOutdatedMajority = 950;
-        consensus.nToCheckBlockUpgradeMajority = 1000;
+        consensus.nEnforceBlockUpgradeMajority = 1500;
+        consensus.nRejectBlockOutdatedMajority = 1900;
+        consensus.nToCheckBlockUpgradeMajority = 2000;
         consensus.BIP34Height = 10000000;
         consensus.BIP65Height = 10000000;
         consensus.BIP66Height = 10000000;
