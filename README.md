@@ -15,7 +15,7 @@ out collectively by the network. Goldcoin Core is the name of open source
 software which enables the use of this currency.
 
 For more information, as well as an immediately useable, binary version of
-the Goldcoin Core software, see [https://www.goldcoin.org](https://goldcoin.org).
+the Goldcoin Core software, see [https://www.goldcoin.org](https://www.goldcoin.org).
 
 License
 -------
