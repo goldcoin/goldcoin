@@ -485,10 +485,10 @@ void PrintExceptionContinue(const std::exception* pex, const char* pszThread)
 boost::filesystem::path GetDefaultDataDir()
 {
     namespace fs = boost::filesystem;
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Bitcoin
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Bitcoin
-    // Mac: ~/Library/Application Support/Bitcoin
-    // Unix: ~/.bitcoin
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\GoldCoin (GLD)
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\GoldCoin (GLD)
+    // Mac: ~/Library/Application Support/GoldCoin (GLD)
+    // Unix: ~/.goldcoin
 #ifdef WIN32
     // Windows
     return GetSpecialFolderPath(CSIDL_APPDATA) / "GoldCoin (GLD)";
