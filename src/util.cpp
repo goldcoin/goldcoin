@@ -1,7 +1,7 @@
 // Copyright (c) 2007-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2015 The Bitcoin Core developers
 // Copyright (c) 2011-2017 The Litecoin Core developers
-// Copyright (c) 2013-2017 The Goldcoin Core developers
+// Copyright (c) 2013-2018 The Goldcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -851,10 +851,17 @@ std::string CopyrightHolders(const std::string& strPrefix)
 {
     std::string strCopyrightHolders = strPrefix + strprintf(_(COPYRIGHT_HOLDERS), _(COPYRIGHT_HOLDERS_SUBSTITUTION));
 
+    // Check for untranslated substitution to make sure Litecoin Core copyright is not removed by accident
+    if (strprintf(COPYRIGHT_HOLDERS, COPYRIGHT_HOLDERS_SUBSTITUTION).find("Litecoin Core") == std::string::npos) {
+        std::string strYear = strPrefix;
+        strYear.replace(strYear.find("2013"), sizeof("2013")-1, "2011");
+        strCopyrightHolders += "\n" + strYear + "The Litecoin Core developers";
+    }
+
     // Check for untranslated substitution to make sure Bitcoin Core copyright is not removed by accident
     if (strprintf(COPYRIGHT_HOLDERS, COPYRIGHT_HOLDERS_SUBSTITUTION).find("Bitcoin Core") == std::string::npos) {
         std::string strYear = strPrefix;
-        strYear.replace(strYear.find("2011"), sizeof("2011")-1, "2009");
+        strYear.replace(strYear.find("2013"), sizeof("2013")-1, "2009");
         strCopyrightHolders += "\n" + strYear + "The Bitcoin Core developers";
     }
     return strCopyrightHolders;
