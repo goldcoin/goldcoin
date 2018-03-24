@@ -1,4 +1,4 @@
-Goldcoin Core 0.14.2
+Goldcoin Core 0.14.2.1
 =====================
 
 Intro
