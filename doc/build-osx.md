@@ -29,7 +29,7 @@ Build Goldcoin Core
 
 1. Clone the goldcoin source code and cd into `goldcoin`
 
-        git clone https://github.com/goldcoin-project/goldcoin
+        git clone https://github.com/goldcoin/Goldcoin-GLD
         cd goldcoin
 
 2.  Build goldcoin-core:

@@ -7,7 +7,7 @@ architectures:
 packages:
 - "faketime"
 remotes:
-- "url": "https://github.com/goldcoin-project/goldcoin-detached-sigs.git"
+- "url": "https://github.com/goldcoin/Goldcoin-GLD-detached-sigs.git"
   "dir": "signature"
 files:
 - "goldcoin-osx-unsigned.tar.gz"
