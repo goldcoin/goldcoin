@@ -31,10 +31,10 @@ If you're using the automated script (found in [contrib/gitian-build.sh](/contri
 Check out the source code in the following directory hierarchy.
 
     cd /path/to/your/toplevel/build
-    git clone https://github.com/goldcoin-project/gitian.sigs.GLD.git
-    git clone https://github.com/goldcoin-project/goldcoin-detached-sigs.git
+    git clone https://github.com/goldcoin/gitian.sigs.GLD.git
+    git clone https://github.com/goldcoin/Goldcoin-GLD-detached-sigs.git
     git clone https://github.com/devrandom/gitian-builder.git
-    git clone https://github.com/goldcoin-project/goldcoin.git
+    git clone https://github.com/goldcoin/Goldcoin-GLD.git
 
 ### Goldcoin maintainers/release engineers, update version in sources
 
@@ -178,7 +178,7 @@ Commit your signature to gitian.sigs.GLD:
 Wait for Windows/OS X detached signatures:
 
 - Once the Windows/OS X builds each have 3 matching signatures, they will be signed with their respective release keys.
-- Detached signatures will then be committed to the [goldcoin-detached-sigs](https://github.com/goldcoin-project/goldcoin-detached-sigs) repository, which can be combined with the unsigned apps to create signed binaries.
+- Detached signatures will then be committed to the [goldcoin-detached-sigs](https://github.com/goldcoin/Goldcoin-GLD-detached-sigs) repository, which can be combined with the unsigned apps to create signed binaries.
 
 Create (and optionally verify) the signed OS X binary:
 
