@@ -386,6 +386,9 @@ UniValue createrawtransaction(const JSONRPCRequest& request)
     UniValue sendTo = request.params[1].get_obj();
 
     CMutableTransaction rawTx;
+    int state = VersionBitsState(chainActive.Tip(), Params().GetConsensus(), Consensus::DEPLOYMENT_CSV, versionbitscache);
+    rawTx.nVersion = (state == THRESHOLD_ACTIVE || state == THRESHOLD_LOCKED_IN) ? CTransaction::CURRENT_VERSION : 1;
+
 
     if (request.params.size() > 2 && !request.params[2].isNull()) {
         int64_t nLockTime = request.params[2].get_int64();

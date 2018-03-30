@@ -79,9 +79,9 @@ static const unsigned int STANDARD_SCRIPT_VERIFY_FLAGS = MANDATORY_SCRIPT_VERIFY
  * older GoldCoin transactions until January 31, 2019
  */
 int64_t GetTime();
-//1548892800 = 31 January 2019
+//1556668800; // Wednesday, May 1, 2019 12:00:00 AM GMT
 inline unsigned int getSTANDARD_SCRIPT_VERIFY_FLAGS() {
-    return GetTime() > 1548892800 ? STANDARD_SCRIPT_VERIFY_FLAGS : STANDARD_SCRIPT_VERIFY_FLAGS_COMPAT;
+    return GetTime() > 1556668800 ? STANDARD_SCRIPT_VERIFY_FLAGS : STANDARD_SCRIPT_VERIFY_FLAGS_COMPAT;
 }
 
 

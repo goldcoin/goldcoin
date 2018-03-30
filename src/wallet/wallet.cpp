@@ -2399,6 +2399,9 @@ bool CWallet::CreateTransaction(const vector<CRecipient>& vecSend, CWalletTx& wt
     wtxNew.BindWallet(this);
     CMutableTransaction txNew;
 
+    int state = VersionBitsState(chainActive.Tip(), Params().GetConsensus(), Consensus::DEPLOYMENT_CSV, versionbitscache);
+    txNew.nVersion = (state == THRESHOLD_ACTIVE || state == THRESHOLD_LOCKED_IN) ? CTransaction::CURRENT_VERSION : 1;
+
     // Discourage fee sniping.
     //
     // For a large miner the value of the transactions in the best block and
