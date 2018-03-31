@@ -1,13 +1,13 @@
-Goldcoin Core version 0.13.2 is now available from:
+Litecoin Core version 0.13.2 is now available from:
 
-  <https://download.goldcoin.org/goldcoin-0.13.2.1/>
+  <https://download.litecoin.org/litecoin-0.13.2.1/>
 
 This is a new major version release, including new features, various bugfixes and performance improvements, as well as updated translations.
 It is recommended to upgrade to this version.
 
 Please report bugs using the issue tracker at github:
 
-  <https://github.com/goldcoin/Goldcoin-GLD/issues>
+  <https://github.com/litecoin-project/litecoin/issues>
 
 Compatibility
 ==============

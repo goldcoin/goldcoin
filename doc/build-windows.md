@@ -7,7 +7,7 @@ Most developers use cross-compilation from Ubuntu to build executables for
 Windows. Cross-compilation is also used to build the release binaries.
 
 Currently only building on Ubuntu Trusty 14.04 or Ubuntu Zesty 17.04 or later is supported.
-Building on Ubuntu Xenial 16.04 is known to be broken, see extensive discussion in issue [8732](https://github.com/Goldcoin/Goldcoin/issues/8732).
+Building on Ubuntu Xenial 16.04 is known to be broken, see extensive discussion in issue [8732](https://github.com/bitcoin/bitcoin/issues/8732).
 While it may be possible to do so with work arounds, it's potentially dangerous and not recommended.
 
 While there are potentially a number of ways to build on Windows (for example using msys / mingw-w64),

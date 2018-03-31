@@ -1,7 +1,7 @@
 Goldcoin Core integration/staging tree
 =====================================
 
-[![Build Status](https://travis-ci.org/goldcoin/Goldcoin-GLD.svg?branch=goldcoin-master)](https://travis-ci.org/goldcoin/Goldcoin-GLD)
+[![Build Status](https://travis-ci.org/goldcoin/goldcoin.svg?branch=goldcoin-master)](https://travis-ci.org/goldcoin/goldcoin)
 
 https://www.goldcoin.org
 
@@ -27,7 +27,7 @@ Development Process
 -------------------
 
 The `master` branch is regularly built and tested, but is not guaranteed to be
-completely stable. [Tags](https://github.com/goldcoin/Goldcoin-GLD/tags) are created
+completely stable. [Tags](https://github.com/goldcoin/goldcoin/tags) are created
 regularly to indicate new official, stable release versions of Goldcoin Core.
 
 The contribution workflow is described in [CONTRIBUTING.md](CONTRIBUTING.md).
