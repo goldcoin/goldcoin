@@ -308,7 +308,7 @@ then
             echo ""
             echo "Committing ${VERSION} Unsigned Sigs"
             echo ""
-            pushd gitian.sigs
+            pushd gitian.sigs.GLD
             git add ${VERSION}-linux/${SIGNER}
             git add ${VERSION}-win-unsigned/${SIGNER}
             git add ${VERSION}-osx-unsigned/${SIGNER}
