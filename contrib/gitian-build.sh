@@ -380,7 +380,7 @@ then
         if [[ $commitFiles = true ]]
         then
             # Commit Sigs
-            pushd gitian.sigs
+            pushd gitian.sigs.GLD
             echo ""
             echo "Committing ${VERSION} Signed Sigs"
             echo ""
