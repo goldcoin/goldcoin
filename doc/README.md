@@ -28,10 +28,9 @@ Drag GoldCoin-Core to your applications folder, and then run GoldCoin-Core.
 
 ### Need Help?
 
-* See the documentation at the [GoldCoin Wiki](https://goldcoin.info/)
+* Get help on the forum [GoldCoin Talk](https://www.goldcointalk.org/)
 for help and more information.
 * Ask for help on [#goldcoin](http://webchat.freenode.net?channels=goldcoin) on Freenode. If you don't have an IRC client use [webchat here](http://webchat.freenode.net?channels=goldcoin).
-* Ask for help on the [GoldCoinTalk](https://goldcointalk.org/) forums.
 
 Building
 ---------------------
