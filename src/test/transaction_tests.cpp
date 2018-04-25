@@ -158,10 +158,6 @@ BOOST_AUTO_TEST_CASE(tx_valid)
                     break;
                 }
 
-                CAmount amount = 0;
-                if (mapprevOutValues.count(tx.vin[i].prevout)) {
-                    amount = mapprevOutValues[tx.vin[i].prevout];
-                }
                 unsigned int verify_flags = ParseScriptFlags(test[2].get_str());
                 BOOST_CHECK_MESSAGE(VerifyScript(tx.vin[i].scriptSig, mapprevOutScriptPubKeys[tx.vin[i].prevout],
                                                  verify_flags, TransactionSignatureChecker(&tx, i), &err),
@@ -241,10 +237,6 @@ BOOST_AUTO_TEST_CASE(tx_invalid)
                 }
 
                 unsigned int verify_flags = ParseScriptFlags(test[2].get_str());
-                CAmount amount = 0;
-                if (mapprevOutValues.count(tx.vin[i].prevout)) {
-                    amount = mapprevOutValues[tx.vin[i].prevout];
-                }
                 fValid = VerifyScript(tx.vin[i].scriptSig, mapprevOutScriptPubKeys[tx.vin[i].prevout],
                                       verify_flags, TransactionSignatureChecker(&tx, i), &err);
             }
