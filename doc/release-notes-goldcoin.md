@@ -1,22 +1,22 @@
-Litecoin Core version 0.14.2 is now available from:
+Goldcoin Core version 0.14.3 is now available from:
 
-  <https://download.litecoin.org/litecoin-0.14.2.0/>
+  <https://www.goldcoin.org/get-started/>
 
 This is a new major version release, including new features, various bugfixes
 and performance improvements, as well as updated translations.
 
 Please report bugs using the issue tracker at github:
 
-  <https://github.com/litecoin-project/litecoin/issues>
+  <https://github.com/goldcoin/goldcoin/issues>
 
 To receive security and update notifications, please subscribe to:
 
-  <https://groups.google.com/forum/#!forum/litecoin-dev>
+  <https://groups.google.com/forum/#!forum/goldcoin-dev>
 
 Compatibility
 ==============
 
-Litecoin Core is extensively tested on multiple operating systems using
+Goldcoin Core is extensively tested on multiple operating systems using
 the Linux kernel, macOS 10.8+, and Windows Vista and later.
 
 Microsoft ended support for Windows XP on [April 8th, 2014](https://www.microsoft.com/en-us/WindowsForBusiness/end-of-xp-support),
@@ -24,16 +24,25 @@ No attempt is made to prevent installing or running the software on Windows XP, 
 can still do so at your own risk but be aware that there are known instabilities and issues.
 Please do not report issues about Windows XP to the issue tracker.
 
-Litecoin Core should also work on most other Unix-like systems but is not
+Goldcoin Core should also work on most other Unix-like systems but is not
 frequently tested on them.
 
 Notable changes
 ===============
 
+Block Queuing
+-------------
+
+Goldcoin Core now supports several settings for block queuing to allow miners to accurately
+calculate payouts.  NOMP pools for instance require a reportqueuedblocks=2 setting.  Block
+queuing can be turned off with queueblocks=0.  reportqueuedblocks=2 will modify the returned
+data for gettransaction and getblock.  `gettransaction` will return a "queued" status for the
+coinbase transaction, while `getblock` will return 0 confirmations on queued blocks.
+
 New Multisig Address Prefix
 ---------------------------
 
-Litecoin Core now supports P2SH addresses beginning with M on mainnet and Q on testnet.
+Goldcoin Core now supports P2SH addresses beginning with M on mainnet and Q on testnet.
 P2SH addresses beginning with 3 on mainnet and m or n on testnet will continue to be valid.
 Old and new addresses can be used interchangeably.
 
@@ -42,7 +51,7 @@ miniupnp CVE-2017-8798
 
 Bundled miniupnpc was updated to 2.0.20170509. This fixes an integer signedness error (present in MiniUPnPc v1.4.20101221 through v2.0) that allows remote attackers (within the LAN) to cause a denial of service or possibly have unspecified other impact.
 
-This only affects users that have explicitly enabled UPnP through the GUI setting or through the -upnp option, as since the last UPnP vulnerability (in Litecoin Core 0.10.4) it has been disabled by default.
+This only affects users that have explicitly enabled UPnP through the GUI setting or through the -upnp option, as since the last UPnP vulnerability (in Goldcoin Core 0.10.4) it has been disabled by default.
 
 If you use this option, it is recommended to upgrade to this version as soon as possible.
 
@@ -53,10 +62,10 @@ Testnet3 has been deprecated and replaced with Testnet4. The server port has bee
 the same (19332).
 
 Testnet faucets can be located at:
-- http://testnet.litecointools.com
+- http://testnet.goldcointools.com
 - http://testnet.thrasher.io
 
-Developers who require the new testnet blockchain paramaters can find them [here](https://github.com/litecoin-project/litecoin/blob/master/src/chainparams.cpp#L220).
+Developers who require the new testnet blockchain paramaters can find them [here](https://github.com/goldcoin/goldcoin/blob/master/src/chainparams.cpp#L220).
 
 Performance Improvements
 --------------
@@ -83,7 +92,7 @@ improved, leading to much shorter sync and initial block download times.
 Manual Pruning
 --------------
 
-Litecoin Core has supported automatically pruning the blockchain since 0.13.2. Pruning
+Goldcoin Core has supported automatically pruning the blockchain since 0.13.2. Pruning
 the blockchain allows for significant storage space savings as the vast majority of
 the downloaded data can be discarded after processing so very little of it remains
 on the disk.
@@ -124,7 +133,7 @@ ZMQ On Windows
 
 Previously the ZeroMQ notification system was unavailable on Windows
 due to various issues with ZMQ. These have been fixed upstream and
-now ZMQ can be used on Windows. Please see [this document](https://github.com/litecoin-project/litecoin/blob/master/doc/zmq.md) for
+now ZMQ can be used on Windows. Please see [this document](https://github.com/goldcoin/goldcoin/blob/master/doc/zmq.md) for
 help with using ZMQ in general.
 
 Nested RPC Commands in Debug Console
@@ -157,7 +166,7 @@ the same thing as the GUI icon. The command takes one boolean parameter,
 Out-of-sync Modal Info Layer
 ----------------------------
 
-When Litecoin Core is out-of-sync on startup, a semi-transparent information
+When Goldcoin Core is out-of-sync on startup, a semi-transparent information
 layer will be shown over top of the normal display. This layer contains
 details about the current sync progress and estimates the amount of time
 remaining to finish syncing. This layer can also be hidden and subsequently
@@ -166,19 +175,19 @@ unhidden by clicking on the progress bar at the bottom of the window.
 Support for JSON-RPC Named Arguments
 ------------------------------------
 
-Commands sent over the JSON-RPC interface and through the `litecoin-cli` binary
+Commands sent over the JSON-RPC interface and through the `goldcoin-cli` binary
 can now use named arguments. This follows the [JSON-RPC specification](http://www.jsonrpc.org/specification)
 for passing parameters by-name with an object.
 
-`litecoin-cli` has been updated to support this by parsing `name=value` arguments
+`goldcoin-cli` has been updated to support this by parsing `name=value` arguments
 when the `-named` option is given.
 
 Some examples:
 
-    src/litecoin-cli -named help command="help"
-    src/litecoin-cli -named getblockhash height=0
-    src/litecoin-cli -named getblock blockhash=000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
-    src/litecoin-cli -named sendtoaddress address="(snip)" amount="1.0" subtractfeefromamount=true
+    src/goldcoin-cli -named help command="help"
+    src/goldcoin-cli -named getblockhash height=0
+    src/goldcoin-cli -named getblock blockhash=000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
+    src/goldcoin-cli -named sendtoaddress address="(snip)" amount="1.0" subtractfeefromamount=true
 
 The order of arguments doesn't matter in this case. Named arguments are also
 useful to leave out arguments that should stay at their default value. The
@@ -209,7 +218,7 @@ commands such as `prioritisetransaction` so that those changes will not be lost.
 Final Alert
 -----------
 
-The Alert System was disabled and deprecated in Litecoin Core 0.10.4 and removed in 0.13.2. 
+The Alert System was disabled and deprecated in Goldcoin Core 0.10.4 and removed in 0.13.2. 
 The Alert System was retired with a maximum sequence final alert which causes any nodes
 supporting the Alert System to display a static hard-coded "Alert Key Compromised" message which also
 prevents any other alerts from overriding it. This final alert is hard-coded into this release
@@ -261,7 +270,7 @@ Low-level RPC changes
    the mempool or if `txindex` is enabled.
 
  - A new RPC command `getmemoryinfo` has been added which will return information
-   about the memory usage of Litecoin Core. This was added in conjunction with
+   about the memory usage of Goldcoin Core. This was added in conjunction with
    optimizations to memory management. See [Pull #8753](https://github.com/bitcoin/bitcoin/pull/8753)
    for more information.
 
@@ -413,7 +422,7 @@ the same cache performance as prior releases.  Users on low-memory systems
 this parameter.
 
 Additional information relating to running on low-memory systems can be found
-here, originally written for Bitcoin but can also be used for Litecoin:
+here, originally written for Bitcoin but can also be used for Goldcoin:
 [reducing-bitcoind-memory-usage.md](https://gist.github.com/laanwj/efe29c7661ce9b6620a7).
 
 Credits
@@ -427,3 +436,133 @@ Thanks to everyone who directly contributed to this release:
 - Loshan T
 - Shaolin Fry
 - Xinxi Wang
+
+
+Amir Eslampanah (17):
+      Initial Re-branding
+      Added some goldcoin params, genesis block, pchmessagestart, checkpoints, timespan spacing
+      Removed Segregatted Witness (Needs Compile Fix)
+      Update ISSUE_TEMPLATE.md
+      Update README.md
+      Update ISSUE_TEMPLATE.md
+      Fix copyright years for satoshi
+      Fix copyright years for satoshi 2
+      proper tx fee and block size
+      Added Golden River & Fixed some params
+      Golden River fix
+      Added most of 51% defense, needs build fix
+      Removed witness argument from check-doc.py
+      Added -rpcserialversion docs/checks
+      RPC fixes
+      RPC fixes (sorry for the dyslexia)
+      Test fixes initial
+      Fix lack of format specifier
+
+Brett Walling (1):
+      Added translation for "Send as zero-fee transaction if possible"
+
+Greg Matthews (2):
+      Updated website domain to GOLDCOIN.ORG
+      Update README.md
+
+Stouse49 (95):
+      Rename man pages to goldcoin
+      Continue removing Segwit
+      Removing SegWit from tests
+      Remove SegWit from bench
+      Remove SegWit from Coin Control
+      Disable RegTest genesis block checks
+      Remove unused SegWit parameter in CreateNewBlock
+      Remove commented SegWit Code from mining, validation(#2)
+      Remove More SegWit from mining.cpp (#2)
+      Remove WITNESS_SCALE_FACTOR (previously set to 1).  Set Transaction Size to 100000 bytes.
+      Set maximum sigops to 40000 (same as 0.6 & Removing SegWit-Block Weight)
+      Set maximum allowed sigops to match GoldCoin 0.6
+      Change min protocol to that of GoldCoin 0.6
+      Fix compile errors:  remove shared_ptr, change CNode* to argument
+      Fix bug that caused blockchain to rewind on restart.  From deleting segwit code.
+      Update to GoldCoin Address versions (public/dumped private)
+      Add check for 51% activation for updating block times while mining
+      RegTest:  Initialize with new Genesis Block (valid hash), new message start, disabled forks (#7)
+      Set correct message start values for GoldCoin (#3)
+      Fix rawtransactions.py test (#3).  GoldCoin subsidy was 10000 not 50
+      Fix listsinceblock.py test (#3). GoldCoin subsidy was 10000 not 50
+      RPC Tests (#3):  Fix tests that failed due to incorrect coin values (10000 replaced 50)
+      RPC Tests (#3): Remove Segwit tests
+      Tests:  fix main_tests
+      Tests (#12):  Fix tests (rewards, addresses and private keys converted to GoldCoin)
+      Add NULLFAIL (non-segwit) back to signature checking
+      Tests (#12):  Fix tests involving NULLFAIL and DISCOURAGE_UPGRADABLE_NOPS
+      set high transaction fee to 1 coin, default transaction fee to 0.01 (same as Default Min Tx Fee for mining)
+      Tests(#12):  Fix transaction tests by adding some signature checks that were deleted while removing segwit.
+      Removing Segwit (#2):  Removing Block weight from miner and fixing tx virtual size
+      Unit Tests (#12): Fix miner_tests for block nonces and fees
+      Unit Tests (#12): Fix rpcnestedtests by putting the correct transaction id for the coinbase of the genesis block of GoldCoin.
+      Unit Tests (#12): Fix bitcoin-utils-test.  Mainly changing addresses to GoldCoin format.
+      Removing Segwit (#2): Unit Tests had remaining segwit tests
+      Removing Segwit (#2): remove unnecessary files for segwit unit tests.
+      RPC Tests (#3): fix fundrawtransaction.py by increasing most amounts by a factor of 10 
+	(since some amounts were 0.01 the same as the transaction fee) and watchonly_amount to equal 4 block rewards
+      RPC Tests(#3):  Fix broken compact block from removing segwit by using Bitcoin-ABC as a guide.  Fix p2p-compactblock test by borrowing from Bitcoin-ABC
+      RPC Tests(#3):  Fix p2p-fullblocktest by updating coinbase block reward, max block size and max block sigops.
+      RPC Tests(#3):  Fix nulldummy by removing segwit and using Bitcoin-ABC as a guide.
+      RPC Tests(#3):  Fix bump fee, which required a change to WALLET_INCREMENTAL_RELAY_FEE=default min transaction fee
+      RPC Tests(#3):  Fix zmq_test by fixing RewindBlockIndex to not rewinding the top block.  Copied from Bitcoin-ABC
+      RPC Tests(#3):  Fix 4 other tests by updating amounts based on block rewards and default tx fees
+      Filter out pyenv from Travis path to fix python3.6 Travis errors (#3)
+      RPC Tests (#3):  Disable testing on windows platforms by default to allow Travis Build and test to succeed
+      Removing Segwit (#2):  fix getblocktemplate for mining.  Also resolves some -extended three RPC Tests(#3) failures
+      RPC Tests (#3): fix txn_clone --mineblock (-extended test)
+      TestNet (#5):  Set up testnet with new Genesis Block and fork heights
+      Adjust default maximum fee to allow for 100 KB blocks
+      Set BIP34,65,66 activation height into the far future until these features are activated by the network.
+      TestNet (#5):  Add main testnet node for connections
+      Fees (#15):  Default fees set to 0.001 GLD.  Since this was the same as Litecoin 0.14.2, returned other values to Litecoin values, except for fall back fee.
+      Add more compatability with GoldCoin 0.7.5 transactions by allowing transactions to be verified (not require Low S until January 31, 2019) 
+	and free transactions to be transmitted, mined.
+      Add IsSuperMajority to detect BIP34, BIP66 and BIP65 based on block versions (#23)
+      Mining:  Fix BlockQueue function (#24)
+      Remove unused pfrom (CNode* as void*) in CValidationState
+      Remove RBF (#19) from man page, qa tests, rpc command, command line options and makefile.
+      Fees (#15):  Add checkbox to send zero-fee fee transactions by temporarily setting fSendFreeTransactions=true
+      TestNet(#5):  Update values for activating BIP34, 66 and 65 (#23)
+      v0.14.2.1
+      Set free transaction limit to 5% per block, currently 100KB of 2MB
+      remove 'if possible' from zero-fee transaction checkbox text
+      Update to Goldcoin icon for About menu
+      Mining: Queued Blocks (#24): set result successful if block is queued
+      About Dialog:  Change graphic to 0.7.5 image
+      Use median time when getting the min time for the next block, simialr to pre 51% defense
+      TestNet (#5): set magic numbers in mininode
+      RPC Tests (#3):  Disable new difficulty protocol for RegTest that changes difficulty adjustment from every 504 blocks to 2016 blocks.  This allows RPC Tests to pass.
+      fix warning about converting type int64_t to unsigned int
+      Update copyright year to 2018
+      build: fix qt distdir builds
+      Block Queuing (#24):  Add configuration file settings
+	* queueblocks (default:1 ON) - setting allows to disable block queuing
+	* reportqueuedblocks=<n> (default: 0 OFF) - setting allows different reporting of queued blocks for mining pools
+      Fees(#15): remove Send as zero fee transaction; allow for free transactions through manual setting fee to 0
+      Segwit (#2):  remove more leftovers including CStriptWitness
+      goldcoin-tx:  Fix compile error when removing segwit (#2)
+      Mainnet:  BIP34, 65 and 66:  set activation parameters
+      Mainnet:  add dnsseed.gldcoin.com
+      Set to release build
+      Update man pages for block queuing command line options
+      Use GoldCoin 0.7.5 default data directory locations
+      Fix typo with DEFAULT_BLOCK_PRIORITY_SIZE which should be 5% of the block size, not 20 times the block size.  Fix min relay fee.
+      Update default data dir paths
+      Update man page generator
+      Splash:  fix icon and text position.  Add about-icon source file
+      Update copyright years for GoldCoin (since 2013) and rename Goldcoin to GoldCoin
+      Update documentation for names and versions
+      Update links to GoldCoin Repository
+      Update man pages with correct GoldCoin repository links
+      Set relay fee back to 0.001 GLD
+      Update website links (www.goldcoin.org and GitHub)
+      Delay version 2 transactions until CSV is locked in.  Delay CSV time until May 1, 2018.
+      Shared Images:  Update to GoldCoin; change default Windows install dir
+      Gitian Keys:  Add key for Stouse49
+      Update GitHub links
+      Man pages: update GitHub and website links
+      Gitian:  Fix dir name
+
