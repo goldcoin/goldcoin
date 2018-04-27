@@ -113,9 +113,9 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 
 		/// debug print
 		LogPrintf("GetNextWorkRequired RETARGET\n");
-		LogPrintf("nTargetTimespan2 = %d    nActualTimespan = %d\n", nTargetTimespan2Current, nActualTimespan);
-		LogPrintf("Before: %08x  %s\n", pindexLast->nBits, arith_uint256().SetCompact(pindexLast->nBits).ToString().c_str());
-		LogPrintf("After:  %08x  %s\n", bnNew.GetCompact(), bnNew.ToString().c_str());
+        LogPrintf("nTargetTimespan2 = %d    nActualTimespan = %d\n", nTargetTimespan2Current, nActualTimespan);
+        LogPrintf("Before: %08x\n", pindexLast->nBits);
+        LogPrintf("After:  %08x\n", bnNew.GetCompact());
 
 	} else
 		if (nHeight > params.novemberFork) {
@@ -256,7 +256,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 				averageTime = total / 119;
 
 
-				LogPrintf(" GetNextWorkRequired(): Average time between blocks over the last 120 blocks is: %d \n", averageTime);
+                LogPrintf(" GetNextWorkRequired(): Average time between blocks: %d\n", averageTime);
 				/*  LogPrintf(" GetNextWorkRequired(): Total Time (over 119 time differences) is: %"PRI64d" \n",total);
 				    LogPrintf(" GetNextWorkRequired(): First Time (over 119 time differences) is: %"PRI64d" \n",last119TimeDifferences[0]);
 				    LogPrintf(" GetNextWorkRequired(): Last Time (over 119 time differences) is: %"PRI64d" \n",last119TimeDifferences[118]);
@@ -276,7 +276,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 							//If the average time between blocks is more than 1.8 minutes and medTime is less than 120 seconds (which would ordinarily prompt an increase in difficulty)
 							//limit the stepping to something reasonable(so we don't see massive difficulty spike followed by miners leaving in these situations).
 							medTime = 110;
-							LogPrintf(" \n Medium Time between blocks is too low compared to average time.. Attempting to Adjust.. \n ");
+                            LogPrintf("\n Medium Time between blocks is too low compared to average time.. Attempting to Adjust.. \n ");
 						}
 
 				} else {//julyFork2 changes here
@@ -314,7 +314,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 			if (nHeight > params.novemberFork2) {
 				if (medTime >= 120) {
 					//Check to see whether we are in a deadlock situation with the 51% defense system
-					LogPrintf(" \n Checking for DeadLocks \n");
+                    //LogPrintf(" \n Checking for DeadLocks \n");
 					int numTooClose = 0;
 					int index = 1;
 
@@ -329,7 +329,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 					if (numTooClose > 0) {
 						//We found 6 blocks that were solved in exactly 10 minutes
 						//Averaging 1.66 minutes per block
-						LogPrintf(" \n DeadLock detected and fixed - Difficulty Increased to avoid bleeding edge of defence system \n");
+                        LogPrintf("DeadLock detected and fixed - Difficulty Increased\n");
 
 						if (nHeight > params.julyFork2) {
 							medTime = 119;
@@ -490,8 +490,8 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 			/// debug print
 			LogPrintf("GetNextWorkRequired RETARGET\n");
 			LogPrintf("nTargetTimespan = %d    nActualTimespan = %d\n", nTargetTimespanCurrent, nActualTimespan);
-			LogPrintf("Before: %08x  %s\n", pindexLast->nBits, arith_uint256().SetCompact(pindexLast->nBits).ToString().c_str());
-			LogPrintf("After:  %08x  %s\n", bnNew.GetCompact(), bnNew.ToString().c_str());
+            LogPrintf("Before: %08x\n", pindexLast->nBits);
+            LogPrintf("After:  %08x\n", bnNew.GetCompact());
 
 		} else {
 			const_cast<Consensus::Params&>(params).hardForkedJuly = true;
@@ -566,8 +566,8 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 			/// debug print
 			LogPrintf("GetNextWorkRequired RETARGET\n");
 			LogPrintf("nTargetTimespan = %d    nActualTimespan = %d\n", nTargetTimespanCurrent, nActualTimespan);
-			LogPrintf("Before: %08x  %s\n", pindexLast->nBits, arith_uint256().SetCompact(pindexLast->nBits).ToString().c_str());
-			LogPrintf("After:  %08x  %s\n", bnNew.GetCompact(), bnNew.ToString().c_str());
+            LogPrintf("Before: %08x\n", pindexLast->nBits);
+            LogPrintf("After:  %08x\n", bnNew.GetCompact());
 		}
 
 	return bnNew.GetCompact();
