@@ -3238,7 +3238,7 @@ bool CheckBlock51Percent(CNode * pfrom, const CBlock& block, CValidationState& s
         //If your block is accepted or rejected its status will be returned once processblock has finished doing its thing
         if (!pfrom || (pfrom->addr.ToString().find("local") != std::string::npos || pfrom->addr.ToString().find("127.0.0.") != std::string::npos)) { //If its a local block
             //First we check if its a valid block
-            if (CBlockIndex * theBlock = GetPreviousBlock(block, 5)) // 4 + 1 = 5th previous block (total duration of 6 blocks)
+            if (CBlockIndex * theBlock = GetPreviousBlock(block, 5)) { // 4 + 1 = 5th previous block (total duration of 6 blocks)
                 if ((block.nTime - theBlock->nTime) < (60 * 10)) {
                     //The block is too far into the future but still not far enough to pass the 51% defense
                     //Thus it is useless and will be rejected
@@ -3282,6 +3282,7 @@ bool CheckBlock51Percent(CNode * pfrom, const CBlock& block, CValidationState& s
                         return state.DoS(0, false, REJECT_INVALID, "rejected-by-def", false, "block timestamp too far in the future and waiting on another block");
                     else return state.DoS(0, false, REJECT_INVALID, "rejected-by-def", false, "block timestamp too far in the future");
                 }
+            }
         } else {
              return state.DoS(10, false, REJECT_INVALID, "rejected-by-def", false, "block timestamp too far in the future");
         }
