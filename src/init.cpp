@@ -17,6 +17,7 @@
 #include "chain.h"
 #include "chainparams.h"
 #include "checkpoints.h"
+#include "checkpointsync.h"
 #include "compat/sanity.h"
 #include "consensus/validation.h"
 #include "httpserver.h"
@@ -1112,6 +1113,11 @@ bool AppInitParameterInteraction()
             nReportQueuedBlocks = GetArg("-reportqueuedblocks", DEFAULT_REPORTQUEUEDBLOCKS);
         }
     }
+    if (IsArgSet("-checkpointkey")) // Checkpoint master priv key
+    {
+        if (!SetCheckpointPrivKey(GetArg("-checkpointkey", "")))
+            return InitError(_("Unable to sign checkpoint, wrong checkpointkey?"));
+    }
     return true;
 }
 
@@ -1487,6 +1493,12 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
                         strLoadError = _("Unable to rewind the database to a pre-fork state. You will need to redownload the blockchain");
                         break;
                     }
+                }
+
+                uiInterface.InitMessage(_("Checking ACP ..."));
+                if (!CheckCheckpointPubKey()) {
+                    strLoadError = _("Checking ACP pubkey failed");
+                    break;
                 }
 
                 uiInterface.InitMessage(_("Verifying blocks..."));
