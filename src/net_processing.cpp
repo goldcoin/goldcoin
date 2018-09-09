@@ -12,6 +12,7 @@
 #include "arith_uint256.h"
 #include "blockencodings.h"
 #include "chainparams.h"
+#include "checkpointsync.h"
 #include "consensus/validation.h"
 #include "hash.h"
 #include "init.h"
@@ -1330,6 +1331,13 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             connman.MarkAddressGood(pfrom->addr);
         }
 
+        // Relay sync-checkpoint
+        {
+            LOCK(cs_hashSyncCheckpoint);
+            if (!checkpointMessage.IsNull())
+                checkpointMessage.RelayTo(pfrom);
+        }
+
         std::string remoteAddr;
         if (fLogIPs)
             remoteAddr = ", peeraddr=" + pfrom->addr.ToString();
@@ -1348,6 +1356,9 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             CDataStream finalAlert(ParseHex("5c0100000015f7675900000000ffffff7f00000000ffffff7ffeffff7f0000000000ffffff7f00ffffff7f002f555247454e543a20416c657274206b657920636f6d70726f6d697365642c2075706772616465207265717569726564004630440220405f7e7572b176f3316d4e12deab75ad4ff978844f7a7bcd5ed06f6aa094eb6602207880fcc07d0a78e0f46f188d115e04ed4ad48980ea3572cb0e0cb97921048095"), SER_NETWORK, PROTOCOL_VERSION);
             connman.PushMessage(pfrom, CNetMsgMaker(nSendVersion).Make("alert", finalAlert));
         }
+
+        if (!IsInitialBlockDownload())
+            AskForPendingSyncCheckpoint(pfrom);
 
         // Feeler connections exist only to verify if address is online.
         if (pfrom->fFeeler) {
@@ -2518,6 +2529,24 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         if (bPingFinished) {
             pfrom->nPingNonceSent = 0;
         }
+    }
+
+    if (strCommand == NetMsgType::CHECKPOINT) // Synchronized checkpoint
+    {
+        CSyncCheckpoint checkpoint;
+        vRecv >> checkpoint;
+
+        if (checkpoint.ProcessSyncCheckpoint(pfrom))
+        {
+            LogPrintf("%s: hashCheckpoint=%s\n", __func__, checkpoint.hashCheckpoint.ToString().c_str());
+
+            // Relay checkpoint
+            pfrom->hashCheckpointKnown = checkpoint.hashCheckpoint;
+            g_connman->ForEachNode([checkpoint](CNode* pnode) {
+                checkpoint.RelayTo(pnode);
+            });
+        }
+        return true;
     }
 
 

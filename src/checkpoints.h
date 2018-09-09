@@ -32,6 +32,9 @@ bool IsBadpoint(const CBadpointData& data, int64_t height, uint256 hash);
 //! Add an in-memory badpoint
 void AddBadPoint(const CBadpointData& data, int64_t height, uint256 hash);
 
+//! Returns the block hash of latest hardened checkpoint, if empty genesis block returned
+uint256 GetLatestHardenedCheckpoint(const CCheckpointData& data);
+
 } //namespace Checkpoints
 
 #endif // BITCOIN_CHECKPOINTS_H

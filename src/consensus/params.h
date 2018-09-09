@@ -93,6 +93,7 @@ struct Params {
     int nEnforceBlockUpgradeMajority;
     int nRejectBlockOutdatedMajority;
     int nToCheckBlockUpgradeMajority;
+    std::string checkpointPubKey;
 };
 } // namespace Consensus
 

@@ -53,4 +53,14 @@ namespace Checkpoints {
         const_cast<MapCheckpoints&>(data.mapBadpoints).insert(std::pair<int64_t,uint256>(height, hash));
     }
 
+    uint256 GetLatestHardenedCheckpoint(const CCheckpointData& data)
+    {
+        const MapCheckpoints& checkpoints = data.mapCheckpoints;
+
+        if (checkpoints.empty())
+            return Params().GetConsensus().hashGenesisBlock;
+
+        return (checkpoints.rbegin()->second);
+    }
+
 } // namespace Checkpoints

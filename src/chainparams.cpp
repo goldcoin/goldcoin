@@ -85,9 +85,9 @@ public:
         consensus.nEnforceBlockUpgradeMajority = 1500;
         consensus.nRejectBlockOutdatedMajority = 1900;
         consensus.nToCheckBlockUpgradeMajority = 2000;
-        consensus.BIP34Height = 10000000;
-        consensus.BIP65Height = 10000000;
-        consensus.BIP66Height = 10000000;
+        consensus.BIP34Height = 815135;
+        consensus.BIP65Height = 815135;
+        consensus.BIP66Height = 815135;
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
         consensus.nPowTargetTimespan = 2.0 * 60 * 60; // Difficulty changes every 60 blocks
         consensus.nPowTargetSpacing = 2.0 * 60;
@@ -105,7 +105,7 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nTimeout = 1556668800; // Wednesday, May 1, 2019 12:00:00 AM GMT
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0x00");
+        consensus.nMinimumChainWork = uint256S("0000000000000000000000000000000000000000000000000b6617bc6a536252");
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -182,6 +182,7 @@ public:
     (     300000, uint256S("0xe81d2c84c9e7332b35788c1166a0b2c9a34be4d17f08f44a9ba2f5edd82dc300"))
     (     372000, uint256S("0xe3d2857896d0f52ac502eb056ac23f416cb7eddb0a6eba68785b940cca8257ee"))
     (     564000, uint256S("0x9d67ce445d6b513074ef061066bb331871901b953b3bdeaa4dc0a4043cf189f8"))
+    (     815135, uint256S("0x7a577f2f264db62a7ce9a99b2c95cf9af44c4fb8067394f1ab4cd0b5da9b49f2"))
     };
 
         chainTxData = ChainTxData{
@@ -191,7 +192,9 @@ public:
                     //   (the tx=... number in the SetBestChain debug.log lines)
             0.06     // * estimated number of transactions per second after that timestamp
         };
-    }
+        consensus.checkpointPubKey = "03fa3202fcecbb8efb084d92655e6300bef04753de0831439b74e88c6e52777ef5";
+
+    }    
 };
 static CMainParams mainParams;
 #include "arith_uint256.h"
@@ -289,6 +292,8 @@ public:
             0,
             0
         };
+        consensus.checkpointPubKey = "0383485a411c6b9a259af83d732a759dcab948931c74e55458f9489c411d0a62b0";
+
 
     }
 };
@@ -379,6 +384,8 @@ public:
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x35)(0x87)(0xCF).convert_to_container<std::vector<unsigned char> >();
         base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x35)(0x83)(0x94).convert_to_container<std::vector<unsigned char> >();
+        consensus.checkpointPubKey = "0383485a411c6b9a259af83d732a759dcab948931c74e55458f9489c411d0a62b0";
+
     }
 
     void UpdateBIP9Parameters(Consensus::DeploymentPos d, int64_t nStartTime, int64_t nTimeout)

@@ -220,3 +220,23 @@ bool CBlockTreeDB::LoadBlockIndexGuts(boost::function<CBlockIndex*(const uint256
 
     return true;
 }
+
+bool CBlockTreeDB::ReadSyncCheckpoint(uint256& hashCheckpoint)
+{
+    return Read(std::string("hashSyncCheckpoint"), hashCheckpoint);
+}
+
+bool CBlockTreeDB::WriteSyncCheckpoint(uint256 hashCheckpoint)
+{
+    return Write(std::string("hashSyncCheckpoint"), hashCheckpoint);
+}
+
+bool CBlockTreeDB::ReadCheckpointPubKey(std::string& strPubKey)
+{
+    return Read(std::string("strCheckpointPubKey"), strPubKey);
+}
+
+bool CBlockTreeDB::WriteCheckpointPubKey(const std::string& strPubKey)
+{
+    return Write(std::string("strCheckpointPubKey"), strPubKey);
+}

@@ -10,6 +10,7 @@
 #include "clientversion.h"
 #include "util.h"
 #include "warnings.h"
+#include "checkpointsync.h"
 
 CCriticalSection cs_warnings;
 std::string strMiscWarning;
@@ -59,6 +60,13 @@ std::string GetWarnings(const std::string& strFor)
         strStatusBar = "This is a pre-release test build - use at your own risk - do not use for mining or merchant applications";
         strGUI = _("This is a pre-release test build - use at your own risk - do not use for mining or merchant applications");
     }
+
+    // Checkpoint warning
+    /*if (strCheckpointWarning != "")
+    {
+        strStatusBar = strCheckpointWarning;
+        strGUI += (strGUI.empty() ? "" : uiAlertSeperator) + strCheckpointWarning;
+    }*/
 
     if (GetBoolArg("-testsafemode", DEFAULT_TESTSAFEMODE))
         strStatusBar = strRPC = strGUI = "testsafemode enabled";

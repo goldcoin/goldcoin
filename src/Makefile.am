@@ -86,6 +86,7 @@ BITCOIN_CORE_H = \
   chainparamsbase.h \
   chainparamsseeds.h \
   checkpoints.h \
+  checkpointsync.h \
   checkqueue.h \
   clientversion.h \
   coins.h \
@@ -103,6 +104,7 @@ BITCOIN_CORE_H = \
   indirectmap.h \
   init.h \
   key.h \
+  key_io.h \
   keystore.h \
   dbwrapper.h \
   limitedmap.h \
@@ -180,6 +182,7 @@ libbitcoin_server_a_SOURCES = \
   blockencodings.cpp \
   chain.cpp \
   checkpoints.cpp \
+  checkpointsync.cpp \
   httprpc.cpp \
   httpserver.cpp \
   init.cpp \
@@ -303,6 +306,7 @@ libbitcoin_common_a_SOURCES = \
   core_read.cpp \
   core_write.cpp \
   key.cpp \
+  key_io.cpp \
   keystore.cpp \
   netaddress.cpp \
   netbase.cpp \
