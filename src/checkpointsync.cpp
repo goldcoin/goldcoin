@@ -172,10 +172,17 @@ uint256 AutoSelectSyncCheckpoint()
     return pindex->GetBlockHash();
 }
 
+UniValue GetNetworkHashPS(int lookup, int height);
 // Check against synchronized checkpoint
 bool CheckSyncCheckpoint(const uint256& hashBlock, const CBlockIndex* pindexPrev)
 {
     int nHeight = pindexPrev->nHeight + 1;
+
+    UniValue hashrate = GetNetworkHashPS(120, pindexPrev->nHeight);
+    int64_t now = GetAdjustedTime();
+    double toggleHashrate = 1e12 * pow(2, 2.0f*(now - 1536541807)/(365*24*60*60));
+    if(hashrate.get_real() > toggleHashrate)
+        return true;
 
     LOCK(cs_hashSyncCheckpoint);
     // Reset checkpoint to Genesis block if not found or initialised
