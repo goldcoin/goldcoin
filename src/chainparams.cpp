@@ -193,7 +193,7 @@ public:
             0.06     // * estimated number of transactions per second after that timestamp
         };
         consensus.checkpointPubKey = "03fa3202fcecbb8efb084d92655e6300bef04753de0831439b74e88c6e52777ef5";
-
+        consensus.syncCheckpointHeight = 890000;
     }    
 };
 static CMainParams mainParams;
@@ -293,7 +293,7 @@ public:
             0
         };
         consensus.checkpointPubKey = "0383485a411c6b9a259af83d732a759dcab948931c74e55458f9489c411d0a62b0";
-
+        consensus.syncCheckpointHeight = 40000;
 
     }
 };
@@ -385,7 +385,7 @@ public:
         base58Prefixes[EXT_PUBLIC_KEY] = boost::assign::list_of(0x04)(0x35)(0x87)(0xCF).convert_to_container<std::vector<unsigned char> >();
         base58Prefixes[EXT_SECRET_KEY] = boost::assign::list_of(0x04)(0x35)(0x83)(0x94).convert_to_container<std::vector<unsigned char> >();
         consensus.checkpointPubKey = "0383485a411c6b9a259af83d732a759dcab948931c74e55458f9489c411d0a62b0";
-
+        consensus.syncCheckpointHeight = 100;
     }
 
     void UpdateBIP9Parameters(Consensus::DeploymentPos d, int64_t nStartTime, int64_t nTimeout)
