@@ -94,6 +94,7 @@ struct Params {
     int nRejectBlockOutdatedMajority;
     int nToCheckBlockUpgradeMajority;
     std::string checkpointPubKey;
+    int syncCheckpointHeight;
 };
 } // namespace Consensus
 
