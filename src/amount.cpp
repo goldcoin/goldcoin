@@ -10,7 +10,7 @@
 
 #include "tinyformat.h"
 
-const std::string CURRENCY_UNIT = "GLD";
+const std::string CURRENCY_UNIT = "GLC";
 
 CFeeRate::CFeeRate(const CAmount& nFeePaid, size_t nBytes_)
 {
