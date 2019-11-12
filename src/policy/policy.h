@@ -1,7 +1,7 @@
 // Copyright (c) 2007-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2015 The Bitcoin Core developers
 // Copyright (c) 2011-2017 The Litecoin Core developers
-// Copyright (c) 2013-2018 The GoldCoin Core developers
+// Copyright (c) 2013-2018 The Goldcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -51,7 +51,7 @@ static const unsigned int DUST_RELAY_TX_FEE = 100000;
  * Standard script verification flags that standard transactions will comply
  * with. However scripts violating these flags may still be present in valid
  * blocks and we must accept those blocks.  This Compatability set of flags
- * will allow GoldCoin 0.7.5 transactions to be valid in the mempool and mined.
+ * will allow Goldcoin 0.7.5 transactions to be valid in the mempool and mined.
  */
 static const unsigned int STANDARD_SCRIPT_VERIFY_FLAGS_COMPAT = MANDATORY_SCRIPT_VERIFY_FLAGS |
                                                          SCRIPT_VERIFY_DERSIG |
@@ -82,7 +82,7 @@ static const unsigned int STANDARD_SCRIPT_VERIFY_FLAGS = MANDATORY_SCRIPT_VERIFY
                                                          SCRIPT_VERIFY_LOW_S;
 /**
  * Returns the proper set of verification flags to maintain compatibility with
- * older GoldCoin transactions until January 31, 2019
+ * older Goldcoin transactions until January 31, 2019
  */
 int64_t GetTime();
 //1556668800; // Wednesday, May 1, 2019 12:00:00 AM GMT

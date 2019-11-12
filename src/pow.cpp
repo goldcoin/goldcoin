@@ -1,7 +1,7 @@
 // Copyright (c) 2007-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2015 The Bitcoin Core developers
 // Copyright (c) 2011-2017 The Litecoin Core developers
-// Copyright (c) 2013-2018 The GoldCoin Core developers
+// Copyright (c) 2013-2018 The Goldcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -72,7 +72,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 			return pindexLast->nBits;
 		}
 
-		// GoldCoin (GLC): This fixes an issue where a 51% attack can change difficulty at will.
+		// Goldcoin (GLC): This fixes an issue where a 51% attack can change difficulty at will.
 		// Go back the full period unless it's the first retarget after genesis. Code courtesy of Art Forz
 		int blockstogoback = nInterval - 1;
 
@@ -151,7 +151,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 				return pindexLast->nBits;
 			}
 
-			// GoldCoin (GLC): This fixes an issue where a 51% attack can change difficulty at will.
+			// Goldcoin (GLC): This fixes an issue where a 51% attack can change difficulty at will.
 			// Go back the full period unless it's the first retarget after genesis. Code courtesy of Art Forz
 			int blockstogoback = nInterval - 1;
 
@@ -524,7 +524,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 				return pindexLast->nBits;
 			}
 
-			// GoldCoin (GLC): This fixes an issue where a 51% attack can change difficulty at will.
+			// Goldcoin (GLC): This fixes an issue where a 51% attack can change difficulty at will.
 			// Go back the full period unless it's the first retarget after genesis. Code courtesy of Art Forz
 			int blockstogoback = nInterval - 1;
 

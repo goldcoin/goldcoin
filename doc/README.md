@@ -1,15 +1,15 @@
-GoldCoin Core 0.14.4
+Goldcoin Core 0.14.4
 =====================
 
 Setup
 ---------------------
-GoldCoin Core is the original GoldCoin client and it builds the backbone of the network. However, it downloads and stores the entire history of GoldCoin transactions (which is currently several GBs); depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more.
+Goldcoin Core is the original Goldcoin client and it builds the backbone of the network. However, it downloads and stores the entire history of Goldcoin transactions (which is currently several GBs); depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more.
 
-To download GoldCoin Core, visit [goldcoin.org](https://goldcoin.org).
+To download Goldcoin Core, visit [goldcoin.org](https://goldcoin.org).
 
 Running
 ---------------------
-The following are some helpful notes on how to run GoldCoin on your native platform.
+The following are some helpful notes on how to run Goldcoin on your native platform.
 
 ### Unix
 
@@ -24,17 +24,17 @@ Unpack the files into a directory, and then run goldcoin-qt.exe.
 
 ### OS X
 
-Drag GoldCoin-Core to your applications folder, and then run GoldCoin-Core.
+Drag Goldcoin-Core to your applications folder, and then run Goldcoin-Core.
 
 ### Need Help?
 
-* Get help on the forum [GoldCoin Talk](https://www.goldcointalk.org/)
+* Get help on the forum [Goldcoin Talk](https://www.goldcointalk.org/)
 for help and more information.
 * Ask for help on [#goldcoin](http://webchat.freenode.net?channels=goldcoin) on Freenode. If you don't have an IRC client use [webchat here](http://webchat.freenode.net?channels=goldcoin).
 
 Building
 ---------------------
-The following are developer notes on how to build GoldCoin on your native platform. They are not complete guides, but include notes on the necessary libraries, compile flags, etc.
+The following are developer notes on how to build Goldcoin on your native platform. They are not complete guides, but include notes on the necessary libraries, compile flags, etc.
 
 - [OS X Build Notes](build-osx.md)
 - [Unix Build Notes](build-unix.md)
@@ -44,7 +44,7 @@ The following are developer notes on how to build GoldCoin on your native platfo
 
 Development
 ---------------------
-The GoldCoin repo's [root README](/README.md) contains relevant information on the development process and automated testing.
+The Goldcoin repo's [root README](/README.md) contains relevant information on the development process and automated testing.
 
 - [Developer Notes](developer-notes.md)
 - [Release Notes](release-notes.md)
@@ -61,7 +61,7 @@ The GoldCoin repo's [root README](/README.md) contains relevant information on t
 
 ### Resources
 * Discuss on the [GoldCoinTalk](https://goldcointalk.org/) forums.
-* Discuss general GoldCoin development on #goldcoin-dev on Freenode. If you don't have an IRC client use [webchat here](http://webchat.freenode.net/?channels=goldcoin-dev).
+* Discuss general Goldcoin development on #goldcoin-dev on Freenode. If you don't have an IRC client use [webchat here](http://webchat.freenode.net/?channels=goldcoin-dev).
 
 ### Miscellaneous
 - [Assets Attribution](assets-attribution.md)
