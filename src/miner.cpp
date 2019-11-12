@@ -86,10 +86,10 @@ BlockAssembler::BlockAssembler(const CChainParams& _chainparams)
     // If neither -blockmaxsize or -blockmaxweight is given, limit to DEFAULT_BLOCK_MAX_*
     // If only one is given, only restrict the specified resource.
     // If both are given, restrict both.
-    nBlockMaxSize = DEFAULT_BLOCK_MAX_SIZE;
+    nBlockMaxSize = GetDefaultBlockMaxSize(fGIP1ActiveAtTip);
 
     if (IsArgSet("-blockmaxsize")) {
-        nBlockMaxSize = GetArg("-blockmaxsize", DEFAULT_BLOCK_MAX_SIZE);
+        nBlockMaxSize = GetArg("-blockmaxsize", GetDefaultBlockMaxSize(fGIP1ActiveAtTip));
     }
     if (IsArgSet("-blockmintxfee")) {
         CAmount n = 0;
@@ -515,7 +515,7 @@ void BlockAssembler::addPriorityTxs()
 {
     // How much of the block should be dedicated to high-priority transactions,
     // included regardless of the fees they pay
-    unsigned int nBlockPrioritySize = GetArg("-blockprioritysize", DEFAULT_BLOCK_PRIORITY_SIZE);
+    unsigned int nBlockPrioritySize = GetArg("-blockprioritysize", GetDefaultBlockPrioritySize(fGIP1ActiveAtTip));
     nBlockPrioritySize = std::min(nBlockMaxSize, nBlockPrioritySize);
 
     if (nBlockPrioritySize == 0) {
