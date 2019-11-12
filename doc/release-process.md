@@ -31,7 +31,7 @@ If you're using the automated script (found in [contrib/gitian-build.sh](/contri
 Check out the source code in the following directory hierarchy.
 
     cd /path/to/your/toplevel/build
-    git clone https://github.com/goldcoin/gitian.sigs.GLD.git
+    git clone https://github.com/goldcoin/gitian.sigs.GLC.git
     git clone https://github.com/goldcoin/goldcoin-detached-sigs.git
     git clone https://github.com/devrandom/gitian-builder.git
     git clone https://github.com/goldcoin/goldcoin.git
@@ -82,9 +82,9 @@ Setup Gitian descriptors:
     git checkout v${VERSION}
     popd
 
-Ensure your gitian.sigs.GLD are up-to-date if you wish to gverify your builds against other Gitian signatures.
+Ensure your gitian.sigs.GLC are up-to-date if you wish to gverify your builds against other Gitian signatures.
 
-    pushd ./gitian.sigs.GLD
+    pushd ./gitian.sigs.GLC
     git pull
     popd
 
@@ -126,16 +126,16 @@ The gbuild invocations below <b>DO NOT DO THIS</b> by default.
 
     pushd ./gitian-builder
     ./bin/gbuild --memory 3000 --commit goldcoin=v${VERSION} ../goldcoin/contrib/gitian-descriptors/gitian-linux.yml
-    ./bin/gsign --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs.GLD/ ../goldcoin/contrib/gitian-descriptors/gitian-linux.yml
+    ./bin/gsign --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs.GLC/ ../goldcoin/contrib/gitian-descriptors/gitian-linux.yml
     mv build/out/goldcoin-*.tar.gz build/out/src/goldcoin-*.tar.gz ../
 
     ./bin/gbuild --memory 3000 --commit goldcoin=v${VERSION} ../goldcoin/contrib/gitian-descriptors/gitian-win.yml
-    ./bin/gsign --signer $SIGNER --release ${VERSION}-win-unsigned --destination ../gitian.sigs.GLD/ ../goldcoin/contrib/gitian-descriptors/gitian-win.yml
+    ./bin/gsign --signer $SIGNER --release ${VERSION}-win-unsigned --destination ../gitian.sigs.GLC/ ../goldcoin/contrib/gitian-descriptors/gitian-win.yml
     mv build/out/goldcoin-*-win-unsigned.tar.gz inputs/goldcoin-win-unsigned.tar.gz
     mv build/out/goldcoin-*.zip build/out/goldcoin-*.exe ../
 
     ./bin/gbuild --memory 3000 --commit goldcoin=v${VERSION} ../goldcoin/contrib/gitian-descriptors/gitian-osx.yml
-    ./bin/gsign --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs.GLD/ ../goldcoin/contrib/gitian-descriptors/gitian-osx.yml
+    ./bin/gsign --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs.GLC/ ../goldcoin/contrib/gitian-descriptors/gitian-osx.yml
     mv build/out/goldcoin-*-osx-unsigned.tar.gz inputs/goldcoin-osx-unsigned.tar.gz
     mv build/out/goldcoin-*.tar.gz build/out/goldcoin-*.dmg ../
     popd
@@ -146,7 +146,7 @@ Build output expected:
   2. linux 32-bit and 64-bit dist tarballs (`goldcoin-${VERSION}-linux[32|64].tar.gz`)
   3. windows 32-bit and 64-bit unsigned installers and dist zips (`goldcoin-${VERSION}-win[32|64]-setup-unsigned.exe`, `goldcoin-${VERSION}-win[32|64].zip`)
   4. OS X unsigned installer and dist tarball (`goldcoin-${VERSION}-osx-unsigned.dmg`, `goldcoin-${VERSION}-osx64.tar.gz`)
-  5. Gitian signatures (in `gitian.sigs.GLD/${VERSION}-<linux|{win,osx}-unsigned>/(your Gitian key)/`)
+  5. Gitian signatures (in `gitian.sigs.GLC/${VERSION}-<linux|{win,osx}-unsigned>/(your Gitian key)/`)
 
 ### Verify other gitian builders signatures to your own. (Optional)
 
@@ -158,21 +158,21 @@ Add other gitian builders keys to your gpg keyring, and/or refresh keys.
 Verify the signatures
 
     pushd ./gitian-builder
-    ./bin/gverify -v -d ../gitian.sigs.GLD/ -r ${VERSION}-linux ../goldcoin/contrib/gitian-descriptors/gitian-linux.yml
-    ./bin/gverify -v -d ../gitian.sigs.GLD/ -r ${VERSION}-win-unsigned ../goldcoin/contrib/gitian-descriptors/gitian-win.yml
-    ./bin/gverify -v -d ../gitian.sigs.GLD/ -r ${VERSION}-osx-unsigned ../goldcoin/contrib/gitian-descriptors/gitian-osx.yml
+    ./bin/gverify -v -d ../gitian.sigs.GLC/ -r ${VERSION}-linux ../goldcoin/contrib/gitian-descriptors/gitian-linux.yml
+    ./bin/gverify -v -d ../gitian.sigs.GLC/ -r ${VERSION}-win-unsigned ../goldcoin/contrib/gitian-descriptors/gitian-win.yml
+    ./bin/gverify -v -d ../gitian.sigs.GLC/ -r ${VERSION}-osx-unsigned ../goldcoin/contrib/gitian-descriptors/gitian-osx.yml
     popd
 
 ### Next steps:
 
-Commit your signature to gitian.sigs.GLD:
+Commit your signature to gitian.sigs.GLC:
 
-    pushd gitian.sigs.GLD
+    pushd gitian.sigs.GLC
     git add ${VERSION}-linux/${SIGNER}
     git add ${VERSION}-win-unsigned/${SIGNER}
     git add ${VERSION}-osx-unsigned/${SIGNER}
     git commit -a
-    git push  # Assuming you can push to the gitian.sigs.GLD tree
+    git push  # Assuming you can push to the gitian.sigs.GLC tree
     popd
 
 Wait for Windows/OS X detached signatures:
@@ -184,8 +184,8 @@ Create (and optionally verify) the signed OS X binary:
 
     pushd ./gitian-builder
     ./bin/gbuild -i --commit signature=v${VERSION} ../goldcoin/contrib/gitian-descriptors/gitian-osx-signer.yml
-    ./bin/gsign --signer $SIGNER --release ${VERSION}-osx-signed --destination ../gitian.sigs.GLD/ ../goldcoin/contrib/gitian-descriptors/gitian-osx-signer.yml
-    ./bin/gverify -v -d ../gitian.sigs.GLD/ -r ${VERSION}-osx-signed ../goldcoin/contrib/gitian-descriptors/gitian-osx-signer.yml
+    ./bin/gsign --signer $SIGNER --release ${VERSION}-osx-signed --destination ../gitian.sigs.GLC/ ../goldcoin/contrib/gitian-descriptors/gitian-osx-signer.yml
+    ./bin/gverify -v -d ../gitian.sigs.GLC/ -r ${VERSION}-osx-signed ../goldcoin/contrib/gitian-descriptors/gitian-osx-signer.yml
     mv build/out/goldcoin-osx-signed.dmg ../goldcoin-${VERSION}-osx.dmg
     popd
 
@@ -193,19 +193,19 @@ Create (and optionally verify) the signed Windows binaries:
 
     pushd ./gitian-builder
     ./bin/gbuild -i --commit signature=v${VERSION} ../goldcoin/contrib/gitian-descriptors/gitian-win-signer.yml
-    ./bin/gsign --signer $SIGNER --release ${VERSION}-win-signed --destination ../gitian.sigs.GLD/ ../goldcoin/contrib/gitian-descriptors/gitian-win-signer.yml
-    ./bin/gverify -v -d ../gitian.sigs.GLD/ -r ${VERSION}-win-signed ../goldcoin/contrib/gitian-descriptors/gitian-win-signer.yml
+    ./bin/gsign --signer $SIGNER --release ${VERSION}-win-signed --destination ../gitian.sigs.GLC/ ../goldcoin/contrib/gitian-descriptors/gitian-win-signer.yml
+    ./bin/gverify -v -d ../gitian.sigs.GLC/ -r ${VERSION}-win-signed ../goldcoin/contrib/gitian-descriptors/gitian-win-signer.yml
     mv build/out/goldcoin-*win64-setup.exe ../goldcoin-${VERSION}-win64-setup.exe
     mv build/out/goldcoin-*win32-setup.exe ../goldcoin-${VERSION}-win32-setup.exe
     popd
 
 Commit your signature for the signed OS X/Windows binaries:
 
-    pushd gitian.sigs.GLD
+    pushd gitian.sigs.GLC
     git add ${VERSION}-osx-signed/${SIGNER}
     git add ${VERSION}-win-signed/${SIGNER}
     git commit -a
-    git push  # Assuming you can push to the gitian.sigs.GLD tree
+    git push  # Assuming you can push to the gitian.sigs.GLC tree
     popd
 
 ### After 3 or more people have gitian-built and their results match:
