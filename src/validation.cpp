@@ -1,7 +1,7 @@
 // Copyright (c) 2007-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2015 The Bitcoin Core developers
 // Copyright (c) 2011-2017 The Litecoin Core developers
-// Copyright (c) 2013-2018 The GoldCoin Core developers
+// Copyright (c) 2013-2018 The Goldcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -98,7 +98,7 @@ static void CheckBlockIndex(const Consensus::Params& consensusParams);
 /** Constant stuff for coinbase transactions we create: */
 CScript COINBASE_FLAGS;
 
-const std::string strMessageMagic = "GoldCoin (GLD) Signed Message:\n";
+const std::string strMessageMagic = "Goldcoin (GLD) Signed Message:\n";
 
 //Schedule CheckPoint Block
 //0 if no checkpoint is to be done.
