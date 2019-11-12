@@ -72,7 +72,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 			return pindexLast->nBits;
 		}
 
-		// GoldCoin (GLD): This fixes an issue where a 51% attack can change difficulty at will.
+		// GoldCoin (GLC): This fixes an issue where a 51% attack can change difficulty at will.
 		// Go back the full period unless it's the first retarget after genesis. Code courtesy of Art Forz
 		int blockstogoback = nInterval - 1;
 
@@ -151,7 +151,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 				return pindexLast->nBits;
 			}
 
-			// GoldCoin (GLD): This fixes an issue where a 51% attack can change difficulty at will.
+			// GoldCoin (GLC): This fixes an issue where a 51% attack can change difficulty at will.
 			// Go back the full period unless it's the first retarget after genesis. Code courtesy of Art Forz
 			int blockstogoback = nInterval - 1;
 
@@ -524,7 +524,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 				return pindexLast->nBits;
 			}
 
-			// GoldCoin (GLD): This fixes an issue where a 51% attack can change difficulty at will.
+			// GoldCoin (GLC): This fixes an issue where a 51% attack can change difficulty at will.
 			// Go back the full period unless it's the first retarget after genesis. Code courtesy of Art Forz
 			int blockstogoback = nInterval - 1;
 

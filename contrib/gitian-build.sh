@@ -31,7 +31,7 @@ commitFiles=true
 read -d '' usage <<- EOF
 Usage: $scriptName [-c|u|v|b|s|B|o|h|j|m|] signer version
 
-Run this script from the directory containing the goldcoin, gitian-builder, gitian.sigs.GLD, and goldcoin-detached-sigs.
+Run this script from the directory containing the goldcoin, gitian-builder, gitian.sigs.GLC, and goldcoin-detached-sigs.
 
 Arguments:
 signer          GPG signer to sign each build assert file
@@ -232,7 +232,7 @@ echo ${COMMIT}
 if [[ $setup = true ]]
 then
     sudo apt-get install ruby apache2 git apt-cacher-ng python-vm-builder qemu-kvm qemu-utils
-    git clone https://github.com/goldcoin/gitian.sigs.GLD.git
+    git clone https://github.com/goldcoin/gitian.sigs.GLC.git
     git clone https://github.com/goldcoin/goldcoin-detached-sigs.git
     git clone https://github.com/devrandom/gitian-builder.git
     pushd ./gitian-builder
@@ -275,7 +275,7 @@ then
 	    echo "Compiling ${VERSION} Linux"
 	    echo ""
 	    ./bin/gbuild -j ${proc} -m ${mem} --commit goldcoin=${COMMIT} --url goldcoin=${url} ../goldcoin/contrib/gitian-descriptors/gitian-linux.yml
-	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs.GLD/ ../goldcoin/contrib/gitian-descriptors/gitian-linux.yml
+	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-linux --destination ../gitian.sigs.GLC/ ../goldcoin/contrib/gitian-descriptors/gitian-linux.yml
 	    mv build/out/goldcoin-*.tar.gz build/out/src/goldcoin-*.tar.gz ../goldcoin-binaries/${VERSION}
 	fi
 	# Windows
@@ -285,7 +285,7 @@ then
 	    echo "Compiling ${VERSION} Windows"
 	    echo ""
 	    ./bin/gbuild -j ${proc} -m ${mem} --commit goldcoin=${COMMIT} --url goldcoin=${url} ../goldcoin/contrib/gitian-descriptors/gitian-win.yml
-	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-win-unsigned --destination ../gitian.sigs.GLD/ ../goldcoin/contrib/gitian-descriptors/gitian-win.yml
+	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-win-unsigned --destination ../gitian.sigs.GLC/ ../goldcoin/contrib/gitian-descriptors/gitian-win.yml
 	    mv build/out/goldcoin-*-win-unsigned.tar.gz inputs/goldcoin-win-unsigned.tar.gz
 	    mv build/out/goldcoin-*.zip build/out/goldcoin-*.exe ../goldcoin-binaries/${VERSION}
 	fi
@@ -296,7 +296,7 @@ then
 	    echo "Compiling ${VERSION} Mac OSX"
 	    echo ""
 	    ./bin/gbuild -j ${proc} -m ${mem} --commit goldcoin=${COMMIT} --url goldcoin=${url} ../goldcoin/contrib/gitian-descriptors/gitian-osx.yml
-	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs.GLD/ ../goldcoin/contrib/gitian-descriptors/gitian-osx.yml
+	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-osx-unsigned --destination ../gitian.sigs.GLC/ ../goldcoin/contrib/gitian-descriptors/gitian-osx.yml
 	    mv build/out/goldcoin-*-osx-unsigned.tar.gz inputs/goldcoin-osx-unsigned.tar.gz
 	    mv build/out/goldcoin-*.tar.gz build/out/goldcoin-*.dmg ../goldcoin-binaries/${VERSION}
 	fi
@@ -308,7 +308,7 @@ then
             echo ""
             echo "Committing ${VERSION} Unsigned Sigs"
             echo ""
-            pushd gitian.sigs.GLD
+            pushd gitian.sigs.GLC
             git add ${VERSION}-linux/${SIGNER}
             git add ${VERSION}-win-unsigned/${SIGNER}
             git add ${VERSION}-osx-unsigned/${SIGNER}
@@ -325,27 +325,27 @@ then
 	echo ""
 	echo "Verifying v${VERSION} Linux"
 	echo ""
-	./bin/gverify -v -d ../gitian.sigs.GLD/ -r ${VERSION}-linux ../goldcoin/contrib/gitian-descriptors/gitian-linux.yml
+	./bin/gverify -v -d ../gitian.sigs.GLC/ -r ${VERSION}-linux ../goldcoin/contrib/gitian-descriptors/gitian-linux.yml
 	# Windows
 	echo ""
 	echo "Verifying v${VERSION} Windows"
 	echo ""
-	./bin/gverify -v -d ../gitian.sigs.GLD/ -r ${VERSION}-win-unsigned ../goldcoin/contrib/gitian-descriptors/gitian-win.yml
+	./bin/gverify -v -d ../gitian.sigs.GLC/ -r ${VERSION}-win-unsigned ../goldcoin/contrib/gitian-descriptors/gitian-win.yml
 	# Mac OSX	
 	echo ""
 	echo "Verifying v${VERSION} Mac OSX"
 	echo ""	
-	./bin/gverify -v -d ../gitian.sigs.GLD/ -r ${VERSION}-osx-unsigned ../goldcoin/contrib/gitian-descriptors/gitian-osx.yml
+	./bin/gverify -v -d ../gitian.sigs.GLC/ -r ${VERSION}-osx-unsigned ../goldcoin/contrib/gitian-descriptors/gitian-osx.yml
 	# Signed Windows
 	echo ""
 	echo "Verifying v${VERSION} Signed Windows"
 	echo ""
-	./bin/gverify -v -d ../gitian.sigs.GLD/ -r ${VERSION}-osx-signed ../goldcoin/contrib/gitian-descriptors/gitian-osx-signer.yml
+	./bin/gverify -v -d ../gitian.sigs.GLC/ -r ${VERSION}-osx-signed ../goldcoin/contrib/gitian-descriptors/gitian-osx-signer.yml
 	# Signed Mac OSX
 	echo ""
 	echo "Verifying v${VERSION} Signed Mac OSX"
 	echo ""
-	./bin/gverify -v -d ../gitian.sigs.GLD/ -r ${VERSION}-osx-signed ../goldcoin/contrib/gitian-descriptors/gitian-osx-signer.yml	
+	./bin/gverify -v -d ../gitian.sigs.GLC/ -r ${VERSION}-osx-signed ../goldcoin/contrib/gitian-descriptors/gitian-osx-signer.yml	
 	popd
 fi
 
@@ -361,7 +361,7 @@ then
 	    echo "Signing ${VERSION} Windows"
 	    echo ""
 	    ./bin/gbuild -i --commit signature=${COMMIT} ../goldcoin/contrib/gitian-descriptors/gitian-win-signer.yml
-	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-win-signed --destination ../gitian.sigs.GLD/ ../goldcoin/contrib/gitian-descriptors/gitian-win-signer.yml
+	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-win-signed --destination ../gitian.sigs.GLC/ ../goldcoin/contrib/gitian-descriptors/gitian-win-signer.yml
 	    mv build/out/goldcoin-*win64-setup.exe ../goldcoin-binaries/${VERSION}
 	    mv build/out/goldcoin-*win32-setup.exe ../goldcoin-binaries/${VERSION}
 	fi
@@ -372,7 +372,7 @@ then
 	    echo "Signing ${VERSION} Mac OSX"
 	    echo ""
 	    ./bin/gbuild -i --commit signature=${COMMIT} ../goldcoin/contrib/gitian-descriptors/gitian-osx-signer.yml
-	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-osx-signed --destination ../gitian.sigs.GLD/ ../goldcoin/contrib/gitian-descriptors/gitian-osx-signer.yml
+	    ./bin/gsign -p $signProg --signer $SIGNER --release ${VERSION}-osx-signed --destination ../gitian.sigs.GLC/ ../goldcoin/contrib/gitian-descriptors/gitian-osx-signer.yml
 	    mv build/out/goldcoin-osx-signed.dmg ../goldcoin-binaries/${VERSION}/goldcoin-${VERSION}-osx.dmg
 	fi
 	popd
@@ -380,7 +380,7 @@ then
         if [[ $commitFiles = true ]]
         then
             # Commit Sigs
-            pushd gitian.sigs.GLD
+            pushd gitian.sigs.GLC
             echo ""
             echo "Committing ${VERSION} Signed Sigs"
             echo ""

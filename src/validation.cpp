@@ -976,7 +976,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
         // Remove conflicting transactions from the mempool
         BOOST_FOREACH(const CTxMemPool::txiter it, allConflicting)
         {
-            LogPrint("mempool", "replacing tx %s with %s for %s GLD additional fees, %d delta bytes\n",
+            LogPrint("mempool", "replacing tx %s with %s for %s GLC additional fees, %d delta bytes\n",
                     it->GetTx().GetHash().ToString(),
                     hash.ToString(),
                     FormatMoney(nModifiedFees - nConflictingFees),
@@ -1169,7 +1169,7 @@ CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
     }
     else if (nHeight > 200 && nHeight <= 2200)
     {
-        nSubsidy = 1000 * COIN;//Most of these are what caused GLD to break all coin record LTC volume on Cryptsy
+        nSubsidy = 1000 * COIN;//Most of these are what caused GLC to break all coin record LTC volume on Cryptsy
     }
     else if (nHeight > 2200 && nHeight < consensusParams.julyFork)
     {
