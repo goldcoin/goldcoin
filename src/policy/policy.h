@@ -19,8 +19,12 @@ class CCoinsViewCache;
 
 /** Default for -blockmaxsize, which controls the maximum size of block the mining code will create **/
 static const unsigned int DEFAULT_BLOCK_MAX_SIZE = 2000000;
+/** Default for -blockmaxsize, which controls the maximum size of block the mining code will create **/
+static const unsigned int DEFAULT_BLOCK_MAX_SIZE_GIP1 = 32000000;
 /** Default for -blockprioritysize, maximum space for zero/low-fee transactions **/
 static const unsigned int DEFAULT_BLOCK_PRIORITY_SIZE = DEFAULT_BLOCK_MAX_SIZE * 5 / 100; //5% are allowed to be free
+/** Default for -blockprioritysize, maximum space for zero/low-fee transactions **/
+static const unsigned int DEFAULT_BLOCK_PRIORITY_SIZE_GIP1 = DEFAULT_BLOCK_MAX_SIZE_GIP1 * 5 / 100; //5% are allowed to be free
 /** Default for -blockmintxfee, which sets the minimum feerate for a transaction in blocks created by mining code **/
 static const unsigned int DEFAULT_BLOCK_MIN_TX_FEE = 1000;
 /** The maximum weight (size in bytes) for transactions we're willing to relay/mine */
@@ -29,6 +33,8 @@ static const unsigned int MAX_STANDARD_TX_WEIGHT = 100000;
 static const unsigned int MAX_P2SH_SIGOPS = 15;
 /** The maximum number of sigops we're willing to relay/mine in a single tx */
 static const unsigned int MAX_STANDARD_TX_SIGOPS_COST = MAX_BLOCK_SIGOPS_COST/5;
+/** The maximum number of sigops we're willing to relay/mine in a single tx */
+static const unsigned int MAX_STANDARD_TX_SIGOPS_COST_GIP1 = MAX_BLOCK_SIGOPS_COST_GIP1/5;
 /** Default for -maxmempool, maximum megabytes of mempool memory usage */
 static const unsigned int DEFAULT_MAX_MEMPOOL_SIZE = 5;
 /** Default for -incrementalrelayfee, which sets the minimum feerate increase for mempool limiting or BIP 125 replacement **/
@@ -114,4 +120,11 @@ extern unsigned int nBytesPerSigOp;
 int64_t GetVirtualTransactionSize(int64_t nWeight, int64_t nSigOpCost);
 int64_t GetVirtualTransactionSize(const CTransaction& tx, int64_t nSigOpCost = 0);
 
+inline unsigned int GetDefaultBlockMaxSize(bool isGIP1Active) {
+    return isGIP1Active ? DEFAULT_BLOCK_MAX_SIZE_GIP1 : DEFAULT_BLOCK_MAX_SIZE;
+}
+
+inline unsigned int GetDefaultBlockPrioritySize(bool isGIP1Active) {
+    return isGIP1Active ? DEFAULT_BLOCK_PRIORITY_SIZE_GIP1 : DEFAULT_BLOCK_PRIORITY_SIZE;
+}
 #endif // BITCOIN_POLICY_POLICY_H

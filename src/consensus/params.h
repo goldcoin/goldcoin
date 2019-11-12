@@ -95,6 +95,9 @@ struct Params {
     int nToCheckBlockUpgradeMajority;
     std::string checkpointPubKey;
     int syncCheckpointHeight;
+
+    long GIP1ActivationTime;
+    int GIP1Height;
 };
 } // namespace Consensus
 
