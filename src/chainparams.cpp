@@ -196,8 +196,8 @@ public:
         consensus.checkpointPubKey = "03fa3202fcecbb8efb084d92655e6300bef04753de0831439b74e88c6e52777ef5";
         consensus.syncCheckpointHeight = 890000;
 
-        GIP1ActivationTime = 1589155200;
-        GIP1Height = -1;
+        consensus.GIP1ActivationTime = 1589155200;
+        consensus.GIP1Height = -1;
     }    
 };
 static CMainParams mainParams;
@@ -299,8 +299,8 @@ public:
         consensus.checkpointPubKey = "0383485a411c6b9a259af83d732a759dcab948931c74e55458f9489c411d0a62b0";
         consensus.syncCheckpointHeight = 40000;
 
-        GIP1ActivationTime = 1573473600;
-        GIP1Height = -1;
+        consensus.GIP1ActivationTime = 1573473600;
+        consensus.GIP1Height = -1;
 
 
     }
@@ -395,8 +395,8 @@ public:
         consensus.checkpointPubKey = "0383485a411c6b9a259af83d732a759dcab948931c74e55458f9489c411d0a62b0";
         consensus.syncCheckpointHeight = 100;
 
-        GIP1ActiviationTime = 1573473600;
-        GIP1Height = -1;
+        consensus.GIP1ActivationTime = 1573473600;
+        consensus.GIP1Height = -1;
 
     }
 

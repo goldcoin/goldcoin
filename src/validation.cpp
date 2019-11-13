@@ -1906,7 +1906,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         // * legacy (always)
         // * p2sh (when P2SH enabled in flags and excludes coinbase)
         nSigOpsCost += GetTransactionSigOpCost(tx, view, flags);
-        unsigned int maxBlockSigOps = GetMaxBlockSigOps(pindex->GetMedianTimePast() >= chainparams.GIP1ActivationTime);
+        unsigned int maxBlockSigOps = GetMaxBlockSigOps(pindex->GetMedianTimePast() >= chainparams.GetConsensus().GIP1ActivationTime);
         if (nSigOpsCost > maxBlockSigOps)
             return state.DoS(100, error("ConnectBlock(): too many sigops"),
                              REJECT_INVALID, "bad-blk-sigops");
@@ -2978,7 +2978,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         nSigOps += GetLegacySigOpCount(*tx);
     }
 
-    unsigned int maxBlockSigOps = GetMaxBlockSigOps(pindex->GetMedianTimePast() >= chainParams.GIP1ActivationTime);
+    unsigned int maxBlockSigOps = GetMaxBlockSigOps(pindex->GetMedianTimePast() >= consensusParams.GIP1ActivationTime);
     if (nSigOps > maxBlockSigOps)
         return state.DoS(100, false, REJECT_INVALID, "bad-blk-sigops", false, "out-of-bounds SigOpCount");
 
