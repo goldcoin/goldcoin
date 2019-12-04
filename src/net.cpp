@@ -25,6 +25,8 @@
 #include "ui_interface.h"
 #include "utilstrencodings.h"
 
+extern std::atomic<bool> fGIP1ActiveAtTip;
+
 #ifdef WIN32
 #include <string.h>
 #else
@@ -2596,7 +2598,7 @@ bool CConnman::OutboundTargetReached(bool historicalBlockServingLimit)
     {
         // keep a large enough buffer to at least relay each block once
         uint64_t timeLeftInCycle = GetMaxOutboundTimeLeftInCycle();
-        uint64_t buffer = timeLeftInCycle / 600 * MAX_BLOCK_SERIALIZED_SIZE;
+        uint64_t buffer = timeLeftInCycle / 600 * GetMaxBlockSize(fGIP1ActiveAtTip);
         if (buffer >= nMaxOutboundLimit || nMaxOutboundTotalBytesSentInCycle >= nMaxOutboundLimit - buffer)
             return true;
     }
