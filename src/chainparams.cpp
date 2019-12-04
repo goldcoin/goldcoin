@@ -269,7 +269,7 @@ public:
         vSeeds.clear();
 
         // Note that of those with the service bits flag, most only support a subset of possible options
-        vSeeds.push_back(CDNSSeedData("testnet.gldcoin.com", "168.235.108.201", true));
+        vSeeds.push_back(CDNSSeedData("testnet.gldcoin.com", "167.88.117.138", true));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
