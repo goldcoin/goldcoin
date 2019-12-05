@@ -1,4 +1,4 @@
-Goldcoin Core 0.14.4
+Goldcoin Core 0.14.5
 =====================
 
 Setup
