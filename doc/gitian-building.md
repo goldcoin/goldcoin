@@ -310,7 +310,7 @@ Clone the git repositories for goldcoin and Gitian.
 ```bash
 git clone https://github.com/devrandom/gitian-builder.git
 git clone https://github.com/goldcoin/goldcoin
-git clone https://github.com/goldcoin/gitian.sigs.GLD.git
+git clone https://github.com/goldcoin/gitian.sigs.GLC.git
 ```
 
 Setting up the Gitian image
@@ -475,5 +475,5 @@ Uploading signatures
 ---------------------
 
 After building and signing you can push your signatures (both the `.assert` and `.assert.sig` files) to the
-[goldcoin/gitian.sigs.GLD](https://github.com/goldcoin/gitian.sigs.GLD/) repository, or if that's not possible create a pull
+[goldcoin/gitian.sigs.GLC](https://github.com/goldcoin/gitian.sigs.GLC/) repository, or if that's not possible create a pull
 request. You can also mail the files to thrasher (thrasher@addictionsofware.com) and he will commit them.
