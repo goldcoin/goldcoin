@@ -1,4 +1,4 @@
-Goldcoin Core version 0.14.6 is now available from:
+Goldcoin Core version 0.14.5 is now available from:
 
   <https://www.goldcoin.org/downloads.html>
 
@@ -29,8 +29,6 @@ frequently tested on them.
 
 Notable changes
 ===============
-
-This update gets this software ready for the coming changes in the dnsseeders. 
 
 On May 11, 2020 at 0:00 UTC (Medium Time Past): 32 MB blocks will be allowed.  If a block larger than 2 MB is mined, nodes that are running old versions of Goldcoin will be disconnected.
 
