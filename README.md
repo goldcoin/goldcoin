@@ -3,7 +3,7 @@ Goldcoin Core integration/staging tree
 
 [![Build Status](https://travis-ci.org/goldcoin/goldcoin.svg?branch=goldcoin-master)](https://travis-ci.org/goldcoin/goldcoin)
 
-https://www.goldcoin.org
+https://www.goldcoinweb.com
 
 What is Goldcoin?
 ----------------
