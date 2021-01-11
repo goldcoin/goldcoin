@@ -3,7 +3,7 @@ Goldcoin Core integration/staging tree
 
 [![Build Status](https://travis-ci.org/goldcoin/goldcoin.svg?branch=goldcoin-master)](https://travis-ci.org/goldcoin/goldcoin)
 
-https://www.goldcoinweb.com
+https://www.goldcoinproject.org
 
 What is Goldcoin?
 ----------------
@@ -15,7 +15,7 @@ out collectively by the network. Goldcoin Core is the name of open source
 software which enables the use of this currency.
 
 For more information, as well as an immediately useable, binary version of
-the Goldcoin Core software, see [https://www.goldcoinweb.com](https://www.goldcoinweb.com).
+the Goldcoin Core software, see [https://www.goldcoinproject.org](https://www.goldcoinproject.org).
 
 License
 -------
