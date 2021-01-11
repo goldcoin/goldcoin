@@ -50,9 +50,9 @@ Var StartMenuGroup
 # Installer attributes
 OutFile @abs_top_srcdir@/@PACKAGE_TARNAME@-${VERSION}-win@WINDOWS_BITS@-setup.exe
 !if "@WINDOWS_BITS@" == "64"
-InstallDir "$PROGRAMFILES64\GoldCoin (GLD)"
+InstallDir "$PROGRAMFILES64\Goldcoin"
 !else
-InstallDir "$PROGRAMFILES\Goldcoin (GLD)"
+InstallDir "$PROGRAMFILES\Goldcoin"
 !endif
 CRCCheck on
 XPStyle on
