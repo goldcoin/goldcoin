@@ -517,7 +517,7 @@ std::string HelpMessage(HelpMessageMode mode)
 std::string LicenseInfo()
 {
     const std::string URL_SOURCE_CODE = "<https://github.com/goldcoin/goldcoin>";
-    const std::string URL_WEBSITE = "<https://www.goldcoin.org>";
+    const std::string URL_WEBSITE = "<https://www.goldcoinproject.org>";
 
     return CopyrightHolders(strprintf(_("Copyright (C) %i-%i"), 2013, COPYRIGHT_YEAR) + " ") + "\n" +
            "\n" +
