@@ -1,7 +1,7 @@
 ---
 name: "goldcoin-dmg-signer"
 suites:
-- "bionic"
+- "focal"
 architectures:
 - "amd64"
 packages:

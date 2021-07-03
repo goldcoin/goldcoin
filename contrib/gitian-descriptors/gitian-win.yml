@@ -2,7 +2,7 @@
 name: "goldcoin-win-0.14"
 enable_cache: true
 suites:
-- "bionic"
+- "focal"
 architectures:
 - "amd64"
 packages:
