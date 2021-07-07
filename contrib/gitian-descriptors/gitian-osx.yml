@@ -2,14 +2,14 @@
 name: "goldcoin-osx-0.14"
 enable_cache: true
 suites:
-- "bionic"
+- "trusty"
 architectures:
 - "amd64"
 packages:
 - "ca-certificates"
 - "curl"
 - "g++"
-- "git"
+- "git-core"
 - "pkg-config"
 - "autoconf"
 - "librsvg2-bin"
