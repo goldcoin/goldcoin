@@ -1,6 +1,6 @@
-Goldcoin Core version 0.14.8 is now available from:
+Goldcoin Core version 0.14.6 is now available from:
 
-  <https://www.goldcoinproject.org/downloads.html>
+  <https://www.goldcoin.org/downloads.html>
 
 This is a new major version release, including new features, various bugfixes
 and performance improvements, as well as updated translations.
@@ -11,7 +11,7 @@ Please report bugs using the issue tracker at github:
 
 To receive security and update notifications, please subscribe to:
 
-  <https://goldcointalk.org/index.php?board=56.0>
+  <https://groups.google.com/forum/#!forum/goldcoin-dev>
 
 Compatibility
 ==============
@@ -30,8 +30,9 @@ frequently tested on them.
 Notable changes
 ===============
 
-This update provides a checkpoint on a 6MB block and allows for 32 MB blocks to be 
-sent across the network.  It fixes some dependency links to allow the gitian system to run.
+This update gets this software ready for the coming changes in the dnsseeders. 
+
+On May 11, 2020 at 0:00 UTC (Medium Time Past): 32 MB blocks will be allowed.  If a block larger than 2 MB is mined, nodes that are running old versions of Goldcoin will be disconnected.
 
 Credits
 =======
