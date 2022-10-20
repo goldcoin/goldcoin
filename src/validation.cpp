@@ -2948,8 +2948,12 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
     }
 
     CBlockIndex * pindex = mapBlockIndex[block.hashPrevBlock];
-    unsigned int maxBlockSize = GetMaxBlockSize(pindex->GetMedianTimePast() >= consensusParams.GIP1ActivationTime);
-
+    
+    // Do proper NULL validation to prevent segfaults. Credit Tpfue0505
+    
+    bool isGIP1Active = (pindex?(pindex->GetMedianTimePast() >= consensusParams.GIP1ActivationTime):false);                                    
+    unsigned int maxBlockSize = GetMaxBlockSize(isGIP1Active);
+    
     // All potential-corruption validation must be done before we do any
     // transaction validation, as otherwise we may mark the header as invalid
     // because we receive the wrong transactions for it.
@@ -2966,7 +2970,6 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
             return state.DoS(100, false, REJECT_INVALID, "bad-cb-multiple", false, "more than one coinbase");
 
     // Check transactions
-    bool isGIP1Active = pindex->GetMedianTimePast() >= consensusParams.GIP1ActivationTime;
     for (const auto& tx : block.vtx)
         if (!CheckTransaction(*tx, state, isGIP1Active))
             return state.Invalid(false, state.GetRejectCode(), state.GetRejectReason(),
@@ -2978,7 +2981,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
         nSigOps += GetLegacySigOpCount(*tx);
     }
 
-    unsigned int maxBlockSigOps = GetMaxBlockSigOps(pindex->GetMedianTimePast() >= consensusParams.GIP1ActivationTime);
+    unsigned int maxBlockSigOps = GetMaxBlockSigOps(isGIP1Active);
     if (nSigOps > maxBlockSigOps)
         return state.DoS(100, false, REJECT_INVALID, "bad-blk-sigops", false, "out-of-bounds SigOpCount");
 
