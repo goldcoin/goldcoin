@@ -3323,10 +3323,12 @@ bool ProcessNewBlock(CNode * pfrom, const CChainParams& chainparams, const std::
         // belt-and-suspenders.
         bool ret = CheckBlock(*pblock, state, chainparams.GetConsensus());
 
-        // Check that the new block meets 51% rules
+        // Remove 51% rule to improve mining efficiency
+        
+        /*
         if (ret)
             ret = CheckBlock51Percent(pfrom, *pblock, state, chainparams);
-
+        */
 
         LOCK(cs_main);
 
