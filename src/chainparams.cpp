@@ -1,7 +1,7 @@
 // Copyright (c) 2007-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2015 The Bitcoin Core developers
 // Copyright (c) 2011-2017 The Litecoin Core developers
-// Copyright (c) 2013-2018 The Goldcoin Core developers
+// Copyright (c) 2013-2023 The Goldcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -127,6 +127,8 @@ public:
         assert(genesis.hashMerkleRoot == uint256S("0xa215e67ba165202f75b6458d22fedd1a3ec4f03449a4c6b2a4b8130bfebd3b15"));
 
         // Note that of those with the service bits flag, most only support a subset of possible options
+        vSeeds.push_back(CDNSSeedData("seed.microguy.net", "seed.microguy.net", true)); // MicroGuy
+        vSeeds.push_back(CDNSSeedData("cm.goldcoinproject.org", "cm.goldcoinproject.org", true)); // Community
         vSeeds.push_back(CDNSSeedData("dnsseed.netseed.net", "dnsseed.netseed.net", true));
         vSeeds.push_back(CDNSSeedData("seed.glcseed.net", "seed.glcseed.net", true));
         vSeeds.push_back(CDNSSeedData("vps.netseed.net", "vps.netseed.net", true));
