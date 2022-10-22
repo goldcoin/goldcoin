@@ -2,7 +2,7 @@
 
 This issue tracker is only for technical/code issues related to goldcoin-core.
 
-General goldcoin questions and/or support requests and are best directed to the [https://www.goldcointalk.org/ forums](https://www.goldcointalk.org/).
+General goldcoin questions and/or support requests are best directed to the #support channel of our [Discord](https://discord.me/goldcoin).
 
 For reporting security issues, please contact the Goldcoin developers on the goldcoinproject.slack.com slack channel.
 
