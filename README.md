@@ -32,7 +32,7 @@ regularly to indicate new official, stable release versions of Goldcoin Core.
 
 The contribution workflow is described in [CONTRIBUTING.md](CONTRIBUTING.md).
 
-The developer [slack](https://goldcoinproject.slack.com/)
+The #support channel on [Discord](https://discord.me/goldcoin)
 should be used to discuss complicated or controversial changes before working
 on a patch set.
 
