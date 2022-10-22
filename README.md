@@ -8,11 +8,12 @@ https://www.goldcoinproject.org
 What is Goldcoin?
 ----------------
 
-Goldcoin is a proven digital currency that enables instant payments to
-anyone, anywhere in the world. Goldcoin uses peer-to-peer technology to operate
-with no central authority: managing transactions and issuing money are carried
-out collectively by the network. Goldcoin Core is the name of open source
-software which enables the use of this currency.
+Goldcoin is an efficient cash payment system that scales on-chain without the need for L2 solutions. It enables instant payments to 
+anyone, anywhere in the world and can been sent without a tx fee.
+
+Goldcoin uses peer-to-peer technology to operate with no central authority: managing transactions 
+and issuing money are carried out collectively by the network. The network capacity is 1,120 Tx/s with 2-min 
+confirmations. The network is SegWit-free and 0-Conf is fully supported.
 
 For more information, as well as an immediately useable, binary version of
 the Goldcoin Core software, see [https://www.goldcoinproject.org](https://www.goldcoinproject.org).
