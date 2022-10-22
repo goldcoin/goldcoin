@@ -36,8 +36,6 @@ The #support channel on [Discord](https://discord.me/goldcoin)
 should be used to discuss complicated or controversial changes before working
 on a patch set.
 
-Developer IRC can be found on Freenode at #goldcoin-dev.
-
 Testing
 -------
 
