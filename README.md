@@ -8,7 +8,7 @@ https://www.goldcoinproject.org
 What is Goldcoin?
 ----------------
 
-Goldcoin is an experimental digital currency that enables instant payments to
+Goldcoin is a proven digital currency that enables instant payments to
 anyone, anywhere in the world. Goldcoin uses peer-to-peer technology to operate
 with no central authority: managing transactions and issuing money are carried
 out collectively by the network. Goldcoin Core is the name of open source
