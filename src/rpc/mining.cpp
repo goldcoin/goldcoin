@@ -667,7 +667,6 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     result.push_back(Pair("mintime", (int64_t)pindexPrev->GetMinTimeNext()));
     result.push_back(Pair("mutable", aMutable));
     result.push_back(Pair("noncerange", "00000000ffffffff"));
-    CBlockIndex * pindex = mapBlockIndex[pblock->hashPrevBlock];
     int64_t nSigOpLimit = GetMaxBlockSigOps(fGIP1ActiveAtTip);
     result.push_back(Pair("sigoplimit", nSigOpLimit));
     int64_t nMaxBlockSize = GetMaxBlockSize(fGIP1ActiveAtTip);
