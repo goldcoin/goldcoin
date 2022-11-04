@@ -6,13 +6,16 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 
-#ifndef BITCOIN_CONSENSUS_CONSENSUS_H
-#define BITCOIN_CONSENSUS_CONSENSUS_H
+#ifndef GOLDCOIN_CONSENSUS_CONSENSUS_H
+#define GOLDCOIN_CONSENSUS_CONSENSUS_H
 
 #include <stdint.h>
 
 /** The maximum allowed size for a serialized block, in bytes (only for buffer size limits) */
-static const unsigned int MAX_BLOCK_SERIALIZED_SIZE = 2000000;
+//
+// Goldcoin does not use serialized blocks
+/* static const unsigned int MAX_BLOCK_SERIALIZED_SIZE = 2000000; */
+
 /** The maximum allowed size for a block, in bytes (network rule) */
 static const unsigned int MAX_BLOCK_BASE_SIZE = 32000000;
 /** The maximum allowed number of signature check operations in a block (network rule) */
@@ -30,4 +33,4 @@ enum {
     LOCKTIME_MEDIAN_TIME_PAST = (1 << 1),
 };
 
-#endif // BITCOIN_CONSENSUS_CONSENSUS_H
+#endif // GOLDCOIN_CONSENSUS_CONSENSUS_H
