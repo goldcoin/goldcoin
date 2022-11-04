@@ -1,7 +1,7 @@
 // Copyright (c) 2007-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2015 The Bitcoin Core developers
 // Copyright (c) 2011-2017 The Litecoin Core developers
-// Copyright (c) 2013-2018 The Goldcoin Core developers
+// Copyright (c) 2013-2023 The Goldcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -86,10 +86,10 @@ BlockAssembler::BlockAssembler(const CChainParams& _chainparams)
     // If neither -blockmaxsize or -blockmaxweight is given, limit to DEFAULT_BLOCK_MAX_*
     // If only one is given, only restrict the specified resource.
     // If both are given, restrict both.
-    nBlockMaxSize = GetDefaultBlockMaxSize(fGIP1ActiveAtTip);
+    nBlockMaxSize = DEFAULT_BLOCK_MAX_SIZE;
 
     if (IsArgSet("-blockmaxsize")) {
-        nBlockMaxSize = GetArg("-blockmaxsize", GetDefaultBlockMaxSize(fGIP1ActiveAtTip));
+        nBlockMaxSize = GetArg("-blockmaxsize", DEFAULT_BLOCK_MAX_SIZE);
     }
     if (IsArgSet("-blockmintxfee")) {
         CAmount n = 0;
@@ -100,7 +100,7 @@ BlockAssembler::BlockAssembler(const CChainParams& _chainparams)
     }
 
     // Limit size to between 1K and MAX_BLOCK_SERIALIZED_SIZE-1K for sanity:
-    nBlockMaxSize = std::max((unsigned int)1000, std::min((unsigned int)(GetMaxBlockSize(fGIP1ActiveAtTip)-1000), nBlockMaxSize));
+    nBlockMaxSize = std::max((unsigned int)1000, std::min((unsigned int)(MAX_BLOCK_SERIALIZED_SIZE-1000), nBlockMaxSize));
     // Whether we need to account for byte usage (in addition to weight usage)
     fNeedSizeAccounting = true;//(nBlockMaxSize < MAX_BLOCK_SERIALIZED_SIZE-1000);
 }
@@ -515,7 +515,7 @@ void BlockAssembler::addPriorityTxs()
 {
     // How much of the block should be dedicated to high-priority transactions,
     // included regardless of the fees they pay
-    unsigned int nBlockPrioritySize = GetArg("-blockprioritysize", GetDefaultBlockPrioritySize(fGIP1ActiveAtTip));
+    unsigned int nBlockPrioritySize = GetArg("-blockprioritysize", DEFAULT_BLOCK_PRIORITY_SIZE);
     nBlockPrioritySize = std::min(nBlockMaxSize, nBlockPrioritySize);
 
     if (nBlockPrioritySize == 0) {
