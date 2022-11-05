@@ -11,10 +11,9 @@
 
 #include <stdint.h>
 
-/** The maximum allowed size for a serialized block, in bytes (only for buffer size limits) */
-//
-// Goldcoin does not use serialized blocks
-/* static const unsigned int MAX_BLOCK_SERIALIZED_SIZE = 2000000; */
+// The maximum allowed size for a serialized block, in bytes (only for buffer size limits)
+// Goldcoin does not use serialized blocks. Setting this to 32 MB until deemded safe for removal.
+static const unsigned int MAX_BLOCK_SERIALIZED_SIZE = 32000000;
 
 /** The maximum allowed size for a block, in bytes (network rule) */
 static const unsigned int MAX_BLOCK_BASE_SIZE = 32000000;
