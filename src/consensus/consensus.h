@@ -12,11 +12,10 @@
 #include <stdint.h>
 
 // The maximum allowed size for a serialized block, in bytes (only for buffer size limits)
-// Goldcoin does not use serialized blocks. Setting this to 32 MB until deemded safe for removal.
 static const unsigned int MAX_BLOCK_SERIALIZED_SIZE = 32000000;
 
 /** The maximum allowed size for a block, in bytes (network rule) */
-static const unsigned int MAX_BLOCK_BASE_SIZE = 32000000;
+static const unsigned int MAX_BLOCK_BASE_SIZE = MAX_BLOCK_SERIALIZED_SIZE;
 /** The maximum allowed number of signature check operations in a block (network rule) */
 static const int64_t MAX_BLOCK_SIGOPS_COST = 40000 * 16;
 /** Coinbase transaction outputs can only be spent after this number of new blocks (network rule) */
