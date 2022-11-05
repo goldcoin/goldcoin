@@ -100,7 +100,6 @@ BlockAssembler::BlockAssembler(const CChainParams& _chainparams)
     }
 
     // Limit size to between 1K and MAX_BLOCK_SERIALIZED_SIZE-1K for sanity:
-    // Goldcoin does not use serialized blocks. This code needs to be revised or removed.
     nBlockMaxSize = std::max((unsigned int)1000, std::min((unsigned int)(MAX_BLOCK_SERIALIZED_SIZE-1000), nBlockMaxSize));
     // Whether we need to account for byte usage (in addition to weight usage)
     fNeedSizeAccounting = true;//(nBlockMaxSize < MAX_BLOCK_SERIALIZED_SIZE-1000);
