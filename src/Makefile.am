@@ -99,7 +99,6 @@ BITCOIN_CORE_H = \
   core_io.h \
   core_memusage.h \
   cuckoocache.h \
-  glcnotificationinterface.h \
   httprpc.h \
   httpserver.h \
   indirectmap.h \
@@ -184,7 +183,6 @@ libbitcoin_server_a_SOURCES = \
   chain.cpp \
   checkpoints.cpp \
   checkpointsync.cpp \
-  glcnotificationinterface.cpp \
   httprpc.cpp \
   httpserver.cpp \
   init.cpp \
