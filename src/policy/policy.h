@@ -6,8 +6,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 
-#ifndef BITCOIN_POLICY_POLICY_H
-#define BITCOIN_POLICY_POLICY_H
+#ifndef GOLDCOIN_POLICY_POLICY_H
+#define GOLDCOIN_POLICY_POLICY_H
 
 #include "consensus/consensus.h"
 #include "script/interpreter.h"
@@ -128,4 +128,4 @@ inline unsigned int GetDefaultBlockMaxSize(bool isGIP1Active) {
 inline unsigned int GetDefaultBlockPrioritySize(bool isGIP1Active) {
     return isGIP1Active ? DEFAULT_BLOCK_PRIORITY_SIZE_GIP1 : DEFAULT_BLOCK_PRIORITY_SIZE;
 }
-#endif // BITCOIN_POLICY_POLICY_H
+#endif // GOLDCOIN_POLICY_POLICY_H
