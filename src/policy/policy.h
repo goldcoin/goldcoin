@@ -24,6 +24,7 @@ static const unsigned int DEFAULT_BLOCK_MAX_SIZE_GIP1 = 32000000;
 /** Default for -blockprioritysize, maximum space for zero/low-fee transactions **/
 static const unsigned int DEFAULT_BLOCK_PRIORITY_SIZE = DEFAULT_BLOCK_MAX_SIZE * 5 / 100; //5% are allowed to be free
 /** Default for -blockprioritysize, maximum space for zero/low-fee transactions **/
+
 static const unsigned int DEFAULT_BLOCK_PRIORITY_SIZE_GIP1 = DEFAULT_BLOCK_MAX_SIZE_GIP1 * 5 / 100; //5% are allowed to be free
 /** Default for -blockmintxfee, which sets the minimum feerate for a transaction in blocks created by mining code **/
 static const unsigned int DEFAULT_BLOCK_MIN_TX_FEE = 1000;
@@ -36,8 +37,8 @@ static const unsigned int MAX_STANDARD_TX_SIGOPS_COST = MAX_BLOCK_SIGOPS_COST/5;
 /** The maximum number of sigops we're willing to relay/mine in a single tx */
 static const unsigned int MAX_STANDARD_TX_SIGOPS_COST_GIP1 = MAX_BLOCK_SIGOPS_COST_GIP1/5;
 /** Default for -maxmempool, maximum megabytes of mempool memory usage */
-static const unsigned int DEFAULT_MAX_MEMPOOL_SIZE = 300;
-/** Default for -incrementalrelayfee, which sets the minimum feerate increase for mempool limiting or BIP 320 replacement **/
+static const unsigned int DEFAULT_MAX_MEMPOOL_SIZE = 320;
+/** Default for -incrementalrelayfee, which sets the minimum feerate increase for mempool limiting or BIP 125 replacement **/
 static const unsigned int DEFAULT_INCREMENTAL_RELAY_FEE = 1000;
 /** Default for -bytespersigop */
 static const unsigned int DEFAULT_BYTES_PER_SIGOP = 20;
