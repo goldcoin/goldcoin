@@ -96,7 +96,7 @@ static void CheckBlockIndex(const Consensus::Params& consensusParams);
 /** Constant stuff for coinbase transactions we create: */
 CScript COINBASE_FLAGS;
 
-const std::string strMessageMagic = "Goldcoin (GLD) Signed Message:\n";
+const std::string strMessageMagic = "Goldcoin (GLC) Signed Message:\n";
 
 //Schedule CheckPoint Block
 //0 if no checkpoint is to be done.
