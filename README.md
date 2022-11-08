@@ -13,7 +13,7 @@ anyone, anywhere in the world and can been sent without a tx fee.
 
 Goldcoin uses peer-to-peer technology to operate with no central authority: managing transactions 
 and issuing money are carried out collectively by the network. The network capacity is 1,120 Tx/s with 2-min 
-confirmations. The network is SegWit-free and 0-Conf is fully supported.
+confirmations and 32 MB blocks. The network is SegWit-free and 0-Conf is fully supported.
 
 For more information, as well as an immediately useable, binary version of
 the Goldcoin Core software, see [https://www.goldcoinproject.org](https://www.goldcoinproject.org).
@@ -33,7 +33,7 @@ regularly to indicate new official, stable release versions of Goldcoin Core.
 
 The contribution workflow is described in [CONTRIBUTING.md](CONTRIBUTING.md).
 
-The #support channel on [Discord](https://discord.me/goldcoin)
+The #core-client channel on [Discord](https://discord.me/goldcoin)
 should be used to discuss complicated or controversial changes before working
 on a patch set.
 
