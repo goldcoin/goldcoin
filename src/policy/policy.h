@@ -1,4 +1,4 @@
-// Copyright (c) 2007-2010 Satoshi Nakamoto
+// Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2015 The Bitcoin Core developers
 // Copyright (c) 2011-2017 The Litecoin Core developers
 // Copyright (c) 2013-2023 The Goldcoin Core developers
@@ -19,15 +19,8 @@ class CCoinsViewCache;
 
 /** Default for -blockmaxsize, which controls the maximum size of block the mining code will create **/
 static const unsigned int DEFAULT_BLOCK_MAX_SIZE = 32000000;
-
-// GIP1 -blockmaxsize left to preserve functionality during sync testing
-// If successfull, we can consider reverting the GIP1 commits introducing this variable
-static const unsigned int DEFAULT_BLOCK_MAX_SIZE_GIP1 = 32000000;
-
 /** Default for -blockprioritysize, maximum space for zero/low-fee transactions **/
 static const unsigned int DEFAULT_BLOCK_PRIORITY_SIZE = DEFAULT_BLOCK_MAX_SIZE * 5 / 100; //5% are allowed to be free
-/** Default for -blockprioritysize, maximum space for zero/low-fee transactions **/
-static const unsigned int DEFAULT_BLOCK_PRIORITY_SIZE_GIP1 = DEFAULT_BLOCK_MAX_SIZE_GIP1 * 5 / 100; //5% are allowed to be free
 /** Default for -blockmintxfee, which sets the minimum feerate for a transaction in blocks created by mining code **/
 static const unsigned int DEFAULT_BLOCK_MIN_TX_FEE = 1000;
 /** The maximum weight (size in bytes) for transactions we're willing to relay/mine */
@@ -92,7 +85,6 @@ inline unsigned int getSTANDARD_SCRIPT_VERIFY_FLAGS() {
 }
 
 
-
 /** For convenience, standard but not mandatory verify flags. */
 static const unsigned int STANDARD_NOT_MANDATORY_VERIFY_FLAGS = STANDARD_SCRIPT_VERIFY_FLAGS & ~MANDATORY_SCRIPT_VERIFY_FLAGS;
 
@@ -121,11 +113,4 @@ extern unsigned int nBytesPerSigOp;
 int64_t GetVirtualTransactionSize(int64_t nWeight, int64_t nSigOpCost);
 int64_t GetVirtualTransactionSize(const CTransaction& tx, int64_t nSigOpCost = 0);
 
-inline unsigned int GetDefaultBlockMaxSize(bool isGIP1Active) {
-    return isGIP1Active ? DEFAULT_BLOCK_MAX_SIZE_GIP1 : DEFAULT_BLOCK_MAX_SIZE;
-}
-
-inline unsigned int GetDefaultBlockPrioritySize(bool isGIP1Active) {
-    return isGIP1Active ? DEFAULT_BLOCK_PRIORITY_SIZE_GIP1 : DEFAULT_BLOCK_PRIORITY_SIZE;
-}
 #endif // GOLDCOIN_POLICY_POLICY_H
