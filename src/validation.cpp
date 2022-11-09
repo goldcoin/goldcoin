@@ -3311,12 +3311,16 @@ bool ProcessNewBlock(CNode * pfrom, const CChainParams& chainparams, const std::
         // belt-and-suspenders.
         bool ret = CheckBlock(*pblock, state, chainparams.GetConsensus());
 
-        // Remove 51% rule to improve mining efficiency
+       // Remove 51% rule to improve mining efficiency
+
+        // This system will be completely removed in version 0.15.0. It was an interesting 
+        // experiment at the time. While somewhat effective at preventing diff sticks from 
+        // auto-switching multi-pools, it was not effective against 51% attacks in the field.
         
-        /*
+        /***********************************************************************
         if (ret)
             ret = CheckBlock51Percent(pfrom, *pblock, state, chainparams);
-        */
+        ************************************************************************/
 
         LOCK(cs_main);
 
