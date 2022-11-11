@@ -8,6 +8,7 @@
 
 #include "validationinterface.h"
 
+
 static CMainSignals g_signals;
 
 CMainSignals& GetMainSignals()
