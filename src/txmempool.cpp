@@ -47,11 +47,6 @@ CTxMemPoolEntry::CTxMemPoolEntry(const CTransactionRef& _tx, const CAmount& _nFe
     nSigOpCostWithAncestors = sigOpCost;
 }
 
-CTxMemPoolEntry::CTxMemPoolEntry(const CTxMemPoolEntry& other)
-{
-    *this = other;
-}
-
 double
 CTxMemPoolEntry::GetPriority(unsigned int currentHeight) const
 {
