@@ -319,11 +319,11 @@ void ClientModel::subscribeToCoreSignals()
     uiInterface.NotifyNumConnectionsChanged.connect(boost::bind(NotifyNumConnectionsChanged, this,
                                                                 boost::placeholders::_1));
     uiInterface.NotifyNetworkActiveChanged.connect(boost::bind(NotifyNetworkActiveChanged, this,
-                                                               boost::placeholders::_1));
+                                                                boost::placeholders::_1));
 	uiInterface.BannedListChanged.connect(boost::bind(BannedListChanged, this));
-    uiInterface.NotifyBlockTip.connect(boost::bind(BlockTipChanged, this,
-                                                   boost::placeholders::_1,
-                                                   boost::placeholders::_2, false));
+        uiInterface.NotifyBlockTip.connect(boost::bind(BlockTipChanged, this,
+                                                    boost::placeholders::_1,
+                                                    boost::placeholders::_2, false));
     uiInterface.NotifyHeaderTip.connect(boost::bind(BlockTipChanged, this,
                                                     boost::placeholders::_1,
                                                     boost::placeholders::_2, true));
@@ -338,11 +338,11 @@ void ClientModel::unsubscribeFromCoreSignals()
     uiInterface.NotifyNumConnectionsChanged.disconnect(boost::bind(NotifyNumConnectionsChanged, this,
                                                                    boost::placeholders::_1));
     uiInterface.NotifyNetworkActiveChanged.disconnect(boost::bind(NotifyNetworkActiveChanged, this,
-                                                                  boost::placeholders::_1));
+                                                                   boost::placeholders::_1));
 	uiInterface.BannedListChanged.disconnect(boost::bind(BannedListChanged, this));
 	uiInterface.NotifyBlockTip.disconnect(boost::bind(BlockTipChanged, this,
-                                                      boost::placeholders::_1,
-                                                      boost::placeholders::_2, false));
+                                                       boost::placeholders::_1,
+                                                       boost::placeholders::_2, false));
     uiInterface.NotifyHeaderTip.disconnect(boost::bind(BlockTipChanged, this,
                                                        boost::placeholders::_1,
                                                        boost::placeholders::_2, true));
