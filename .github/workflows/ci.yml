@@ -24,16 +24,16 @@ jobs:
       fail-fast: false
       matrix:
         name:
-#          - linux-32-bit
+          - linux-32-bit
           - linux-64-bit
           - windows-64-bit
           - macos-64-bit
-#          - linux-arm-32-bit
-#          - linux-arm-64-bit
-#          - linux-power-64-bit
-#          - linux-power-le-64-bit
-#          - linux-riscv-64-bit
-#          - linux-s390x
+          - linux-arm-32-bit
+          - linux-arm-64-bit
+          - linux-power-64-bit
+          - linux-power-le-64-bit
+          - linux-riscv-64-bit
+          - linux-s390x
         include:
           - name: linux-32-bit
             host: i686-pc-linux-gnu
@@ -68,7 +68,7 @@ jobs:
             config-opts: "LDFLAGS=-static-libgcc"
             goal: install
           - name: macos-64-bit
-            host: x86_64-apple-darwin
+            host: x86_64-apple-darwin11
             os: ubuntu-22.04
             packages: curl bsdmainutils cmake libz-dev python3-setuptools libtinfo5 xorriso
             check-security: false
