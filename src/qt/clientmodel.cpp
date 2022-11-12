@@ -24,8 +24,8 @@
 #include <QDebug>
 #include <QTimer>
 
+// reguired for Boost 1.74
 #include <boost/bind.hpp>
-#include <boost/bind/bind.hpp>
 
 class CBlockIndex;
 
@@ -276,12 +276,6 @@ static void NotifyNetworkActiveChanged(ClientModel *clientmodel, bool networkAct
                               Q_ARG(bool, networkActive));
 }
 
-static void NotifyAlertChanged(ClientModel *clientmodel)
-{
-    qDebug() << "NotifyAlertChanged";
-    QMetaObject::invokeMethod(clientmodel, "updateAlert", Qt::QueuedConnection);
-}
-
 static void BannedListChanged(ClientModel *clientmodel)
 {
     qDebug() << QString("%1: Requesting update for peer banlist").arg(__func__);
@@ -326,12 +320,13 @@ void ClientModel::subscribeToCoreSignals()
                                                                 boost::placeholders::_1));
     uiInterface.NotifyNetworkActiveChanged.connect(boost::bind(NotifyNetworkActiveChanged, this,
                                                                boost::placeholders::_1));
-    uiInterface.NotifyAlertChanged.connect(boost::bind(NotifyAlertChanged, this,
-                                           boost::placeholders::_1,
-                                           boost::placeholders::_2));
-    uiInterface.BannedListChanged.connect(boost::bind(BannedListChanged, this));
-    uiInterface.NotifyBlockTip.connect(boost::bind(BlockTipChanged, this, _1, _2, false));
-    uiInterface.NotifyHeaderTip.connect(boost::bind(BlockTipChanged, this, _1, _2, true));
+	uiInterface.BannedListChanged.connect(boost::bind(BannedListChanged, this));
+    uiInterface.NotifyBlockTip.connect(boost::bind(BlockTipChanged, this,
+                                                   boost::placeholders::_1,
+                                                   boost::placeholders::_2, false));
+    uiInterface.NotifyHeaderTip.connect(boost::bind(BlockTipChanged, this,
+                                                    boost::placeholders::_1,
+                                                    boost::placeholders::_2, true));
 }
 
 void ClientModel::unsubscribeFromCoreSignals()
@@ -344,11 +339,8 @@ void ClientModel::unsubscribeFromCoreSignals()
                                                                    boost::placeholders::_1));
     uiInterface.NotifyNetworkActiveChanged.disconnect(boost::bind(NotifyNetworkActiveChanged, this,
                                                                   boost::placeholders::_1));
-    uiInterface.NotifyAlertChanged.disconnect(boost::bind(NotifyAlertChanged, this,
-                                                          boost::placeholders::_1,
-                                                          boost::placeholders::_2));
-    uiInterface.BannedListChanged.disconnect(boost::bind(BannedListChanged, this));
-    uiInterface.NotifyBlockTip.disconnect(boost::bind(BlockTipChanged, this,
+	uiInterface.BannedListChanged.disconnect(boost::bind(BannedListChanged, this));
+	uiInterface.NotifyBlockTip.disconnect(boost::bind(BlockTipChanged, this,
                                                       boost::placeholders::_1,
                                                       boost::placeholders::_2, false));
     uiInterface.NotifyHeaderTip.disconnect(boost::bind(BlockTipChanged, this,
