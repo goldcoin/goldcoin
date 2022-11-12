@@ -24,6 +24,7 @@
 #include <QDebug>
 #include <QTimer>
 
+#include <boost/bind.hpp>
 #include <boost/bind/bind.hpp>
 
 class CBlockIndex;
