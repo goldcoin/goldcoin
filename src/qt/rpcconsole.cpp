@@ -1,4 +1,5 @@
 // Copyright (c) 2011-2016 The Bitcoin Core developers
+// Copyright (c) 2013-2023 The Goldcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -265,6 +266,7 @@ bool RPCConsole::RPCParseCommandLine(std::string &strResult, const std::string &
                 if (breakParsing)
                     break;
             }
+	    // Falls through
             case STATE_ARGUMENT: // In or after argument
             case STATE_EATING_SPACES_IN_ARG:
             case STATE_EATING_SPACES_IN_BRACKETS:
@@ -370,6 +372,7 @@ bool RPCConsole::RPCParseCommandLine(std::string &strResult, const std::string &
                 strResult = lastResult.get_str();
             else
                 strResult = lastResult.write(2);
+            // Falls through
         case STATE_ARGUMENT:
         case STATE_EATING_SPACES:
             return true;
