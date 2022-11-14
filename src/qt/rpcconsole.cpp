@@ -372,6 +372,7 @@ bool RPCConsole::RPCParseCommandLine(std::string &strResult, const std::string &
                 strResult = lastResult.get_str();
             else
                 strResult = lastResult.write(2);
+            // Falls through
         case STATE_ARGUMENT:
         case STATE_EATING_SPACES:
             return true;
