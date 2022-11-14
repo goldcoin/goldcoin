@@ -30,10 +30,6 @@ jobs:
           - macos-64-bit
           - linux-arm-32-bit
           - linux-arm-64-bit
-          - linux-power-64-bit
-          - linux-power-le-64-bit
-          - linux-riscv-64-bit
-          - linux-s390x
         include:
           - name: linux-32-bit
             host: i686-pc-linux-gnu
@@ -90,42 +86,6 @@ jobs:
             host: aarch64-linux-gnu
             os: ubuntu-22.04
             packages: g++-aarch64-linux-gnu binutils-aarch64-linux-gnu
-            check-security: false
-            check-symbols: false
-            dep-opts: ""
-            config-opts: "--enable-glibc-back-compat LDFLAGS=-static-libstdc++"
-            goal: install
-          - name: linux-power-64-bit
-            host: powerpc64-linux-gnu
-            os: ubuntu-22.04
-            packages: g++-powerpc64-linux-gnu binutils-powerpc64-linux-gnu
-            check-security: false
-            check-symbols: false
-            dep-opts: ""
-            config-opts: "--enable-glibc-back-compat LDFLAGS=-static-libstdc++"
-            goal: install
-          - name: linux-power-le-64-bit
-            host: powerpc64le-linux-gnu
-            os: ubuntu-22.04
-            packages: g++-powerpc64le-linux-gnu binutils-powerpc64le-linux-gnu
-            check-security: false
-            check-symbols: false
-            dep-opts: ""
-            config-opts: "--enable-glibc-back-compat LDFLAGS=-static-libstdc++"
-            goal: install
-          - name: linux-riscv-64-bit
-            host: riscv64-linux-gnu
-            os: ubuntu-22.04
-            packages: g++-riscv64-linux-gnu binutils-riscv64-linux-gnu
-            check-security: false
-            check-symbols: false
-            dep-opts: ""
-            config-opts: "--enable-glibc-back-compat LDFLAGS=-static-libstdc++"
-            goal: install
-          - name: linux-s390x
-            host: s390x-linux-gnu
-            os: ubuntu-22.04
-            packages: g++-s390x-linux-gnu binutils-s390x-linux-gnu
             check-security: false
             check-symbols: false
             dep-opts: ""
