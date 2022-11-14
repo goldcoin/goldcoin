@@ -1,7 +1,6 @@
-// Copyright (c) 2007-2010 Satoshi Nakamoto
+// Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2015 The Bitcoin Core developers
-// Copyright (c) 2011-2017 The Litecoin Core developers
-// Copyright (c) 2013-2018 The Goldcoin Core developers
+// Copyright (c) 2013-2023 The Goldcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -28,9 +27,9 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 	}
 
     int nHeight = pindexLast->nHeight + 1;
-    if (nHeight > params.julyFork2)
+    if (nHeight > params.julyFork2) {
         return GoldenRiver(pindexLast, params);
-    
+    }
 	arith_uint256 bnNew;
 	// FeatherCoin difficulty adjustment protocol switch
 	static const int nDifficultySwitchHeight = 21000;
