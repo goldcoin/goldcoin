@@ -35,10 +35,10 @@ uint32_t Hash(const char* data, size_t n, uint32_t seed) {
   switch (limit - data) {
     case 3:
       h += static_cast<unsigned char>(data[2]) << 16;
-      [[fallthrough]]
+      [[fallthrough]];
     case 2:
       h += static_cast<unsigned char>(data[1]) << 8;
-      [[fallthrough]]
+      [[fallthrough]];
     case 1:
       h += static_cast<unsigned char>(data[0]);
       h *= m;
