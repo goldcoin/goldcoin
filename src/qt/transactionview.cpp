@@ -214,8 +214,8 @@ void TransactionView::setModel(WalletModel *_model)
 
         columnResizingFixer = new GUIUtil::TableViewLastColumnResizingFixer(transactionView, AMOUNT_MINIMUM_COLUMN_WIDTH, MINIMUM_COLUMN_WIDTH, this);
 
-         if (_model->getOptionsModel())
-         {
+        if (_model->getOptionsModel())
+        {
             // Add third party transaction URLs to context menu
             QStringList listUrls = GUIUtil::SplitSkipEmptyParts(_model->getOptionsModel()->getThirdPartyTxUrls(), "|");
             bool actions_created = false;
