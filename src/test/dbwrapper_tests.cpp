@@ -287,23 +287,22 @@ BOOST_AUTO_TEST_CASE(iterator_string_ordering)
     }
 
     std::unique_ptr<CDBIterator> it(const_cast<CDBWrapper*>(&dbw)->NewIterator());
-    for (int c=0; c<2; ++c) {
-        int seek_start;
-        if (c == 0)
-            seek_start = 0;
-        else
-            seek_start = 5;
-        sprintf(buf, "%d", seek_start);
-        StringContentsSerializer seek_key(buf);
-        it->Seek(seek_key);
-        for (int x=seek_start; x<10; ++x) {
-            for (int y = 0; y < 10; y++) {
-                sprintf(buf, "%d", x);
-                std::string exp_key(buf);
-                for (int z = 0; z < y; z++)
-                    exp_key += exp_key;
-                StringContentsSerializer key;
-                uint32_t value;
+    for (int seek_start : {0, 5})
+        {
+            snprintf(buf, sizeof(buf), "%d", seek_start);
+            StringContentsSerializer seek_key(buf);
+            it->Seek(seek_key);
+            for (int x = seek_start; x < 10; ++x)
+            {
+                for (int y = 0; y < 10; y++)
+                {
+                    snprintf(buf, sizeof(buf), "%d", x);
+                    std::string exp_key(buf);
+                    for (int z = 0; z < y; z++)
+                        exp_key += exp_key;
+                    StringContentsSerializer key;
+                    uint32_t value;
+                    
                 BOOST_CHECK(it->Valid());
                 if (!it->Valid()) // Avoid spurious errors about invalid iterator's key and value in case of failure
                     break;
