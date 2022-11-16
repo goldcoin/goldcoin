@@ -9,7 +9,7 @@ What is Goldcoin?
 ----------------
 Launched on BCT in 2013. 
 
-Goldcoin is an efficient cash payment system that scales on-chain without the need for L2 solutions. It enables instant payments to 
+Goldcoin is an improved cash payment system that scales on-chain without the need for L2 solutions. It enables instant payments to 
 anyone, anywhere in the world, and can been sent **with or without a transaction fee**.
 
 Goldcoin uses peer-to-peer technology to operate with no central authority: managing transactions 
