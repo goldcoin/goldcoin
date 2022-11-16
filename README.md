@@ -9,7 +9,7 @@ What is Goldcoin?
 ----------------
 
 Goldcoin is an efficient cash payment system that scales on-chain without the need for L2 solutions. It enables instant payments to 
-anyone, anywhere in the world and can been sent without a tx fee.
+anyone, anywhere in the world and can been sent **without a transaction fee**.
 
 Goldcoin uses peer-to-peer technology to operate with no central authority: managing transactions 
 and issuing money are carried out collectively by the network. The network capacity is 1,120 Tx/s with 2-min 
