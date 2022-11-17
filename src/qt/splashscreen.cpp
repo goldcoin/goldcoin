@@ -7,6 +7,7 @@
 #endif
 
 #include "splashscreen.h"
+#include "guiutil.h"
 
 #include "networkstyle.h"
 
