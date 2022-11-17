@@ -16,6 +16,7 @@
 #include "util.h"
 #include "ui_interface.h"
 #include "version.h"
+#include "guiutil.h"
 
 #ifdef ENABLE_WALLET
 #include "wallet/wallet.h"
