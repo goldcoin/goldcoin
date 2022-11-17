@@ -26,6 +26,7 @@
 #include <QDesktopWidget>
 #include <QPainter>
 #include <QRadialGradient>
+#include <QScreen>
 
 #include <boost/bind/bind.hpp>
 
