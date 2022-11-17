@@ -131,15 +131,16 @@ void PaymentServer::LoadRootCAs(X509_STORE* _store)
     }
 
     QList<QSslCertificate> certList;
+    QSslConfiguration qSslConfiguration;
 
     if (certFile != "-system-") {
             qDebug() << QString("PaymentServer::%1: Using \"%2\" as trusted root certificate.").arg(__func__).arg(certFile);
 
         certList = QSslCertificate::fromPath(certFile);
         // Use those certificates when fetching payment requests, too:
-        QSslConfiguration.setCaCertificates(certList);
+        qSslConfiguration.setCaCertificates(certList);
     } else
-        certList = QSslConfiguration.systemCaCertificates();
+        certList = qSslConfiguration.systemCaCertificates();
 
     int nRootCerts = 0;
     const QDateTime currentTime = QDateTime::currentDateTime();
