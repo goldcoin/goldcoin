@@ -137,9 +137,9 @@ void PaymentServer::LoadRootCAs(X509_STORE* _store)
 
         certList = QSslCertificate::fromPath(certFile);
         // Use those certificates when fetching payment requests, too:
-        qSslConfiguration.setCaCertificates(certList);
+        QSslConfiguration.setCaCertificates(certList);
     } else
-        certList = qSslConfiguration.systemCaCertificates();
+        certList = QSslConfiguration.systemCaCertificates();
 
     int nRootCerts = 0;
     const QDateTime currentTime = QDateTime::currentDateTime();
