@@ -850,7 +850,7 @@ void restoreWindowGeometry(const QString& strSetting, const QSize& defaultSize, 
     if (!pos.x() && !pos.y()) {
         
         // QRect screen = QApplication::desktop()->screenGeometry(); // deprecated: Use QGuiApplication::screens()
-        QRect screen =QGuiApplication::primaryScreen()->availableGeometry();
+        QRect screen = QGuiApplication::primaryScreen()->availableGeometry().size();
         
         pos.setX((screen.width() - size.width()) / 2);
         pos.setY((screen.height() - size.height()) / 2);
