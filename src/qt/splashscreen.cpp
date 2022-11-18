@@ -83,14 +83,22 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
     // check font size and drawing with
     pixPaint.setFont(QFont(font, 33*fontFactor));
     QFontMetrics fm = pixPaint.fontMetrics();
-    int titleTextWidth = GUIUtil::TextWidth(fm, titleText);
+    #ifndef QTversionPreFiveEleven
+    	int titleTextWidth = fm.horizontalAdvance(titleText);
+    #else
+    	int titleTextWidth = fm.width(titleText);
+    #endif
     if (titleTextWidth > 176) {
         fontFactor = fontFactor * 176 / titleTextWidth;
     }
 
     pixPaint.setFont(QFont(font, 33*fontFactor));
     fm = pixPaint.fontMetrics();
-    titleTextWidth  = GUIUtil::TextWidth(fm, titleText);
+    #ifndef QTversionPreFiveEleven
+    	titleTextWidth  = fm.horizontalAdvance(titleText);
+    #else
+    	titleTextWidth  = fm.width(titleText);
+    #endif
     pixPaint.drawText(pixmap.width()/devicePixelRatio-titleTextWidth-paddingRight,paddingTop,titleText);
 
     pixPaint.setFont(QFont(font, 15*fontFactor));
@@ -119,7 +127,11 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
         boldFont.setWeight(QFont::Bold);
         pixPaint.setFont(boldFont);
         fm = pixPaint.fontMetrics();
-        int titleAddTextWidth  = GUIUtil::TextWidth(fm, titleAddText);
+        #ifndef QTversionPreFiveEleven
+    		int titleAddTextWidth  = fm.horizontalAdvance(titleAddText);
+    	#else
+    		int titleAddTextWidth  = fm.width(titleAddText);
+    	#endif
         pixPaint.drawText(pixmap.width()/devicePixelRatio-titleAddTextWidth-10,15,titleAddText);
     }
 
