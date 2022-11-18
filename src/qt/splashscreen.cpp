@@ -31,7 +31,7 @@
 
 #include <boost/bind/bind.hpp>
 
-// support QT verions < 5.11
+// support QT versions < 5.11
 #if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
 #define QTversionPreFiveEleven
 #endif
