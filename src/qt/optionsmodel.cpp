@@ -206,12 +206,12 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
             return settings.value("fUseProxy", false);
         case ProxyIP: {
             // contains IP at index 0 and port at index 1
-            QStringList strlIpPort = settings.value("addrProxy").toString().split(":", QString::SkipEmptyParts);
+            QStringList strlIpPort = GUIUtil::SplitSkipEmptyParts(settings.value("addrProxy").toString(), ":");
             return strlIpPort.at(0);
         }
         case ProxyPort: {
             // contains IP at index 0 and port at index 1
-            QStringList strlIpPort = settings.value("addrProxy").toString().split(":", QString::SkipEmptyParts);
+            QStringList strlIpPort = GUIUtil::SplitSkipEmptyParts(settings.value("addrProxy").toString(), ":");
             return strlIpPort.at(1);
         }
 
@@ -220,12 +220,12 @@ QVariant OptionsModel::data(const QModelIndex & index, int role) const
             return settings.value("fUseSeparateProxyTor", false);
         case ProxyIPTor: {
             // contains IP at index 0 and port at index 1
-            QStringList strlIpPort = settings.value("addrSeparateProxyTor").toString().split(":", QString::SkipEmptyParts);
+            QStringList strlIpPort = GUIUtil::SplitSkipEmptyParts(settings.value("addrSeparateProxyTor").toString(), ":");
             return strlIpPort.at(0);
         }
         case ProxyPortTor: {
             // contains IP at index 0 and port at index 1
-            QStringList strlIpPort = settings.value("addrSeparateProxyTor").toString().split(":", QString::SkipEmptyParts);
+            QStringList strlIpPort = GUIUtil::SplitSkipEmptyParts(settings.value("addrSeparateProxyTor").toString(), ":");
             return strlIpPort.at(1);
         }
 
