@@ -136,9 +136,9 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
     move(QGuiApplication::primaryScreen()->geometry().center() - r.center());
 
     subscribeToCoreSignals(); // this line was removed in Bitcoin. Leaving until understanding its function.
-    installEventFilter(this);
-
-    GUIUtil::handleCloseWindowShortcut(this);
+    
+    // installEventFilter(this);
+    // GUIUtil::handleCloseWindowShortcut(this);
 }
 
 SplashScreen::~SplashScreen()
