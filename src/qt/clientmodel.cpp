@@ -24,8 +24,7 @@
 #include <QDebug>
 #include <QTimer>
 
-// required for Boost 1.74
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 
 class CBlockIndex;
 
