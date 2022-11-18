@@ -103,9 +103,14 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
 
     pixPaint.setFont(QFont(font, 15*fontFactor));
 
-    // if the version string is too long, reduce size
+    // if the version string is to long, reduce size
     fm = pixPaint.fontMetrics();
-    int versionTextWidth  = GUIUtil::TextWidth(fm, versionText);
+    #ifndef QTversionPreFiveEleven
+    	int versionTextWidth  = fm.horizontalAdvance(versionText);
+    #else
+    	int versionTextWidth  = fm.width(versionText);
+    #endif
+    
     if(versionTextWidth > titleTextWidth+paddingRight-10) {
         pixPaint.setFont(QFont(font, 10*fontFactor));
         titleVersionVSpace -= 5;
