@@ -87,7 +87,7 @@ SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
     // check font size and drawing with
     pixPaint.setFont(QFont(font, 33*fontFactor));
     QFontMetrics fm = pixPaint.fontMetrics();
-    #ifndef QTversionPreFiveEleven
+    ##ifndef QTversionPreFiveEleven
     	int titleTextWidth = fm.horizontalAdvance(titleText);
     #else
     	int titleTextWidth = fm.width(titleText);
@@ -101,7 +101,7 @@ SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
     #ifndef QTversionPreFiveEleven
     	titleTextWidth  = fm.horizontalAdvance(titleText);
     #else
-        titleTextWidth  = fm.width(titleText);
+    	titleTextWidth  = fm.width(titleText);
     #endif
     pixPaint.drawText(pixmap.width()/devicePixelRatio-titleTextWidth-paddingRight,paddingTop,titleText);
 
@@ -110,9 +110,9 @@ SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
     // if the version string is to long, reduce size
     fm = pixPaint.fontMetrics();
     #ifndef QTversionPreFiveEleven
-    	int versionTextWidth  = fm.width(versionText);
+    	int versionTextWidth  = fm.horizontalAdvance(versionText);
     #else
-        int versionTextWidth  = fm.horizontalAdvance(versionText);
+    	int versionTextWidth  = fm.width(versionText);
     #endif
     
     if(versionTextWidth > titleTextWidth+paddingRight-10) {
