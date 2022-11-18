@@ -75,6 +75,7 @@ const std::string BitcoinGUI::DEFAULT_UIPLATFORM =
         ;
 
 #include <boost/bind/bind.hpp>
+using namespace boost::placeholders;
 
 /** Display name for default wallet name. Uses tilde to avoid name
  * collisions in the future with additional wallets */
