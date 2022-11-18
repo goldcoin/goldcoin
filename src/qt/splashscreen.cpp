@@ -1,4 +1,5 @@
 // Copyright (c) 2011-2016 The Bitcoin Core developers
+// Copyright (c) 2011-2023 The Goldcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -30,6 +31,7 @@
 
 #include <boost/bind/bind.hpp>
 
+// support QT verions < 5.11
 #if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
 #define QTversionPreFiveEleven
 #endif
@@ -45,6 +47,7 @@ SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
 
     float fontFactor            = 1.0;
     float devicePixelRatio      = 1.0;
+
 #if QT_VERSION > 0x050100
     devicePixelRatio = ((QGuiApplication*)QCoreApplication::instance())->devicePixelRatio();
 #endif
@@ -87,7 +90,7 @@ SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
     // check font size and drawing with
     pixPaint.setFont(QFont(font, 33*fontFactor));
     QFontMetrics fm = pixPaint.fontMetrics();
-    ##ifndef QTversionPreFiveEleven
+    #ifndef QTversionPreFiveEleven
     	int titleTextWidth = fm.horizontalAdvance(titleText);
     #else
     	int titleTextWidth = fm.width(titleText);
@@ -104,7 +107,6 @@ SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
     	titleTextWidth  = fm.width(titleText);
     #endif
     pixPaint.drawText(pixmap.width()/devicePixelRatio-titleTextWidth-paddingRight,paddingTop,titleText);
-
     pixPaint.setFont(QFont(font, 15*fontFactor));
 
     // if the version string is to long, reduce size
