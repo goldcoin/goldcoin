@@ -30,6 +30,10 @@
 
 #include <boost/bind/bind.hpp>
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
+#define QTversionPreFiveEleven
+#endif
+
 SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
     : QWidget(), curAlignment(0)
 {
@@ -97,7 +101,7 @@ SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
     #ifndef QTversionPreFiveEleven
     	titleTextWidth  = fm.horizontalAdvance(titleText);
     #else
-    	titleTextWidth  = fm.width(titleText);
+        titleTextWidth  = fm.width(titleText);
     #endif
     pixPaint.drawText(pixmap.width()/devicePixelRatio-titleTextWidth-paddingRight,paddingTop,titleText);
 
@@ -106,9 +110,9 @@ SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
     // if the version string is to long, reduce size
     fm = pixPaint.fontMetrics();
     #ifndef QTversionPreFiveEleven
-    	int versionTextWidth  = fm.horizontalAdvance(versionText);
-    #else
     	int versionTextWidth  = fm.width(versionText);
+    #else
+        int versionTextWidth  = fm.horizontalAdvance(versionText);
     #endif
     
     if(versionTextWidth > titleTextWidth+paddingRight-10) {
