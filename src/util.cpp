@@ -563,8 +563,40 @@ boost::filesystem::path GetConfigFile(const std::string& confPath)
 void ReadConfigFile(const std::string& confPath)
 {
     boost::filesystem::ifstream streamConfig(GetConfigFile(confPath));
-    if (!streamConfig.good())
-        return; // No bitcoin.conf file is OK
+    if (!streamConfig.good()){
+        FILE* configFile = fopen(GetConfigFile(confPath).string().c_str(), "a");
+
+        if (configFile != NULL) {
+            std::string strHeader = "# GoldCoin config file\n"
+                          "rpcuser=username\n"
+                          "rpcpassword=password\n"
+                          "server=1\n"
+                          "listen=1\n"
+                          "#txindex=1\n"
+                          "daemon=1\n"
+                          "port=8121\n"
+                          "rpcport=9332\n"
+                          "rpcbind=127.0.0.1\n"
+                          "maxconnections=20\n"
+                          "fallbackfee=0.0001\n"
+                          "rpcallowip=127.0.0.1\n"
+                          "\n"
+                          "# ADDNODES:\n"
+			  "addnode=dnsseed.netseed.net\n"
+                          "addnode=95.217.78.80:8121\n"
+                          "addnode=83.221.211.116:8121\n"
+                          "addnode=31.25.241.224:8121\n"
+                          "addnode=188.165.3.6:8121\n"
+                          "addnode=80.65.23.139:8121\n"
+                          "addnode=91.206.16.214:8121\n"
+                          "addnode=82.200.205.30:8121\n"
+                          "addnode=103.133.56.221:8121\n"
+			  "\n";
+            fwrite(strHeader.c_str(), std::strlen(strHeader.c_str()), 1, configFile);
+            fclose(configFile);
+        }
+        return;
+    }
 
     {
         LOCK(cs_args);
