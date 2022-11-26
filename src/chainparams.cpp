@@ -105,7 +105,7 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_CSV].nTimeout = 1556668800; // Wednesday, May 1, 2019 12:00:00 AM GMT
 
         // The best chain should have at least this much work.
-        consensus.nMinimumChainWork = uint256S("0000000000000000000000000000000000000000000000000b6617bc6a536252");
+        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000003c6b902a038d8b78");
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -127,9 +127,9 @@ public:
         assert(genesis.hashMerkleRoot == uint256S("0xa215e67ba165202f75b6458d22fedd1a3ec4f03449a4c6b2a4b8130bfebd3b15"));
 
         // Note that of those with the service bits flag, most only support a subset of possible options
+        vSeeds.push_back(CDNSSeedData("dnsseed.netseed.net", "dnsseed.netseed.net", true));
         vSeeds.push_back(CDNSSeedData("seed.microguy.net", "seed.microguy.net", true)); // MicroGuy
         vSeeds.push_back(CDNSSeedData("cm.goldcoinproject.org", "cm.goldcoinproject.org", true)); // Community
-        vSeeds.push_back(CDNSSeedData("dnsseed.netseed.net", "dnsseed.netseed.net", true));
         vSeeds.push_back(CDNSSeedData("seed.glcseed.net", "seed.glcseed.net", true));
         vSeeds.push_back(CDNSSeedData("vps.netseed.net", "vps.netseed.net", true));
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,32);
@@ -186,14 +186,15 @@ public:
     (     815135, uint256S("0x7a577f2f264db62a7ce9a99b2c95cf9af44c4fb8067394f1ab4cd0b5da9b49f2"))
     (     889411, uint256S("0xc483518b3dbd585e3b04ad29070ee3d6fb90553995b0a5b36a5ca85d0e9c777d"))
     (    1430115, uint256S("0x78911d0d5eaf05a0d2feca3682f8d7c7a8b6fb3797d064cb14b213ff391e535e"))
+    (    1733326, uint256S("0x31bbbb5b278732a2a180bb78a8c23e72569cd8ac760387437a8f8e6a37992ac8"))
     };
 
         chainTxData = ChainTxData{
-            // Data as of block b44bc5ae41d1be67227ba9ad875d7268aa86c965b1d64b47c35be6e8d5c352f4 (height 1155626).
-            1487715936, // * UNIX timestamp of last known number of transactions
-            9243806,  // * total number of transactions between genesis and that timestamp
+            // Data as of block 31bbbb5b278732a2a180bb78a8c23e72569cd8ac760387437a8f8e6a37992ac8 (height 1733326).
+            1669466255, // * UNIX timestamp of last known number of transactions
+            2480326,  // * total number of transactions between genesis and that timestamp
                     //   (the tx=... number in the SetBestChain debug.log lines)
-            0.06     // * estimated number of transactions per second after that timestamp
+            0.123098 // * estimated number of transactions per second after that timestamp
         };
         consensus.checkpointPubKey = "03fa3202fcecbb8efb084d92655e6300bef04753de0831439b74e88c6e52777ef5";
         consensus.syncCheckpointHeight = 890000;
