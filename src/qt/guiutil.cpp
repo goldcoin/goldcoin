@@ -44,6 +44,7 @@
 
 #include <QAbstractItemView>
 #include <QApplication>
+#include <QScreen>
 #include <QClipboard>
 #include <QDateTime>
 #include <QDesktopServices>
@@ -849,8 +850,8 @@ void restoreWindowGeometry(const QString& strSetting, const QSize& defaultSize, 
 
     if (!pos.x() && !pos.y()) {
         
-        QRect screen = QApplication::desktop()->screenGeometry(); // deprecated: Use QGuiApplication::screens()
-        // QRect screen = QGuiApplication::primaryScreen()->geometry()
+        // QRect screen = QApplication::desktop()->screenGeometry(); // deprecated: Use QGuiApplication::screens()
+        QRect screen = QGuiApplication::primaryScreen()->availableGeometry();
         
         pos.setX((screen.width() - size.width()) / 2);
         pos.setY((screen.height() - size.height()) / 2);

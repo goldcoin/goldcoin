@@ -74,7 +74,8 @@ const std::string BitcoinGUI::DEFAULT_UIPLATFORM =
 #endif
         ;
 
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
+using namespace boost::placeholders;
 
 /** Display name for default wallet name. Uses tilde to avoid name
  * collisions in the future with additional wallets */
@@ -1206,7 +1207,7 @@ UnitDisplayStatusBarControl::UnitDisplayStatusBarControl(const PlatformStyle *pl
     const QFontMetrics fm(font());
     Q_FOREACH (const BitcoinUnits::Unit unit, units)
     {
-        max_width = qMax(max_width, fm.width(BitcoinUnits::name(unit)));
+        max_width = qMax(max_width, fm.horizontalAdvance(BitcoinUnits::name(unit)));
     }
     setMinimumSize(max_width, 0);
     setAlignment(Qt::AlignRight | Qt::AlignVCenter);

@@ -111,11 +111,17 @@ namespace GUIUtil
     // Determine whether a widget is hidden behind other windows
     bool isObscured(QWidget *w);
 
+    // Activate, show and raise the widget
+    void bringToFront(QWidget* w);
+
+    // Set shortcut to close window
+    void handleCloseWindowShortcut(QWidget* w);
+
     // Open debug.log
     void openDebugLogfile();
 
-    // Replace invalid default fonts with known good ones
-    void SubstituteFonts(const QString& language);
+    // Open the config file
+    bool openBitcoinConf();
 
     /** Qt event filter that intercepts ToolTipChange events, and replaces the tooltip with a rich text
       representation if needed. This assures that Qt can word-wrap long tooltip messages.
@@ -242,6 +248,14 @@ namespace GUIUtil
     typedef ClickableProgressBar ProgressBar;
 #endif
     
+     /**
+     * Returns the distance in pixels appropriate for drawing a subsequent character after text.
+     *
+     * In Qt 5.12 and before the QFontMetrics::width() is used and it is deprecated since Qt 5.13.
+     * In Qt 5.11 the QFontMetrics::horizontalAdvance() was introduced.
+     */
+    int TextWidth(const QFontMetrics& fm, const QString& text);
+    
     /**
      * Returns the start-moment of the day in local time.
      *
@@ -272,7 +286,14 @@ namespace GUIUtil
     #endif
     }
     
-
+     /**
+     * Returns true if pixmap has been set.
+     *
+     * QPixmap* QLabel::pixmap() is deprecated since Qt 5.15.
+     */
+    bool HasPixmap(const QLabel* label);
+    QImage GetImage(const QLabel* label);
+    
 } // namespace GUIUtil
 
 #endif // BITCOIN_QT_GUIUTIL_H
