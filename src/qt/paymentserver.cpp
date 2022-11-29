@@ -131,15 +131,16 @@ void PaymentServer::LoadRootCAs(X509_STORE* _store)
     }
 
     QList<QSslCertificate> certList;
+    QSslConfiguration qSslConfiguration;
 
     if (certFile != "-system-") {
             qDebug() << QString("PaymentServer::%1: Using \"%2\" as trusted root certificate.").arg(__func__).arg(certFile);
 
         certList = QSslCertificate::fromPath(certFile);
         // Use those certificates when fetching payment requests, too:
-        QSslSocket::setDefaultCaCertificates(certList);
+        qSslConfiguration.setCaCertificates(certList);
     } else
-        certList = QSslSocket::systemCaCertificates();
+        certList = qSslConfiguration.systemCaCertificates();
 
     int nRootCerts = 0;
     const QDateTime currentTime = QDateTime::currentDateTime();
@@ -415,7 +416,7 @@ void PaymentServer::handleURIOrFile(const QString& s)
         if (uri.hasQueryItem("r")) // payment request URI
         {
             QByteArray temp;
-            temp.append(uri.queryItemValue("r"));
+            temp.append(uri.queryItemValue("r").toUtf8());
             QString decoded = QUrl::fromPercentEncoding(temp);
             QUrl fetchUrl(decoded, QUrl::StrictMode);
 
@@ -661,7 +662,12 @@ void PaymentServer::fetchPaymentACK(CWallet* wallet, SendCoinsRecipient recipien
         }
     }
 
+    #if GOOGLE_PROTOBUF_VERSION < 3011001
     int length = payment.ByteSize();
+    #else
+    int length = payment.ByteSizeLong();
+    #endif
+      
     netRequest.setHeader(QNetworkRequest::ContentLengthHeader, length);
     QByteArray serData(length, '\0');
     if (payment.SerializeToArray(serData.data(), length)) {
