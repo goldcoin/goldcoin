@@ -64,6 +64,10 @@
 #include <QUrlQuery>
 #endif
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
+#define QTversionPreFiveEleven
+#endif
+
 const std::string BitcoinGUI::DEFAULT_UIPLATFORM =
 #if defined(Q_OS_MAC)
         "macosx"
@@ -1207,7 +1211,11 @@ UnitDisplayStatusBarControl::UnitDisplayStatusBarControl(const PlatformStyle *pl
     const QFontMetrics fm(font());
     Q_FOREACH (const BitcoinUnits::Unit unit, units)
     {
-        max_width = qMax(max_width, fm.horizontalAdvance(BitcoinUnits::name(unit)));
+        #ifndef QTversionPreFiveEleven
+            max_width = qMax(max_width, fm.horizontalAdvance(BitcoinUnits::name(unit)));
+        #else
+            max_width = qMax(max_width, fm.width(BitcoinUnits::name(unit)));
+        #endif
     }
     setMinimumSize(max_width, 0);
     setAlignment(Qt::AlignRight | Qt::AlignVCenter);
