@@ -14,6 +14,11 @@
 #include <QKeyEvent>
 #include <QLineEdit>
 
+// support for QT versions < 5.11
+#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
+#define QTversionPreFiveEleven
+#endif
+
 /** QSpinBox that uses fixed-point numbers internally and uses our own
  * formatting/parsing functions.
  */
@@ -99,8 +104,12 @@ public:
 
             const QFontMetrics fm(fontMetrics());
             int h = lineEdit()->minimumSizeHint().height();
-            // horizontalAdvance not supported QT < 5.11
-            int w = fm.horizontalAdvance(BitcoinUnits::format(BitcoinUnits::BTC, BitcoinUnits::maxMoney(), false, BitcoinUnits::separatorAlways));
+            // suppport for QT < 5.11
+            #ifndef QTversionPreFiveEleven
+                int w = fm.horizontalAdvance(BitcoinUnits::format(BitcoinUnits::BTC, BitcoinUnits::maxMoney(), false, BitcoinUnits::separatorAlways));
+            #else
+                int w = fm.width(BitcoinUnits::format(BitcoinUnits::BTC, BitcoinUnits::maxMoney(), false, BitcoinUnits::separatorAlways));
+            #endif
             w += 2; // cursor blinking space
 
             QStyleOptionSpinBox opt;
