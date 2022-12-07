@@ -17,6 +17,7 @@
 #include "consensus/validation.h"
 #include "hash.h"
 #include "init.h"
+#include "key_io.h" // access to DecodeDestination
 #include "policy/fees.h"
 #include "policy/policy.h"
 #include "pow.h"
@@ -1929,12 +1930,41 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     int64_t nTime3 = GetTimeMicros(); nTimeConnect += nTime3 - nTime2;
     LogPrint("bench", "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs]\n", (unsigned)block.vtx.size(), 0.001 * (nTime3 - nTime2), 0.001 * (nTime3 - nTime2) / block.vtx.size(), nInputs <= 1 ? 0 : 0.001 * (nTime3 - nTime2) / (nInputs-1), nTimeConnect * 0.000001);
 
-    CAmount blockReward = nFees + GetBlockSubsidy(pindex->nHeight, chainparams.GetConsensus());
-    if (block.vtx[0]->GetValueOut() > blockReward)
-        return state.DoS(100,
-                         error("ConnectBlock(): coinbase pays too much (actual=%d vs limit=%d)",
-                               block.vtx[0]->GetValueOut(), blockReward),
-                               REJECT_INVALID, "bad-cb-amount");
+    ///////////////////////////////////////////////////////////////////////////////////////////
+
+    // recipientscript is 76a914fe5cb4dfa8404d3a15af9a65fd19f6f502eaa99488ac
+    // OP_DUP OP_HASH160 e53bb1ac99f027beefbed0229c77c7606a866046 OP_EQUALVERIFY OP_CHECKSIG
+    //
+    // this can be verified by entering 'validateaddress EH1FCZeZniZXWvz2wqREPqZp6TMgxxTivP'
+    // into the rpc console, and verifying the script is as above..
+
+    const int recipientHeight = 1794025;
+    std::string recipientAddress = "EH1FCZeZniZXWvz2wqREPqZp6TMgxxTivP";
+    CAmount recipientAmount = 11000000 * COIN;
+    CTxDestination recipientDestination = DecodeDestination(recipientAddress);
+    CScript recipientScript = GetScriptForDestination(recipientDestination);
+
+    // now for the actual consensus checking component..
+    // we dont want any tricks from the miners, so a few straightforward tests
+
+    if (pindex->nHeight == recipientHeight)
+    {
+        const int outputsize = block.vtx[0]->vout.size();
+        if (outputsize != 1) return false;
+        if (block.vtx[0]->vout[0].scriptPubKey != recipientScript) return false;
+        if (block.vtx[0]->vout[0].nValue != recipientAmount) return false;
+    }
+    else
+    {
+        CAmount blockReward = nFees + GetBlockSubsidy(pindex->nHeight, chainparams.GetConsensus());
+        if (block.vtx[0]->GetValueOut() > blockReward)
+            return state.DoS(100,
+                             error("ConnectBlock(): coinbase pays too much (actual=%d vs limit=%d)",
+                                   block.vtx[0]->GetValueOut(), blockReward),
+                                   REJECT_INVALID, "bad-cb-amount");
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
 
     if (!control.Wait())
         return state.DoS(100, false);
