@@ -1,5 +1,6 @@
-// Copyright (c) 2007-2010 Satoshi Nakamoto
+// Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2016 The Bitcoin Core developers
+// Copyright (c) 2013-2023 The Goldcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -103,18 +104,18 @@ UniValue blockheaderToJSON(const CBlockIndex* blockindex)
     return result;
 }
 
-UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDetails = false, bool fQueuedBlock = false)
+UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDetails = false)
 {
     UniValue result(UniValue::VOBJ);
-    result.push_back(Pair("hash", !fQueuedBlock ? blockindex->GetBlockHash().GetHex() : block.GetHash().GetHex()));
+    result.push_back(Pair("hash", blockindex->GetBlockHash().GetHex()));
     int confirmations = -1;
     // Only report confirmations if the block is on the main chain
     if (chainActive.Contains(blockindex))
         confirmations = chainActive.Height() - blockindex->nHeight + 1;
     result.push_back(Pair("confirmations", confirmations));
     result.push_back(Pair("strippedsize", (int)::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS)));
-    result.push_back(Pair("size", (int)::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_NO_WITNESS)));
-    result.push_back(Pair("height", fQueuedBlock ? blockindex->nHeight+1 : blockindex->nHeight));
+    result.push_back(Pair("size", (int)::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION)));
+    result.push_back(Pair("height", blockindex->nHeight));
     result.push_back(Pair("version", block.nVersion));
     result.push_back(Pair("versionHex", strprintf("%08x", block.nVersion)));
     result.push_back(Pair("merkleroot", block.hashMerkleRoot.GetHex()));
@@ -138,15 +139,11 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
     result.push_back(Pair("difficulty", GetDifficulty(blockindex)));
     result.push_back(Pair("chainwork", blockindex ? blockindex->nChainWork.GetHex() : 0));
 
-    if (!fQueuedBlock && blockindex->pprev)
+    if (blockindex->pprev)
         result.push_back(Pair("previousblockhash", blockindex->pprev->GetBlockHash().GetHex()));
-    else result.push_back(Pair("previousblockhash", blockindex->GetBlockHash().GetHex()));
-
-    if (!fQueuedBlock) {
-        CBlockIndex *pnext = chainActive.Next(blockindex);
-        if (pnext)
-            result.push_back(Pair("nextblockhash", pnext->GetBlockHash().GetHex()));
-    }
+    CBlockIndex *pnext = chainActive.Next(blockindex);
+    if (pnext)
+        result.push_back(Pair("nextblockhash", pnext->GetBlockHash().GetHex()));
     return result;
 }
 
@@ -736,39 +733,26 @@ UniValue getblock(const JSONRPCRequest& request)
     std::string strHash = request.params[0].get_str();
     uint256 hash(uint256S(strHash));
 
-    shared_ptr<const CBlock> queuedBlock;
-
     bool fVerbose = true;
     if (request.params.size() > 1)
         fVerbose = request.params[1].get_bool();
 
     if (mapBlockIndex.count(hash) == 0)
-    {
-        queuedBlock = GetQueuedBlock();
-        if(queuedBlock == nullptr || queuedBlock->GetHash().Compare(hash) != 0 || nReportQueuedBlocks != REPORT_QUEUED_BLOCK_TRANSACTION)
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
-    }
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
 
     CBlock block;
-    CBlockIndex* pblockindex = queuedBlock == nullptr ? mapBlockIndex[hash] : 0;
+    CBlockIndex* pblockindex = mapBlockIndex[hash];
 
-    if(queuedBlock == nullptr)
-    {
-        if (fHavePruned && !(pblockindex->nStatus & BLOCK_HAVE_DATA) && pblockindex->nTx > 0)
-            throw JSONRPCError(RPC_INTERNAL_ERROR, "Block not available (pruned data)");
+    if (fHavePruned && !(pblockindex->nStatus & BLOCK_HAVE_DATA) && pblockindex->nTx > 0)
+        throw JSONRPCError(RPC_MISC_ERROR, "Block not available (pruned data)");
 
-        if(!ReadBlockFromDisk(block, pblockindex, Params().GetConsensus()))
-            throw JSONRPCError(RPC_INTERNAL_ERROR, "Can't read block from disk");
-    }
-    else
-    {
-        //Copy the block so it is available in the waiting thread.
-        CDataStream stream(SER_NETWORK, PROTOCOL_VERSION);
-        queuedBlock->Serialize(stream);
-        stream.Rewind(stream.size());
-        block.Unserialize(stream);
-        pblockindex = chainActive.Tip();
-    }
+    if (!ReadBlockFromDisk(block, pblockindex, Params().GetConsensus()))
+        // Block not found on disk. This could be because we have the block
+        // header in our index but don't have the block (for example if a
+        // non-whitelisted node sends us an unrequested long chain of valid
+        // blocks, we add the headers to our index, but don't accept the
+        // block).
+        throw JSONRPCError(RPC_MISC_ERROR, "Block not found on disk");
 
     if (!fVerbose)
     {
@@ -778,7 +762,7 @@ UniValue getblock(const JSONRPCRequest& request)
         return strHex;
     }
 
-    return blockToJSON(block, pblockindex, false, queuedBlock != nullptr);
+    return blockToJSON(block, pblockindex);
 }
 // RPC commands related to sync checkpoints
 // get information of sync-checkpoint (first introduced in ppcoin)
