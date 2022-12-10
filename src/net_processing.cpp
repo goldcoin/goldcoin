@@ -1468,44 +1468,25 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
     else if (strCommand == NetMsgType::SENDHEADERS)
     {
         LOCK(cs_main);
-        if(!defenseDelayActive) {
-            State(pfrom->GetId())->fPreferHeaders = true;
-        } else {
-            time_t now;
-            time(&now);
-            if (difftime(now, defenseStartTime) > 840) { //If 14 minutes has passed
-                defenseDelayActive = false;
-            }
-        }
+        State(pfrom->GetId())->fPreferHeaders = true;
     }
 
     else if (strCommand == NetMsgType::SENDCMPCT)
     {
-        if(!defenseDelayActive) {
-            bool fAnnounceUsingCMPCTBLOCK = false;
-            uint64_t nCMPCTBLOCKVersion = 0;
-            vRecv >> fAnnounceUsingCMPCTBLOCK >> nCMPCTBLOCKVersion;
-		if (nCMPCTBLOCKVersion == 1) {
-		    LOCK(cs_main);
-		    // fProvidesHeaderAndIDs is used to "lock in" version of compact
-		    // blocks we send.
-		    if (!State(pfrom->GetId())->fProvidesHeaderAndIDs) {
-		        State(pfrom->GetId())->fProvidesHeaderAndIDs = true;
-		    }
-
-		    State(pfrom->GetId())->fPreferHeaderAndIDs =
-		        fAnnounceUsingCMPCTBLOCK;
-		    if (!State(pfrom->GetId())->fSupportsDesiredCmpctVersion) {
-		        State(pfrom->GetId())->fSupportsDesiredCmpctVersion = true;
-		    }
-		}
-        } else {
-            time_t now;
-            time(&now);
-            if (difftime(now, defenseStartTime) > 840) { //If 14 minutes has passed
-                defenseDelayActive = false;
-            }
-        }
+	bool fAnnounceUsingCMPCTBLOCK = false;
+	uint64_t nCMPCTBLOCKVersion = 0;
+	vRecv >> fAnnounceUsingCMPCTBLOCK >> nCMPCTBLOCKVersion;
+	if (nCMPCTBLOCKVersion == 1) {
+	    LOCK(cs_main);
+	    // fProvidesHeaderAndIDs is used to "lock in" version of compact blocks we send
+	    if (!State(pfrom->GetId())->fProvidesHeaderAndIDs) {
+		State(pfrom->GetId())->fProvidesHeaderAndIDs = true;
+	    }
+	    State(pfrom->GetId())->fPreferHeaderAndIDs = fAnnounceUsingCMPCTBLOCK;
+	    if (!State(pfrom->GetId())->fSupportsDesiredCmpctVersion) {
+		State(pfrom->GetId())->fSupportsDesiredCmpctVersion = true;
+	    }
+	}
     }
 
 
@@ -1600,68 +1581,60 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
 
     else if (strCommand == NetMsgType::GETBLOCKS)
     {
-        if(!defenseDelayActive) {
-            CBlockLocator locator;
-            uint256 hashStop;
-            vRecv >> locator >> hashStop;
+        CBlockLocator locator;
+        uint256 hashStop;
+        vRecv >> locator >> hashStop;
 
-            // We might have announced the currently-being-connected tip using a
-            // compact block, which resulted in the peer sending a getblocks
-            // request, which we would otherwise respond to without the new block.
-            // To avoid this situation we simply verify that we are on our best
-            // known chain now. This is super overkill, but we handle it better
-            // for getheaders requests, and there are no known nodes which support
-            // compact blocks but still use getblocks to request blocks.
+        // We might have announced the currently-being-connected tip using a
+        // compact block, which resulted in the peer sending a getblocks
+        // request, which we would otherwise respond to without the new block.
+        // To avoid this situation we simply verify that we are on our best
+        // known chain now. This is super overkill, but we handle it better
+        // for getheaders requests, and there are no known nodes which support
+        // compact blocks but still use getblocks to request blocks.
+        {
+            std::shared_ptr<const CBlock> a_recent_block;
             {
-                std::shared_ptr<const CBlock> a_recent_block;
-                {
-                    LOCK(cs_most_recent_block);
-                    a_recent_block = most_recent_block;
-                }
-            	CValidationState dummy;
-                ActivateBestChain(dummy, Params(), a_recent_block);
+                LOCK(cs_most_recent_block);
+                a_recent_block = most_recent_block;
             }
+            CValidationState dummy;
+            ActivateBestChain(dummy, Params(), a_recent_block);
+        }
 
-            LOCK(cs_main);
+        LOCK(cs_main);
 
-            // Find the last block the caller has in the main chain
-            const CBlockIndex* pindex = FindForkInGlobalIndex(chainActive, locator);
+        // Find the last block the caller has in the main chain
+        const CBlockIndex* pindex = FindForkInGlobalIndex(chainActive, locator);
 
-            // Send the rest of the chain
-            if (pindex)
-                pindex = chainActive.Next(pindex);
-            int nLimit = 500;
-            LogPrint("net", "getblocks %d to %s limit %d from peer=%d\n", (pindex ? pindex->nHeight : -1), hashStop.IsNull() ? "end" : hashStop.ToString(), nLimit, pfrom->id);
-            for (; pindex; pindex = chainActive.Next(pindex))
+        // Send the rest of the chain
+        if (pindex)
+            pindex = chainActive.Next(pindex);
+        int nLimit = 500;
+        LogPrint("net", "getblocks %d to %s limit %d from peer=%d\n", (pindex ? pindex->nHeight : -1), hashStop.IsNull() ? "end" : hashStop.ToString(), nLimit, pfrom->id);
+        for (; pindex; pindex = chainActive.Next(pindex))
+        {
+            if (pindex->GetBlockHash() == hashStop)
             {
-                if (pindex->GetBlockHash() == hashStop)
-                {
-                    LogPrint("net", "  getblocks stopping at %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
-                    break;
-                }
-                // If pruning, don't inv blocks unless we have on disk and are likely to still have
-                // for some reasonable time window (1 hour) that block relay might require.
-                const int nPrunedBlocksLikelyToHave = MIN_BLOCKS_TO_KEEP - 3600 / chainparams.GetConsensus().nPowTargetSpacing;
-                if (fPruneMode && (!(pindex->nStatus & BLOCK_HAVE_DATA) || pindex->nHeight <= chainActive.Tip()->nHeight - nPrunedBlocksLikelyToHave))
-                {
-                    LogPrint("net", " getblocks stopping, pruned or too old block at %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
-                    break;
-                }
-                pfrom->PushInventory(CInv(MSG_BLOCK, pindex->GetBlockHash()));
-                if (--nLimit <= 0)
-                {
-                    // When this block is requested, we'll send an inv that'll
-                    // trigger the peer to getblocks the next batch of inventory.
-                    LogPrint("net", "  getblocks stopping at limit %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
-                    pfrom->hashContinue = pindex->GetBlockHash();
-                    break;
-                }
+                LogPrint("net", "  getblocks stopping at %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
+                break;
             }
-        } else {
-            time_t now;
-            time(&now);
-            if (difftime(now, defenseStartTime) > 840) { //If 14 minutes has passed
-                defenseDelayActive = false;
+            // If pruning, don't inv blocks unless we have on disk and are likely to still have
+            // for some reasonable time window (1 hour) that block relay might require.
+            const int nPrunedBlocksLikelyToHave = MIN_BLOCKS_TO_KEEP - 3600 / chainparams.GetConsensus().nPowTargetSpacing;
+            if (fPruneMode && (!(pindex->nStatus & BLOCK_HAVE_DATA) || pindex->nHeight <= chainActive.Tip()->nHeight - nPrunedBlocksLikelyToHave))
+            {
+                LogPrint("net", " getblocks stopping, pruned or too old block at %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
+                break;
+            }
+            pfrom->PushInventory(CInv(MSG_BLOCK, pindex->GetBlockHash()));
+            if (--nLimit <= 0)
+            {
+                // When this block is requested, we'll send an inv that'll
+                // trigger the peer to getblocks the next batch of inventory.
+                LogPrint("net", "  getblocks stopping at limit %d %s\n", pindex->nHeight, pindex->GetBlockHash().ToString());
+                pfrom->hashContinue = pindex->GetBlockHash();
+                break;
             }
         }
     }
@@ -1669,124 +1642,108 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
 
     else if (strCommand == NetMsgType::GETBLOCKTXN)
     {
-        if(!defenseDelayActive) {
-            BlockTransactionsRequest req;
-            vRecv >> req;
+        BlockTransactionsRequest req;
+        vRecv >> req;
 
-            std::shared_ptr<const CBlock> recent_block;
-            {
-                LOCK(cs_most_recent_block);
-                if (most_recent_block_hash == req.blockhash)
-                    recent_block = most_recent_block;
-                // Unlock cs_most_recent_block to avoid cs_main lock inversion
-            }
-            if (recent_block) {
-                SendBlockTransactions(*recent_block, req, pfrom, connman);
-                return true;
-            }
-
-            LOCK(cs_main);
-
-            BlockMap::iterator it = mapBlockIndex.find(req.blockhash);
-            if (it == mapBlockIndex.end() || !(it->second->nStatus & BLOCK_HAVE_DATA)) {
-                LogPrintf("Peer %d sent us a getblocktxn for a block we don't have", pfrom->id);
-                return true;
-            }
-
-            if (it->second->nHeight < chainActive.Height() - MAX_BLOCKTXN_DEPTH) {
-                // If an older block is requested (should never happen in practice,
-                // but can happen in tests) send a block response instead of a
-                // blocktxn response. Sending a full block response instead of a
-                // small blocktxn response is preferable in the case where a peer
-                // might maliciously send lots of getblocktxn requests to trigger
-                // expensive disk reads, because it will require the peer to
-                // actually receive all the data read from disk over the network.
-                LogPrint("net", "Peer %d sent us a getblocktxn for a block > %i deep", pfrom->id, MAX_BLOCKTXN_DEPTH);
-                CInv inv;
-                inv.type =  MSG_BLOCK;
-                inv.hash = req.blockhash;
-                pfrom->vRecvGetData.push_back(inv);
-                ProcessGetData(pfrom, chainparams.GetConsensus(), connman, interruptMsgProc);
-                return true;
-            }
-
-            CBlock block;
-            bool ret = ReadBlockFromDisk(block, it->second, chainparams.GetConsensus());
-            assert(ret);
-
-            SendBlockTransactions(block, req, pfrom, connman);
-        } else {
-            time_t now;
-            time(&now);
-            if (difftime(now, defenseStartTime) > 840) { //If 14 minutes has passed
-                defenseDelayActive = false;
-            }
+        std::shared_ptr<const CBlock> recent_block;
+        {
+            LOCK(cs_most_recent_block);
+            if (most_recent_block_hash == req.blockhash)
+                recent_block = most_recent_block;
+            // Unlock cs_most_recent_block to avoid cs_main lock inversion
         }
+        if (recent_block) {
+            SendBlockTransactions(*recent_block, req, pfrom, connman);
+            return true;
+        }
+
+        LOCK(cs_main);
+
+        BlockMap::iterator it = mapBlockIndex.find(req.blockhash);
+        if (it == mapBlockIndex.end() || !(it->second->nStatus & BLOCK_HAVE_DATA)) {
+            LogPrintf("Peer %d sent us a getblocktxn for a block we don't have", pfrom->id);
+            return true;
+        }
+
+        if (it->second->nHeight < chainActive.Height() - MAX_BLOCKTXN_DEPTH) {
+            // If an older block is requested (should never happen in practice,
+            // but can happen in tests) send a block response instead of a
+            // blocktxn response. Sending a full block response instead of a
+            // small blocktxn response is preferable in the case where a peer
+            // might maliciously send lots of getblocktxn requests to trigger
+            // expensive disk reads, because it will require the peer to
+            // actually receive all the data read from disk over the network.
+            LogPrint("net", "Peer %d sent us a getblocktxn for a block > %i deep", pfrom->id, MAX_BLOCKTXN_DEPTH);
+            CInv inv;
+            inv.type = MSG_BLOCK;
+            inv.hash = req.blockhash;
+            pfrom->vRecvGetData.push_back(inv);
+            ProcessGetData(pfrom, chainparams.GetConsensus(), connman, interruptMsgProc);
+            return true;
+        }
+
+        CBlock block;
+        bool ret = ReadBlockFromDisk(block, it->second, chainparams.GetConsensus());
+        assert(ret);
+
+        SendBlockTransactions(block, req, pfrom, connman);
     }
 
 
     else if (strCommand == NetMsgType::GETHEADERS)
     {
-        if(!defenseDelayActive) {
-            CBlockLocator locator;
-            uint256 hashStop;
-            vRecv >> locator >> hashStop;
+        CBlockLocator locator;
+        uint256 hashStop;
+        vRecv >> locator >> hashStop;
 
-            LOCK(cs_main);
-            if (IsInitialBlockDownload() && !pfrom->fWhitelisted) {
-                LogPrint("net", "Ignoring getheaders from peer=%d because node is in initial block download\n", pfrom->id);
-                return true;
-            }
-
-            CNodeState *nodestate = State(pfrom->GetId());
-            const CBlockIndex* pindex = NULL;
-            if (locator.IsNull())
-            {
-                // If locator is null, return the hashStop block
-                BlockMap::iterator mi = mapBlockIndex.find(hashStop);
-                if (mi == mapBlockIndex.end())
-                    return true;
-                pindex = (*mi).second;
-            }
-            else
-            {
-                // Find the last block the caller has in the main chain
-                pindex = FindForkInGlobalIndex(chainActive, locator);
-                if (pindex)
-                    pindex = chainActive.Next(pindex);
-            }
-
-            // we must use CBlocks, as CBlockHeaders won't include the 0x00 nTx count at the end
-            std::vector<CBlock> vHeaders;
-            int nLimit = MAX_HEADERS_RESULTS;
-            LogPrint("net", "getheaders %d to %s from peer=%d\n", (pindex ? pindex->nHeight : -1), hashStop.IsNull() ? "end" : hashStop.ToString(), pfrom->id);
-            for (; pindex; pindex = chainActive.Next(pindex))
-            {
-                vHeaders.push_back(pindex->GetBlockHeader());
-                if (--nLimit <= 0 || pindex->GetBlockHash() == hashStop)
-                    break;
-            }
-            // pindex can be NULL either if we sent chainActive.Tip() OR
-            // if our peer has chainActive.Tip() (and thus we are sending an empty
-            // headers message). In both cases it's safe to update
-            // pindexBestHeaderSent to be our tip.
-            //
-            // It is important that we simply reset the BestHeaderSent value here,
-            // and not max(BestHeaderSent, newHeaderSent). We might have announced
-            // the currently-being-connected tip using a compact block, which
-            // resulted in the peer sending a headers request, which we respond to
-            // without the new block. By resetting the BestHeaderSent, we ensure we
-            // will re-announce the new block via headers (or compact blocks again)
-            // in the SendMessages logic.
-            nodestate->pindexBestHeaderSent = pindex ? pindex : chainActive.Tip();
-            connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::HEADERS, vHeaders));
-        } else {
-            time_t now;
-            time(&now);
-            if (difftime(now, defenseStartTime) > 840) { //If 14 minutes has passed
-                defenseDelayActive = false;
-            }
+        LOCK(cs_main);
+        if (IsInitialBlockDownload() && !pfrom->fWhitelisted) {
+            LogPrint("net", "Ignoring getheaders from peer=%d because node is in initial block download\n", pfrom->id);
+            return true;
         }
+
+        CNodeState *nodestate = State(pfrom->GetId());
+        const CBlockIndex* pindex = NULL;
+        if (locator.IsNull())
+        {
+            // If locator is null, return the hashStop block
+            BlockMap::iterator mi = mapBlockIndex.find(hashStop);
+            if (mi == mapBlockIndex.end())
+                return true;
+            pindex = (*mi).second;
+        }
+        else
+        {
+            // Find the last block the caller has in the main chain
+            pindex = FindForkInGlobalIndex(chainActive, locator);
+            if (pindex)
+                pindex = chainActive.Next(pindex);
+        }
+
+        // we must use CBlocks, as CBlockHeaders won't include the 0x00 nTx count at the end
+        std::vector<CBlock> vHeaders;
+        int nLimit = MAX_HEADERS_RESULTS;
+        LogPrint("net", "getheaders %d to %s from peer=%d\n", (pindex ? pindex->nHeight : -1), hashStop.IsNull() ? "end" : hashStop.ToString(), pfrom->id);
+        for (; pindex; pindex = chainActive.Next(pindex))
+        {
+            vHeaders.push_back(pindex->GetBlockHeader());
+            if (--nLimit <= 0 || pindex->GetBlockHash() == hashStop)
+                break;
+        }
+        // pindex can be NULL either if we sent chainActive.Tip() OR
+        // if our peer has chainActive.Tip() (and thus we are sending an empty
+        // headers message). In both cases it's safe to update
+        // pindexBestHeaderSent to be our tip.
+        //
+        // It is important that we simply reset the BestHeaderSent value here,
+        // and not max(BestHeaderSent, newHeaderSent). We might have announced
+        // the currently-being-connected tip using a compact block, which
+        // resulted in the peer sending a headers request, which we respond to
+        // without the new block. By resetting the BestHeaderSent, we ensure we
+        // will re-announce the new block via headers (or compact blocks again)
+        // in the SendMessages logic.
+        nodestate->pindexBestHeaderSent = pindex ? pindex : chainActive.Tip();
+        connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::HEADERS, vHeaders));
     }
 
 
@@ -2143,7 +2100,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
                 mapBlockSource.emplace(pblock->GetHash(), std::make_pair(pfrom->GetId(), false));
             }
             bool fNewBlock = false;
-            ProcessNewBlock(pfrom, chainparams, pblock, true, &fNewBlock);
+            ProcessNewBlock(chainparams, pblock, true, &fNewBlock);
             if (fNewBlock)
                 pfrom->nLastBlockTime = GetTime();
 
@@ -2220,7 +2177,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             bool fNewBlock = false;
             // Since we requested this block (it was in mapBlocksInFlight), force it to be processed,
             // even if it would not be a candidate for new tip (missing previous block, chain not long enough, etc)
-            ProcessNewBlock(pfrom, chainparams, pblock, true, &fNewBlock);
+            ProcessNewBlock(chainparams, pblock, true, &fNewBlock);
             if (fNewBlock)
                 pfrom->nLastBlockTime = GetTime();
         }
@@ -2398,7 +2355,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             mapBlockSource.emplace(hash, std::make_pair(pfrom->GetId(), true));
         }
         bool fNewBlock = false;
-        ProcessNewBlock(NULL, chainparams, pblock, forceProcessing, &fNewBlock);
+        ProcessNewBlock(chainparams, pblock, forceProcessing, &fNewBlock);
         if (fNewBlock)
             pfrom->nLastBlockTime = GetTime();
     }

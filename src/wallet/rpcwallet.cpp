@@ -1742,8 +1742,6 @@ UniValue gettransaction(const JSONRPCRequest& request)
     uint256 hash;
     hash.SetHex(request.params[0].get_str());
 
-    shared_ptr<const CBlock> queuedBlock = nullptr;
-
     isminefilter filter = ISMINE_SPENDABLE;
     if(request.params.size() > 1)
         if(request.params[1].get_bool())
@@ -1751,82 +1749,28 @@ UniValue gettransaction(const JSONRPCRequest& request)
 
     UniValue entry(UniValue::VOBJ);
     if (!pwalletMain->mapWallet.count(hash))
-    {
-        queuedBlock = GetQueuedBlock();
-        if(queuedBlock == nullptr || queuedBlock->vtx[0]->GetHash() != hash || nReportQueuedBlocks != REPORT_QUEUED_BLOCK_TRANSACTION)
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid or non-wallet transaction id");
-    }
-    if(queuedBlock != nullptr)
-    {
-        CTransactionRef tx = queuedBlock->vtx[0];
-        entry.push_back(Pair("amount", ValueFromAmount(tx->GetValueOut())));
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid or non-wallet transaction id");
+    const CWalletTx& wtx = pwalletMain->mapWallet[hash];
 
-        entry.push_back(Pair("confirmations", 0));
-        entry.push_back(Pair("generated", true));
-        entry.push_back(Pair("blockhash", queuedBlock->GetHash().GetHex()));
+    CAmount nCredit = wtx.GetCredit(filter);
+    CAmount nDebit = wtx.GetDebit(filter);
+    CAmount nNet = nCredit - nDebit;
+    CAmount nFee = (wtx.IsFromMe(filter) ? wtx.tx->GetValueOut() - nDebit : 0);
 
-        uint256 hash = tx->GetHash();
-        entry.push_back(Pair("txid", hash.GetHex()));
+    entry.push_back(Pair("amount", ValueFromAmount(nNet - nFee)));
+    if (wtx.IsFromMe(filter))
+        entry.push_back(Pair("fee", ValueFromAmount(nFee)));
 
-        UniValue details(UniValue::VARR);
-        for(unsigned int i = 0; i < tx->vout.size() ;++i)
-        {
-            string account;
-            const CTxOut & r = tx->vout[i];
-            CTxDestination destination(r.scriptPubKey);
-            if (pwalletMain->mapAddressBook.count(destination))
-                account = pwalletMain->mapAddressBook[destination].name;
-            //if (fAllAccounts || (account == strAccount))
-            {
-                UniValue output(UniValue::VOBJ);
-                entry.push_back(Pair("account", account));
-                MaybePushAddress(output, destination);
-                if (tx->IsCoinBase())
-                {
-                    output.push_back(Pair("category", "queued"));
-                }
-                else
-                {
-                    output.push_back(Pair("category", "receive"));
-                }
-                output.push_back(Pair("amount", ValueFromAmount(r.nValue)));
-                if (pwalletMain->mapAddressBook.count(destination))
-                    output.push_back(Pair("label", account));
-                details.push_back(output);
-            }
-        }
+    WalletTxToJSON(wtx, entry);
 
-        entry.push_back(Pair("details", details));
+    UniValue details(UniValue::VARR);
+    ListTransactions(wtx, "*", 0, false, details, filter);
+    entry.push_back(Pair("details", details));
 
-        string strHex = EncodeHexTx(*tx, RPCSerializationFlags());
-        entry.push_back(Pair("hex", strHex));
+    string strHex = EncodeHexTx(static_cast<CTransaction>(wtx), RPCSerializationFlags());
+    entry.push_back(Pair("hex", strHex));
 
-        return entry;
-    }
-    else
-    {
-        const CWalletTx& wtx = pwalletMain->mapWallet[hash];
-
-        CAmount nCredit = wtx.GetCredit(filter);
-        CAmount nDebit = wtx.GetDebit(filter);
-        CAmount nNet = nCredit - nDebit;
-        CAmount nFee = (wtx.IsFromMe(filter) ? wtx.tx->GetValueOut() - nDebit : 0);
-
-        entry.push_back(Pair("amount", ValueFromAmount(nNet - nFee)));
-        if (wtx.IsFromMe(filter))
-            entry.push_back(Pair("fee", ValueFromAmount(nFee)));
-
-        WalletTxToJSON(wtx, entry);
-
-        UniValue details(UniValue::VARR);
-        ListTransactions(wtx, "*", 0, false, details, filter);
-        entry.push_back(Pair("details", details));
-
-        string strHex = EncodeHexTx(static_cast<CTransaction>(wtx), RPCSerializationFlags());
-        entry.push_back(Pair("hex", strHex));
-
-        return entry;
-    }
+    return entry;
 }
 
 UniValue abandontransaction(const JSONRPCRequest& request)
