@@ -563,7 +563,7 @@ void ReadConfigFile(const std::string& confPath)
 {
     boost::filesystem::ifstream streamConfig(GetConfigFile(confPath));
      if (!streamConfig.good())
-        return; // No bitcoin.conf file is OK
+        return; // No goldcoin.conf file is OK
 	
     {
         LOCK(cs_args);
