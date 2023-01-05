@@ -133,7 +133,7 @@ UniValue generateBlocks(boost::shared_ptr<CReserveScript> coinbaseScript, int nG
             continue;
         }
         std::shared_ptr<const CBlock> shared_pblock = std::make_shared<const CBlock>(*pblock);
-        if (!ProcessNewBlock(Params(), shared_pblock, true, NULL))
+        if (!ProcessNewBlock(NULL, Params(), shared_pblock, true, NULL))
             throw JSONRPCError(RPC_INTERNAL_ERROR, "ProcessNewBlock, block not accepted");
         ++nHeight;
         blockHashes.push_back(pblock->GetHash().GetHex());
@@ -292,6 +292,9 @@ UniValue prioritisetransaction(const JSONRPCRequest& request)
 static UniValue BIP22ValidationResult(const CValidationState& state)
 {
     if (state.IsValid())
+        return NullUniValue;
+
+    if (fQueueBlocks && nReportQueuedBlocks > REPORT_NONE && state.GetBlockQueued())
         return NullUniValue;
 
     std::string strRejectReason = state.GetRejectReason();
@@ -672,6 +675,12 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     result.push_back(Pair("curtime", pblock->GetBlockTime()));
     result.push_back(Pair("bits", strprintf("%08x", pblock->nBits)));
     result.push_back(Pair("height", (int64_t)(pindexPrev->nHeight+1)));
+    
+    // Signal non-mining time frame to stratum pool
+
+    if (CBlockIndex * theBlock = GetPreviousBlock(*pblock, 5)) {
+       result.push_back(Pair("mining_disabled", (((pblock->GetBlockTime() - theBlock->nTime) < ((10 * 60))) || (pblock->GetBlockTime() > GetAdjustedTime()))? true : false ));
+    }
 
     return result;
 }
@@ -742,7 +751,7 @@ UniValue submitblock(const JSONRPCRequest& request)
 
     submitblock_StateCatcher sc(block.GetHash());
     RegisterValidationInterface(&sc);
-    bool fAccepted = ProcessNewBlock(Params(), blockptr, true, NULL);
+    bool fAccepted = ProcessNewBlock(NULL, Params(), blockptr, true, NULL);
     UnregisterValidationInterface(&sc);
     if (fBlockPresent)
     {

@@ -196,6 +196,10 @@ extern CBlockIndex *pindexBestHeader;
 //0 if no checkpoint is to be done.
 extern int64_t checkpointBlockNum;
 
+//Delay block-transmittance by 14 minutes flag (51% defence)
+extern bool defenseDelayActive;
+extern time_t defenseStartTime;
+
 /** Minimum disk space required - used in CheckDiskSpace() */
 static const uint64_t nMinDiskSpace = 52428800;
 
@@ -241,7 +245,7 @@ static const uint64_t MIN_DISK_SPACE_FOR_BLOCK_FILES = 550 * 1024 * 1024;
  * @param[out]  fNewBlock A boolean which is set to indicate if the block was first received via this call
  * @return True if state.IsValid()
  */
-bool ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<const CBlock> pblock, bool fForceProcessing, bool* fNewBlock);
+bool ProcessNewBlock(CNode * pfrom, const CChainParams& chainparams, const std::shared_ptr<const CBlock> pblock, bool fForceProcessing, bool* fNewBlock);
 
 /**
  * Process incoming block headers.
@@ -483,6 +487,38 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus
 
 /** Functions for validating blocks and updating the block tree */
 
+CBlockIndex * GetPreviousBlock(const CBlock& block, int64_t numBlocksBefore);
+
+/** Functions and flags for queuing blocks */
+
+/** Default for DEFAULT_QUEUEBLOCKS. -queueblocks */
+static const bool DEFAULT_QUEUEBLOCKS = true;
+
+enum {
+    REPORT_NONE = 0,
+    REPORT_QUEUED = 1,
+    REPORT_QUEUED_BLOCK_TRANSACTION = 2
+};
+
+/** Default for DEFAULT_REPORTQUEUEBLOCKS. -reportqueuedblocks */
+static const int DEFAULT_REPORTQUEUEDBLOCKS = REPORT_NONE;
+
+extern bool fQueueBlocks;
+extern int  nReportQueuedBlocks;
+
+
+struct QueuedBlockData {
+    std::shared_ptr<const CBlock> block;
+    const CChainParams& chainparams;
+    CNode * pfrom;
+
+    QueuedBlockData(const CChainParams & params) : chainparams(params) {}
+};
+void QueuedBlockHandler(QueuedBlockData * data);
+extern CCriticalSection cs_blockqueue;
+std::shared_ptr<const CBlock> GetQueuedBlock();
+bool IsBlockQueued();
+
 /** Context-independent validity checks */
 bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true);
 bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::Params& consensusParams, bool fCheckPOW = true, bool fCheckMerkleRoot = true);
@@ -490,7 +526,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, const Consensus::P
 /** Context-dependent validity checks.
  *  By "context", we mean only the previous block headers, but not the UTXO
  *  set; UTXO-related validity checks are done in ConnectBlock(). */
-bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, const CBlockIndex* pindexPrev, int64_t nAdjustedTime);
+bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& state, const Consensus::Params& consensusParams, const CBlockIndex* pindexPrev, int64_t nAdjustedTime, bool fCheckTime51Defense);
 bool ContextualCheckBlock(const CBlock& block, CValidationState& state, const Consensus::Params& consensusParams, const CBlockIndex* pindexPrev);
 
 /** Apply the effects of this block (with given index) on the UTXO set represented by coins.
