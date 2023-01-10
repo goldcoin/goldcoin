@@ -814,7 +814,7 @@ UniValue sendcheckpoint(const JSONRPCRequest& request)
             "sendcheckpoint <blockhash>\n"
             "Send a synchronized checkpoint.\n");
 
-    if (IsArgSet("-checkpointkey") || CSyncCheckpoint::strMasterPrivKey.empty())
+    if (!IsArgSet("-checkpointkey") || CSyncCheckpoint::strMasterPrivKey.empty())
         throw std::runtime_error("Not a checkpointmaster node, first set checkpointkey in configuration and restart client. ");
 
     std::string strHash = request.params[0].get_str();
