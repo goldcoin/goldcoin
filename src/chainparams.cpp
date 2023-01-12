@@ -186,6 +186,7 @@ public:
     (     815135, uint256S("0x7a577f2f264db62a7ce9a99b2c95cf9af44c4fb8067394f1ab4cd0b5da9b49f2"))
     (     889411, uint256S("0xc483518b3dbd585e3b04ad29070ee3d6fb90553995b0a5b36a5ca85d0e9c777d"))
     (    1430115, uint256S("0x78911d0d5eaf05a0d2feca3682f8d7c7a8b6fb3797d064cb14b213ff391e535e"))
+    (    1753179, uint256S("0x565b1c4b357bde8e7b29c788ac0545092e2285b131d2f346768226b0091cc105"))
     };
 
         chainTxData = ChainTxData{
@@ -195,7 +196,7 @@ public:
                     //   (the tx=... number in the SetBestChain debug.log lines)
             0.06     // * estimated number of transactions per second after that timestamp
         };
-        consensus.checkpointPubKey = "03fa3202fcecbb8efb084d92655e6300bef04753de0831439b74e88c6e52777ef5";
+        consensus.checkpointPubKey = "0308bc7c4fec892909a094f71e37edbad453f07b5a295140b20497773d6f7e990c";
         consensus.syncCheckpointHeight = 890000;
 
         consensus.GIP1ActivationTime = 1589155200;
