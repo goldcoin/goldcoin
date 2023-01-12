@@ -676,12 +676,6 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     result.push_back(Pair("bits", strprintf("%08x", pblock->nBits)));
     result.push_back(Pair("height", (int64_t)(pindexPrev->nHeight+1)));
     
-    // Signal non-mining time frame to stratum pool
-
-    if (CBlockIndex * theBlock = GetPreviousBlock(*pblock, 5)) {
-       result.push_back(Pair("mining_disabled", (((pblock->GetBlockTime() - theBlock->nTime) < ((10 * 60))) || (pblock->GetBlockTime() > GetAdjustedTime()))? true : false ));
-    }
-
     return result;
 }
 
