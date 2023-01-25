@@ -83,6 +83,11 @@ public:
         consensus.julyFork2 = 251230;
         consensus.febFork = 372000;
 
+        // note: superblock code
+        consensus.sbHeight = std::numeric_limits<int>::max();
+        consensus.sbAddress = "";
+        consensus.sbAmount = 0 * COIN;
+
         // note: this overrides all above
         consensus.lwmaRetarget = std::numeric_limits<int>::max();
 
@@ -225,6 +230,11 @@ public:
         consensus.mayFork = 2016;
         consensus.julyFork2 = 2016;
         consensus.febFork = 2016;
+
+        // note: superblock code
+        consensus.sbHeight = 1000;
+        consensus.sbAddress = "n44fFRZJYgdDFbZZWx3CHtW7bsd1zruUFu";
+        consensus.sbAmount = 11000000 * COIN;
 
         // note: this overrides all above
         consensus.lwmaRetarget = 0;

@@ -17,6 +17,7 @@
 #include "consensus/validation.h"
 #include "hash.h"
 #include "init.h"
+#include "key_io.h"
 #include "policy/fees.h"
 #include "policy/policy.h"
 #include "pow.h"
@@ -1164,6 +1165,10 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus
 
 CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
 {
+    if (nHeight == consensusParams.sbHeight) {
+        return consensusParams.sbAmount;
+    }
+
     CAmount nSubsidy = 50 * COIN;//First block is worth a ceremonial 50 coins.
 
     if (nHeight > 0 && nHeight <= 200)
@@ -1943,6 +1948,18 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                          error("ConnectBlock(): coinbase pays too much (actual=%d vs limit=%d)",
                                block.vtx[0]->GetValueOut(), blockReward),
                                REJECT_INVALID, "bad-cb-amount");
+
+    // check superblock recipient
+    if (pindex->nHeight == chainparams.GetConsensus().sbHeight)
+    {
+         const CScript recipientScript = GetScriptForDestination(DecodeDestination(chainparams.GetConsensus().sbAddress));
+         if (block.vtx[0]->vout.size() != 1) {
+             return false;
+         }
+         if (block.vtx[0]->vout[0].scriptPubKey != recipientScript) {
+             return false;
+         }
+    }
 
     if (!control.Wait())
         return state.DoS(100, false);
