@@ -259,12 +259,12 @@ public:
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
          * a large 32-bit integer with any alignment.
          */
-        pchMessageStart[0] = 0xfc;
-        pchMessageStart[1] = 0xc5;
-        pchMessageStart[2] = 0xb4;
-        pchMessageStart[3] = 0xdd;
+        pchMessageStart[0] = 0xcc;
+        pchMessageStart[1] = 0xe5;
+        pchMessageStart[2] = 0xb5;
+        pchMessageStart[3] = 0xd3;
 
-        nDefaultPort = 18121;
+        nDefaultPort = 18122;
         nPruneAfterHeight = 1000;
 
         genesis = CreateGenesisBlock(1674654322, 1134524, 0x1e0ffff0, 1, 50 * COIN);
@@ -276,7 +276,7 @@ public:
         vSeeds.clear();
 
         // Note that of those with the service bits flag, most only support a subset of possible options
-        vSeeds.push_back(CDNSSeedData("testnet.netseed.net", "167.88.117.138", true));
+        // vSeeds.push_back(CDNSSeedData("testnet.netseed.net", "167.88.117.138", true));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
