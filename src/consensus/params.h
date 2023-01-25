@@ -64,6 +64,8 @@ struct Params {
     /** Whether the client has already processed up to the november fork */
     bool hardForkedNovember = false;
 
+    /** Enable lwma3 retarget algorithm */
+    int lwmaRetarget;
 
     /** Block height and hash at which BIP34 becomes active */
     int BIP34Height;

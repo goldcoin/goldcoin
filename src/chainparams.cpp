@@ -15,6 +15,7 @@
 #include <assert.h>
 
 #include <boost/assign/list_of.hpp>
+#include <limits.h>
 
 #include "chainparamsseeds.h"
 
@@ -81,6 +82,9 @@ public:
         consensus.mayFork = 248000;
         consensus.julyFork2 = 251230;
         consensus.febFork = 372000;
+
+        // note: this overrides all above
+        consensus.lwmaRetarget = std::numeric_limits<int>::max();
 
         consensus.nEnforceBlockUpgradeMajority = 1500;
         consensus.nRejectBlockOutdatedMajority = 1900;
@@ -206,7 +210,7 @@ public:
 static CMainParams mainParams;
 #include "arith_uint256.h"
 /**
- * Testnet (v3)
+ * Testnet (v4)
  */
 class CTestNetParams : public CChainParams {
 public:
@@ -221,6 +225,9 @@ public:
         consensus.mayFork = 2016;
         consensus.julyFork2 = 2016;
         consensus.febFork = 2016;
+
+        // note: this overrides all above
+        consensus.lwmaRetarget = 0;
 
         consensus.nEnforceBlockUpgradeMajority = 375;
         consensus.nRejectBlockOutdatedMajority = 475;
@@ -260,12 +267,9 @@ public:
         nDefaultPort = 18121;
         nPruneAfterHeight = 1000;
 
-        genesis = CreateGenesisBlock(1513056232, 2702105, 0x1e0ffff0, 1, 50 * COIN);
-
+        genesis = CreateGenesisBlock(1674654322, 1134524, 0x1e0ffff0, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-
-
-        assert(consensus.hashGenesisBlock == uint256S("0x63ee26429068a53a39ab251fb3d611bbac9539651f1bae5d7e73adac3767e513"));
+        assert(consensus.hashGenesisBlock == uint256S("0x3b6d1b06081226278a6cb732dc588efc1f94b2a615c713139de427b3539d4be6"));
         assert(genesis.hashMerkleRoot == uint256S("0xa215e67ba165202f75b6458d22fedd1a3ec4f03449a4c6b2a4b8130bfebd3b15"));
 
         vFixedSeeds.clear();
@@ -290,7 +294,7 @@ public:
 
         checkpointData = (CCheckpointData){
             boost::assign::map_list_of
-            ( 0, uint256S("0x63ee26429068a53a39ab251fb3d611bbac9539651f1bae5d7e73adac3767e513"))
+            ( 0, uint256S("0x3b6d1b06081226278a6cb732dc588efc1f94b2a615c713139de427b3539d4be6"))
         };
 
 
