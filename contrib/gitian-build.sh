@@ -33,7 +33,7 @@ test=false
 # Other Basic variables
 SIGNER=
 VERSION=
-url=https://github.com/Reaper-lk/goldcoin
+url=https://github.com/goldcoin/goldcoin
 proc=2
 mem=2000
 scriptName=$(basename -- "$0")
