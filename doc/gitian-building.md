@@ -113,7 +113,7 @@ The entire gitian flow can be performed step by step, example using docker :
 
 Or to do everything at once :
 ```bash
-./gitian-build.sh --docker --setup --build --sign SIGNER --verify 1.14.5
+./gitian-build.sh --docker --setup --build --sign SIGNER --verify 0.14.9.5
 ```
 
 ### Signing externally
