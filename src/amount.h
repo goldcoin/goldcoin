@@ -24,14 +24,12 @@ extern const std::string CURRENCY_UNIT;
 
 /** No amount larger than this (in satoshi) is valid.
  *
- * Note that this constant is *not* the total money supply, which in Bitcoin
- * currently happens to be less than 21,000,000 BTC for various reasons, but
- * rather a sanity check. As this sanity check is used by consensus-critical
- * validation code, the exact value of the MAX_MONEY constant is consensus
- * critical; in unusual circumstances like a(nother) overflow bug that allowed
- * for the creation of coins out of thin air modification could lead to a fork.
- * */
-static const CAmount MAX_MONEY = 84000000 * COIN;
+ * Note that this constant is *not* the total money supply, but rather
+ * the maximum number of coins permitted in a single transaction. The
+ * value of the MAX_MONEY constant is consensus critical. Here we allow
+ * for the super block used to fund the new Goldcoin Treasury.
+ */
+static const CAmount MAX_MONEY = 10000000000 * COIN; // Treasury Fork: max transaction 10,000,000,000 coins
 inline bool MoneyRange(const CAmount& nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
 
 /**
