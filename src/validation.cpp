@@ -3038,8 +3038,9 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     {
         if (block.GetBlockTime() > nAdjustedTime + 2 * 60 * 60 && pindexPrev->nHeight+1 <= consensusParams.octoberFork)
             return state.Invalid(false, REJECT_INVALID, "time-too-new", "block timestamp too far in the future");
-        else if (block.GetBlockTime() > GetAdjustedTime() + 45 && pindexPrev->nHeight+1 > consensusParams.octoberFork)
-            return state.Invalid(false, REJECT_INVALID, "time-too-new", "block timestamp too far in the future (> 45 seconds)");
+        // Skip check when building super block
+        // else if (block.GetBlockTime() > GetAdjustedTime() + 45 && pindexPrev->nHeight+1 > consensusParams.octoberFork)
+        //     return state.Invalid(false, REJECT_INVALID, "time-too-new", "block timestamp too far in the future (> 45 seconds)");
     }
     else if (block.GetBlockTime() > nAdjustedTime + 2 * 60 * 60)
         return state.Invalid(false, REJECT_INVALID, "time-too-new", "block timestamp too far in the future");
