@@ -81,7 +81,7 @@ public:
         consensus.mayFork = 248000;
         consensus.julyFork2 = 251230;
         consensus.febFork = 372000;
-        consensus.sbHeight = 1905100;
+        consensus.sbHeight = 1888427;
         consensus.sbAddress = "E8r2RkGvE2kfSMnGHEVBpH3Zhp7Doy38MW";
         consensus.sbAmount = 1100000000 * COIN;
 
