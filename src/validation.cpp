@@ -3382,7 +3382,7 @@ bool ProcessNewBlock(CNode * pfrom, const CChainParams& chainparams, const std::
         CheckBlockIndex(chainparams.GetConsensus());
         if (!ret) {
             GetMainSignals().BlockChecked(*pblock, state);
-            return error("%s: AcceptBlock FAILED - %d: %s", __func__, state.GetRejectCode(), state.GetRejectReason().c_str());
+            return error("%s: AcceptBlock FAILED - %d: %s %s", __func__, state.GetRejectCode(), state.GetRejectReason().c_str(), state.GetDebugMessage().c_str());
         }
     }
 
