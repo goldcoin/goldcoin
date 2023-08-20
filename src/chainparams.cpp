@@ -81,6 +81,9 @@ public:
         consensus.mayFork = 248000;
         consensus.julyFork2 = 251230;
         consensus.febFork = 372000;
+        consensus.sbHeight = 1905100;
+        consensus.sbAddress = "E8r2RkGvE2kfSMnGHEVBpH3Zhp7Doy38MW";
+        consensus.sbAmount = 1100000000 * COIN;
 
         consensus.nEnforceBlockUpgradeMajority = 1500;
         consensus.nRejectBlockOutdatedMajority = 1900;
@@ -221,6 +224,9 @@ public:
         consensus.mayFork = 2016;
         consensus.julyFork2 = 2016;
         consensus.febFork = 2016;
+        consensus.sbHeight = 36;
+        consensus.sbAddress = "mydcuRh1ji1mpixaDemKzfo6xDyGzXBvSj";
+        consensus.sbAmount = 1100000000 * COIN;
 
         consensus.nEnforceBlockUpgradeMajority = 375;
         consensus.nRejectBlockOutdatedMajority = 475;

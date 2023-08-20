@@ -17,6 +17,7 @@
 #include "consensus/validation.h"
 #include "hash.h"
 #include "init.h"
+#include "key_io.h" // access to DecodeDestination
 #include "policy/fees.h"
 #include "policy/policy.h"
 #include "pow.h"
@@ -1164,6 +1165,10 @@ bool ReadBlockFromDisk(CBlock& block, const CBlockIndex* pindex, const Consensus
 
 CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
 {
+    if (nHeight == consensusParams.sbHeight) {
+        return consensusParams.sbAmount;
+    }
+
     CAmount nSubsidy = 50 * COIN;//First block is worth a ceremonial 50 coins.
 
     if (nHeight > 0 && nHeight <= 200)
@@ -1944,13 +1949,30 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                                block.vtx[0]->GetValueOut(), blockReward),
                                REJECT_INVALID, "bad-cb-amount");
 
+    if (fJustCheck)
+        return true;
+    
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    
+    // recipientscript is 76a914a4dd4b6413baf0a0f34d55fcf66739b1654ea59688ac
+    // OP_DUP OP_HASH160 a4dd4b6413baf0a0f34d55fcf66739b1654ea596 OP_EQUALVERIFY OP_CHECKSIG
+    //
+    // this can be verified by entering 'validateaddress E8r2RkGvE2kfSMnGHEVBpH3Zhp7Doy38MW'
+    // into the rpc console, and verifying the script is as above..
+    
+    if (pindex->nHeight == chainparams.GetConsensus().sbHeight)
+    {
+        const CScript recipientScript = GetScriptForDestination(DecodeDestination(chainparams.GetConsensus().sbAddress));
+        if (block.vtx[0]->vout.size() != 1) return false;
+        if (block.vtx[0]->vout[0].scriptPubKey != recipientScript) return false;
+    }
+    
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    
     if (!control.Wait())
         return state.DoS(100, false);
     int64_t nTime4 = GetTimeMicros(); nTimeVerify += nTime4 - nTime2;
     LogPrint("bench", "    - Verify %u txins: %.2fms (%.3fms/txin) [%.2fs]\n", nInputs - 1, 0.001 * (nTime4 - nTime2), nInputs <= 1 ? 0 : 0.001 * (nTime4 - nTime2) / (nInputs-1), nTimeVerify * 0.000001);
-
-    if (fJustCheck)
-        return true;
 
     // Write undo information to disk
     if (pindex->GetUndoPos().IsNull() || !pindex->IsValid(BLOCK_VALID_SCRIPTS))

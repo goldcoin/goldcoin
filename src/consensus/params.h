@@ -9,6 +9,7 @@
 #ifndef BITCOIN_CONSENSUS_PARAMS_H
 #define BITCOIN_CONSENSUS_PARAMS_H
 
+#include "amount.h"
 #include "uint256.h"
 #include <map>
 #include <string>
@@ -98,6 +99,10 @@ struct Params {
 
     long GIP1ActivationTime;
     int GIP1Height;
+
+    int sbHeight;
+    std::string sbAddress;
+    CAmount sbAmount;
 };
 } // namespace Consensus
 
