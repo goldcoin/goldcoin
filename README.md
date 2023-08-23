@@ -11,7 +11,7 @@ Launched on BCT in 2013.
 
 Goldcoin is an open-source cash payment system that scales on-chain without the need for L2 solutions. It enables instant payments to anyone, anywhere in the world, and can been sent **with or without a transaction fee**.
 
-Goldcoin uses peer-to-peer technology to operate. The network capacity is 1,120 Tx/s with 2-min confirmations and 32 MB blocks. The network is SegWit-free and 0-Conf is fully supported. Starting Sep 15th, 2023 the currency will backed by a real world treasury.
+Goldcoin uses peer-to-peer technology to operate. The network capacity is 1,120 Tx/s with 2-min confirmations and 32 MB blocks. The network is SegWit-free and 0-Conf is fully supported. Starting Sep 15th, 2023 the currency will be backed by a real world treasury.
 
 For more information, as well as an immediately useable, binary version of
 the Goldcoin Core software, see [https://www.goldcoinproject.org](https://www.goldcoinproject.org).
