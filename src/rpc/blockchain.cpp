@@ -23,6 +23,9 @@
 
 #include <stdint.h>
 
+#include <condition_variable>
+#include <mutex>
+
 #include <univalue.h>
 
 #include <boost/thread/thread.hpp> // boost::thread::interrupt
