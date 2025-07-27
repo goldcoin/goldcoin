@@ -10,6 +10,7 @@
 #include <map>
 #include <mutex>
 #include <memory>
+#include <thread>
 
 /**
  * OS-dependent allocation and deallocation of locked/pinned memory pages.
