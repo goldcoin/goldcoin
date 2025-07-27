@@ -246,6 +246,8 @@ BOOST_AUTO_TEST_CASE(rpc_ban)
     BOOST_CHECK_THROW(r = CallRPC(std::string("setban 127.0.0.0:8334")), std::runtime_error); //portnumber for setban not allowed
     BOOST_CHECK_NO_THROW(r = CallRPC(std::string("listbanned")));
     UniValue ar = r.get_array();
+    BOOST_CHECK(ar.size() > 0);
+    BOOST_CHECK(ar[0].isObject());
     UniValue o1 = ar[0].get_obj();
     UniValue adr = find_value(o1, "address");
     BOOST_CHECK_EQUAL(adr.get_str(), "127.0.0.0/32");
