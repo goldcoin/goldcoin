@@ -36,7 +36,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed Python 3 compatibility in `contrib/devtools/check-doc.py`
   - Updated deprecated GitHub Actions (upload-artifact v3 → v4)
   - Updated CodeQL actions from v2 → v3 (security.yml)
+  - Updated actions/setup-python from v4 → v5 across all workflows
+  - Pinned aquasecurity/trivy-action to v0.28.0 (replaced @master for stability)
   - Added libboost-all-dev dependencies to resolve build failures
+  - Fixed missing `<thread>` header include in `support/lockedpool.h` (resolves std::call_once compilation errors)
   - Resolved bytes vs string handling issues
 
 ### Ready for Phase 2: Build System Modernization 🚀
