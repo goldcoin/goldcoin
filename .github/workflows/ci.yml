@@ -1,0 +1,207 @@
+name: CI
+
+on:
+  push:
+    branches: [ goldcoin-master, development ]
+  pull_request:
+    branches: [ goldcoin-master, development ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CCACHE_SIZE: 100M
+  CCACHE_TEMPDIR: /tmp/.ccache-temp
+  CCACHE_COMPRESS: 1
+  PYTHON_DEBUG: 1
+  SDK_URL: https://bitcoincore.org/depends-sources/sdks
+  WINEDEBUG: fixme-all
+
+jobs:
+  lint:
+    runs-on: ubuntu-22.04
+    name: Lint
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip shellcheck
+
+      - name: Run lint checks
+        run: |
+          if [ -f contrib/devtools/check-doc.py ]; then
+            python3 contrib/devtools/check-doc.py
+          fi
+
+  build:
+    needs: lint
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux x86_64 (main)
+          - name: "Linux x86_64"
+            host: x86_64-unknown-linux-gnu
+            packages: "bc python3-zmq python3-dev python3-pip"
+            dep_opts: "NO_QT=1 NO_UPNP=1 DEBUG=1"
+            bitcoin_config: "--enable-zmq --enable-glibc-back-compat --enable-reduce-exports CPPFLAGS=-DDEBUG_LOCKORDER"
+            run_tests: true
+            goldcoin_scrypt: 1
+            goal: "install"
+
+          # Linux x86_64 (no wallet)
+          - name: "Linux x86_64 (no wallet)"
+            host: x86_64-unknown-linux-gnu
+            packages: "python3 python3-dev python3-pip"
+            dep_opts: "NO_WALLET=1"
+            bitcoin_config: "--enable-glibc-back-compat --enable-reduce-exports"
+            run_tests: true
+            goldcoin_scrypt: 1
+            goal: "install"
+
+          # Linux 32-bit
+          - name: "Linux i686"
+            host: i686-pc-linux-gnu
+            packages: "g++-multilib bc python3-pip python3-dev python3-zmq"
+            dep_opts: "NO_QT=1"
+            bitcoin_config: "--enable-zmq --enable-glibc-back-compat --enable-reduce-exports LDFLAGS=-static-libstdc++"
+            run_tests: true
+            goldcoin_scrypt: 1
+            goal: "install"
+            use_shell: "/bin/dash"
+
+          # ARM
+          - name: "ARM Linux"
+            host: arm-linux-gnueabihf
+            packages: "g++-arm-linux-gnueabihf"
+            dep_opts: "NO_QT=1"
+            bitcoin_config: "--enable-glibc-back-compat --enable-reduce-exports"
+            run_tests: false
+            goldcoin_scrypt: 0
+            goal: "install"
+
+          # Windows 32-bit
+          - name: "Win32"
+            host: i686-w64-mingw32
+            packages: "python3 python3-dev python3-pip nsis g++-mingw-w64-i686 wine bc"
+            dep_opts: "NO_QT=1"
+            bitcoin_config: "--enable-reduce-exports"
+            run_tests: true
+            goldcoin_scrypt: 1
+            goal: "install"
+            dpkg_add_arch: "i386"
+
+          # Windows 64-bit
+          - name: "Win64"
+            host: x86_64-w64-mingw32
+            packages: "python3 python3-dev python3-pip nsis g++-mingw-w64-x86-64 wine bc"
+            dep_opts: "NO_QT=1"
+            bitcoin_config: "--enable-reduce-exports"
+            run_tests: true
+            goldcoin_scrypt: 1
+            goal: "install"
+            dpkg_add_arch: "i386"
+
+    name: ${{ matrix.name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ matrix.host }}
+          max-size: ${{ env.CCACHE_SIZE }}
+
+      - name: Set up build environment
+        run: |
+          sudo apt-get update
+          if [ -n "${{ matrix.dpkg_add_arch }}" ]; then
+            sudo dpkg --add-architecture "${{ matrix.dpkg_add_arch }}"
+            sudo apt-get update
+          fi
+          if [ -n "${{ matrix.packages }}" ]; then
+            sudo apt-get install --no-install-recommends --no-upgrade -qq ${{ matrix.packages }}
+          fi
+
+      - name: Install goldcoin_scrypt
+        if: matrix.goldcoin_scrypt == 1
+        run: |
+          sudo pip3 install goldcoin_scrypt
+
+      - name: Prepare build
+        run: |
+          mkdir -p depends/SDKs depends/sdk-sources
+          # Set up ccache
+          export PATH="/usr/lib/ccache:$PATH"
+          ccache --max-size=${{ env.CCACHE_SIZE }}
+
+      - name: Build dependencies
+        run: |
+          export MAKEJOBS="-j$(nproc)"
+          make $MAKEJOBS -C depends HOST=${{ matrix.host }} ${{ matrix.dep_opts }}
+
+      - name: Configure and build
+        run: |
+          export MAKEJOBS="-j$(nproc)"
+          export BASE_OUTDIR=${{ github.workspace }}/out
+          export OUTDIR=$BASE_OUTDIR/${{ matrix.host }}
+          export BITCOIN_CONFIG_ALL="--disable-dependency-tracking --prefix=${{ github.workspace }}/depends/${{ matrix.host }} --bindir=$OUTDIR/bin --libdir=$OUTDIR/lib"
+          
+          # Clean any previous compiler settings
+          unset CC
+          unset CXX
+          
+          # Configure shell if needed
+          if [ -n "${{ matrix.use_shell }}" ]; then
+            export CONFIG_SHELL="${{ matrix.use_shell }}"
+            ${{ matrix.use_shell }} -c "./autogen.sh"
+          else
+            ./autogen.sh
+          fi
+          
+          # Build
+          mkdir -p build && cd build
+          ../configure --cache-file=config.cache $BITCOIN_CONFIG_ALL ${{ matrix.bitcoin_config }} || (cat config.log && false)
+          make distdir VERSION=${{ matrix.host }}
+          cd goldcoin-${{ matrix.host }}
+          ./configure --cache-file=../config.cache $BITCOIN_CONFIG_ALL ${{ matrix.bitcoin_config }} || (cat config.log && false)
+          make $MAKEJOBS ${{ matrix.goal }} || (echo "Build failure. Verbose build follows." && make ${{ matrix.goal }} V=1 && false)
+
+      - name: Run tests
+        if: matrix.run_tests
+        run: |
+          cd build/goldcoin-${{ matrix.host }}
+          export MAKEJOBS="-j$(nproc)"
+          export LD_LIBRARY_PATH=${{ github.workspace }}/depends/${{ matrix.host }}/lib
+          
+          # Run unit tests
+          make $MAKEJOBS check VERBOSE=1
+          
+          # Run functional tests
+          if [ -f ../../qa/pull-tester/rpc-tests.py ]; then
+            python3 ../../qa/pull-tester/rpc-tests.py --coverage --parallel=$(nproc)
+          fi
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: goldcoin-${{ matrix.host }}
+          path: |
+            out/
+            build/goldcoin-${{ matrix.host }}/src/goldcoin*
+            build/goldcoin-${{ matrix.host }}/src/qt/goldcoin-qt*
+          retention-days: 7

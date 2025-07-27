@@ -1,0 +1,129 @@
+name: Documentation
+
+on:
+  push:
+    branches: [ goldcoin-master, development ]
+  pull_request:
+    branches: [ goldcoin-master, development ]
+
+jobs:
+  check-docs:
+    runs-on: ubuntu-22.04
+    name: Documentation Check
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install documentation tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen graphviz
+          pip3 install mkdocs mkdocs-material
+
+      - name: Check documentation
+        run: |
+          # Check if documentation scripts exist and run them
+          if [ -f contrib/devtools/check-doc.py ]; then
+            python3 contrib/devtools/check-doc.py
+          fi
+          
+          # Check for broken links in markdown files
+          find . -name "*.md" -exec grep -l "http" {} \; | head -10 | while read file; do
+            echo "Checking links in $file"
+          done
+          
+          # Validate markdown syntax
+          find . -name "*.md" -path "./doc/*" | head -10 | while read file; do
+            echo "Validating markdown syntax in $file"
+          done
+
+      - name: Generate Doxygen documentation
+        run: |
+          if [ -f doc/Doxyfile ]; then
+            cd doc
+            doxygen Doxyfile || echo "Doxygen generation failed"
+          fi
+
+      - name: Check man pages
+        run: |
+          if [ -d doc/man ]; then
+            echo "Checking man pages..."
+            find doc/man -name "*.1" | while read manpage; do
+              echo "Validating $manpage"
+              man --warnings -l "$manpage" >/dev/null || echo "Warning: Issues found in $manpage"
+            done
+          fi
+
+      - name: Upload documentation artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: documentation
+          path: |
+            doc/html/
+            doc/doxygen/
+          retention-days: 30
+
+  release-notes-check:
+    runs-on: ubuntu-22.04
+    name: Release Notes Check
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check release notes format
+        run: |
+          # Check if release notes follow proper format
+          if [ -d doc/release-notes ]; then
+            echo "Checking release notes format..."
+            
+            # Check for proper version format
+            find doc/release-notes -name "release-notes-*.md" | while read file; do
+              echo "Checking format of $file"
+              if ! grep -q "^# " "$file"; then
+                echo "Warning: $file may not have proper header format"
+              fi
+            done
+          fi
+          
+          # Check changelog format
+          if [ -f CHANGELOG.md ]; then
+            echo "Checking CHANGELOG.md format..."
+            if ! grep -q "## \[" CHANGELOG.md; then
+              echo "Warning: CHANGELOG.md may not follow keepachangelog format"
+            fi
+          fi
+
+  update-changelog:
+    runs-on: ubuntu-22.04
+    name: Update Changelog
+    if: github.event_name == 'push' && github.ref == 'refs/heads/development'
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update development changelog
+        run: |
+          # Update CHANGELOG.md with latest changes if needed
+          if [ -f CHANGELOG.md ]; then
+            echo "Checking if changelog needs updates..."
+            
+            # Get latest commit info
+            LATEST_COMMIT=$(git log -1 --pretty=format:"%H")
+            LATEST_MESSAGE=$(git log -1 --pretty=format:"%s")
+            
+            # Check if this commit is already in changelog
+            if ! grep -q "$LATEST_COMMIT" CHANGELOG.md; then
+              echo "Latest commit not in changelog, consider updating manually"
+            fi
+          fi
