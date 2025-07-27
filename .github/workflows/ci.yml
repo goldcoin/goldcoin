@@ -128,6 +128,8 @@ jobs:
       - name: Set up build environment
         run: |
           sudo apt-get update
+          # Install base dependencies including Boost
+          sudo apt-get install --no-install-recommends --no-upgrade -qq build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils libboost-all-dev
           if [ -n "${{ matrix.dpkg_add_arch }}" ]; then
             sudo dpkg --add-architecture "${{ matrix.dpkg_add_arch }}"
             sudo apt-get update
