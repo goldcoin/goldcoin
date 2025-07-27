@@ -1,7 +1,8 @@
 Goldcoin Core integration/staging tree
 =====================================
 
-[![Build Status](https://travis-ci.org/goldcoin/goldcoin.svg?branch=goldcoin-master)](https://travis-ci.org/goldcoin/goldcoin)
+[![CI](https://github.com/goldcoin/goldcoin/workflows/CI/badge.svg?branch=goldcoin-master)](https://github.com/goldcoin/goldcoin/actions)
+[![Security](https://github.com/goldcoin/goldcoin/workflows/Security/badge.svg?branch=goldcoin-master)](https://github.com/goldcoin/goldcoin/actions)
 
 https://www.goldcoinproject.org
 
@@ -25,10 +26,11 @@ information or see https://opensource.org/licenses/MIT.
 Development Process
 -------------------
 
-The `master` branch is regularly built and tested, but is not guaranteed to be
-completely stable. [Tags](https://github.com/goldcoin/goldcoin/tags) are created
+The `goldcoin-master` branch contains stable releases, while the `development` branch
+is used for ongoing modernization work. [Tags](https://github.com/goldcoin/goldcoin/tags) are created
 regularly to indicate new official, stable release versions of Goldcoin Core.
 
+The modernization roadmap and branching strategy are described in [DEVELOPMENT.md](DEVELOPMENT.md).
 The contribution workflow is described in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 The #core-client channel on [Discord](https://discord.me/goldcoin)
