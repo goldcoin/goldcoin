@@ -52,47 +52,36 @@
 - Never commit private keys or sensitive data
 - Follow defensive security practices
 
-## CI/Build i686 ENDLESS LOOP ISSUE
-**CRITICAL: i686 Build Stuck in 3-Approach Cycle - DO NOT REPEAT**
+## CI/Build i686 Solution
+**RESOLVED: Use native i386 container instead of cross-compilation**
 
-The i686 build has been cycling through these 3 approaches for hours with ZERO success:
+### Root Cause
+The i686 build failures were caused by cross-compilation issues on Ubuntu 20.04 x86_64:
+- C++ standard library headers (`<mutex>`, `<thread>`, `<condition_variable>`) weren't accessible in cross-compilation environment
+- Installing multilib packages didn't resolve the header path issues
+- The `depends` build system's toolchain lacked proper C++11 threading support for i686
 
-### ❌ Failed Approach #1: Multiarch + dpkg_add_arch (commit 7b72dd3f5)
+### Solution: Native i386 Container
+Instead of cross-compiling from x86_64 to i686, use a native 32-bit container:
+
 ```yaml
-dpkg_add_arch: "i386" 
-packages: "g++-multilib bc python3-zmq libc6-dev:i386 libstdc++6:i386"
+- name: "Linux i686"
+  host: i686-pc-linux-gnu
+  container: "i386/ubuntu:20.04"  # Native 32-bit container
+  packages: "build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils libboost-all-dev bc python3-zmq python3-dev python3-pip"
+  dep_opts: "NO_QT=1"
+  bitcoin_config: "--enable-zmq --enable-glibc-back-compat --enable-reduce-exports"
+  skip_base_install: true  # Container has its own package management
 ```
-**Result**: Still fails with "mutex: No such file or directory"
 
-### ❌ Failed Approach #2: Dogecoin Minimal (commit b25c6b610) 
-```yaml
-packages: "g++-multilib bc python3-zmq"  # Minimal like Dogecoin
-# Remove dpkg_add_arch and 32-bit packages
-```
-**Result**: Still fails with "mutex: No such file or directory"
+### Key Changes
+1. **Use `i386/ubuntu:20.04`** - A native 32-bit Ubuntu container
+2. **Install all dependencies directly** - No cross-compilation packages needed
+3. **Handle sudo properly** - Containers might not have sudo
+4. **Skip base install** - Container manages its own packages
 
-### ❌ Failed Approach #3: System Libraries (commit e12b691be)
-```yaml
-skip_depends: true
-packages: "g++-multilib bc python3-zmq libssl-dev:i386 libevent-dev:i386 libboost-all-dev:i386"
-dpkg_add_arch: "i386"
-```
-**Result**: Still fails with "mutex: No such file or directory"
-
-### Root Problem Analysis
-- Headers ARE present in source files (threadinterrupt.h:8-10, net.h:12-14, lockedpool.h:8-10)
-- Problem is NOT missing headers in source code
-- Problem is NOT package installation 
-- All 3 approaches install packages successfully but compilation still fails
-- **This suggests a deeper Ubuntu 20.04 + i686 cross-compilation incompatibility**
-
-### Current Status: i686 Build DISABLED (commit ca6ea7714)
-**DO NOT re-enable i686 build without a fundamentally new approach**
-
-### Alternative Solutions to Investigate:
-1. **Different Ubuntu version** (18.04 or 22.04 instead of 20.04)
-2. **Different compiler setup** (clang instead of gcc for i686)
-3. **Container-based build** (use 32-bit container instead of cross-compilation) 
-4. **Accept permanent disable** - focus on working builds (x86_64, ARM, Windows)
-
-**STOP CYCLING THROUGH THE SAME 3 FAILED APPROACHES**
+### Benefits
+- No cross-compilation complexity
+- Native 32-bit toolchain with proper C++ standard library
+- Headers are found in their expected locations
+- Matches production 32-bit Linux environments

@@ -71,17 +71,17 @@ jobs:
             goldcoin_scrypt: 1
             goal: "install"
 
-          # Linux 32-bit - Using Dogecoin's container-based approach
+          # Linux 32-bit - Using native i386 container approach
           - name: "Linux i686"
             host: i686-pc-linux-gnu
-            container: "ubuntu:20.04"
-            packages: "g++-multilib bc python3-zmq"
+            container: "i386/ubuntu:20.04"
+            packages: "build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils libboost-all-dev bc python3-zmq python3-dev python3-pip"
             dep_opts: "NO_QT=1"
-            bitcoin_config: "--enable-zmq --enable-glibc-back-compat --enable-reduce-exports LDFLAGS=-static-libstdc++"
+            bitcoin_config: "--enable-zmq --enable-glibc-back-compat --enable-reduce-exports"
             run_tests: true
             goldcoin_scrypt: 1
             goal: "install"
-            use_shell: "/bin/dash"
+            skip_base_install: true
 
           # ARM
           - name: "ARM Linux"
@@ -129,21 +129,38 @@ jobs:
 
       - name: Set up build environment
         run: |
-          sudo apt-get update
-          # Install base dependencies including Boost
-          sudo apt-get install --no-install-recommends --no-upgrade -qq build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils libboost-all-dev
+          # For container builds, we might not have sudo
+          if command -v sudo >/dev/null 2>&1; then
+            SUDO=sudo
+          else
+            SUDO=""
+          fi
+          
+          $SUDO apt-get update
+          
+          # Skip base install for container builds that have packages pre-installed
+          if [ "${{ matrix.skip_base_install }}" != "true" ]; then
+            # Install base dependencies including Boost
+            $SUDO apt-get install --no-install-recommends --no-upgrade -qq build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils libboost-all-dev
+          fi
+          
           if [ -n "${{ matrix.dpkg_add_arch }}" ]; then
-            sudo dpkg --add-architecture "${{ matrix.dpkg_add_arch }}"
-            sudo apt-get update
+            $SUDO dpkg --add-architecture "${{ matrix.dpkg_add_arch }}"
+            $SUDO apt-get update
           fi
           if [ -n "${{ matrix.packages }}" ]; then
-            sudo apt-get install --no-install-recommends --no-upgrade -qq ${{ matrix.packages }}
+            $SUDO apt-get install --no-install-recommends --no-upgrade -qq ${{ matrix.packages }}
           fi
 
       - name: Install goldcoin_scrypt
         if: matrix.goldcoin_scrypt == 1
         run: |
-          sudo pip3 install goldcoin_scrypt
+          # For container builds, we might not have sudo
+          if command -v sudo >/dev/null 2>&1; then
+            sudo pip3 install goldcoin_scrypt
+          else
+            pip3 install goldcoin_scrypt
+          fi
 
       - name: Prepare build
         run: |
