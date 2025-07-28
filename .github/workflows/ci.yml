@@ -54,7 +54,7 @@ jobs:
           # MINIMAL TEST: Only Linux x86_64 for now
           - name: "Linux x86_64"
             host: x86_64-unknown-linux-gnu
-            packages: "bc python3-zmq python3-setuptools python3-wheel"
+            packages: "bc python3-setuptools python3-wheel"
             dep_opts: "NO_QT=1 NO_UPNP=1 DEBUG=1"
             bitcoin_config: "--enable-zmq --enable-glibc-back-compat --enable-reduce-exports --with-incompatible-bdb CPPFLAGS=-DDEBUG_LOCKORDER"
             run_tests: true
@@ -114,13 +114,13 @@ jobs:
             $SUDO apt-get install --no-install-recommends --no-upgrade -qq ${{ matrix.packages }}
           fi
 
-      - name: Install goldcoin_scrypt
+      - name: Install Python dependencies
         if: matrix.goldcoin_scrypt == 1
         run: |
           # Upgrade setuptools first (following Dogecoin pattern)
           python3 -m pip install setuptools==70.3.0 --upgrade
-          # Install goldcoin_scrypt
-          python3 -m pip install goldcoin_scrypt
+          # Install required Python packages for tests
+          python3 -m pip install pyzmq goldcoin_scrypt
 
       - name: Prepare build
         run: |
