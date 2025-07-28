@@ -23,15 +23,13 @@
 
 #include <stdint.h>
 
+#include <univalue.h>
+
 #include <condition_variable>
 #include <mutex>
-
-#include <univalue.h>
 
 #include <boost/thread/thread.hpp> // boost::thread::interrupt
 
-#include <mutex>
-#include <condition_variable>
 using namespace std;
 
 struct CUpdatedBlock
