@@ -53,10 +53,7 @@
 #include <signal.h>
 #endif
 
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/algorithm/string/replace.hpp>
-#include <boost/algorithm/string/split.hpp>
+#include <sstream>
 #include <boost/bind/bind.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/function.hpp>
@@ -1066,7 +1063,13 @@ bool AppInitParameterInteraction()
         // Minimal effort at forwards compatibility
         std::string strReplacementModeList = GetArg("-mempoolreplacement", "");  // default is impossible
         std::vector<std::string> vstrReplacementModes;
-        boost::split(vstrReplacementModes, strReplacementModeList, boost::is_any_of(","));
+        std::stringstream ss(strReplacementModeList);
+        std::string token;
+        while (std::getline(ss, token, ',')) {
+            if (!token.empty()) {
+                vstrReplacementModes.push_back(token);
+            }
+        }
         fEnableReplacement = (std::find(vstrReplacementModes.begin(), vstrReplacementModes.end(), "fee") != vstrReplacementModes.end());
     }
 
@@ -1078,7 +1081,13 @@ bool AppInitParameterInteraction()
         const std::vector<std::string>& deployments = mapMultiArgs.at("-bip9params");
         for (auto i : deployments) {
             std::vector<std::string> vDeploymentParams;
-            boost::split(vDeploymentParams, i, boost::is_any_of(":"));
+            std::stringstream ss(i);
+            std::string token;
+            while (std::getline(ss, token, ':')) {
+                if (!token.empty()) {
+                    vDeploymentParams.push_back(token);
+                }
+            }
             if (vDeploymentParams.size() != 3) {
                 return InitError("BIP9 parameters malformed, expecting deployment:start:end");
             }
