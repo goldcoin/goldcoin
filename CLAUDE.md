@@ -27,14 +27,23 @@
   - rpc_tests: Simplified ban tests for limited test environment
   - transaction_tests: Made script validation more lenient for edge cases
 - **GitHub Actions**: All 210 test cases now pass locally; awaiting CI confirmation
-- **CI Threading Loop Issue Resolved**: Broke out of endless header compilation loop (commits 81526c849, 2aa3c325e, 195aa5b7e, bf468eb5f, 7b72dd3f5)
-  - Problem: CI repeatedly failed with missing std::mutex, std::thread, std::condition_variable despite headers being present
-  - Root Cause: 32-bit builds lacked proper C++ standard library development packages AND missing `dpkg_add_arch: "i386"` parameter
-  - Failed Approaches: Force-including headers via CPPFLAGS caused "mutex: No such file or directory" preprocessor errors
-  - Solution: Added `libc6-dev:i386` and `libstdc++6:i386` packages AND `dpkg_add_arch: "i386"` to Linux i686 matrix
-  - Key Learning: Multiarch packages require BOTH the dpkg_add_arch parameter AND proper package installation
-- **Next Steps**: Ready to create PR to upstream goldcoin/goldcoin once CI passes
-- **PR Strategy Decision**: Will merge directly to main branch (goldcoin-master) after comprehensive testing
+
+## CI Feedback Loop Crisis (2025-07-28)
+- **PROBLEM**: 164 failed GitHub Actions workflows in 18 hours
+- **ROOT CAUSE**: CI feedback loop caused by environment differences
+  - Local builds work fine with standard commands
+  - CI failures due to Python 3.11 package availability issues
+  - GitHub AI suggestions created repetitive failed attempts
+- **FAILED APPROACHES**: 
+  - System package installation of `python3.11-dev`, `python3.11-venv`
+  - Force Python 3.11 via `update-alternatives`
+  - Complex multiarch package management
+- **CURRENT SOLUTION** (commit b74c0b3e1): Minimal test approach
+  - Use `actions/setup-python@v5` for reliable Python 3.11
+  - Single matrix entry (Linux x86_64) for isolation
+  - Follow Dogecoin CI patterns for package management
+  - Remove problematic system Python package installations
+- **STATUS**: Testing minimal configuration to break feedback loop
 
 ## PR Merge Strategy (Lead Dev Decision)
 - **Target Branch**: goldcoin-master (main branch)
@@ -52,36 +61,44 @@
 - Never commit private keys or sensitive data
 - Follow defensive security practices
 
-## CI/Build i686 Solution
+## CI Build Solutions & Lessons
+
+### Python 3.11 Setup Issue (2025-07-28)
+**PROBLEM**: GitHub Actions couldn't find `python3.11-dev` and `python3.11-venv` packages
+
+**ROOT CAUSE**: 
+- Ubuntu runners don't have Python 3.11 development packages by default
+- System package installation approach was unreliable across different runner environments
+- Created feedback loop with GitHub AI suggesting same failed approaches
+
+**SOLUTION**: Use `actions/setup-python@v5` instead of system packages
+```yaml
+- name: Set up Python
+  uses: actions/setup-python@v5
+  with:
+    python-version: '3.11'
+```
+
+**KEY LEARNINGS**:
+- GitHub Actions have reliable Python setup actions - use them instead of apt
+- Test minimal configs first to isolate issues
+- Reference successful projects like Dogecoin for proven patterns
+- System package availability varies across runner environments
+
+### i686 Cross-Compilation Solution (Previous)
 **RESOLVED: Use native i386 container instead of cross-compilation**
 
-### Root Cause
-The i686 build failures were caused by cross-compilation issues on Ubuntu 20.04 x86_64:
-- C++ standard library headers (`<mutex>`, `<thread>`, `<condition_variable>`) weren't accessible in cross-compilation environment
-- Installing multilib packages didn't resolve the header path issues
-- The `depends` build system's toolchain lacked proper C++11 threading support for i686
+**Root Cause**: Cross-compilation issues on Ubuntu 20.04 x86_64
+- C++ standard library headers not accessible in cross-compilation environment
+- Multilib packages didn't resolve header path issues
 
-### Solution: Native i386 Container
-Instead of cross-compiling from x86_64 to i686, use a native 32-bit container:
-
+**Solution**: Native i386 container approach
 ```yaml
 - name: "Linux i686"
   host: i686-pc-linux-gnu
-  container: "i386/ubuntu:20.04"  # Native 32-bit container
-  packages: "build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils libboost-all-dev bc python3-zmq python3-dev python3-pip"
+  container: "i386/ubuntu:20.04"
+  packages: "build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils libboost-all-dev bc python3-zmq python3-setuptools python3-wheel"
   dep_opts: "NO_QT=1"
   bitcoin_config: "--enable-zmq --enable-glibc-back-compat --enable-reduce-exports"
-  skip_base_install: true  # Container has its own package management
+  skip_base_install: true
 ```
-
-### Key Changes
-1. **Use `i386/ubuntu:20.04`** - A native 32-bit Ubuntu container
-2. **Install all dependencies directly** - No cross-compilation packages needed
-3. **Handle sudo properly** - Containers might not have sudo
-4. **Skip base install** - Container manages its own packages
-
-### Benefits
-- No cross-compilation complexity
-- Native 32-bit toolchain with proper C++ standard library
-- Headers are found in their expected locations
-- Matches production 32-bit Linux environments
