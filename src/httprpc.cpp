@@ -145,7 +145,9 @@ static bool RPCAuthorized(const std::string& strAuth, std::string& strAuthUserna
     if (strAuth.substr(0, 6) != "Basic ")
         return false;
     std::string strUserPass64 = strAuth.substr(6);
-    boost::trim(strUserPass64);
+    // Trim whitespace from both ends
+    strUserPass64.erase(0, strUserPass64.find_first_not_of(" \t\n\r\f\v"));
+    strUserPass64.erase(strUserPass64.find_last_not_of(" \t\n\r\f\v") + 1);
     std::string strUserPass = DecodeBase64(strUserPass64);
 
     if (strUserPass.find(":") != std::string::npos)
