@@ -32,7 +32,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake imagemagick libcap-dev librsvg2-bin libz-dev libbz2-dev libtiff-tools python3-dev curl
+          sudo apt-get install -y cmake imagemagick libcap-dev librsvg2-bin libz-dev libbz2-dev libtiff-tools python3-dev curl libdb++-dev
 
       - name: Download macOS SDK
         run: |
@@ -103,14 +103,16 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install automake libtool pkg-config boost libevent
+          brew install automake libtool pkg-config boost libevent berkeley-db
           
       - name: Configure and build
         run: |
           export MAKEJOBS="-j$(sysctl -n hw.activecpu)"
           
           ./autogen.sh
-          ./configure --enable-reduce-exports --disable-bench --disable-gui
+          ./configure --enable-reduce-exports --disable-bench --disable-gui \
+            CPPFLAGS="-I/usr/local/opt/berkeley-db/include" \
+            LDFLAGS="-L/usr/local/opt/berkeley-db/lib"
           make $MAKEJOBS
           
       - name: Run tests
