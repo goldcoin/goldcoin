@@ -87,6 +87,32 @@
 - Fix one specific issue at a time, test, then proceed to next
 - Document each fix to maintain continuity across sessions
 
+### Python 3.11 goldcoin_scrypt Compatibility Issue (2025-07-28)
+**PROBLEM**: goldcoin_scrypt pip package fails with `SystemError: PY_SSIZE_T_CLEAN macro must be defined`
+
+**ROOT CAUSE**: 
+- goldcoin_scrypt C extension not updated for Python 3.11's stricter API requirements
+- Python 3.10+ requires PY_SSIZE_T_CLEAN macro defined before including Python.h
+- External dependency, cannot patch directly in our codebase
+
+**TEMPORARY SOLUTION**: Use Python 3.10 instead of 3.11
+```yaml
+- name: Set up Python
+  uses: actions/setup-python@v5
+  with:
+    python-version: '3.10'
+```
+
+**LONG-TERM SOLUTIONS**:
+1. Fork and patch goldcoin_scrypt to add `#define PY_SSIZE_T_CLEAN` before `#include <Python.h>`
+2. Replace goldcoin_scrypt with local implementation using existing C++ scrypt code
+3. Make goldcoin_scrypt optional in tests with graceful fallback
+
+**KEY LEARNINGS**:
+- External Python packages with C extensions may break with new Python versions
+- Always test with exact Python version used in CI
+- Consider vendoring critical dependencies or having fallbacks
+
 ### i686 Cross-Compilation Solution (Previous)
 **RESOLVED: Use native i386 container instead of cross-compilation**
 
