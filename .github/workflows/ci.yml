@@ -137,7 +137,10 @@ jobs:
             SUDO=""
           fi
           
+          # Force Python 3.11 to avoid imp module issues
           $SUDO apt-get update
+          $SUDO apt-get install -y python3.11 python3.11-dev python3.11-venv
+          $SUDO update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
           
           # Skip base install for container builds that have packages pre-installed
           if [ "${{ matrix.skip_base_install }}" != "true" ]; then
