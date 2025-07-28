@@ -74,13 +74,14 @@ jobs:
           # Linux 32-bit
           - name: "Linux i686"
             host: i686-pc-linux-gnu
-            packages: "g++-multilib bc python3-zmq"
+            packages: "g++-multilib bc python3-zmq libc6-dev:i386 libstdc++6:i386"
             dep_opts: "NO_QT=1"
             bitcoin_config: "--enable-zmq --enable-glibc-back-compat --enable-reduce-exports LDFLAGS=-static-libstdc++"
             run_tests: true
             goldcoin_scrypt: 1
             goal: "install"
             use_shell: "/bin/dash"
+            dpkg_add_arch: "i386"
 
           # ARM
           - name: "ARM Linux"
