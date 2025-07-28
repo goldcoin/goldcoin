@@ -81,6 +81,7 @@ jobs:
             goldcoin_scrypt: 1
             goal: "install"
             use_shell: "/bin/dash"
+            dpkg_add_arch: "i386"
 
           # ARM
           - name: "ARM Linux"
