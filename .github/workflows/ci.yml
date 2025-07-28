@@ -71,17 +71,17 @@ jobs:
             goldcoin_scrypt: 1
             goal: "install"
 
-          # Linux 32-bit
+          # Linux 32-bit - Using Dogecoin's container-based approach
           - name: "Linux i686"
             host: i686-pc-linux-gnu
-            packages: "g++-multilib bc python3-zmq libc6-dev:i386 libstdc++6:i386"
+            container: "ubuntu:20.04"
+            packages: "g++-multilib bc python3-zmq"
             dep_opts: "NO_QT=1"
             bitcoin_config: "--enable-zmq --enable-glibc-back-compat --enable-reduce-exports LDFLAGS=-static-libstdc++"
             run_tests: true
             goldcoin_scrypt: 1
             goal: "install"
             use_shell: "/bin/dash"
-            dpkg_add_arch: "i386"
 
           # ARM
           - name: "ARM Linux"
@@ -116,6 +116,7 @@ jobs:
             dpkg_add_arch: "i386"
 
     name: ${{ matrix.name }}
+    container: ${{ matrix.container }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
