@@ -19,7 +19,7 @@
 #include "utilstrencodings.h"
 #include "version.h"
 
-#include <boost/algorithm/string.hpp>
+#include <sstream>
 
 #include <univalue.h>
 
@@ -134,7 +134,13 @@ static bool rest_headers(HTTPRequest* req,
     std::string param;
     const RetFormat rf = ParseDataFormat(param, strURIPart);
     std::vector<std::string> path;
-    boost::split(path, param, boost::is_any_of("/"));
+    std::stringstream ss(param);
+    std::string token;
+    while (std::getline(ss, token, '/')) {
+        if (!token.empty()) {
+            path.push_back(token);
+        }
+    }
 
     if (path.size() != 2)
         return RESTERR(req, HTTP_BAD_REQUEST, "No header count specified. Use /rest/headers/<count>/<hash>.<ext>.");
@@ -415,7 +421,13 @@ static bool rest_getutxos(HTTPRequest* req, const std::string& strURIPart)
     if (param.length() > 1)
     {
         std::string strUriParams = param.substr(1);
-        boost::split(uriParts, strUriParams, boost::is_any_of("/"));
+        std::stringstream ss(strUriParams);
+        std::string token;
+        while (std::getline(ss, token, '/')) {
+            if (!token.empty()) {
+                uriParts.push_back(token);
+            }
+        }
     }
 
     // throw exception in case of a empty request
