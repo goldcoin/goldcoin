@@ -162,8 +162,7 @@ jobs:
           export OUTDIR=$BASE_OUTDIR/${{ matrix.host }}
           export BITCOIN_CONFIG_ALL="--disable-dependency-tracking --prefix=${{ github.workspace }}/depends/${{ matrix.host }} --bindir=$OUTDIR/bin --libdir=$OUTDIR/lib"
           
-          # Ensure pthread linkage for CI compatibility
-          export LDFLAGS="$LDFLAGS -pthread"
+          # Threading support handled by autotools
           
           # Clean any previous compiler settings
           unset CC
