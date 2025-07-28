@@ -192,9 +192,11 @@ jobs:
           # Run unit tests
           make $MAKEJOBS check VERBOSE=1
           
-          # Run functional tests
+          # Run functional tests (if available)
           if [ -f ../../qa/pull-tester/rpc-tests.py ]; then
-            python3 ../../qa/pull-tester/rpc-tests.py --coverage --parallel=$(nproc)
+            python3 ../../qa/pull-tester/rpc-tests.py --coverage
+          elif [ -f ../../test/functional/test_runner.py ]; then
+            python3 ../../test/functional/test_runner.py
           fi
 
       - name: Upload build artifacts
