@@ -56,7 +56,7 @@ jobs:
             host: x86_64-unknown-linux-gnu
             packages: "bc python3-zmq python3-dev python3-pip"
             dep_opts: "NO_QT=1 NO_UPNP=1 DEBUG=1"
-            bitcoin_config: "--enable-zmq --enable-glibc-back-compat --enable-reduce-exports CPPFLAGS=-DDEBUG_LOCKORDER"
+            bitcoin_config: "--enable-zmq --enable-glibc-back-compat --enable-reduce-exports --with-incompatible-bdb CPPFLAGS=-DDEBUG_LOCKORDER"
             run_tests: true
             goldcoin_scrypt: 1
             goal: "install"
@@ -89,7 +89,7 @@ jobs:
             host: arm-linux-gnueabihf
             packages: "g++-arm-linux-gnueabihf"
             dep_opts: "NO_QT=1"
-            bitcoin_config: "--enable-glibc-back-compat --enable-reduce-exports"
+            bitcoin_config: "--enable-glibc-back-compat --enable-reduce-exports --with-incompatible-bdb"
             run_tests: false
             goldcoin_scrypt: 0
             goal: "install"
@@ -99,7 +99,7 @@ jobs:
             host: i686-w64-mingw32
             packages: "python3 python3-dev python3-pip nsis g++-mingw-w64-i686 wine bc"
             dep_opts: "NO_QT=1"
-            bitcoin_config: "--enable-reduce-exports"
+            bitcoin_config: "--enable-reduce-exports --with-incompatible-bdb"
             run_tests: true
             goldcoin_scrypt: 1
             goal: "install"
@@ -110,7 +110,7 @@ jobs:
             host: x86_64-w64-mingw32
             packages: "python3 python3-dev python3-pip nsis g++-mingw-w64-x86-64 wine bc"
             dep_opts: "NO_QT=1"
-            bitcoin_config: "--enable-reduce-exports"
+            bitcoin_config: "--enable-reduce-exports --with-incompatible-bdb"
             run_tests: true
             goldcoin_scrypt: 1
             goal: "install"
