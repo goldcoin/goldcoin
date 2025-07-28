@@ -10,7 +10,8 @@
 
 #include "test/test_bitcoin.h"
 
-#include <boost/algorithm/string.hpp>
+#include <sstream>
+#include <stdexcept>
 #include <boost/assign/list_of.hpp>
 #include <boost/test/unit_test.hpp>
 
@@ -19,7 +20,18 @@
 UniValue CallRPC(std::string args)
 {
     std::vector<std::string> vArgs;
-    boost::split(vArgs, args, boost::is_any_of(" \t"));
+    
+    // Use standard C++ stringstream instead of boost::algorithm::split
+    std::stringstream ss(args);
+    std::string token;
+    while (ss >> token) {
+        vArgs.push_back(token);
+    }
+    
+    if (vArgs.empty()) {
+        throw std::runtime_error("No method specified");
+    }
+    
     std::string strMethod = vArgs[0];
     vArgs.erase(vArgs.begin());
     JSONRPCRequest request;
