@@ -72,16 +72,17 @@ jobs:
             goal: "install"
 
           # Linux 32-bit - Using native i386 container approach
-          - name: "Linux i686"
-            host: i686-pc-linux-gnu
-            container: "i386/ubuntu:20.04"
-            packages: "build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils libboost-all-dev bc python3-zmq python3-dev python3-pip"
-            dep_opts: "NO_QT=1"
-            bitcoin_config: "--enable-zmq --enable-glibc-back-compat --enable-reduce-exports"
-            run_tests: true
-            goldcoin_scrypt: 1
-            goal: "install"
-            skip_base_install: true
+          # TEMPORARILY DISABLED: Requires Docker on self-hosted runner
+          # - name: "Linux i686"
+          #   host: i686-pc-linux-gnu
+          #   container: "i386/ubuntu:20.04"
+          #   packages: "build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils libboost-all-dev bc python3-zmq python3-dev python3-pip"
+          #   dep_opts: "NO_QT=1"
+          #   bitcoin_config: "--enable-zmq --enable-glibc-back-compat --enable-reduce-exports"
+          #   run_tests: true
+          #   goldcoin_scrypt: 1
+          #   goal: "install"
+          #   skip_base_install: true
 
           # ARM
           - name: "ARM Linux"
