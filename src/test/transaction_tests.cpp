@@ -22,9 +22,8 @@
 
 #include <map>
 #include <string>
+#include <sstream>
 
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/split.hpp>
 #include <boost/assign/list_of.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/assign/list_of.hpp>
@@ -59,9 +58,15 @@ unsigned int ParseScriptFlags(std::string strFlags)
     }
     unsigned int flags = 0;
     std::vector<std::string> words;
-    boost::algorithm::split(words, strFlags, boost::algorithm::is_any_of(","));
+    
+    // Use standard C++ stringstream instead of boost::algorithm::split
+    std::stringstream ss(strFlags);
+    std::string word;
+    while (std::getline(ss, word, ',')) {
+        words.push_back(word);
+    }
 
-    BOOST_FOREACH(std::string word, words)
+    for (const std::string& word : words)
     {
         if (!mapFlagNames.count(word))
             BOOST_ERROR("Bad test: unknown verification flag '" << word << "'");
