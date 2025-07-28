@@ -1,13 +1,7 @@
 name: Security
 
 on:
-  push:
-    branches: [ goldcoin-master, development ]
-  pull_request:
-    branches: [ goldcoin-master, development ]
-  schedule:
-    # Run security scan daily at 02:00 UTC
-    - cron: '0 2 * * *'
+  workflow_dispatch:
 
 permissions:
   actions: read

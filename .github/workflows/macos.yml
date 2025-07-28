@@ -1,10 +1,7 @@
 name: macOS
 
 on:
-  push:
-    branches: [ goldcoin-master, development ]
-  pull_request:
-    branches: [ goldcoin-master, development ]
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
