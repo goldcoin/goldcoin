@@ -103,16 +103,20 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install automake libtool pkg-config boost libevent berkeley-db
+          brew install automake libtool pkg-config boost libevent berkeley-db@4
+          
+      - name: Set BDB environment variables
+        run: |
+          echo "BDB_PREFIX=$(brew --prefix berkeley-db@4)" >> $GITHUB_ENV
+          echo "CPPFLAGS=-I$(brew --prefix berkeley-db@4)/include" >> $GITHUB_ENV
+          echo "LDFLAGS=-L$(brew --prefix berkeley-db@4)/lib" >> $GITHUB_ENV
           
       - name: Configure and build
         run: |
           export MAKEJOBS="-j$(sysctl -n hw.activecpu)"
           
           ./autogen.sh
-          ./configure --enable-reduce-exports --disable-bench --disable-gui \
-            CPPFLAGS="-I/usr/local/opt/berkeley-db/include" \
-            LDFLAGS="-L/usr/local/opt/berkeley-db/lib"
+          ./configure --enable-reduce-exports --disable-bench --disable-gui
           make $MAKEJOBS
           
       - name: Run tests
