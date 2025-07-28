@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include "utilstrencodings.h"
 
-#include <boost/algorithm/string.hpp> // boost::trim
+#include <sstream>
 #include <boost/foreach.hpp> //BOOST_FOREACH
 
 /** WWW-Authenticate to present with 401 Unauthorized response */
@@ -98,7 +98,18 @@ static bool multiUserAuthorized(std::string strUserPass)
         BOOST_FOREACH(std::string strRPCAuth, mapMultiArgs.at("-rpcauth"))
         {
             std::vector<std::string> vFields;
-            boost::split(vFields, strRPCAuth, boost::is_any_of(":$"));
+            // Split on ':' and '$' delimiters
+            std::string current = strRPCAuth;
+            size_t pos = 0;
+            while ((pos = current.find_first_of(":$")) != std::string::npos) {
+                if (pos > 0) {
+                    vFields.push_back(current.substr(0, pos));
+                }
+                current = current.substr(pos + 1);
+            }
+            if (!current.empty()) {
+                vFields.push_back(current);
+            }
             if (vFields.size() != 3) {
                 //Incorrect formatting in config file
                 continue;

@@ -535,7 +535,14 @@ static void BlockNotifyCallback(bool initialSync, const CBlockIndex *pBlockIndex
 
     std::string strCmd = GetArg("-blocknotify", "");
 
-    boost::replace_all(strCmd, "%s", pBlockIndex->GetBlockHash().GetHex());
+    // Replace all occurrences of "%s" with block hash
+    std::string search = "%s";
+    std::string replace = pBlockIndex->GetBlockHash().GetHex();
+    size_t pos = 0;
+    while ((pos = strCmd.find(search, pos)) != std::string::npos) {
+        strCmd.replace(pos, search.length(), replace);
+        pos += replace.length();
+    }
     boost::thread t(runCommand, strCmd); // thread runs free
 }
 
