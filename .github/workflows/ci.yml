@@ -74,14 +74,15 @@ jobs:
           # Linux 32-bit
           - name: "Linux i686"
             host: i686-pc-linux-gnu
-            packages: "g++-multilib bc python3-pip python3-dev python3-zmq libc6-dev:i386 libstdc++6:i386"
+            packages: "g++-multilib bc python3-pip python3-dev python3-zmq libc6-dev:i386 libstdc++6:i386 libssl-dev:i386 libevent-dev:i386 libboost-all-dev:i386"
             dep_opts: "NO_QT=1"
-            bitcoin_config: "--enable-zmq --enable-glibc-back-compat --enable-reduce-exports LDFLAGS=-static-libstdc++"
+            bitcoin_config: "--enable-zmq --enable-glibc-back-compat --enable-reduce-exports LDFLAGS=-static-libstdc++ --with-boost-libdir=/usr/lib/i386-linux-gnu"
             run_tests: true
             goldcoin_scrypt: 1
             goal: "install"
             use_shell: "/bin/dash"
             dpkg_add_arch: "i386"
+            skip_depends: true
 
           # ARM
           - name: "ARM Linux"
@@ -152,6 +153,7 @@ jobs:
           ccache --max-size=${{ env.CCACHE_SIZE }}
 
       - name: Build dependencies
+        if: matrix.skip_depends != true
         run: |
           export MAKEJOBS="-j$(nproc)"
           make $MAKEJOBS -C depends HOST=${{ matrix.host }} ${{ matrix.dep_opts }}
@@ -161,7 +163,11 @@ jobs:
           export MAKEJOBS="-j$(nproc)"
           export BASE_OUTDIR=${{ github.workspace }}/out
           export OUTDIR=$BASE_OUTDIR/${{ matrix.host }}
-          export BITCOIN_CONFIG_ALL="--disable-dependency-tracking --prefix=${{ github.workspace }}/depends/${{ matrix.host }} --bindir=$OUTDIR/bin --libdir=$OUTDIR/lib"
+          if [ "${{ matrix.skip_depends }}" = "true" ]; then
+            export BITCOIN_CONFIG_ALL="--disable-dependency-tracking --bindir=$OUTDIR/bin --libdir=$OUTDIR/lib"
+          else
+            export BITCOIN_CONFIG_ALL="--disable-dependency-tracking --prefix=${{ github.workspace }}/depends/${{ matrix.host }} --bindir=$OUTDIR/bin --libdir=$OUTDIR/lib"
+          fi
           
           # Ensure pthread linkage for CI compatibility
           export LDFLAGS="$LDFLAGS -pthread"
