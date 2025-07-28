@@ -8,7 +8,7 @@ on:
 
 jobs:
   check-docs:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Documentation Check
     
     steps:
@@ -71,7 +71,7 @@ jobs:
           retention-days: 30
 
   release-notes-check:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Release Notes Check
     
     steps:
@@ -102,7 +102,7 @@ jobs:
           fi
 
   update-changelog:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     name: Update Changelog
     if: github.event_name == 'push' && github.ref == 'refs/heads/development'
     
