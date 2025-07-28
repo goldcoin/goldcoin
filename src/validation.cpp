@@ -46,7 +46,6 @@
 #include <sstream>
 #include <memory>
 
-#include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
@@ -1239,7 +1238,13 @@ static void AlertNotify(const std::string& strMessage)
     std::string singleQuote("'");
     std::string safeStatus = SanitizeString(strMessage);
     safeStatus = singleQuote+safeStatus+singleQuote;
-    boost::replace_all(strCmd, "%s", safeStatus);
+    // Replace %s with safeStatus
+    size_t pos = 0;
+    const std::string from = "%s";
+    while ((pos = strCmd.find(from, pos)) != std::string::npos) {
+        strCmd.replace(pos, from.length(), safeStatus);
+        pos += safeStatus.length();
+    }
 
     boost::thread t(runCommand, strCmd); // thread runs free
 }
