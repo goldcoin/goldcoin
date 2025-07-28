@@ -162,6 +162,9 @@ jobs:
           export OUTDIR=$BASE_OUTDIR/${{ matrix.host }}
           export BITCOIN_CONFIG_ALL="--disable-dependency-tracking --prefix=${{ github.workspace }}/depends/${{ matrix.host }} --bindir=$OUTDIR/bin --libdir=$OUTDIR/lib"
           
+          # Force include threading headers globally to resolve CI compilation issues
+          export CPPFLAGS="$CPPFLAGS -include mutex -include condition_variable -include thread"
+          
           # Clean any previous compiler settings
           unset CC
           unset CXX
