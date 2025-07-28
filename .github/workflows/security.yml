@@ -17,7 +17,7 @@ permissions:
 jobs:
   codeql:
     name: CodeQL Analysis
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
@@ -53,7 +53,7 @@ jobs:
 
   dependency-check:
     name: Dependency Vulnerability Scan
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted
     
     steps:
       - name: Checkout repository
@@ -81,7 +81,7 @@ jobs:
 
   secrets-scan:
     name: Secrets Scan
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted
     
     steps:
       - name: Checkout repository
@@ -106,7 +106,7 @@ jobs:
 
   security-audit:
     name: Security Audit
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted
     
     steps:
       - name: Checkout repository
@@ -160,7 +160,7 @@ jobs:
 
   build-security:
     name: Build Security Check
-    runs-on: ubuntu-22.04
+    runs-on: self-hosted
     
     steps:
       - name: Checkout repository

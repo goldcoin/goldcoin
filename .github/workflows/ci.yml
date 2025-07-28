@@ -20,7 +20,7 @@ env:
 
 jobs:
   lint:
-    runs-on: ubuntu-20.04
+    runs-on: self-hosted
     name: Lint
     steps:
       - name: Checkout
@@ -46,7 +46,7 @@ jobs:
 
   build:
     needs: lint
-    runs-on: ubuntu-20.04
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
