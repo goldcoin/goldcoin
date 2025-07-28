@@ -74,7 +74,7 @@ jobs:
           # Linux 32-bit
           - name: "Linux i686"
             host: i686-pc-linux-gnu
-            packages: "g++-multilib bc python3-pip python3-dev python3-zmq"
+            packages: "g++-multilib bc python3-pip python3-dev python3-zmq libc6-dev:i386 libstdc++-10-dev:i386"
             dep_opts: "NO_QT=1"
             bitcoin_config: "--enable-zmq --enable-glibc-back-compat --enable-reduce-exports LDFLAGS=-static-libstdc++"
             run_tests: true
@@ -162,8 +162,7 @@ jobs:
           export OUTDIR=$BASE_OUTDIR/${{ matrix.host }}
           export BITCOIN_CONFIG_ALL="--disable-dependency-tracking --prefix=${{ github.workspace }}/depends/${{ matrix.host }} --bindir=$OUTDIR/bin --libdir=$OUTDIR/lib"
           
-          # Force include threading headers and ensure pthread linkage for CI compatibility
-          export CPPFLAGS="$CPPFLAGS -include mutex -include condition_variable -include thread -pthread"
+          # Ensure pthread linkage for CI compatibility
           export LDFLAGS="$LDFLAGS -pthread"
           
           # Clean any previous compiler settings
