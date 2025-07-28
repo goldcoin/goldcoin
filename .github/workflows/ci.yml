@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ goldcoin-master, development ]
+    branches: [ goldcoin-master, development, modernize-python-312 ]
   pull_request:
     branches: [ goldcoin-master, development ]
 
@@ -102,8 +102,8 @@ jobs:
           
           # Skip base install for container builds that have packages pre-installed
           if [ "${{ matrix.skip_base_install }}" != "true" ]; then
-            # Install base dependencies including Boost
-            $SUDO apt-get install --no-install-recommends --no-upgrade -qq build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils libboost-all-dev
+            # Install base dependencies including Boost and Python dev headers
+            $SUDO apt-get install --no-install-recommends --no-upgrade -qq build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils libboost-all-dev python3-dev
           fi
           
           if [ -n "${{ matrix.dpkg_add_arch }}" ]; then
