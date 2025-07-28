@@ -78,6 +78,15 @@ jobs:
           name: dependency-check-report
           path: reports/
           retention-days: 30
+      
+      - name: Fix permissions for cleanup
+        if: always()
+        run: |
+          # Ensure the runner can clean up the reports directory
+          if [ -d "reports/" ]; then
+            sudo chown -R $USER:$USER reports/ || true
+            chmod -R u+rwx reports/ || true
+          fi
 
   secrets-scan:
     name: Secrets Scan
