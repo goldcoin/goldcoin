@@ -263,16 +263,30 @@ jobs:
             sed -i '' 's/qt_darwin_packages=qt/qt_darwin_packages=/' packages/packages.mk
             
             # Debug output
-            echo "Modified packages.mk content:"
+            echo "=== Modified packages.mk content ==="
             cat packages/packages.mk | head -n 15
             
+            echo "=== Checking package modifications ==="
+            grep "packages:=" packages/packages.mk
+            
             # Verify Homebrew installations
-            echo "Checking Homebrew Boost installation:"
+            echo "=== Homebrew package list ==="
+            brew list | grep -E "boost|qt@5|openssl@3|berkeley-db" || true
+            
+            echo "=== Checking Homebrew Boost installation ==="
+            echo "Boost prefix: $(brew --prefix boost)"
             ls -la $(brew --prefix boost)/lib/libboost* | head -n 5 || echo "Boost libs not found"
             
-            echo "Checking Homebrew Qt5 installation:"
-            echo "Qt5 installation: $(brew --prefix qt@5)"
+            echo "=== Checking Homebrew Qt5 installation ==="
+            echo "Qt5 prefix: $(brew --prefix qt@5)"
             ls -la $(brew --prefix qt@5)/lib/cmake/Qt5*/ | head -n 5 || echo "Qt5 cmake files not found"
+            
+            echo "=== Environment variables check ==="
+            echo "BOOST_ROOT: ${BOOST_ROOT}"
+            echo "QT5_ROOT: ${QT5_ROOT}"
+            echo "SDKROOT: ${SDKROOT}"
+            echo "PATH: ${PATH}"
+            echo "PKG_CONFIG_PATH: ${PKG_CONFIG_PATH}"
             
             cd ..
           else
@@ -286,6 +300,12 @@ jobs:
           # Set up build environment
           if [[ "${{ runner.os }}" == "macOS" ]]; then
             export MAKEJOBS="-j$(sysctl -n hw.ncpu)"
+            
+            echo "=== Configure environment variables ==="
+            echo "BOOST_ROOT from env: ${BOOST_ROOT}"
+            echo "QT5_ROOT from env: ${QT5_ROOT}"
+            echo "SDKROOT from env: ${SDKROOT}"
+            
             # Use BOOST_ROOT from environment
             export BOOST_ROOT="${BOOST_ROOT}"
             # Update bitcoin_config to use proper boost path
@@ -297,6 +317,11 @@ jobs:
             export PKG_CONFIG_PATH="${QT5_ROOT}/lib/pkgconfig:${PKG_CONFIG_PATH}"
             echo "QT5_ROOT=${QT5_ROOT}" >> $GITHUB_ENV
             echo "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}" >> $GITHUB_ENV
+            
+            echo "=== Final configure environment ==="
+            echo "BITCOIN_CONFIG_BOOST: ${BITCOIN_CONFIG_BOOST}"
+            echo "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}"
+            echo "PKG_CONFIG_PATH: ${PKG_CONFIG_PATH}"
           else
             export MAKEJOBS="-j$(nproc)"
             export BITCOIN_CONFIG_BOOST=""
