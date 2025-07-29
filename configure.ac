@@ -734,7 +734,7 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 
 dnl Disable Boost concept checks to avoid errors with GCC's debug mode
 dnl Use more targeted fix to avoid affecting consensus code
-BOOST_CPPFLAGS="$BOOST_CPPFLAGS -DBOOST_CONCEPT_ASSERT(x)="
+BOOST_CPPFLAGS="$BOOST_CPPFLAGS \"-DBOOST_CONCEPT_ASSERT(x)=\""
 
 LIBS="$TEMP_LIBS"
 CPPFLAGS="$TEMP_CPPFLAGS"
