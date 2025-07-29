@@ -89,7 +89,7 @@ jobs:
             run_tests: false
             goldcoin_scrypt: 1
             goal: "install"
-            brew_packages: "automake libtool boost berkeley-db@4 pkg-config python@3.12 qt@5 miniupnpc libnatpmp zeromq"
+            brew_packages: "automake libtool berkeley-db@4 pkg-config python@3.12 qt@5 miniupnpc libnatpmp zeromq openssl@3"
 
           - name: "macOS Apple Silicon"
             os: macos-latest
@@ -100,7 +100,7 @@ jobs:
             run_tests: false
             goldcoin_scrypt: 1
             goal: "install"
-            brew_packages: "automake libtool boost berkeley-db@4 pkg-config python@3.12 qt@5 miniupnpc libnatpmp zeromq"
+            brew_packages: "automake libtool berkeley-db@4 pkg-config python@3.12 qt@5 miniupnpc libnatpmp zeromq openssl@3"
 
           # ALL OTHER BUILDS TEMPORARILY DISABLED FOR TESTING
           # - name: "Linux x86_64 (no wallet)"
@@ -133,14 +133,24 @@ jobs:
         run: |
           # Handle macOS with Homebrew
           if [[ "${{ runner.os }}" == "macOS" ]]; then
+            # Ensure Xcode command line tools are available
+            sudo xcode-select --install || true
+            
             # Install Homebrew packages
             if [ -n "${{ matrix.brew_packages }}" ]; then
               brew install ${{ matrix.brew_packages }}
             fi
+            
             # Set up Qt5 paths for macOS
             export Qt5_DIR=$(brew --prefix qt@5)
             export PATH="${Qt5_DIR}/bin:${PATH}"
             export PKG_CONFIG_PATH="${Qt5_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+            
+            # Set up OpenSSL paths
+            export OPENSSL_ROOT_DIR=$(brew --prefix openssl@3)
+            export CPPFLAGS="-I${OPENSSL_ROOT_DIR}/include ${CPPFLAGS}"
+            export LDFLAGS="-L${OPENSSL_ROOT_DIR}/lib ${LDFLAGS}"
+            export PKG_CONFIG_PATH="${OPENSSL_ROOT_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}"
           else
             # Linux build environment setup
             # For container builds, we might not have sudo
@@ -205,6 +215,12 @@ jobs:
             export Qt5_DIR=$(brew --prefix qt@5)
             export PATH="${Qt5_DIR}/bin:${PATH}"
             export PKG_CONFIG_PATH="${Qt5_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+            
+            # Set up OpenSSL paths for macOS
+            export OPENSSL_ROOT_DIR=$(brew --prefix openssl@3)
+            export CPPFLAGS="-I${OPENSSL_ROOT_DIR}/include"
+            export LDFLAGS="-L${OPENSSL_ROOT_DIR}/lib"
+            export PKG_CONFIG_PATH="${OPENSSL_ROOT_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}"
           else
             export MAKEJOBS="-j$(nproc)"
           fi
@@ -218,10 +234,13 @@ jobs:
             export Qt5_DIR=$(brew --prefix qt@5)
             export PATH="${Qt5_DIR}/bin:${PATH}"
             export PKG_CONFIG_PATH="${Qt5_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}"
-            # Set BDB paths for macOS
+            
+            # Set BDB and OpenSSL paths for macOS
             export BDB_PREFIX=$(brew --prefix berkeley-db@4)
-            export LDFLAGS="-L${BDB_PREFIX}/lib"
-            export CPPFLAGS="-I${BDB_PREFIX}/include"
+            export OPENSSL_ROOT_DIR=$(brew --prefix openssl@3)
+            export LDFLAGS="-L${BDB_PREFIX}/lib -L${OPENSSL_ROOT_DIR}/lib"
+            export CPPFLAGS="-I${BDB_PREFIX}/include -I${OPENSSL_ROOT_DIR}/include"
+            export PKG_CONFIG_PATH="${OPENSSL_ROOT_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}"
           else
             export MAKEJOBS="-j$(nproc)"
           fi
