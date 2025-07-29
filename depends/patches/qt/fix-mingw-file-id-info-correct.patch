@@ -1,6 +1,6 @@
 --- a/qtbase/src/corelib/io/qfilesystemengine_win.cpp
 +++ b/qtbase/src/corelib/io/qfilesystemengine_win.cpp
-@@ -630,12 +630,14 @@ BYTE  Identifier[16];
+@@ -631,11 +631,13 @@
  } FILE_ID_128, *PFILE_ID_128;
  #    endif // !(Q_CC_MINGW && FILE_SUPPORTS_INTEGRITY_STREAMS)
  
@@ -9,7 +9,7 @@
      ULONGLONG VolumeSerialNumber;
      FILE_ID_128 FileId;
  } FILE_ID_INFO, *PFILE_ID_INFO;
-+#endif // !defined(_FILE_ID_INFO)
++#endif
  #  endif // if defined (Q_CC_MINGW) || (defined(Q_CC_MSVC) && (_MSC_VER < 1700 || WINVER <= 0x0601))
  
  // File ID for Windows up to version 7.
