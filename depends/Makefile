@@ -6,7 +6,7 @@ SDK_PATH ?= $(BASEDIR)/SDKs
 NO_QT ?=
 NO_WALLET ?=
 NO_UPNP ?=
-FALLBACK_DOWNLOAD_PATH ?= https://github.com/bitcoin/bitcoin/raw/master/depends/sources
+FALLBACK_DOWNLOAD_PATH ?= https://github.com/goldcoin/goldcoin/raw/goldcoin-master/depends/sources
 
 BUILD = $(shell ./config.guess)
 HOST ?= $(BUILD)
