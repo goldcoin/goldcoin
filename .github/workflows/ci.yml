@@ -234,23 +234,27 @@ jobs:
           # Set up macOS-specific paths
           if [[ "${{ runner.os }}" == "macOS" ]]; then
             export MAKEJOBS="-j$(sysctl -n hw.ncpu)"
-            # Skip boost in depends, use Homebrew version
-            export PACKAGES="openssl libevent zeromq"
-            if [[ "${{ matrix.dep_opts }}" != *"NO_WALLET"* ]]; then
-              export PACKAGES="$PACKAGES bdb"
-            fi
-            if [[ "${{ matrix.dep_opts }}" != *"NO_QT"* ]]; then
-              export PACKAGES="$PACKAGES qrencode protobuf zlib qt"
-            fi
+            
+            # Create a custom packages.mk without boost for macOS
+            cd depends
+            cp packages/packages.mk packages/packages.mk.bak
+            sed 's/packages:=boost openssl libevent zeromq/packages:=openssl libevent zeromq/' packages/packages.mk > packages/packages.mk.tmp
+            mv packages/packages.mk.tmp packages/packages.mk
+            
+            # Debug output
+            echo "Modified packages.mk content:"
+            head -n 5 packages/packages.mk
+            
+            # Verify Homebrew Boost is available
+            echo "Checking Homebrew Boost installation:"
+            ls -la $(brew --prefix boost)/lib/libboost* | head -n 5 || echo "Boost libs not found"
+            
+            cd ..
           else
             export MAKEJOBS="-j$(nproc)"
           fi
           
-          if [[ "${{ runner.os }}" == "macOS" ]]; then
-            make $MAKEJOBS -C depends HOST=${{ matrix.host }} ${{ matrix.dep_opts }} PACKAGES="$PACKAGES"
-          else
-            make $MAKEJOBS -C depends HOST=${{ matrix.host }} ${{ matrix.dep_opts }}
-          fi
+          make $MAKEJOBS -C depends HOST=${{ matrix.host }} ${{ matrix.dep_opts }}
 
       - name: Configure and build
         run: |
