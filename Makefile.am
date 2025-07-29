@@ -66,11 +66,14 @@ COVERAGE_INFO = baseline_filtered_combined.info baseline.info \
   leveldb_baseline_filtered.info test_bitcoin_coverage.info test_bitcoin.info
 
 dist-hook:
-	-$(GIT) archive --format=tar HEAD -- src/clientversion.cpp | $(AMTAR) -C $(top_distdir) -xf -
-	@if test -e $(top_srcdir)/src/clientversion.cpp -a ! -e $(top_distdir)/src/clientversion.cpp; then \
-	  echo "Copying src/clientversion.cpp manually"; \
+	@echo "Ensuring src/clientversion.cpp is included in distribution..."
+	@if test -e $(top_srcdir)/src/clientversion.cpp; then \
+	  echo "Found src/clientversion.cpp in source tree"; \
 	  $(MKDIR_P) $(top_distdir)/src; \
 	  cp -f $(top_srcdir)/src/clientversion.cpp $(top_distdir)/src/; \
+	  echo "Copied src/clientversion.cpp to distribution"; \
+	else \
+	  echo "WARNING: src/clientversion.cpp not found in source tree"; \
 	fi
 
 $(BITCOIN_WIN_INSTALLER): all-recursive
