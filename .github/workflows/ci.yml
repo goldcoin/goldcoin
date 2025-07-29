@@ -142,8 +142,24 @@ jobs:
         run: |
           # Handle macOS with Homebrew
           if [[ "${{ runner.os }}" == "macOS" ]]; then
-            # Ensure Xcode command line tools are available
-            sudo xcode-select --install || true
+            # Ensure Xcode Command Line Tools are properly configured
+            echo "Setting up Xcode Command Line Tools..."
+            sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
+            echo "Xcode Developer Path: $(xcode-select -p)"
+            
+            # Verify standard headers are available
+            echo "Checking for available SDKs:"
+            ls -la /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/ || echo "SDK directory not found"
+            
+            # Check for stdlib.h availability
+            echo "Verifying stdlib.h availability:"
+            find /Applications/Xcode.app/Contents/Developer -name "stdlib.h" 2>/dev/null | head -5 || echo "stdlib.h not found in Xcode"
+            
+            # Set SDK environment variables
+            export SDKROOT=$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+            export MACOSX_DEPLOYMENT_TARGET=10.15
+            echo "SDKROOT=${SDKROOT}" >> $GITHUB_ENV
+            echo "MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}" >> $GITHUB_ENV
             
             # Install Homebrew packages
             if [ -n "${{ matrix.brew_packages }}" ]; then
