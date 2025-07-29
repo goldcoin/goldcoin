@@ -46,7 +46,7 @@ jobs:
 
   build:
     needs: lint
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os || 'ubuntu-latest' }}
     strategy:
       fail-fast: false
       matrix:
@@ -80,6 +80,28 @@ jobs:
             goal: "install"
             cross_compile: true
 
+          - name: "macOS Intel"
+            os: macos-13
+            host: x86_64-apple-darwin
+            packages: ""
+            dep_opts: "NO_UPNP=1 DEBUG=1"
+            bitcoin_config: "--enable-reduce-exports --enable-wallet --with-incompatible-bdb CPPFLAGS=-DDEBUG_LOCKORDER"
+            run_tests: false
+            goldcoin_scrypt: 1
+            goal: "install"
+            brew_packages: "automake libtool boost berkeley-db@4 pkg-config python@3.12 qt@5 miniupnpc libnatpmp zeromq"
+
+          - name: "macOS Apple Silicon"
+            os: macos-latest
+            host: arm64-apple-darwin
+            packages: ""
+            dep_opts: "NO_UPNP=1 DEBUG=1"
+            bitcoin_config: "--enable-reduce-exports --enable-wallet --with-incompatible-bdb CPPFLAGS=-DDEBUG_LOCKORDER"
+            run_tests: false
+            goldcoin_scrypt: 1
+            goal: "install"
+            brew_packages: "automake libtool boost berkeley-db@4 pkg-config python@3.12 qt@5 miniupnpc libnatpmp zeromq"
+
           # ALL OTHER BUILDS TEMPORARILY DISABLED FOR TESTING
           # - name: "Linux x86_64 (no wallet)"
           #   host: x86_64-unknown-linux-gnu
@@ -109,28 +131,41 @@ jobs:
 
       - name: Set up build environment
         run: |
-          # For container builds, we might not have sudo
-          if command -v sudo >/dev/null 2>&1; then
-            SUDO=sudo
+          # Handle macOS with Homebrew
+          if [[ "${{ runner.os }}" == "macOS" ]]; then
+            # Install Homebrew packages
+            if [ -n "${{ matrix.brew_packages }}" ]; then
+              brew install ${{ matrix.brew_packages }}
+            fi
+            # Set up Qt5 paths for macOS
+            export Qt5_DIR=$(brew --prefix qt@5)
+            export PATH="${Qt5_DIR}/bin:${PATH}"
+            export PKG_CONFIG_PATH="${Qt5_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}"
           else
-            SUDO=""
-          fi
-          
-          # Update package lists
-          $SUDO apt-get update
-          
-          # Skip base install for container builds that have packages pre-installed
-          if [ "${{ matrix.skip_base_install }}" != "true" ]; then
-            # Install base dependencies including Boost and Python dev headers
-            $SUDO apt-get install --no-install-recommends --no-upgrade -qq build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils libboost-all-dev python3-dev
-          fi
-          
-          if [ -n "${{ matrix.dpkg_add_arch }}" ]; then
-            $SUDO dpkg --add-architecture "${{ matrix.dpkg_add_arch }}"
+            # Linux build environment setup
+            # For container builds, we might not have sudo
+            if command -v sudo >/dev/null 2>&1; then
+              SUDO=sudo
+            else
+              SUDO=""
+            fi
+            
+            # Update package lists
             $SUDO apt-get update
-          fi
-          if [ -n "${{ matrix.packages }}" ]; then
-            $SUDO apt-get install --no-install-recommends --no-upgrade -qq ${{ matrix.packages }}
+            
+            # Skip base install for container builds that have packages pre-installed
+            if [ "${{ matrix.skip_base_install }}" != "true" ]; then
+              # Install base dependencies including Boost and Python dev headers
+              $SUDO apt-get install --no-install-recommends --no-upgrade -qq build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils libboost-all-dev python3-dev
+            fi
+            
+            if [ -n "${{ matrix.dpkg_add_arch }}" ]; then
+              $SUDO dpkg --add-architecture "${{ matrix.dpkg_add_arch }}"
+              $SUDO apt-get update
+            fi
+            if [ -n "${{ matrix.packages }}" ]; then
+              $SUDO apt-get install --no-install-recommends --no-upgrade -qq ${{ matrix.packages }}
+            fi
           fi
 
       - name: Install Python dependencies
@@ -164,12 +199,33 @@ jobs:
 
       - name: Build dependencies
         run: |
-          export MAKEJOBS="-j$(nproc)"
+          # Set up macOS-specific paths
+          if [[ "${{ runner.os }}" == "macOS" ]]; then
+            export MAKEJOBS="-j$(sysctl -n hw.ncpu)"
+            export Qt5_DIR=$(brew --prefix qt@5)
+            export PATH="${Qt5_DIR}/bin:${PATH}"
+            export PKG_CONFIG_PATH="${Qt5_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+          else
+            export MAKEJOBS="-j$(nproc)"
+          fi
           make $MAKEJOBS -C depends HOST=${{ matrix.host }} ${{ matrix.dep_opts }}
 
       - name: Configure and build
         run: |
-          export MAKEJOBS="-j$(nproc)"
+          # Set up build environment
+          if [[ "${{ runner.os }}" == "macOS" ]]; then
+            export MAKEJOBS="-j$(sysctl -n hw.ncpu)"
+            export Qt5_DIR=$(brew --prefix qt@5)
+            export PATH="${Qt5_DIR}/bin:${PATH}"
+            export PKG_CONFIG_PATH="${Qt5_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+            # Set BDB paths for macOS
+            export BDB_PREFIX=$(brew --prefix berkeley-db@4)
+            export LDFLAGS="-L${BDB_PREFIX}/lib"
+            export CPPFLAGS="-I${BDB_PREFIX}/include"
+          else
+            export MAKEJOBS="-j$(nproc)"
+          fi
+          
           export BASE_OUTDIR=${{ github.workspace }}/out
           export OUTDIR=$BASE_OUTDIR/${{ matrix.host }}
           export BITCOIN_CONFIG_ALL="--disable-dependency-tracking --prefix=${{ github.workspace }}/depends/${{ matrix.host }} --bindir=$OUTDIR/bin --libdir=$OUTDIR/lib"
