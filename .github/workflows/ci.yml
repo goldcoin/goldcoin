@@ -63,7 +63,7 @@ jobs:
 
           - name: "Windows x86_64"
             host: x86_64-w64-mingw32
-            packages: "nsis g++-mingw-w64-x86-64-posix=10.3.0-7ubuntu1+22.04.1 wine-binfmt wine64"
+            packages: "nsis g++-mingw-w64-x86-64-posix wine-binfmt wine64"
             dep_opts: "NO_QT=1 NO_UPNP=1 DEBUG=1"
             bitcoin_config: "--enable-reduce-exports --disable-wallet CPPFLAGS=-DDEBUG_LOCKORDER"
             run_tests: false
