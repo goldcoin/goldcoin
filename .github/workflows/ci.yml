@@ -65,7 +65,7 @@ jobs:
             host: x86_64-w64-mingw32
             packages: "nsis g++-mingw-w64-x86-64-posix wine-binfmt wine64"
             dep_opts: "DEBUG=1"
-            bitcoin_config: "--enable-reduce-exports CPPFLAGS=-DDEBUG_LOCKORDER"
+            bitcoin_config: "--enable-reduce-exports --with-incompatible-bdb CPPFLAGS=-DDEBUG_LOCKORDER"
             run_tests: false
             goldcoin_scrypt: 0
             goal: "install"
