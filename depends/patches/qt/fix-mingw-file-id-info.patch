@@ -1,0 +1,18 @@
+--- a/qtbase/src/corelib/io/qfilesystemengine_win.cpp
++++ b/qtbase/src/corelib/io/qfilesystemengine_win.cpp
+@@ -631,6 +631,7 @@
+ }
+ #endif // !Q_OS_WINRT
+ 
++#ifndef FILE_ID_INFO
+ typedef struct _FILE_ID_INFO {
+     ULONGLONG VolumeSerialNumber;
+     FILE_ID_128 FileId;
+@@ -640,6 +641,7 @@ typedef struct _FILE_ID_INFO {
+     FileIdInfo = 18
+ } FILE_INFO_BY_HANDLE_CLASS;
+ #endif // !Q_OS_WINRT
++#endif // FILE_ID_INFO
+ 
+ #if !defined(Q_OS_WINRT)
+ typedef BOOL (WINAPI *GetFileInformationByHandleExType)(HANDLE, FILE_INFO_BY_HANDLE_CLASS, void *, DWORD);
