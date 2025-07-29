@@ -171,6 +171,33 @@ I'm back in the goldcoin directory. Run ./restore-context.sh to check the curren
 - External unmaintained packages block Python modernization
 - Native implementations provide better control and compatibility
 
+### PoW Validation Issue (2025-07-29)
+**PROBLEM**: Proof of Work validation failures after Boost fixes
+- ERROR: AcceptBlockHeader: Consensus::CheckBlockHeader: high-hash, proof of work failed
+
+**ROOT CAUSE ANALYSIS**:
+- Initial fix used `-D_GLIBCXX_DEBUG=0` to disable all debug iterators
+- This flag affects ALL standard library code, not just Boost
+- Could potentially change behavior of uint256 comparisons in consensus code
+- PoW validation is consensus-critical and must not be affected
+
+**INVESTIGATION RESULTS**:
+- ✅ No direct modifications to pow.cpp or consensus/validation.cpp
+- ✅ No changes to CheckProofOfWork or difficulty calculations
+- ✅ No modifications to uint256 comparison operators
+- ❌ `-D_GLIBCXX_DEBUG=0` is too broad and may affect consensus behavior
+
+**SOLUTION**: Use more targeted Boost-specific fix
+- Changed from: `-D_GLIBCXX_DEBUG=0` (affects all C++ stdlib)
+- Changed to: `-DBOOST_CONCEPT_ASSERT(x)=` (only disables Boost concept checks)
+- This preserves standard library behavior for consensus code
+
+**KEY LEARNINGS**:
+- Consensus code must NEVER be affected by build configuration changes
+- Global debug flags can have unintended side effects
+- Always use the most targeted fix possible
+- PoW validation failures are critical and require immediate attention
+
 **KEY LEARNINGS**:
 - Modernization sometimes requires replacing legacy dependencies
 - Having fallback implementations enables progress
