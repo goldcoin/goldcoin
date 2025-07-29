@@ -84,23 +84,23 @@ jobs:
             os: macos-13
             host: x86_64-apple-darwin
             packages: ""
-            dep_opts: "NO_UPNP=1 DEBUG=1"
+            dep_opts: "NO_UPNP=1 DEBUG=1 FALLBACK_DOWNLOAD_PATH=https://bitcoincore.org/depends-sources"
             bitcoin_config: "--enable-reduce-exports --enable-wallet --with-incompatible-bdb CPPFLAGS=-DDEBUG_LOCKORDER"
             run_tests: false
             goldcoin_scrypt: 1
             goal: "install"
-            brew_packages: "automake libtool berkeley-db@4 pkg-config python@3.12 qt@5 miniupnpc libnatpmp zeromq openssl@3"
+            brew_packages: "automake libtool boost berkeley-db@4 pkg-config python@3.12 qt@5 miniupnpc libnatpmp zeromq openssl@3"
 
           - name: "macOS Apple Silicon"
             os: macos-latest
             host: arm64-apple-darwin
             packages: ""
-            dep_opts: "NO_UPNP=1 DEBUG=1"
+            dep_opts: "NO_UPNP=1 DEBUG=1 FALLBACK_DOWNLOAD_PATH=https://bitcoincore.org/depends-sources"
             bitcoin_config: "--enable-reduce-exports --enable-wallet --with-incompatible-bdb CPPFLAGS=-DDEBUG_LOCKORDER"
             run_tests: false
             goldcoin_scrypt: 1
             goal: "install"
-            brew_packages: "automake libtool berkeley-db@4 pkg-config python@3.12 qt@5 miniupnpc libnatpmp zeromq openssl@3"
+            brew_packages: "automake libtool boost berkeley-db@4 pkg-config python@3.12 qt@5 miniupnpc libnatpmp zeromq openssl@3"
 
           # ALL OTHER BUILDS TEMPORARILY DISABLED FOR TESTING
           # - name: "Linux x86_64 (no wallet)"
@@ -141,16 +141,20 @@ jobs:
               brew install ${{ matrix.brew_packages }}
             fi
             
-            # Set up Qt5 paths for macOS
-            export Qt5_DIR=$(brew --prefix qt@5)
-            export PATH="${Qt5_DIR}/bin:${PATH}"
-            export PKG_CONFIG_PATH="${Qt5_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+            # Verify Boost installation
+            brew list boost && echo "Boost installed at: $(brew --prefix boost)"
             
-            # Set up OpenSSL paths
-            export OPENSSL_ROOT_DIR=$(brew --prefix openssl@3)
-            export CPPFLAGS="-I${OPENSSL_ROOT_DIR}/include ${CPPFLAGS}"
-            export LDFLAGS="-L${OPENSSL_ROOT_DIR}/lib ${LDFLAGS}"
-            export PKG_CONFIG_PATH="${OPENSSL_ROOT_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+            # Set up persistent environment variables
+            echo "BOOST_ROOT=$(brew --prefix boost)" >> $GITHUB_ENV
+            echo "Qt5_DIR=$(brew --prefix qt@5)" >> $GITHUB_ENV
+            echo "OPENSSL_ROOT_DIR=$(brew --prefix openssl@3)" >> $GITHUB_ENV
+            echo "BDB_PREFIX=$(brew --prefix berkeley-db@4)" >> $GITHUB_ENV
+            
+            # Set up paths
+            echo "PATH=$(brew --prefix qt@5)/bin:${PATH}" >> $GITHUB_ENV
+            echo "PKG_CONFIG_PATH=$(brew --prefix qt@5)/lib/pkgconfig:$(brew --prefix openssl@3)/lib/pkgconfig:${PKG_CONFIG_PATH}" >> $GITHUB_ENV
+            echo "LDFLAGS=-L$(brew --prefix openssl@3)/lib -L$(brew --prefix berkeley-db@4)/lib -L$(brew --prefix boost)/lib" >> $GITHUB_ENV
+            echo "CPPFLAGS=-I$(brew --prefix openssl@3)/include -I$(brew --prefix berkeley-db@4)/include -I$(brew --prefix boost)/include" >> $GITHUB_ENV
           else
             # Linux build environment setup
             # For container builds, we might not have sudo
@@ -212,37 +216,36 @@ jobs:
           # Set up macOS-specific paths
           if [[ "${{ runner.os }}" == "macOS" ]]; then
             export MAKEJOBS="-j$(sysctl -n hw.ncpu)"
-            export Qt5_DIR=$(brew --prefix qt@5)
-            export PATH="${Qt5_DIR}/bin:${PATH}"
-            export PKG_CONFIG_PATH="${Qt5_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}"
-            
-            # Set up OpenSSL paths for macOS
-            export OPENSSL_ROOT_DIR=$(brew --prefix openssl@3)
-            export CPPFLAGS="-I${OPENSSL_ROOT_DIR}/include"
-            export LDFLAGS="-L${OPENSSL_ROOT_DIR}/lib"
-            export PKG_CONFIG_PATH="${OPENSSL_ROOT_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+            # Skip boost in depends, use Homebrew version
+            export PACKAGES="openssl libevent zeromq"
+            if [[ "${{ matrix.dep_opts }}" != *"NO_WALLET"* ]]; then
+              export PACKAGES="$PACKAGES bdb"
+            fi
+            if [[ "${{ matrix.dep_opts }}" != *"NO_QT"* ]]; then
+              export PACKAGES="$PACKAGES qrencode protobuf zlib qt"
+            fi
           else
             export MAKEJOBS="-j$(nproc)"
           fi
-          make $MAKEJOBS -C depends HOST=${{ matrix.host }} ${{ matrix.dep_opts }}
+          
+          if [[ "${{ runner.os }}" == "macOS" ]]; then
+            make $MAKEJOBS -C depends HOST=${{ matrix.host }} ${{ matrix.dep_opts }} PACKAGES="$PACKAGES"
+          else
+            make $MAKEJOBS -C depends HOST=${{ matrix.host }} ${{ matrix.dep_opts }}
+          fi
 
       - name: Configure and build
         run: |
           # Set up build environment
           if [[ "${{ runner.os }}" == "macOS" ]]; then
             export MAKEJOBS="-j$(sysctl -n hw.ncpu)"
-            export Qt5_DIR=$(brew --prefix qt@5)
-            export PATH="${Qt5_DIR}/bin:${PATH}"
-            export PKG_CONFIG_PATH="${Qt5_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}"
-            
-            # Set BDB and OpenSSL paths for macOS
-            export BDB_PREFIX=$(brew --prefix berkeley-db@4)
-            export OPENSSL_ROOT_DIR=$(brew --prefix openssl@3)
-            export LDFLAGS="-L${BDB_PREFIX}/lib -L${OPENSSL_ROOT_DIR}/lib"
-            export CPPFLAGS="-I${BDB_PREFIX}/include -I${OPENSSL_ROOT_DIR}/include"
-            export PKG_CONFIG_PATH="${OPENSSL_ROOT_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+            # Use BOOST_ROOT from environment
+            export BOOST_ROOT="${BOOST_ROOT}"
+            # Update bitcoin_config to use proper boost path
+            export BITCOIN_CONFIG_BOOST="--with-boost=${BOOST_ROOT}"
           else
             export MAKEJOBS="-j$(nproc)"
+            export BITCOIN_CONFIG_BOOST=""
           fi
           
           export BASE_OUTDIR=${{ github.workspace }}/out
@@ -275,10 +278,10 @@ jobs:
           
           # Build
           mkdir -p build && cd build
-          ../configure --cache-file=config.cache $BITCOIN_CONFIG_ALL ${{ matrix.bitcoin_config }} || (cat config.log && false)
+          ../configure --cache-file=config.cache $BITCOIN_CONFIG_ALL $BITCOIN_CONFIG_BOOST ${{ matrix.bitcoin_config }} || (cat config.log && false)
           make distdir VERSION=${{ matrix.host }}
           cd goldcoin-${{ matrix.host }}
-          ./configure --cache-file=../config.cache $BITCOIN_CONFIG_ALL ${{ matrix.bitcoin_config }} || (cat config.log && false)
+          ./configure --cache-file=../config.cache $BITCOIN_CONFIG_ALL $BITCOIN_CONFIG_BOOST ${{ matrix.bitcoin_config }} || (cat config.log && false)
           make $MAKEJOBS ${{ matrix.goal }} || (echo "Build failure. Verbose build follows." && make ${{ matrix.goal }} V=1 && false)
 
       - name: Run tests
