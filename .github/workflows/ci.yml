@@ -70,6 +70,16 @@ jobs:
             goldcoin_scrypt: 0
             goal: "install"
 
+          - name: "Linux ARM64"
+            host: aarch64-linux-gnu
+            packages: "bc python3-setuptools python3-wheel gcc-aarch64-linux-gnu g++-aarch64-linux-gnu"
+            dep_opts: "NO_QT=1 NO_UPNP=1 DEBUG=1"
+            bitcoin_config: "--enable-zmq --enable-glibc-back-compat --enable-reduce-exports --enable-wallet --with-incompatible-bdb CPPFLAGS=-DDEBUG_LOCKORDER"
+            run_tests: false
+            goldcoin_scrypt: 1
+            goal: "install"
+            cross_compile: true
+
           # ALL OTHER BUILDS TEMPORARILY DISABLED FOR TESTING
           # - name: "Linux x86_64 (no wallet)"
           #   host: x86_64-unknown-linux-gnu
@@ -169,6 +179,16 @@ jobs:
           # Clean any previous compiler settings
           unset CC
           unset CXX
+          
+          # Set cross-compilation environment for ARM64
+          if [ "${{ matrix.cross_compile }}" = "true" ]; then
+            export CC=aarch64-linux-gnu-gcc
+            export CXX=aarch64-linux-gnu-g++
+            export AR=aarch64-linux-gnu-ar
+            export STRIP=aarch64-linux-gnu-strip
+            export RANLIB=aarch64-linux-gnu-ranlib
+            export NM=aarch64-linux-gnu-nm
+          fi
           
           # Configure shell if needed
           if [ -n "${{ matrix.use_shell }}" ]; then
