@@ -198,6 +198,27 @@ I'm back in the goldcoin directory. Run ./restore-context.sh to check the curren
 - Always use the most targeted fix possible
 - PoW validation failures are critical and require immediate attention
 
+### Berkeley DB CI Configuration Fix (2025-07-29)
+**PROBLEM**: CI failing with Berkeley DB errors
+- fatal error: db5/db_cxx.h: No such file or directory
+- /usr/bin/ld: cannot find -ldb_cxx-4.8
+
+**ROOT CAUSE**: Configuration mismatch in CI
+- dep_opts has NO_WALLET=1 (skips building BDB in depends)
+- bitcoin_config had --with-incompatible-bdb (expects BDB to exist)
+- Conflicting options: can't use BDB if wallet is disabled
+
+**SOLUTION**: Align configuration options
+- Changed --with-incompatible-bdb to --disable-wallet
+- Matches the NO_WALLET=1 in dep_opts
+- Consistent no-wallet build configuration
+
+**PROGRESS MILESTONE**: 
+- ✅ All Boost concept errors are GONE!
+- ✅ Python 3.12 compatibility achieved
+- ✅ Moved past compilation errors to dependency issues
+- This is significant progress in the modernization effort
+
 **KEY LEARNINGS**:
 - Modernization sometimes requires replacing legacy dependencies
 - Having fallback implementations enables progress

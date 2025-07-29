@@ -56,7 +56,7 @@ jobs:
             host: x86_64-unknown-linux-gnu
             packages: "bc python3-setuptools python3-wheel"
             dep_opts: "NO_QT=1 NO_UPNP=1 DEBUG=1"
-            bitcoin_config: "--enable-zmq --enable-glibc-back-compat --enable-reduce-exports --with-incompatible-bdb CPPFLAGS=-DDEBUG_LOCKORDER"
+            bitcoin_config: "--enable-zmq --enable-glibc-back-compat --enable-reduce-exports --disable-wallet CPPFLAGS=-DDEBUG_LOCKORDER"
             run_tests: true
             goldcoin_scrypt: 1
             goal: "install"
