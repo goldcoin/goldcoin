@@ -1,8 +1,6 @@
 --- a/qtbase/src/corelib/io/qfilesystemengine_win.cpp
 +++ b/qtbase/src/corelib/io/qfilesystemengine_win.cpp
-@@ -626,12 +626,14 @@ typedef struct _FILE_ID_128 {
- typedef struct _FILE_ID_128 {
- BYTE  Identifier[16];
+@@ -630,12 +630,14 @@ BYTE  Identifier[16];
  } FILE_ID_128, *PFILE_ID_128;
  #    endif // !(Q_CC_MINGW && FILE_SUPPORTS_INTEGRITY_STREAMS)
  
