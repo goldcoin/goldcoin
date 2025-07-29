@@ -35,8 +35,17 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y python3-pip shellcheck
+          # Define retry function for apt commands to handle lock contention
+          retry_apt() {
+            for i in {1..10}; do
+              sudo apt-get "$@" && break
+              echo "apt-get $* failed, retrying in 10 seconds..."
+              sleep 10
+            done
+          }
+          
+          retry_apt update
+          retry_apt install -y python3-pip shellcheck
 
       - name: Run lint checks
         run: |
@@ -164,21 +173,30 @@ jobs:
               SUDO=""
             fi
             
+            # Define retry function for apt commands to handle lock contention
+            retry_apt() {
+              for i in {1..10}; do
+                $SUDO apt-get "$@" && break
+                echo "apt-get $* failed, retrying in 10 seconds..."
+                sleep 10
+              done
+            }
+            
             # Update package lists
-            $SUDO apt-get update
+            retry_apt update
             
             # Skip base install for container builds that have packages pre-installed
             if [ "${{ matrix.skip_base_install }}" != "true" ]; then
               # Install base dependencies including Boost and Python dev headers
-              $SUDO apt-get install --no-install-recommends --no-upgrade -qq build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils libboost-all-dev python3-dev
+              retry_apt install --no-install-recommends --no-upgrade -qq build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils libboost-all-dev python3-dev
             fi
             
             if [ -n "${{ matrix.dpkg_add_arch }}" ]; then
               $SUDO dpkg --add-architecture "${{ matrix.dpkg_add_arch }}"
-              $SUDO apt-get update
+              retry_apt update
             fi
             if [ -n "${{ matrix.packages }}" ]; then
-              $SUDO apt-get install --no-install-recommends --no-upgrade -qq ${{ matrix.packages }}
+              retry_apt install --no-install-recommends --no-upgrade -qq ${{ matrix.packages }}
             fi
           fi
 
