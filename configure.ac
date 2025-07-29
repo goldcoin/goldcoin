@@ -736,6 +736,12 @@ dnl Disable Boost concept checks to avoid errors with GCC's debug mode
 dnl Use more targeted fix to avoid affecting consensus code
 BOOST_CPPFLAGS="$BOOST_CPPFLAGS \"-DBOOST_CONCEPT_ASSERT(x)=\""
 
+dnl Force C++11 for Boost sleep compatibility
+AX_CHECK_COMPILE_FLAG([-std=c++11],[CXXFLAGS="$CXXFLAGS -std=c++11"])
+
+dnl Disable deprecated C++98 features that cause issues with modern Boost
+BOOST_CPPFLAGS="$BOOST_CPPFLAGS -DBOOST_NO_CXX98_FUNCTION_BASE -DBOOST_NO_CXX98_BINDERS"
+
 LIBS="$TEMP_LIBS"
 CPPFLAGS="$TEMP_CPPFLAGS"
 

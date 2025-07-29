@@ -219,6 +219,32 @@ I'm back in the goldcoin directory. Run ./restore-context.sh to check the curren
 - ✅ Moved past compilation errors to dependency issues
 - This is significant progress in the modernization effort
 
+### Boost Sleep Implementation Fix (2025-07-29)
+**PROBLEM**: Configure fails with "No working boost sleep implementation found"
+- Modern Boost requires C++11 for sleep_for functionality
+- boost::this_thread::sleep_for needs C++11 chrono support
+- C++98 compatibility causing issues with Boost 1.64+
+
+**ROOT CAUSE**: Missing C++11 compilation flags
+- Configure tests were running without -std=c++11
+- Boost sleep detection failing due to C++98 mode
+- Modern Boost (1.64 in depends) requires C++11
+
+**SOLUTION**: Enable C++11 and disable deprecated features
+1. Added: `AX_CHECK_COMPILE_FLAG([-std=c++11],[CXXFLAGS="$CXXFLAGS -std=c++11"])`
+2. Added: `-DBOOST_NO_CXX98_FUNCTION_BASE -DBOOST_NO_CXX98_BINDERS`
+3. Ensures Boost sleep tests run with proper C++11 support
+
+**DEPENDS SYSTEM**: 
+- Goldcoin uses depends to build Boost 1.64
+- CI already configured to use depends-built Boost
+- Path: `--prefix=${{ github.workspace }}/depends/${{ matrix.host }}`
+
+**KEY LEARNINGS**:
+- Modern Boost requires C++11 for many features
+- Configure tests must use same C++ standard as build
+- Depends system provides consistent Boost version
+
 **KEY LEARNINGS**:
 - Modernization sometimes requires replacing legacy dependencies
 - Having fallback implementations enables progress
