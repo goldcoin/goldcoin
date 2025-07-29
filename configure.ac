@@ -731,6 +731,10 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([[
   #endif
   ]])],
   [AC_MSG_RESULT(mismatched); BOOST_CPPFLAGS="$BOOST_CPPFLAGS -DBOOST_NO_SCOPED_ENUMS -DBOOST_NO_CXX11_SCOPED_ENUMS"], [AC_MSG_RESULT(ok)])
+
+dnl Disable libstdc++ debug iterators to avoid Boost concept check errors with GCC's debug mode
+BOOST_CPPFLAGS="$BOOST_CPPFLAGS -D_GLIBCXX_DEBUG=0"
+
 LIBS="$TEMP_LIBS"
 CPPFLAGS="$TEMP_CPPFLAGS"
 
