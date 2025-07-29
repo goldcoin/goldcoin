@@ -67,6 +67,11 @@ COVERAGE_INFO = baseline_filtered_combined.info baseline.info \
 
 dist-hook:
 	-$(GIT) archive --format=tar HEAD -- src/clientversion.cpp | $(AMTAR) -C $(top_distdir) -xf -
+	@if test -e $(top_srcdir)/src/clientversion.cpp -a ! -e $(top_distdir)/src/clientversion.cpp; then \
+	  echo "Copying src/clientversion.cpp manually"; \
+	  $(MKDIR_P) $(top_distdir)/src; \
+	  cp -f $(top_srcdir)/src/clientversion.cpp $(top_distdir)/src/; \
+	fi
 
 $(BITCOIN_WIN_INSTALLER): all-recursive
 	$(MKDIR_P) $(top_builddir)/release
