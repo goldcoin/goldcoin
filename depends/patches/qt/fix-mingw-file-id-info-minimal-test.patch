@@ -1,0 +1,16 @@
+--- a/qtbase/src/corelib/io/qfilesystemengine_win.cpp
++++ b/qtbase/src/corelib/io/qfilesystemengine_win.cpp
+@@ -634,6 +634,7 @@
+ 
++#ifndef _FILE_ID_INFO_DEFINED
+ typedef struct _FILE_ID_INFO {
+     ULONGLONG VolumeSerialNumber;
+     FILE_ID_128 FileId;
+@@ -641,6 +642,7 @@ typedef struct _FILE_ID_INFO {
+ #  endif // if defined (Q_CC_MINGW) || (defined(Q_CC_MSVC) && (_MSC_VER < 1700 || WINVER <= 0x0601))
+ 
+ // File ID for Windows up to version 7.
++#endif
+ static inline QByteArray fileId(HANDLE handle)
+ {
+     QByteArray result;
