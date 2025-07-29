@@ -94,22 +94,22 @@ jobs:
             host: x86_64-apple-darwin
             packages: ""
             dep_opts: "NO_UPNP=1 DEBUG=1 FALLBACK_DOWNLOAD_PATH=https://bitcoincore.org/depends-sources"
-            bitcoin_config: "--enable-reduce-exports --enable-wallet --with-incompatible-bdb CPPFLAGS=-DDEBUG_LOCKORDER"
+            bitcoin_config: "--enable-reduce-exports --enable-wallet --with-incompatible-bdb --with-gui=qt5 CPPFLAGS=-DDEBUG_LOCKORDER"
             run_tests: false
             goldcoin_scrypt: 1
             goal: "install"
-            brew_packages: "automake libtool boost berkeley-db@4 pkg-config python@3.12 qt@5 miniupnpc libnatpmp zeromq openssl@3"
+            brew_packages: "automake libtool boost berkeley-db@4 pkg-config python@3.12 qt@5 miniupnpc libnatpmp zeromq openssl@3 qrencode protobuf"
 
           - name: "macOS Apple Silicon"
             os: macos-latest
             host: arm64-apple-darwin
             packages: ""
             dep_opts: "NO_UPNP=1 DEBUG=1 FALLBACK_DOWNLOAD_PATH=https://bitcoincore.org/depends-sources"
-            bitcoin_config: "--enable-reduce-exports --enable-wallet --with-incompatible-bdb CPPFLAGS=-DDEBUG_LOCKORDER"
+            bitcoin_config: "--enable-reduce-exports --enable-wallet --with-incompatible-bdb --with-gui=qt5 CPPFLAGS=-DDEBUG_LOCKORDER"
             run_tests: false
             goldcoin_scrypt: 1
             goal: "install"
-            brew_packages: "automake libtool boost berkeley-db@4 pkg-config python@3.12 qt@5 miniupnpc libnatpmp zeromq openssl@3"
+            brew_packages: "automake libtool boost berkeley-db@4 pkg-config python@3.12 qt@5 miniupnpc libnatpmp zeromq openssl@3 qrencode protobuf"
 
           # ALL OTHER BUILDS TEMPORARILY DISABLED FOR TESTING
           # - name: "Linux x86_64 (no wallet)"
@@ -251,19 +251,28 @@ jobs:
           if [[ "${{ runner.os }}" == "macOS" ]]; then
             export MAKEJOBS="-j$(sysctl -n hw.ncpu)"
             
-            # Create a custom packages.mk without boost for macOS
+            # Create a custom packages.mk without boost and qt for macOS
             cd depends
             cp packages/packages.mk packages/packages.mk.bak
-            sed 's/packages:=boost openssl libevent zeromq/packages:=openssl libevent zeromq/' packages/packages.mk > packages/packages.mk.tmp
-            mv packages/packages.mk.tmp packages/packages.mk
+            
+            # Remove boost from main packages
+            sed -i '' 's/packages:=boost openssl libevent zeromq/packages:=openssl libevent zeromq/' packages/packages.mk
+            
+            # Remove qt packages
+            sed -i '' 's/qt_packages = qrencode protobuf zlib/qt_packages =/' packages/packages.mk
+            sed -i '' 's/qt_darwin_packages=qt/qt_darwin_packages=/' packages/packages.mk
             
             # Debug output
             echo "Modified packages.mk content:"
-            head -n 5 packages/packages.mk
+            cat packages/packages.mk | head -n 15
             
-            # Verify Homebrew Boost is available
+            # Verify Homebrew installations
             echo "Checking Homebrew Boost installation:"
             ls -la $(brew --prefix boost)/lib/libboost* | head -n 5 || echo "Boost libs not found"
+            
+            echo "Checking Homebrew Qt5 installation:"
+            echo "Qt5 installation: $(brew --prefix qt@5)"
+            ls -la $(brew --prefix qt@5)/lib/cmake/Qt5*/ | head -n 5 || echo "Qt5 cmake files not found"
             
             cd ..
           else
@@ -281,6 +290,13 @@ jobs:
             export BOOST_ROOT="${BOOST_ROOT}"
             # Update bitcoin_config to use proper boost path
             export BITCOIN_CONFIG_BOOST="--with-boost=${BOOST_ROOT}"
+            
+            # Set Qt5 paths for configure
+            export QT5_ROOT=$(brew --prefix qt@5)
+            export CMAKE_PREFIX_PATH="${QT5_ROOT}:${CMAKE_PREFIX_PATH}"
+            export PKG_CONFIG_PATH="${QT5_ROOT}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+            echo "QT5_ROOT=${QT5_ROOT}" >> $GITHUB_ENV
+            echo "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}" >> $GITHUB_ENV
           else
             export MAKEJOBS="-j$(nproc)"
             export BITCOIN_CONFIG_BOOST=""
