@@ -10,3 +10,4 @@ i686*
 mips*
 arm*
 aarch64*
+!sources/zlib-*.tar.gz
