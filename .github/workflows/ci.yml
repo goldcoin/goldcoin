@@ -123,6 +123,8 @@ jobs:
           python3 -m pip install pyzmq
           # Install pybind11 for building native extensions
           python3 -m pip install pybind11
+          # Install legacy asyncore for Python 3.12 compatibility (removed from stdlib)
+          python3 -m pip install asyncore
           # Try to install goldcoin_scrypt, but don't fail if it doesn't work
           python3 -m pip install goldcoin_scrypt || echo "WARNING: goldcoin_scrypt installation failed, using native implementation"
 
