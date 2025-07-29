@@ -736,14 +736,14 @@ dnl Disable Boost concept checks to avoid errors with GCC's debug mode
 dnl Use more targeted fix to avoid affecting consensus code
 BOOST_CPPFLAGS="$BOOST_CPPFLAGS \"-DBOOST_CONCEPT_ASSERT(x)=\""
 
-dnl Force C++11 for Boost sleep compatibility
-AX_CHECK_COMPILE_FLAG([-std=c++11],[CXXFLAGS="$CXXFLAGS -std=c++11"])
-
 dnl Disable deprecated C++98 features that cause issues with modern Boost
 BOOST_CPPFLAGS="$BOOST_CPPFLAGS -DBOOST_NO_CXX98_FUNCTION_BASE -DBOOST_NO_CXX98_BINDERS"
 
 LIBS="$TEMP_LIBS"
 CPPFLAGS="$TEMP_CPPFLAGS"
+
+dnl Force C++11 for Boost sleep compatibility - must be after CPPFLAGS restore
+AX_CHECK_COMPILE_FLAG([-std=c++11],[CXXFLAGS="$CXXFLAGS -std=c++11"])
 
 dnl Boost >= 1.50 uses sleep_for rather than the now-deprecated sleep, however
 dnl it was broken from 1.50 to 1.52 when backed by nanosleep. Use sleep_for if
@@ -756,6 +756,7 @@ TEMP_CPPFLAGS="$CPPFLAGS"
 CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
   #include <boost/thread/thread.hpp>
+  #include <boost/chrono.hpp>
   #include <boost/version.hpp>
   ]],[[
   #if BOOST_VERSION >= 105000 && (!defined(BOOST_HAS_NANOSLEEP) || BOOST_VERSION >= 105200)
