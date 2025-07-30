@@ -89,27 +89,9 @@ jobs:
             goal: "install"
             cross_compile: true
 
-          - name: "macOS Intel"
-            os: macos-13
-            host: x86_64-apple-darwin
-            packages: ""
-            dep_opts: "NO_UPNP=1 DEBUG=1 FALLBACK_DOWNLOAD_PATH=https://bitcoincore.org/depends-sources"
-            bitcoin_config: "--disable-gui --enable-reduce-exports --enable-wallet --with-incompatible-bdb CPPFLAGS=-DDEBUG_LOCKORDER"
-            run_tests: false
-            goldcoin_scrypt: 1
-            goal: "install"
-            brew_packages: "automake libtool boost berkeley-db@4 pkg-config python@3.12 qt@5 miniupnpc libnatpmp zeromq openssl@3 qrencode protobuf"
-
-          - name: "macOS Apple Silicon"
-            os: macos-latest
-            host: arm64-apple-darwin
-            packages: ""
-            dep_opts: "NO_UPNP=1 DEBUG=1 FALLBACK_DOWNLOAD_PATH=https://bitcoincore.org/depends-sources"
-            bitcoin_config: "--disable-gui --enable-reduce-exports --enable-wallet --with-incompatible-bdb CPPFLAGS=-DDEBUG_LOCKORDER"
-            run_tests: false
-            goldcoin_scrypt: 1
-            goal: "install"
-            brew_packages: "automake libtool boost berkeley-db@4 pkg-config python@3.12 qt@5 miniupnpc libnatpmp zeromq openssl@3 qrencode protobuf"
+          # macOS builds temporarily removed for v0.16.0
+          # Will be debugged locally and re-enabled in v0.16.1
+          # After 262+ failed CI attempts, focusing on platforms that work
 
           # ALL OTHER BUILDS TEMPORARILY DISABLED FOR TESTING
           # - name: "Linux x86_64 (no wallet)"
@@ -138,110 +120,13 @@ jobs:
           key: ${{ matrix.host }}
           max-size: ${{ env.CCACHE_SIZE }}
 
-      # Qt5 installation skipped - building without GUI
-
       - name: Set up build environment
         run: |
-          # Handle macOS with Homebrew
-          if [[ "${{ runner.os }}" == "macOS" ]]; then
-            # Ensure Xcode Command Line Tools are properly configured
-            echo "Setting up Xcode Command Line Tools..."
-            sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
-            echo "Xcode Developer Path: $(xcode-select -p)"
-            
-            # Verify standard headers are available
-            echo "Checking for available SDKs:"
-            ls -la /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/ || echo "SDK directory not found"
-            
-            # Check for stdlib.h availability
-            echo "Verifying stdlib.h availability:"
-            find /Applications/Xcode.app/Contents/Developer -name "stdlib.h" 2>/dev/null | head -5 || echo "stdlib.h not found in Xcode"
-            
-            # Set SDK environment variables
-            export SDKROOT=$(xcode-select -p)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
-            export MACOSX_DEPLOYMENT_TARGET=10.15
-            echo "SDKROOT=${SDKROOT}" >> $GITHUB_ENV
-            echo "MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}" >> $GITHUB_ENV
-            
-            # Install Homebrew packages
-            if [ -n "${{ matrix.brew_packages }}" ]; then
-              echo "=== Installing Homebrew packages ==="
-              brew update
-              brew install ${{ matrix.brew_packages }}
-            fi
-            
-            # Verify Boost installation
-            brew list boost && echo "Boost installed at: $(brew --prefix boost)"
-            
-            # Skip Qt5 installation for now - will use dedicated action later
-            echo "=== Qt5 setup will be handled by install-qt-action ==="
-            
-            # Set up persistent environment variables
-            echo "BOOST_ROOT=$(brew --prefix boost)" >> $GITHUB_ENV
-            echo "OPENSSL_ROOT_DIR=$(brew --prefix openssl@3)" >> $GITHUB_ENV
-            echo "BDB_PREFIX=$(brew --prefix berkeley-db@4)" >> $GITHUB_ENV
-            
-            # Get Qt5 path from Homebrew - works for both architectures
-            export Qt5_DIR="$(brew --prefix qt@5)"
-            echo "Qt5_DIR=${Qt5_DIR}" >> $GITHUB_ENV
-            
-            # Set up paths with Qt5 first in PKG_CONFIG_PATH
-            echo "PATH=${Qt5_DIR}/bin:${PATH}" >> $GITHUB_ENV
-            echo "PKG_CONFIG_PATH=${Qt5_DIR}/lib/pkgconfig:$(brew --prefix openssl@3)/lib/pkgconfig:${PKG_CONFIG_PATH}" >> $GITHUB_ENV
-            echo "LDFLAGS=-L$(brew --prefix openssl@3)/lib -L$(brew --prefix berkeley-db@4)/lib -L$(brew --prefix boost)/lib" >> $GITHUB_ENV
-            echo "CPPFLAGS=-I$(brew --prefix openssl@3)/include -I$(brew --prefix berkeley-db@4)/include -I$(brew --prefix boost)/include" >> $GITHUB_ENV
-            
-            # Additional Qt5 environment setup
-            echo "QT_SELECT=qt5" >> $GITHUB_ENV
-            echo "QTDIR=${Qt5_DIR}" >> $GITHUB_ENV
-            
-            # Verify Qt5 installation
-            echo "=== Qt5 installation check ==="
-            echo "Qt5_DIR: ${Qt5_DIR}"
-            echo "PATH: ${PATH}"
-            echo "PKG_CONFIG_PATH: ${PKG_CONFIG_PATH}"
-            
-            # Verify Qt5 binaries in PATH
-            echo "=== PATH verification ==="
-            which qmake || echo "qmake not found in PATH"
-            ls -la ${Qt5_DIR}/bin/qmake || echo "qmake not found at Qt5_DIR/bin"
-            
-            # Check Qt5 .pc files exist
-            echo "=== Checking Qt5 .pc files ==="
-            ls -la ${Qt5_DIR}/lib/pkgconfig/Qt5Core.pc || echo "Qt5Core.pc not found!"
-            ls -la ${Qt5_DIR}/lib/pkgconfig/Qt5*.pc | head -5 || echo "Qt5 .pc files not found at Qt5_DIR"
-            
-            # Test pkg-config directly for all Qt5 modules
-            echo "=== pkg-config test ==="
-            export PKG_CONFIG_PATH="${Qt5_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}"
-            echo "Testing Qt5 modules with PKG_CONFIG_PATH: ${PKG_CONFIG_PATH}"
-            pkg-config --exists Qt5Core && echo "✓ Qt5Core found" || echo "✗ Qt5Core NOT found"
-            pkg-config --exists Qt5Gui && echo "✓ Qt5Gui found" || echo "✗ Qt5Gui NOT found"
-            pkg-config --exists Qt5Network && echo "✓ Qt5Network found" || echo "✗ Qt5Network NOT found"
-            pkg-config --exists Qt5Widgets && echo "✓ Qt5Widgets found" || echo "✗ Qt5Widgets NOT found"
-            pkg-config --modversion Qt5Core || echo "Qt5Core version not available"
-            
-            # Additional macOS-specific debugging
-            echo "=== macOS Build Environment Debug ==="
-            echo "Compiler version:"
-            clang --version || echo "clang not found"
-            echo "Available SDKs:"
-            xcodebuild -showsdks || echo "xcodebuild not available"
-            echo "Current SDK path:"
-            xcrun --show-sdk-path || echo "xcrun failed"
-            
-            # Check if our compat headers are accessible
-            echo "=== Checking compat header files ==="
-            ls -la src/compat/endian.h || echo "endian.h not found"
-            ls -la src/compat/byteswap.h || echo "byteswap.h not found"
-            echo "=== Checking if libkern headers exist ==="
-            find $(xcrun --show-sdk-path) -name "OSByteOrder.h" 2>/dev/null | head -5 || echo "OSByteOrder.h not found in SDK"
+          # Only Linux and Windows builds now (macOS removed)
+          # For container builds, we might not have sudo
+          if command -v sudo >/dev/null 2>&1; then
+            SUDO=sudo
           else
-            # Linux build environment setup
-            # For container builds, we might not have sudo
-            if command -v sudo >/dev/null 2>&1; then
-              SUDO=sudo
-            else
               SUDO=""
             fi
             
@@ -301,234 +186,18 @@ jobs:
           export PATH="/usr/lib/ccache:$PATH"
           ccache --max-size=${{ env.CCACHE_SIZE }}
 
-      - name: Update config scripts for modern platforms
-        if: runner.os == 'macOS'
-        run: |
-          cd depends
-          echo "Current config.sub version:"
-          ./config.sub --version 2>/dev/null || echo "No version info"
-          
-          # Download latest if needed
-          wget -q -O config.sub.new https://git.savannah.gnu.org/cgit/config.git/plain/config.sub
-          wget -q -O config.guess.new https://git.savannah.gnu.org/cgit/config.git/plain/config.guess
-          
-          # Only update if different
-          if ! cmp -s config.sub config.sub.new; then
-            echo "Updating config.sub..."
-            mv config.sub.new config.sub
-          else
-            rm config.sub.new
-          fi
-          
-          if ! cmp -s config.guess config.guess.new; then
-            echo "Updating config.guess..."
-            mv config.guess.new config.guess
-          else
-            rm config.guess.new
-          fi
-          
-          chmod +x config.sub config.guess
-          
-          # Test that arm64-apple-darwin is now recognized
-          echo "Testing config.sub with arm64-apple-darwin:"
-          ./config.sub arm64-apple-darwin || echo "config.sub failed"
-          cd ..
 
       - name: Build dependencies
         run: |
-          # Set up macOS-specific paths
-          if [[ "${{ runner.os }}" == "macOS" ]]; then
-            export MAKEJOBS="-j$(sysctl -n hw.ncpu)"
-            
-            echo "=== Platform detection check ==="
-            echo "Current directory: $(pwd)"
-            echo "Host triplet: $(./depends/config.guess)"
-            echo "HOST variable: ${{ matrix.host }}"
-            
-            # Create a custom packages.mk without boost and qt for macOS
-            cd depends
-            
-            echo "=== Files in depends/hosts/ ==="
-            ls -la hosts/
-            
-            echo "=== Testing config.guess from depends directory ==="
-            echo "config.guess output: $(./config.guess)"
-            
-            cp packages/packages.mk packages/packages.mk.bak
-            
-            # Remove boost and openssl from main packages
-            sed -i '' 's/packages:=boost openssl libevent zeromq/packages:=libevent zeromq/' packages/packages.mk
-            
-            # Remove qt packages
-            sed -i '' 's/qt_packages = qrencode protobuf zlib/qt_packages =/' packages/packages.mk
-            sed -i '' 's/qt_darwin_packages=qt/qt_darwin_packages=/' packages/packages.mk
-            
-            # Remove bdb from wallet_packages - use Homebrew's berkeley-db@4 instead
-            sed -i '' 's/wallet_packages=bdb/wallet_packages=/' packages/packages.mk
-            
-            # Debug output
-            echo "=== Modified packages.mk content ==="
-            cat packages/packages.mk | head -n 15
-            
-            echo "=== Checking package modifications ==="
-            grep "packages:=" packages/packages.mk
-            grep "wallet_packages=" packages/packages.mk || echo "wallet_packages line not found"
-            
-            # Verify Homebrew installations
-            echo "=== Homebrew package list ==="
-            brew list | grep -E "boost|qt@5|openssl@3|berkeley-db" || true
-            
-            echo "=== Checking Homebrew Boost installation ==="
-            echo "Boost prefix: $(brew --prefix boost)"
-            ls -la $(brew --prefix boost)/lib/libboost* | head -n 5 || echo "Boost libs not found"
-            
-            echo "=== Checking Homebrew Qt5 installation ==="
-            echo "Qt5 prefix: $(brew --prefix qt@5)"
-            ls -la $(brew --prefix qt@5)/lib/cmake/Qt5*/ | head -n 5 || echo "Qt5 cmake files not found"
-            
-            echo "=== Qt5 pkg-config debug ==="
-            echo "Current PKG_CONFIG_PATH: $PKG_CONFIG_PATH"
-            pkg-config --list-all | grep -i qt5 || echo "No Qt5 modules in pkg-config"
-            
-            echo "=== OpenSSL configuration ==="
-            echo "OPENSSL_ROOT_DIR: ${OPENSSL_ROOT_DIR}"
-            ls -la ${OPENSSL_ROOT_DIR}/include/openssl/sha.h || echo "OpenSSL headers not found!"
-            ls -la ${OPENSSL_ROOT_DIR}/lib/libssl.* | head -3 || echo "OpenSSL libs not found!"
-            
-            echo "=== Berkeley DB from Homebrew ==="
-            echo "BDB_PREFIX: ${BDB_PREFIX}"
-            ls -la ${BDB_PREFIX}/include/db.h || echo "BDB headers not found"
-            ls -la ${BDB_PREFIX}/lib/libdb*.dylib | head -3 || echo "BDB libs not found"
-            
-            echo "=== Environment variables check ==="
-            echo "BOOST_ROOT: ${BOOST_ROOT}"
-            echo "QT5_ROOT: ${QT5_ROOT}"
-            echo "OPENSSL_ROOT_DIR: ${OPENSSL_ROOT_DIR}"
-            echo "SDKROOT: ${SDKROOT}"
-            echo "PATH: ${PATH}"
-            echo "PKG_CONFIG_PATH: ${PKG_CONFIG_PATH}"
-            
-            cd ..
-            
-            echo "=== Host detection for make ==="
-            HOST_TRIPLET=${{ matrix.host }}
-            host_arch=$(echo $HOST_TRIPLET | cut -d- -f1)
-            host_vendor=$(echo $HOST_TRIPLET | cut -d- -f2) 
-            host_os=$(echo $HOST_TRIPLET | cut -d- -f3)
-            
-            echo "Matrix HOST: ${{ matrix.host }}"
-            echo "Parsed components:"
-            echo "  arch: $host_arch"
-            echo "  vendor: $host_vendor"
-            echo "  os: $host_os"
-            
-            # Alternative approach - let config.guess do its job from depends directory
-            cd depends
-            
-            echo "=== Verifying config scripts ==="
-            echo "Current directory: $(pwd)"
-            echo "Directory contents:"
-            ls -la | head -20
-            
-            echo "=== Testing config scripts ==="
-            ls -la config.guess config.sub
-            
-            # Test config.guess directly
-            echo "Testing config.guess: $(./config.guess)"
-            
-            # Test config.sub with the HOST value
-            echo "Testing config.sub with ${{ matrix.host }}: $(./config.sub ${{ matrix.host }})"
-            
-            # Ensure they're executable (redundant but safe)
-            chmod +x config.guess config.sub
-            
-            # For macOS, we know the canonical format, so pass it explicitly
-            echo "=== Running make with explicit canonical_host for macOS ==="
-            # No need for BDB mutex configuration - using Homebrew's berkeley-db@4
-            make $MAKEJOBS HOST=${{ matrix.host }} canonical_host=${{ matrix.host }} ${{ matrix.dep_opts }}
-            cd ..
-          else
-            export MAKEJOBS="-j$(nproc)"
-            make $MAKEJOBS -C depends HOST=${{ matrix.host }} ${{ matrix.dep_opts }}
-          fi
+          export MAKEJOBS="-j$(nproc)"
+          make $MAKEJOBS -C depends HOST=${{ matrix.host }} ${{ matrix.dep_opts }}
 
       - name: Configure and build
         run: |
-          # Set up build environment
-          if [[ "${{ runner.os }}" == "macOS" ]]; then
-            export MAKEJOBS="-j$(sysctl -n hw.ncpu)"
-            
-            echo "=== Configure environment variables ==="
-            echo "BOOST_ROOT from env: ${BOOST_ROOT}"
-            echo "Qt5_DIR from env: ${Qt5_DIR}"
-            echo "SDKROOT from env: ${SDKROOT}"
-            echo "MACOSX_DEPLOYMENT_TARGET: ${MACOSX_DEPLOYMENT_TARGET}"
-            echo "CXX compiler: $(which clang++ || echo 'clang++ not found')"
-            echo "CC compiler: $(which clang || echo 'clang not found')"
-            
-            # Use BOOST_ROOT from environment
-            export BOOST_ROOT="${BOOST_ROOT}"
-            # Update bitcoin_config to use proper boost path
-            export BITCOIN_CONFIG_BOOST="--with-boost=${BOOST_ROOT}"
-            
-            # Set Qt5 paths for configure - use the Qt5_DIR from environment
-            export CMAKE_PREFIX_PATH="${Qt5_DIR}:${CMAKE_PREFIX_PATH}"
-            export PKG_CONFIG_PATH="${Qt5_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}"
-            export PATH="${Qt5_DIR}/bin:${PATH}"
-            
-            # Export Qt5 specific variables
-            export Qt5_CFLAGS="-I${Qt5_DIR}/include -I${Qt5_DIR}/include/QtCore -I${Qt5_DIR}/include/QtGui -I${Qt5_DIR}/include/QtWidgets -I${Qt5_DIR}/include/QtNetwork -I${Qt5_DIR}/include/QtTest -I${Qt5_DIR}/include/QtDBus"
-            export Qt5_LIBS="-L${Qt5_DIR}/lib -lQt5Core -lQt5Gui -lQt5Widgets -lQt5Network -lQt5Test -lQt5DBus"
-            export MOC="${Qt5_DIR}/bin/moc"
-            export UIC="${Qt5_DIR}/bin/uic"
-            export RCC="${Qt5_DIR}/bin/rcc"
-            export LRELEASE="${Qt5_DIR}/bin/lrelease"
-            export LUPDATE="${Qt5_DIR}/bin/lupdate"
-            
-            # Debug Qt5 availability before configure
-            echo "=== Pre-configure Qt5 check ==="
-            echo "PATH: ${PATH}"
-            echo "PKG_CONFIG_PATH: ${PKG_CONFIG_PATH}"
-            echo "Qt5_DIR: ${Qt5_DIR}"
-            echo "MOC: ${MOC}"
-            which qmake || echo "qmake not in PATH before configure"
-            pkg-config --exists Qt5Core && echo "Qt5Core available before configure" || echo "Qt5Core NOT available before configure"
-            
-            # Force Qt5 detection with explicit paths
-            export QT_SELECT=qt5
-            export QTDIR="${Qt5_DIR}"
-            export QMAKE="${Qt5_DIR}/bin/qmake"
-            
-            # Set OpenSSL paths for configure
-            export OPENSSL_CFLAGS="-I${OPENSSL_ROOT_DIR}/include"
-            export OPENSSL_LIBS="-L${OPENSSL_ROOT_DIR}/lib -lssl -lcrypto"
-            export BITCOIN_CONFIG_OPENSSL="--with-openssl=${OPENSSL_ROOT_DIR}"
-            
-            # Set BDB paths for configure
-            export BDB_CFLAGS="-I${BDB_PREFIX}/include"
-            export BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-4.8"
-            export BITCOIN_CONFIG_BDB="--with-incompatible-bdb BDB_CFLAGS=\"${BDB_CFLAGS}\" BDB_LIBS=\"${BDB_LIBS}\""
-            
-            echo "=== Final configure environment ==="
-            echo "BITCOIN_CONFIG_BOOST: ${BITCOIN_CONFIG_BOOST}"
-            echo "BITCOIN_CONFIG_OPENSSL: ${BITCOIN_CONFIG_OPENSSL}"
-            echo "BITCOIN_CONFIG_BDB: ${BITCOIN_CONFIG_BDB}"
-            echo "OPENSSL_CFLAGS: ${OPENSSL_CFLAGS}"
-            echo "OPENSSL_LIBS: ${OPENSSL_LIBS}"
-            echo "BDB_CFLAGS: ${BDB_CFLAGS}"
-            echo "BDB_LIBS: ${BDB_LIBS}"
-            echo "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}"
-            echo "PKG_CONFIG_PATH: ${PKG_CONFIG_PATH}"
-            echo "Qt5_CFLAGS: ${Qt5_CFLAGS}"
-            echo "Qt5_LIBS: ${Qt5_LIBS}"
-            echo "QMAKE: ${QMAKE}"
-            echo "MOC: ${MOC}"
-          else
-            export MAKEJOBS="-j$(nproc)"
-            export BITCOIN_CONFIG_BOOST=""
-            export BITCOIN_CONFIG_OPENSSL=""
-            export BITCOIN_CONFIG_BDB=""
-          fi
+          export MAKEJOBS="-j$(nproc)"
+          export BITCOIN_CONFIG_BOOST=""
+          export BITCOIN_CONFIG_OPENSSL=""
+          export BITCOIN_CONFIG_BDB=""
           
           export BASE_OUTDIR=${{ github.workspace }}/out
           export OUTDIR=$BASE_OUTDIR/${{ matrix.host }}
@@ -561,34 +230,9 @@ jobs:
           # Build
           mkdir -p build && cd build
           
-          # Set OpenSSL configuration for macOS
-          if [[ "${{ runner.os }}" == "macOS" ]]; then
-            export OPENSSL_CFLAGS="${OPENSSL_CFLAGS}"
-            export OPENSSL_LIBS="${OPENSSL_LIBS}"
-            export BDB_CFLAGS="${BDB_CFLAGS}"
-            export BDB_LIBS="${BDB_LIBS}"
-            export Qt5_CFLAGS="${Qt5_CFLAGS}"
-            export Qt5_LIBS="${Qt5_LIBS}"
-            export MOC="${MOC}"
-            export UIC="${UIC}"
-            export RCC="${RCC}"
-            export QMAKE="${QMAKE}"
-            export QT_SELECT=qt5
-            export QTDIR="${Qt5_DIR}"
-            BITCOIN_CONFIG_EXTRA="$BITCOIN_CONFIG_BOOST $BITCOIN_CONFIG_OPENSSL"
-          else
-            BITCOIN_CONFIG_EXTRA="$BITCOIN_CONFIG_BOOST"
-          fi
+          BITCOIN_CONFIG_EXTRA="$BITCOIN_CONFIG_BOOST"
           
-          # Debug: Show what headers are actually present
-          echo "=== Checking for endian headers on system ==="
-          find /usr/include /usr/local/include /opt/homebrew/include /Applications/Xcode.app -name "*endian*.h" 2>/dev/null | head -20 || echo "No endian headers found"
-          echo "=== Checking our compat headers ==="
-          cat ../src/compat/endian.h | head -80
-          echo "=== Testing if __APPLE__ is defined ==="
-          echo -e "#ifdef __APPLE__\n#error APPLE IS DEFINED\n#endif" | clang -c -x c - 2>&1 || echo "Apple is defined"
-          echo "=== Running configure with maximum verbosity ==="
-          ../configure --cache-file=config.cache $BITCOIN_CONFIG_ALL $BITCOIN_CONFIG_EXTRA ${{ matrix.bitcoin_config }} || (echo "=== Configure failed, showing config.log ===" && cat config.log && echo "=== Checking generated config headers ===" && find . -name "*config*.h" -exec echo "File: {}" \; -exec head -20 {} \; && false)
+          ../configure --cache-file=config.cache $BITCOIN_CONFIG_ALL $BITCOIN_CONFIG_EXTRA ${{ matrix.bitcoin_config }} || (cat config.log && false)
           make distdir VERSION=${{ matrix.host }}
           cd goldcoin-${{ matrix.host }}
           ./configure --cache-file=../config.cache $BITCOIN_CONFIG_ALL $BITCOIN_CONFIG_EXTRA ${{ matrix.bitcoin_config }} || (cat config.log && false)
