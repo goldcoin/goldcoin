@@ -174,7 +174,7 @@ jobs:
             # Ensure Qt5 is properly installed and linked
             echo "=== Setting up Qt5 ==="
             brew list qt@5 && echo "Qt5 found" || (echo "Installing qt@5..." && brew install qt@5)
-            brew link --force qt@5 || echo "Qt5 already linked or linking failed"
+            brew link --force --overwrite qt@5 || echo "Qt5 already linked or linking failed"
             
             # Set up persistent environment variables
             echo "BOOST_ROOT=$(brew --prefix boost)" >> $GITHUB_ENV
