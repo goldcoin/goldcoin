@@ -33,7 +33,21 @@ endif
 base_build_dir=$(BASEDIR)/work/build
 base_staging_dir=$(BASEDIR)/work/staging
 base_download_dir=$(BASEDIR)/work/download
+
+# Debug config.sub execution
+$(info Attempting config.sub with HOST=$(HOST))
+$(info Current directory: $(shell pwd))
+$(info config.sub exists: $(shell test -f config.sub && echo yes || echo no))
+$(info config.sub executable: $(shell test -x config.sub && echo yes || echo no))
+$(info config.sub output: $(shell ./config.sub $(HOST) 2>&1))
+
+# Allow override of canonical_host from command line
+ifdef canonical_host
+$(info Using provided canonical_host=$(canonical_host))
+else
 canonical_host:=$(shell ./config.sub $(HOST))
+endif
+
 build:=$(shell ./config.sub $(BUILD))
 
 build_arch =$(firstword $(subst -, ,$(build)))

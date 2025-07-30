@@ -316,7 +316,27 @@ jobs:
             
             # Alternative approach - let config.guess do its job from depends directory
             cd depends
-            make $MAKEJOBS HOST=${{ matrix.host }} ${{ matrix.dep_opts }}
+            
+            echo "=== Verifying config scripts ==="
+            echo "Current directory: $(pwd)"
+            echo "Directory contents:"
+            ls -la | head -20
+            
+            echo "=== Testing config scripts ==="
+            ls -la config.guess config.sub
+            
+            # Test config.guess directly
+            echo "Testing config.guess: $(./config.guess)"
+            
+            # Test config.sub with the HOST value
+            echo "Testing config.sub with ${{ matrix.host }}: $(./config.sub ${{ matrix.host }})"
+            
+            # Ensure they're executable (redundant but safe)
+            chmod +x config.guess config.sub
+            
+            # For macOS, we know the canonical format, so pass it explicitly
+            echo "=== Running make with explicit canonical_host for macOS ==="
+            make $MAKEJOBS HOST=${{ matrix.host }} canonical_host=${{ matrix.host }} ${{ matrix.dep_opts }}
             cd ..
           else
             export MAKEJOBS="-j$(nproc)"
