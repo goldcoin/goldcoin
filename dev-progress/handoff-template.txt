@@ -1,0 +1,48 @@
+GOLDCOIN DEVELOPMENT HANDOFF
+===========================
+Version: v0.16.1-dev
+Branch: modernize-python-312
+
+COMPLETED SINCE LAST SESSION:
+- Comprehensive deprecated code scan (300+ instances identified)
+- Created detailed DEPRECATED_CODE_PATTERNS.md inventory
+- Implemented dev-progress tracking system
+- Restarted Gitian Linux build with resource limits (2 cores, 2GB RAM)
+
+IN PROGRESS:
+- Gitian Linux build: Running with resource limits to prevent SSH crashes
+- Deprecated code removal: Planning phase complete, ready to begin implementation
+
+CODEBASE STATE:
+- 85+ boost::filesystem instances to migrate
+- 95+ boost::bind instances to replace
+- 10+ deprecated wallet RPCs to remove
+- All tests passing on modernize-python-312 branch
+- Python 3.12 compatibility achieved
+
+NEXT IMMEDIATE TASKS:
+1. Monitor Gitian Linux build completion
+2. Begin removing deprecated wallet account RPCs
+3. Start boost::filesystem → std::filesystem migration
+4. Fix Windows Qt build issue (FILE_ID_INFO)
+
+ARCHITECTURAL NOTES:
+- Decided to completely remove wallet account system (not just deprecate)
+- Prioritizing boost::filesystem migration due to high instance count
+- Resource-limited builds required for system stability
+- Consider C++17 upgrade for std::filesystem support
+
+CURRENT BLOCKERS:
+- Windows Gitian build: Qt FILE_ID_INFO compilation error
+- C++11 limitation prevents direct std::filesystem usage
+
+BUILD STATUS:
+- Linux: Building with resource limits (monitor with ./monitor-builds.sh)
+- Windows: Failed - Qt patch not applying correctly
+- macOS: Not started
+
+FILES TO REVIEW:
+- DEPRECATED_CODE_PATTERNS.md - Complete deprecated code inventory
+- GITIAN_BUILD_STATUS.md - Current build status and commands
+- dev-progress/session-log.md - Detailed session history
+- dev-progress/codebase-state.json - Structured progress data
