@@ -245,6 +245,39 @@ jobs:
           export PATH="/usr/lib/ccache:$PATH"
           ccache --max-size=${{ env.CCACHE_SIZE }}
 
+      - name: Update config scripts for modern platforms
+        if: runner.os == 'macOS'
+        run: |
+          cd depends
+          echo "Current config.sub version:"
+          ./config.sub --version 2>/dev/null || echo "No version info"
+          
+          # Download latest if needed
+          wget -q -O config.sub.new https://git.savannah.gnu.org/cgit/config.git/plain/config.sub
+          wget -q -O config.guess.new https://git.savannah.gnu.org/cgit/config.git/plain/config.guess
+          
+          # Only update if different
+          if ! cmp -s config.sub config.sub.new; then
+            echo "Updating config.sub..."
+            mv config.sub.new config.sub
+          else
+            rm config.sub.new
+          fi
+          
+          if ! cmp -s config.guess config.guess.new; then
+            echo "Updating config.guess..."
+            mv config.guess.new config.guess
+          else
+            rm config.guess.new
+          fi
+          
+          chmod +x config.sub config.guess
+          
+          # Test that arm64-apple-darwin is now recognized
+          echo "Testing config.sub with arm64-apple-darwin:"
+          ./config.sub arm64-apple-darwin || echo "config.sub failed"
+          cd ..
+
       - name: Build dependencies
         run: |
           # Set up macOS-specific paths
