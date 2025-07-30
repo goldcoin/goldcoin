@@ -17,6 +17,48 @@
 #if defined(__APPLE__)
 #include <libkern/OSByteOrder.h>
 
+// On macOS, we ALWAYS use OSByteOrder functions, regardless of HAVE_ENDIAN_H
+// because macOS endian.h (if it exists) doesn't provide these functions
+
+// Undefine any existing macros to avoid conflicts
+#ifdef htobe16
+#undef htobe16
+#endif
+#ifdef htole16
+#undef htole16
+#endif
+#ifdef be16toh
+#undef be16toh
+#endif
+#ifdef le16toh
+#undef le16toh
+#endif
+#ifdef htobe32
+#undef htobe32
+#endif
+#ifdef htole32
+#undef htole32
+#endif
+#ifdef be32toh
+#undef be32toh
+#endif
+#ifdef le32toh
+#undef le32toh
+#endif
+#ifdef htobe64
+#undef htobe64
+#endif
+#ifdef htole64
+#undef htole64
+#endif
+#ifdef be64toh
+#undef be64toh
+#endif
+#ifdef le64toh
+#undef le64toh
+#endif
+
+// Now define our macOS versions
 #define htobe16(x) OSSwapHostToBigInt16(x)
 #define htole16(x) OSSwapHostToLittleInt16(x)
 #define be16toh(x) OSSwapBigToHostInt16(x)
@@ -32,7 +74,7 @@
 #define be64toh(x) OSSwapBigToHostInt64(x)
 #define le64toh(x) OSSwapLittleToHostInt64(x)
 
-// Try system endian headers if available (but macOS definitions take precedence)
+// Try system endian headers if available
 #elif defined(HAVE_ENDIAN_H)
 #include <endian.h>
 #elif defined(HAVE_SYS_ENDIAN_H)
