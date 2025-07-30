@@ -138,6 +138,16 @@ jobs:
           key: ${{ matrix.host }}
           max-size: ${{ env.CCACHE_SIZE }}
 
+      - name: Install Qt5 (macOS)
+        if: runner.os == 'macOS'
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '5.15.2'
+          modules: 'qtbase qttools'
+          host: 'mac'
+          target: 'desktop'
+          cache: true
+
       - name: Set up build environment
         run: |
           # Handle macOS with Homebrew
@@ -171,17 +181,8 @@ jobs:
             # Verify Boost installation
             brew list boost && echo "Boost installed at: $(brew --prefix boost)"
             
-            # Ensure Qt5 is properly installed and linked
-            echo "=== Setting up Qt5 ==="
-            brew list qt@5 && echo "Qt5 found" || (echo "Installing qt@5..." && brew install qt@5)
-            brew link --force --overwrite qt@5 || echo "Qt5 already linked or linking failed"
-            
-            # Also set the legacy path for compatibility
-            if [ -d "/usr/local/opt/qt@5" ]; then
-              echo "Setting legacy Qt5 path for Intel Mac"
-              echo 'export PATH="/usr/local/opt/qt@5/bin:$PATH"' >> $GITHUB_ENV
-              echo 'export PKG_CONFIG_PATH="/usr/local/opt/qt@5/lib/pkgconfig:$PKG_CONFIG_PATH"' >> $GITHUB_ENV
-            fi
+            # Skip Qt5 installation for now - will use dedicated action later
+            echo "=== Qt5 setup will be handled by install-qt-action ==="
             
             # Set up persistent environment variables
             echo "BOOST_ROOT=$(brew --prefix boost)" >> $GITHUB_ENV
