@@ -466,12 +466,28 @@ jobs:
             export PKG_CONFIG_PATH="${Qt5_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}"
             export PATH="${Qt5_DIR}/bin:${PATH}"
             
+            # Export Qt5 specific variables
+            export Qt5_CFLAGS="-I${Qt5_DIR}/include -I${Qt5_DIR}/include/QtCore -I${Qt5_DIR}/include/QtGui -I${Qt5_DIR}/include/QtWidgets -I${Qt5_DIR}/include/QtNetwork -I${Qt5_DIR}/include/QtTest -I${Qt5_DIR}/include/QtDBus"
+            export Qt5_LIBS="-L${Qt5_DIR}/lib -lQt5Core -lQt5Gui -lQt5Widgets -lQt5Network -lQt5Test -lQt5DBus"
+            export MOC="${Qt5_DIR}/bin/moc"
+            export UIC="${Qt5_DIR}/bin/uic"
+            export RCC="${Qt5_DIR}/bin/rcc"
+            export LRELEASE="${Qt5_DIR}/bin/lrelease"
+            export LUPDATE="${Qt5_DIR}/bin/lupdate"
+            
             # Debug Qt5 availability before configure
             echo "=== Pre-configure Qt5 check ==="
             echo "PATH: ${PATH}"
             echo "PKG_CONFIG_PATH: ${PKG_CONFIG_PATH}"
+            echo "Qt5_DIR: ${Qt5_DIR}"
+            echo "MOC: ${MOC}"
             which qmake || echo "qmake not in PATH before configure"
             pkg-config --exists Qt5Core && echo "Qt5Core available before configure" || echo "Qt5Core NOT available before configure"
+            
+            # Force Qt5 detection with explicit paths
+            export QT_SELECT=qt5
+            export QTDIR="${Qt5_DIR}"
+            export QMAKE="${Qt5_DIR}/bin/qmake"
             
             # Set OpenSSL paths for configure
             export OPENSSL_CFLAGS="-I${OPENSSL_ROOT_DIR}/include"
@@ -493,6 +509,10 @@ jobs:
             echo "BDB_LIBS: ${BDB_LIBS}"
             echo "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}"
             echo "PKG_CONFIG_PATH: ${PKG_CONFIG_PATH}"
+            echo "Qt5_CFLAGS: ${Qt5_CFLAGS}"
+            echo "Qt5_LIBS: ${Qt5_LIBS}"
+            echo "QMAKE: ${QMAKE}"
+            echo "MOC: ${MOC}"
           else
             export MAKEJOBS="-j$(nproc)"
             export BITCOIN_CONFIG_BOOST=""
@@ -537,6 +557,14 @@ jobs:
             export OPENSSL_LIBS="${OPENSSL_LIBS}"
             export BDB_CFLAGS="${BDB_CFLAGS}"
             export BDB_LIBS="${BDB_LIBS}"
+            export Qt5_CFLAGS="${Qt5_CFLAGS}"
+            export Qt5_LIBS="${Qt5_LIBS}"
+            export MOC="${MOC}"
+            export UIC="${UIC}"
+            export RCC="${RCC}"
+            export QMAKE="${QMAKE}"
+            export QT_SELECT=qt5
+            export QTDIR="${Qt5_DIR}"
             BITCOIN_CONFIG_EXTRA="$BITCOIN_CONFIG_BOOST $BITCOIN_CONFIG_OPENSSL"
           else
             BITCOIN_CONFIG_EXTRA="$BITCOIN_CONFIG_BOOST"

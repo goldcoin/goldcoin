@@ -13,55 +13,59 @@
 
 #include "compat/byteswap.h"
 
+// First, try system endian headers if available
 #if defined(HAVE_ENDIAN_H)
 #include <endian.h>
 #elif defined(HAVE_SYS_ENDIAN_H)
 #include <sys/endian.h>
 #endif
 
-// macOS / Darwin
+// macOS specific implementation - define directly without checking
 #if defined(__APPLE__)
 #include <libkern/OSByteOrder.h>
 
-#if !defined(htole16)
-#define htole16(x) OSSwapHostToLittleInt16(x)
-#endif
-#if !defined(htole32)
-#define htole32(x) OSSwapHostToLittleInt32(x)
-#endif
-#if !defined(htole64)
-#define htole64(x) OSSwapHostToLittleInt64(x)
-#endif
-#if !defined(le16toh)
-#define le16toh(x) OSSwapLittleToHostInt16(x)
-#endif
-#if !defined(le32toh)
-#define le32toh(x) OSSwapLittleToHostInt32(x)
-#endif
-#if !defined(le64toh)
-#define le64toh(x) OSSwapLittleToHostInt64(x)
-#endif
-
-#if !defined(htobe16)
 #define htobe16(x) OSSwapHostToBigInt16(x)
-#endif
-#if !defined(htobe32)
-#define htobe32(x) OSSwapHostToBigInt32(x)
-#endif
-#if !defined(htobe64)
-#define htobe64(x) OSSwapHostToBigInt64(x)
-#endif
-#if !defined(be16toh)
+#define htole16(x) OSSwapHostToLittleInt16(x)
 #define be16toh(x) OSSwapBigToHostInt16(x)
-#endif
-#if !defined(be32toh)
+#define le16toh(x) OSSwapLittleToHostInt16(x)
+
+#define htobe32(x) OSSwapHostToBigInt32(x)
+#define htole32(x) OSSwapHostToLittleInt32(x)
 #define be32toh(x) OSSwapBigToHostInt32(x)
-#endif
-#if !defined(be64toh)
+#define le32toh(x) OSSwapLittleToHostInt32(x)
+
+#define htobe64(x) OSSwapHostToBigInt64(x)
+#define htole64(x) OSSwapHostToLittleInt64(x)
 #define be64toh(x) OSSwapBigToHostInt64(x)
-#endif
+#define le64toh(x) OSSwapLittleToHostInt64(x)
 
 #endif // __APPLE__
+
+// Windows specific implementation
+#if defined(_WIN32)
+#include <winsock2.h>
+
+#if !defined(HAVE_BYTESWAP_H)
+#define htobe16(x) htons(x)
+#define htole16(x) (x)
+#define be16toh(x) ntohs(x)
+#define le16toh(x) (x)
+
+#define htobe32(x) htonl(x)
+#define htole32(x) (x)
+#define be32toh(x) ntohl(x)
+#define le32toh(x) (x)
+
+#define htobe64(x) htonll(x)
+#define htole64(x) (x)
+#define be64toh(x) ntohll(x)
+#define le64toh(x) (x)
+#endif // !HAVE_BYTESWAP_H
+
+#endif // _WIN32
+
+// Fallback implementations for other systems
+#if !defined(__APPLE__) && !defined(_WIN32)
 
 #if defined(WORDS_BIGENDIAN)
 
@@ -236,5 +240,6 @@ inline uint64_t le64toh(uint64_t little_endian_64bits)
 #endif // HAVE_DECL_LE64TOH
 
 #endif // WORDS_BIGENDIAN
+#endif // !__APPLE__ && !_WIN32
 
 #endif // BITCOIN_COMPAT_ENDIAN_H
