@@ -307,12 +307,16 @@ jobs:
             sed -i '' 's/qt_packages = qrencode protobuf zlib/qt_packages =/' packages/packages.mk
             sed -i '' 's/qt_darwin_packages=qt/qt_darwin_packages=/' packages/packages.mk
             
+            # Remove bdb from wallet_packages - use Homebrew's berkeley-db@4 instead
+            sed -i '' 's/wallet_packages=bdb/wallet_packages=/' packages/packages.mk
+            
             # Debug output
             echo "=== Modified packages.mk content ==="
             cat packages/packages.mk | head -n 15
             
             echo "=== Checking package modifications ==="
             grep "packages:=" packages/packages.mk
+            grep "wallet_packages=" packages/packages.mk || echo "wallet_packages line not found"
             
             # Verify Homebrew installations
             echo "=== Homebrew package list ==="
@@ -330,6 +334,11 @@ jobs:
             echo "OPENSSL_ROOT_DIR: ${OPENSSL_ROOT_DIR}"
             ls -la ${OPENSSL_ROOT_DIR}/include/openssl/sha.h || echo "OpenSSL headers not found!"
             ls -la ${OPENSSL_ROOT_DIR}/lib/libssl.* | head -3 || echo "OpenSSL libs not found!"
+            
+            echo "=== Berkeley DB from Homebrew ==="
+            echo "BDB_PREFIX: ${BDB_PREFIX}"
+            ls -la ${BDB_PREFIX}/include/db.h || echo "BDB headers not found"
+            ls -la ${BDB_PREFIX}/lib/libdb*.dylib | head -3 || echo "BDB libs not found"
             
             echo "=== Environment variables check ==="
             echo "BOOST_ROOT: ${BOOST_ROOT}"
@@ -375,22 +384,8 @@ jobs:
             
             # For macOS, we know the canonical format, so pass it explicitly
             echo "=== Running make with explicit canonical_host for macOS ==="
-            # Also force BDB mutex detection on macOS
-            echo "=== BDB mutex debug ==="
-            echo "Setting ac_cv_mutex=POSIX/pthreads/library for BDB"
-            export ac_cv_mutex="POSIX/pthreads/library"
-            export db_cv_mutex="POSIX/pthreads/library"
-            echo "ac_cv_mutex in env: $ac_cv_mutex"
-            echo "db_cv_mutex in env: $db_cv_mutex"
-            env | grep mutex || echo "No mutex vars in environment"
-            
-            # Add to config.site.in as well
-            echo 'ac_cv_mutex=POSIX/pthreads/library' >> config.site.in
-            echo 'db_cv_mutex=POSIX/pthreads/library' >> config.site.in
-            cat config.site.in | grep mutex || echo "No mutex in config.site"
-            
-            # Use environment prefix syntax to ensure variables reach configure
-            ac_cv_mutex="POSIX/pthreads/library" db_cv_mutex="POSIX/pthreads/library" make $MAKEJOBS HOST=${{ matrix.host }} canonical_host=${{ matrix.host }} ${{ matrix.dep_opts }}
+            # No need for BDB mutex configuration - using Homebrew's berkeley-db@4
+            make $MAKEJOBS HOST=${{ matrix.host }} canonical_host=${{ matrix.host }} ${{ matrix.dep_opts }}
             cd ..
           else
             export MAKEJOBS="-j$(nproc)"
@@ -425,17 +420,26 @@ jobs:
             export OPENSSL_LIBS="-L${OPENSSL_ROOT_DIR}/lib -lssl -lcrypto"
             export BITCOIN_CONFIG_OPENSSL="--with-openssl=${OPENSSL_ROOT_DIR}"
             
+            # Set BDB paths for configure
+            export BDB_CFLAGS="-I${BDB_PREFIX}/include"
+            export BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-4.8"
+            export BITCOIN_CONFIG_BDB="--with-incompatible-bdb BDB_CFLAGS=\"${BDB_CFLAGS}\" BDB_LIBS=\"${BDB_LIBS}\""
+            
             echo "=== Final configure environment ==="
             echo "BITCOIN_CONFIG_BOOST: ${BITCOIN_CONFIG_BOOST}"
             echo "BITCOIN_CONFIG_OPENSSL: ${BITCOIN_CONFIG_OPENSSL}"
+            echo "BITCOIN_CONFIG_BDB: ${BITCOIN_CONFIG_BDB}"
             echo "OPENSSL_CFLAGS: ${OPENSSL_CFLAGS}"
             echo "OPENSSL_LIBS: ${OPENSSL_LIBS}"
+            echo "BDB_CFLAGS: ${BDB_CFLAGS}"
+            echo "BDB_LIBS: ${BDB_LIBS}"
             echo "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}"
             echo "PKG_CONFIG_PATH: ${PKG_CONFIG_PATH}"
           else
             export MAKEJOBS="-j$(nproc)"
             export BITCOIN_CONFIG_BOOST=""
             export BITCOIN_CONFIG_OPENSSL=""
+            export BITCOIN_CONFIG_BDB=""
           fi
           
           export BASE_OUTDIR=${{ github.workspace }}/out
@@ -473,6 +477,8 @@ jobs:
           if [[ "${{ runner.os }}" == "macOS" ]]; then
             export OPENSSL_CFLAGS="${OPENSSL_CFLAGS}"
             export OPENSSL_LIBS="${OPENSSL_LIBS}"
+            export BDB_CFLAGS="${BDB_CFLAGS}"
+            export BDB_LIBS="${BDB_LIBS}"
             BITCOIN_CONFIG_EXTRA="$BITCOIN_CONFIG_BOOST $BITCOIN_CONFIG_OPENSSL"
           else
             BITCOIN_CONFIG_EXTRA="$BITCOIN_CONFIG_BOOST"
