@@ -210,6 +210,22 @@ jobs:
             PKG_CONFIG_PATH="${Qt5_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}" pkg-config --exists Qt5Core && echo "Qt5Core detected with explicit path" || echo "Qt5Core still not found"
             pkg-config --exists Qt5Core && echo "Qt5Core found" || echo "Qt5Core NOT found"
             pkg-config --modversion Qt5Core || echo "Qt5Core version not available"
+            
+            # Additional macOS-specific debugging
+            echo "=== macOS Build Environment Debug ==="
+            echo "Compiler version:"
+            clang --version || echo "clang not found"
+            echo "Available SDKs:"
+            xcodebuild -showsdks || echo "xcodebuild not available"
+            echo "Current SDK path:"
+            xcrun --show-sdk-path || echo "xcrun failed"
+            
+            # Check if our compat headers are accessible
+            echo "=== Checking compat header files ==="
+            ls -la src/compat/endian.h || echo "endian.h not found"
+            ls -la src/compat/byteswap.h || echo "byteswap.h not found"
+            echo "=== Checking if libkern headers exist ==="
+            find $(xcrun --show-sdk-path) -name "OSByteOrder.h" 2>/dev/null | head -5 || echo "OSByteOrder.h not found in SDK"
           else
             # Linux build environment setup
             # For container builds, we might not have sudo
@@ -434,8 +450,11 @@ jobs:
             
             echo "=== Configure environment variables ==="
             echo "BOOST_ROOT from env: ${BOOST_ROOT}"
-            echo "QT5_ROOT from env: ${QT5_ROOT}"
+            echo "Qt5_DIR from env: ${Qt5_DIR}"
             echo "SDKROOT from env: ${SDKROOT}"
+            echo "MACOSX_DEPLOYMENT_TARGET: ${MACOSX_DEPLOYMENT_TARGET}"
+            echo "CXX compiler: $(which clang++ || echo 'clang++ not found')"
+            echo "CC compiler: $(which clang || echo 'clang not found')"
             
             # Use BOOST_ROOT from environment
             export BOOST_ROOT="${BOOST_ROOT}"
@@ -527,7 +546,7 @@ jobs:
           make distdir VERSION=${{ matrix.host }}
           cd goldcoin-${{ matrix.host }}
           ./configure --cache-file=../config.cache $BITCOIN_CONFIG_ALL $BITCOIN_CONFIG_EXTRA ${{ matrix.bitcoin_config }} || (cat config.log && false)
-          make $MAKEJOBS ${{ matrix.goal }} || (echo "Build failure. Verbose build follows." && echo "=== Checking include paths ===" && make V=1 -n | grep -E "(hash.cpp|endian)" | head -10 || echo "Can't find relevant compilation commands" && make ${{ matrix.goal }} V=1 && false)
+          make $MAKEJOBS ${{ matrix.goal }} || (echo "Build failure. Verbose build follows." && echo "=== Checking include paths ===" && make V=1 -n | grep -E "(hash.cpp|endian)" | head -10 || echo "Can't find relevant compilation commands" && echo "=== First failing compilation command ===" && make ${{ matrix.goal }} V=1 2>&1 | grep -A5 "error:" | head -20 && false)
 
       - name: Run tests
         if: matrix.run_tests
