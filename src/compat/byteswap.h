@@ -29,6 +29,25 @@
 
 #endif // !defined(bswap_16)
 
+// Also provide fallback using compiler builtins if needed
+#if !defined(bswap_16) && defined(__has_builtin)
+#if __has_builtin(__builtin_bswap16)
+#define bswap_16(x) __builtin_bswap16(x)
+#endif
+#endif
+
+#if !defined(bswap_32) && defined(__has_builtin)
+#if __has_builtin(__builtin_bswap32)
+#define bswap_32(x) __builtin_bswap32(x)
+#endif
+#endif
+
+#if !defined(bswap_64) && defined(__has_builtin)
+#if __has_builtin(__builtin_bswap64)
+#define bswap_64(x) __builtin_bswap64(x)
+#endif
+#endif
+
 #else
 // Non-Mac OS X / non-Darwin
 

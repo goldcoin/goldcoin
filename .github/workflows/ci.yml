@@ -527,7 +527,7 @@ jobs:
           make distdir VERSION=${{ matrix.host }}
           cd goldcoin-${{ matrix.host }}
           ./configure --cache-file=../config.cache $BITCOIN_CONFIG_ALL $BITCOIN_CONFIG_EXTRA ${{ matrix.bitcoin_config }} || (cat config.log && false)
-          make $MAKEJOBS ${{ matrix.goal }} || (echo "Build failure. Verbose build follows." && make ${{ matrix.goal }} V=1 && false)
+          make $MAKEJOBS ${{ matrix.goal }} || (echo "Build failure. Verbose build follows." && echo "=== Checking include paths ===" && make V=1 -n | grep -E "(hash.cpp|endian)" | head -10 || echo "Can't find relevant compilation commands" && make ${{ matrix.goal }} V=1 && false)
 
       - name: Run tests
         if: matrix.run_tests
