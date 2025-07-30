@@ -5,6 +5,31 @@ All notable changes to the Goldcoin Core modernization project will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.0] - 2025-07-30
+
+### Added
+- Windows ZIP distribution option alongside installer
+- Python 3.12 support with native crypto bindings
+- Comprehensive CI/CD with GitHub Actions
+- Modern compiler compatibility (GCC 13+)
+
+### Fixed
+- Python 3.12 compatibility (PY_SSIZE_T_CLEAN requirement)
+- Boost modernization - replaced deprecated dependencies with C++11/14 equivalents
+- Missing C++17 headers for modern compilers
+- Build system compatibility issues
+
+### Changed
+- Upgraded from Python 3.11 to Python 3.12
+- Modernized codebase for current toolchains
+- Temporarily removed macOS from CI matrix (will return in v0.16.1)
+
+### Technical Details
+- Replaced 12 Boost algorithm dependencies with standard C++ equivalents
+- Fixed debug iterator compatibility issues
+- Implemented compiler-agnostic endian handling
+- Updated Windows installer version to 0.16.0
+
 ## [Unreleased] - Development Branch
 
 ### Added
@@ -94,7 +119,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History
 
-### [0.15.0] - Current State
+### [0.15.0] - Previous Release
 - Based on Bitcoin Core 0.14.x fork
 - C++11 standard
 - Autotools build system
