@@ -94,4 +94,8 @@ bool static inline IsSelectableSocket(SOCKET s) {
 #endif
 }
 
+// Include endian and byteswap compatibility headers
+#include "compat/byteswap.h"
+#include "compat/endian.h"
+
 #endif // BITCOIN_COMPAT_H
