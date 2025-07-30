@@ -587,11 +587,19 @@ jobs:
             BITCOIN_CONFIG_EXTRA="$BITCOIN_CONFIG_BOOST"
           fi
           
-          ../configure --cache-file=config.cache $BITCOIN_CONFIG_ALL $BITCOIN_CONFIG_EXTRA ${{ matrix.bitcoin_config }} || (cat config.log && false)
+          # Debug: Show what headers are actually present
+          echo "=== Checking for endian headers on system ==="
+          find /usr/include /usr/local/include /opt/homebrew/include /Applications/Xcode.app -name "*endian*.h" 2>/dev/null | head -20 || echo "No endian headers found"
+          echo "=== Checking our compat headers ==="
+          cat ../src/compat/endian.h | head -80
+          echo "=== Testing if __APPLE__ is defined ==="
+          echo -e "#ifdef __APPLE__\n#error APPLE IS DEFINED\n#endif" | clang -c -x c - 2>&1 || echo "Apple is defined"
+          echo "=== Running configure with maximum verbosity ==="
+          ../configure --cache-file=config.cache $BITCOIN_CONFIG_ALL $BITCOIN_CONFIG_EXTRA ${{ matrix.bitcoin_config }} || (echo "=== Configure failed, showing config.log ===" && cat config.log && echo "=== Checking generated config headers ===" && find . -name "*config*.h" -exec echo "File: {}" \; -exec head -20 {} \; && false)
           make distdir VERSION=${{ matrix.host }}
           cd goldcoin-${{ matrix.host }}
           ./configure --cache-file=../config.cache $BITCOIN_CONFIG_ALL $BITCOIN_CONFIG_EXTRA ${{ matrix.bitcoin_config }} || (cat config.log && false)
-          make $MAKEJOBS ${{ matrix.goal }} || (echo "Build failure. Verbose build follows." && echo "=== Checking include paths ===" && make V=1 -n | grep -E "(hash.cpp|endian)" | head -10 || echo "Can't find relevant compilation commands" && echo "=== First failing compilation command ===" && make ${{ matrix.goal }} V=1 2>&1 | grep -A5 "error:" | head -20 && false)
+          make $MAKEJOBS ${{ matrix.goal }} || (echo "Build failure. Verbose build follows." && echo "=== Checking include paths ===" && make V=1 -n | grep -E "(hash.cpp|endian)" | head -10 || echo "Can't find relevant compilation commands" && echo "=== Show actual compilation command for failing file ===" && make V=1 -n 2>&1 | grep -B2 -A2 "zmqpublishnotifier\|hash\.cpp" | head -20 && echo "=== Check if HAVE_CONFIG_H is defined ===" && grep -r "HAVE_CONFIG_H" src/config 2>/dev/null | head -10 || echo "No config headers found" && echo "=== Show preprocessor output for a failing file ===" && make src/zmq/zmqpublishnotifier.o CXXFLAGS="-E" 2>&1 | grep -A20 -B20 "le64toh\|WriteLE32" | head -50 || echo "Could not get preprocessor output" && echo "=== First failing compilation command ===" && make ${{ matrix.goal }} V=1 2>&1 | grep -A5 "error:" | head -20 && false)
 
       - name: Run tests
         if: matrix.run_tests
