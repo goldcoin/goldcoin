@@ -376,8 +376,11 @@ jobs:
             # For macOS, we know the canonical format, so pass it explicitly
             echo "=== Running make with explicit canonical_host for macOS ==="
             # Also force BDB mutex detection on macOS
-            export ac_cv_mutex=POSIX/pthreads
-            make $MAKEJOBS HOST=${{ matrix.host }} canonical_host=${{ matrix.host }} ac_cv_mutex=POSIX/pthreads ${{ matrix.dep_opts }}
+            echo "Setting ac_cv_mutex=POSIX for BDB"
+            export ac_cv_mutex=POSIX
+            echo "ac_cv_mutex=$ac_cv_mutex"
+            echo "ac_cv_mutex=POSIX" >> $GITHUB_ENV
+            make $MAKEJOBS HOST=${{ matrix.host }} canonical_host=${{ matrix.host }} ac_cv_mutex=POSIX ${{ matrix.dep_opts }}
             cd ..
           else
             export MAKEJOBS="-j$(nproc)"
