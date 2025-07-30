@@ -85,6 +85,13 @@ $(BITCOIN_WIN_INSTALLER): all-recursive
 	  echo error: could not build $@
 	@echo built $@
 
+# Windows ZIP distribution
+BITCOIN_WIN_ZIP=$(PACKAGE)-$(PACKAGE_VERSION)-win$(WINDOWS_BITS).zip
+
+$(BITCOIN_WIN_ZIP): $(BITCOIN_WIN_INSTALLER)
+	cd $(top_builddir)/release && zip -r ../$(BITCOIN_WIN_ZIP) *
+	@echo "Created Windows ZIP: $(BITCOIN_WIN_ZIP)"
+
 $(OSX_APP)/Contents/PkgInfo:
 	$(MKDIR_P) $(@D)
 	@echo "APPL????" > $@
@@ -162,7 +169,7 @@ appbundle: $(OSX_APP_BUILT)
 deploy: $(OSX_DMG)
 endif
 if TARGET_WINDOWS
-deploy: $(BITCOIN_WIN_INSTALLER)
+deploy: $(BITCOIN_WIN_INSTALLER) $(BITCOIN_WIN_ZIP)
 endif
 
 $(BITCOIN_QT_BIN): FORCE
@@ -231,7 +238,7 @@ dist_noinst_SCRIPTS = autogen.sh
 
 EXTRA_DIST = $(top_srcdir)/share/genbuild.sh qa/pull-tester/rpc-tests.py qa/rpc-tests $(DIST_CONTRIB) $(DIST_DOCS) $(WINDOWS_PACKAGING) $(OSX_PACKAGING) $(BIN_CHECKS)
 
-CLEANFILES = $(OSX_DMG) $(BITCOIN_WIN_INSTALLER)
+CLEANFILES = $(OSX_DMG) $(BITCOIN_WIN_INSTALLER) $(BITCOIN_WIN_ZIP)
 
 # This file is problematic for out-of-tree builds if it exists.
 DISTCLEANFILES = qa/pull-tester/tests_config.pyc
