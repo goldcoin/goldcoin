@@ -33,7 +33,21 @@ endif
 base_build_dir=$(BASEDIR)/work/build
 base_staging_dir=$(BASEDIR)/work/staging
 base_download_dir=$(BASEDIR)/work/download
+
+# Debug config.sub execution
+$(info Attempting config.sub with HOST=$(HOST))
+$(info Current directory: $(shell pwd))
+$(info config.sub exists: $(shell test -f config.sub && echo yes || echo no))
+$(info config.sub executable: $(shell test -x config.sub && echo yes || echo no))
+$(info config.sub output: $(shell ./config.sub $(HOST) 2>&1))
+
+# Allow override of canonical_host from command line
+ifdef canonical_host
+$(info Using provided canonical_host=$(canonical_host))
+else
 canonical_host:=$(shell ./config.sub $(HOST))
+endif
+
 build:=$(shell ./config.sub $(BUILD))
 
 build_arch =$(firstword $(subst -, ,$(build)))
@@ -55,6 +69,22 @@ host_os+=$(findstring mingw32,$(full_host_os))
 host_os:=$(strip $(host_os))
 ifeq ($(host_os),)
 host_os=$(full_host_os)
+endif
+
+# Debug platform detection
+$(info === PLATFORM DETECTION DEBUG ===)
+$(info Make variable HOST = $(HOST))
+$(info Make variable host = $(host))
+$(info config.sub result: canonical_host = $(canonical_host))
+$(info Parsed host_arch = $(host_arch))
+$(info Parsed host_vendor = $(host_vendor))
+$(info Parsed full_host_os = $(full_host_os))
+$(info Final host_os = $(host_os))
+$(info Current directory = $(shell pwd))
+$(info ================================)
+
+ifeq ($(host_os),)
+$(error Could not detect host OS. HOST=$(HOST), canonical_host=$(canonical_host), host_os=$(host_os). Try running from depends directory.)
 endif
 
 $(host_arch)_$(host_os)_prefix=$(BASEDIR)/$(host)

@@ -8,6 +8,10 @@
 
 #include "threadinterrupt.h"
 
+// Additional threading headers for CI compatibility
+#include <condition_variable>
+#include <mutex>
+
 CThreadInterrupt::operator bool() const
 {
     return flag.load(std::memory_order_acquire);

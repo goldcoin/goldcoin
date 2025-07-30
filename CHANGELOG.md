@@ -1,0 +1,147 @@
+# Goldcoin Core Modernization Changelog
+
+All notable changes to the Goldcoin Core modernization project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.16.0] - 2025-07-30
+
+### Added
+- Windows ZIP distribution option alongside installer
+- Python 3.12 support with native crypto bindings
+- Comprehensive CI/CD with GitHub Actions
+- Modern compiler compatibility (GCC 13+)
+
+### Fixed
+- Python 3.12 compatibility (PY_SSIZE_T_CLEAN requirement)
+- Boost modernization - replaced deprecated dependencies with C++11/14 equivalents
+- Missing C++17 headers for modern compilers
+- Build system compatibility issues
+
+### Changed
+- Upgraded from Python 3.11 to Python 3.12
+- Modernized codebase for current toolchains
+- Temporarily removed macOS from CI matrix (will return in v0.16.1)
+
+### Technical Details
+- Replaced 12 Boost algorithm dependencies with standard C++ equivalents
+- Fixed debug iterator compatibility issues
+- Implemented compiler-agnostic endian handling
+- Updated Windows installer version to 0.16.0
+
+## [Unreleased] - Development Branch
+
+### Added
+- Created `development` branch for safe modernization work
+- Added `DEVELOPMENT.md` with branching strategy documentation
+- Added `CHANGELOG.md` to track modernization progress
+- Established git configuration for development work
+
+### Completed - Phase 1: CI/CD Migration ✅
+- **GitHub Actions Workflows**: Successfully migrated from deprecated Travis CI
+  - `ci.yml`: Main build workflow with Ubuntu 22.04, multi-platform support
+  - `security.yml`: Automated security scanning (CodeQL, dependency check, secrets scan)
+  - `macos.yml`: macOS cross-compilation and native builds
+  - `docs.yml`: Documentation validation and release notes checking
+- **Build Matrix**: ARM, Windows 32/64-bit, Linux 32/64-bit support
+- **Security Integration**: CodeQL analysis, dependency vulnerability scanning
+- **Modern Tooling**: ccache optimization, artifact uploads, parallel builds
+- **Testing**: Pushed to microguy/goldcoin fork for validation
+
+### Completed - Phase 1: CI/CD Validation ✅
+- **GitHub Actions Testing**: Successfully validated all workflows in fork environment
+- **Build Verification**: All platforms building successfully (Linux x86_64/i686, ARM, Windows 32/64)
+- **Security Scanning**: CodeQL and dependency checks passing
+- **Code Quality Improvements**:
+  - Reorganized header includes for better maintainability and readability
+  - Fixed missing standard library headers (`<mutex>`, `<condition_variable>`) in `rpc/blockchain.cpp`
+  - Improved header dependency management across codebase
+- **Bug Fixes Applied**:
+  - Fixed Python 3 compatibility in `contrib/devtools/check-doc.py`
+  - Updated deprecated GitHub Actions (upload-artifact v3 → v4)
+  - Updated CodeQL actions from v2 → v3 (security.yml)
+  - Updated actions/setup-python from v4 → v5 across all workflows
+  - Pinned aquasecurity/trivy-action to v0.28.0 (replaced @master for stability)
+  - Added libboost-all-dev dependencies to resolve build failures
+  - Fixed missing `<thread>` header include in `support/lockedpool.h` (resolves std::call_once compilation errors)
+  - Resolved bytes vs string handling issues
+
+### Ready for Phase 2: Build System Modernization 🚀
+- **Current Status**: CI/CD infrastructure stable and validated
+- **Next Target**: Migration from Autotools to CMake
+- **Prerequisites**: All Phase 1 objectives completed successfully
+
+### Project Analysis Completed
+- **Codebase Assessment**: Analyzed current state (C++11, Autotools, Bitcoin Core 0.14.x fork)
+- **Modernization Plan**: Created 4-phase roadmap (12-17 months total)
+- **Priority Areas Identified**:
+  - CI/CD migration from Travis CI to GitHub Actions
+  - C++ standard upgrade (C++11 → C++17 → C++20)
+  - Build system migration (Autotools → CMake)
+  - Dependency management improvements
+  - Security tooling integration
+
+### Current Technical Debt
+- **Build System**: Autotools (legacy, complex maintenance)
+- **CI/CD**: Travis CI with Ubuntu Trusty 14.04 (deprecated)
+- **Language Standard**: C++11 (14 years old, missing modern features)
+- **Dependencies**: Custom depends/ system (manual updates, security risks)
+- **Testing**: Limited coverage (88 Python tests, 56 C++ unit tests)
+
+## Planned Phases
+
+### Phase 1: Infrastructure (3-4 months)
+- [x] Migrate CI/CD to GitHub Actions (IN PROGRESS)
+- [ ] Update C++ standard to C++17
+- [x] Add static analysis tools (CodeQL, cppcheck, clang-tidy)
+- [x] Implement security scanning (dependency check, secrets scan)
+
+### Phase 2: Build System (4-6 months)
+- [ ] CMake migration
+- [ ] Modern dependency management
+- [ ] Cross-platform build improvements
+- [ ] Automated dependency updates
+
+### Phase 3: Code Quality (2-3 months)
+- [ ] Enhanced static analysis
+- [ ] Improved test coverage
+- [ ] Code formatting automation
+- [ ] Documentation generation
+
+### Phase 4: Advanced Features (3-4 months)
+- [ ] C++20 migration
+- [ ] Performance optimizations
+- [ ] Modern C++ patterns
+- [ ] Advanced tooling integration
+
+---
+
+## Version History
+
+### [0.15.0] - Previous Release
+- Based on Bitcoin Core 0.14.x fork
+- C++11 standard
+- Autotools build system
+- Travis CI integration
+- Custom dependency management
+
+---
+
+## Development Notes
+
+- **Repository**: https://github.com/goldcoin/goldcoin
+- **Development Branch**: `development`
+- **Stable Branch**: `goldcoin-master`
+- **Maintainer**: microguy (webmaster@microguy.net)
+
+## Contributing
+
+See `DEVELOPMENT.md` for branching strategy and workflow guidelines.
+
+All modernization work should:
+1. Create feature branches from `development`
+2. Follow established coding standards
+3. Include appropriate tests
+4. Update this changelog
+5. Get code review before merging

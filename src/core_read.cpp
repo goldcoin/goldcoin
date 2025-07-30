@@ -14,10 +14,7 @@
 #include "utilstrencodings.h"
 #include "version.h"
 
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/algorithm/string/replace.hpp>
-#include <boost/algorithm/string/split.hpp>
+#include <sstream>
 #include <boost/assign/list_of.hpp>
 
 CScript ParseScript(const std::string& s)
@@ -40,13 +37,22 @@ CScript ParseScript(const std::string& s)
             std::string strName(name);
             mapOpNames[strName] = (opcodetype)op;
             // Convenience: OP_ADD and just ADD are both recognized:
-            boost::algorithm::replace_first(strName, "OP_", "");
+            // Replace first "OP_" with empty string
+            size_t pos = strName.find("OP_");
+            if (pos != std::string::npos) {
+                strName.replace(pos, 3, "");
+            }
             mapOpNames[strName] = (opcodetype)op;
         }
     }
 
     std::vector<std::string> words;
-    boost::algorithm::split(words, s, boost::algorithm::is_any_of(" \t\n"), boost::algorithm::token_compress_on);
+    // Split on whitespace with token compression
+    std::stringstream ss(s);
+    std::string token;
+    while (ss >> token) {
+        words.push_back(token);
+    }
 
     for (std::vector<std::string>::const_iterator w = words.begin(); w != words.end(); ++w)
     {
@@ -54,20 +60,20 @@ CScript ParseScript(const std::string& s)
         {
             // Empty string, ignore. (boost::split given '' will return one word)
         }
-        else if (all(*w, boost::algorithm::is_digit()) ||
-            (boost::algorithm::starts_with(*w, "-") && all(std::string(w->begin()+1, w->end()), boost::algorithm::is_digit())))
+        else if (w->find_first_not_of("0123456789") == std::string::npos ||
+            (w->size() > 1 && (*w)[0] == '-' && w->substr(1).find_first_not_of("0123456789") == std::string::npos))
         {
             // Number
             int64_t n = atoi64(*w);
             result << n;
         }
-        else if (boost::algorithm::starts_with(*w, "0x") && (w->begin()+2 != w->end()) && IsHex(std::string(w->begin()+2, w->end())))
+        else if (w->size() > 2 && w->substr(0, 2) == "0x" && IsHex(w->substr(2)))
         {
             // Raw hex data, inserted NOT pushed onto stack:
             std::vector<unsigned char> raw = ParseHex(std::string(w->begin()+2, w->end()));
             result.insert(result.end(), raw.begin(), raw.end());
         }
-        else if (w->size() >= 2 && boost::algorithm::starts_with(*w, "'") && boost::algorithm::ends_with(*w, "'"))
+        else if (w->size() >= 2 && (*w)[0] == '\'' && (*w)[w->size()-1] == '\'')
         {
             // Single-quoted string, pushed as data. NOTE: this is poor-man's
             // parsing, spaces/tabs/newlines in single-quoted strings won't work.
