@@ -171,15 +171,29 @@ jobs:
             
             # Set up persistent environment variables
             echo "BOOST_ROOT=$(brew --prefix boost)" >> $GITHUB_ENV
-            echo "Qt5_DIR=$(brew --prefix qt@5)" >> $GITHUB_ENV
             echo "OPENSSL_ROOT_DIR=$(brew --prefix openssl@3)" >> $GITHUB_ENV
             echo "BDB_PREFIX=$(brew --prefix berkeley-db@4)" >> $GITHUB_ENV
             
+            # Qt5 path varies by architecture
+            if [[ "${{ matrix.host }}" == "x86_64-apple-darwin" ]]; then
+              export Qt5_DIR="/usr/local/opt/qt@5"
+            else
+              # Apple Silicon
+              export Qt5_DIR="/opt/homebrew/opt/qt@5"
+            fi
+            echo "Qt5_DIR=${Qt5_DIR}" >> $GITHUB_ENV
+            
             # Set up paths
-            echo "PATH=$(brew --prefix qt@5)/bin:${PATH}" >> $GITHUB_ENV
-            echo "PKG_CONFIG_PATH=$(brew --prefix qt@5)/lib/pkgconfig:$(brew --prefix openssl@3)/lib/pkgconfig:${PKG_CONFIG_PATH}" >> $GITHUB_ENV
+            echo "PATH=${Qt5_DIR}/bin:${PATH}" >> $GITHUB_ENV
+            echo "PKG_CONFIG_PATH=${Qt5_DIR}/lib/pkgconfig:$(brew --prefix openssl@3)/lib/pkgconfig:${PKG_CONFIG_PATH}" >> $GITHUB_ENV
             echo "LDFLAGS=-L$(brew --prefix openssl@3)/lib -L$(brew --prefix berkeley-db@4)/lib -L$(brew --prefix boost)/lib" >> $GITHUB_ENV
             echo "CPPFLAGS=-I$(brew --prefix openssl@3)/include -I$(brew --prefix berkeley-db@4)/include -I$(brew --prefix boost)/include" >> $GITHUB_ENV
+            
+            # Verify Qt5 installation
+            echo "=== Qt5 installation check ==="
+            echo "Qt5_DIR: ${Qt5_DIR}"
+            ls -la ${Qt5_DIR}/lib/pkgconfig/Qt5*.pc | head -5 || echo "Qt5 .pc files not found"
+            pkg-config --modversion Qt5Core || echo "Qt5Core not found in pkg-config"
           else
             # Linux build environment setup
             # For container builds, we might not have sudo
@@ -330,6 +344,10 @@ jobs:
             echo "Qt5 prefix: $(brew --prefix qt@5)"
             ls -la $(brew --prefix qt@5)/lib/cmake/Qt5*/ | head -n 5 || echo "Qt5 cmake files not found"
             
+            echo "=== Qt5 pkg-config debug ==="
+            echo "Current PKG_CONFIG_PATH: $PKG_CONFIG_PATH"
+            pkg-config --list-all | grep -i qt5 || echo "No Qt5 modules in pkg-config"
+            
             echo "=== OpenSSL configuration ==="
             echo "OPENSSL_ROOT_DIR: ${OPENSSL_ROOT_DIR}"
             ls -la ${OPENSSL_ROOT_DIR}/include/openssl/sha.h || echo "OpenSSL headers not found!"
@@ -408,11 +426,9 @@ jobs:
             # Update bitcoin_config to use proper boost path
             export BITCOIN_CONFIG_BOOST="--with-boost=${BOOST_ROOT}"
             
-            # Set Qt5 paths for configure
-            export QT5_ROOT=$(brew --prefix qt@5)
-            export CMAKE_PREFIX_PATH="${QT5_ROOT}:${CMAKE_PREFIX_PATH}"
-            export PKG_CONFIG_PATH="${QT5_ROOT}/lib/pkgconfig:${PKG_CONFIG_PATH}"
-            echo "QT5_ROOT=${QT5_ROOT}" >> $GITHUB_ENV
+            # Set Qt5 paths for configure - use the Qt5_DIR from environment
+            export CMAKE_PREFIX_PATH="${Qt5_DIR}:${CMAKE_PREFIX_PATH}"
+            export PKG_CONFIG_PATH="${Qt5_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}"
             echo "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}" >> $GITHUB_ENV
             
             # Set OpenSSL paths for configure
