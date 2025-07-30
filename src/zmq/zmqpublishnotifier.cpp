@@ -2,6 +2,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include "compat/endian.h"  // Include first to ensure macOS definitions take precedence
 #include "chainparams.h"
 #include "streams.h"
 #include "zmqpublishnotifier.h"

@@ -176,6 +176,13 @@ jobs:
             brew list qt@5 && echo "Qt5 found" || (echo "Installing qt@5..." && brew install qt@5)
             brew link --force --overwrite qt@5 || echo "Qt5 already linked or linking failed"
             
+            # Also set the legacy path for compatibility
+            if [ -d "/usr/local/opt/qt@5" ]; then
+              echo "Setting legacy Qt5 path for Intel Mac"
+              echo 'export PATH="/usr/local/opt/qt@5/bin:$PATH"' >> $GITHUB_ENV
+              echo 'export PKG_CONFIG_PATH="/usr/local/opt/qt@5/lib/pkgconfig:$PKG_CONFIG_PATH"' >> $GITHUB_ENV
+            fi
+            
             # Set up persistent environment variables
             echo "BOOST_ROOT=$(brew --prefix boost)" >> $GITHUB_ENV
             echo "OPENSSL_ROOT_DIR=$(brew --prefix openssl@3)" >> $GITHUB_ENV
