@@ -251,8 +251,20 @@ jobs:
           if [[ "${{ runner.os }}" == "macOS" ]]; then
             export MAKEJOBS="-j$(sysctl -n hw.ncpu)"
             
+            echo "=== Platform detection check ==="
+            echo "Current directory: $(pwd)"
+            echo "Host triplet: $(./depends/config.guess)"
+            echo "HOST variable: ${{ matrix.host }}"
+            
             # Create a custom packages.mk without boost and qt for macOS
             cd depends
+            
+            echo "=== Files in depends/hosts/ ==="
+            ls -la hosts/
+            
+            echo "=== Testing config.guess from depends directory ==="
+            echo "config.guess output: $(./config.guess)"
+            
             cp packages/packages.mk packages/packages.mk.bak
             
             # Remove boost from main packages

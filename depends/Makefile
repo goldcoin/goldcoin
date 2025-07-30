@@ -57,6 +57,18 @@ ifeq ($(host_os),)
 host_os=$(full_host_os)
 endif
 
+# Debug platform detection
+$(info DEBUG: HOST = $(HOST))
+$(info DEBUG: canonical_host = $(canonical_host))
+$(info DEBUG: host_arch = $(host_arch))
+$(info DEBUG: host_vendor = $(host_vendor))
+$(info DEBUG: full_host_os = $(full_host_os))
+$(info DEBUG: host_os = $(host_os))
+
+ifeq ($(host_os),)
+$(error Could not detect host OS. HOST=$(HOST), canonical_host=$(canonical_host), host_os=$(host_os))
+endif
+
 $(host_arch)_$(host_os)_prefix=$(BASEDIR)/$(host)
 $(host_arch)_$(host_os)_host=$(host)
 host_prefix=$($(host_arch)_$(host_os)_prefix)
