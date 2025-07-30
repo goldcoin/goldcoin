@@ -83,9 +83,41 @@ Goldcoin v0.16.0 is a critical compatibility update that modernizes the codebase
 
 ---
 
-## Installation
-
 ### Windows Users
+
 Choose your preferred installation method:
 
-**Option 1: Traditional Installer**
+**Option 1: Traditional Installer** - `goldcoin-0.16.0-win64-setup.exe`
+- Automated installation with setup wizard
+- Start Menu and Desktop shortcuts
+- Automatic file associations
+- Includes uninstaller
+- Recommended for most users
+
+**Option 2: Portable ZIP Archive (NEW)** - `goldcoin-0.16.0-win64.zip`
+- No installation required
+- Extract to any location and run
+- Ideal for USB drives or portable use
+- No registry modifications
+- Perfect for advanced users or testing
+
+#### Installation Instructions
+
+**For the Installer:**
+1. Download the installer file (.exe)
+2. Run as Administrator
+3. Follow the setup wizard
+4. Launch from Start Menu or Desktop shortcut
+
+**For the Portable Archive:**
+1. Download the ZIP file
+2. Extract to your desired location
+3. Navigate to the extracted folder
+4. Run `goldcoin-qt.exe` to start the wallet
+
+#### System Requirements
+- Windows 10 version 1809 or later
+- Windows 11 (all versions)
+- 64-bit processor
+- 4GB RAM minimum (8GB recommended)
+- 20GB free disk space
