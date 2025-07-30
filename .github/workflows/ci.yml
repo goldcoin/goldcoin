@@ -377,20 +377,20 @@ jobs:
             echo "=== Running make with explicit canonical_host for macOS ==="
             # Also force BDB mutex detection on macOS
             echo "=== BDB mutex debug ==="
-            echo "Setting ac_cv_mutex=POSIX for BDB"
-            export ac_cv_mutex=POSIX
-            export db_cv_mutex=POSIX
+            echo "Setting ac_cv_mutex=POSIX/pthreads/library for BDB"
+            export ac_cv_mutex="POSIX/pthreads/library"
+            export db_cv_mutex="POSIX/pthreads/library"
             echo "ac_cv_mutex in env: $ac_cv_mutex"
             echo "db_cv_mutex in env: $db_cv_mutex"
             env | grep mutex || echo "No mutex vars in environment"
             
             # Add to config.site.in as well
-            echo "ac_cv_mutex=POSIX" >> config.site.in
-            echo "db_cv_mutex=POSIX" >> config.site.in
+            echo 'ac_cv_mutex=POSIX/pthreads/library' >> config.site.in
+            echo 'db_cv_mutex=POSIX/pthreads/library' >> config.site.in
             cat config.site.in | grep mutex || echo "No mutex in config.site"
             
             # Use environment prefix syntax to ensure variables reach configure
-            ac_cv_mutex=POSIX db_cv_mutex=POSIX make $MAKEJOBS HOST=${{ matrix.host }} canonical_host=${{ matrix.host }} ${{ matrix.dep_opts }}
+            ac_cv_mutex="POSIX/pthreads/library" db_cv_mutex="POSIX/pthreads/library" make $MAKEJOBS HOST=${{ matrix.host }} canonical_host=${{ matrix.host }} ${{ matrix.dep_opts }}
             cd ..
           else
             export MAKEJOBS="-j$(nproc)"
