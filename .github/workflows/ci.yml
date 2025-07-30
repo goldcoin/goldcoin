@@ -301,11 +301,27 @@ jobs:
             echo "PKG_CONFIG_PATH: ${PKG_CONFIG_PATH}"
             
             cd ..
+            
+            echo "=== Host detection for make ==="
+            HOST_TRIPLET=${{ matrix.host }}
+            host_arch=$(echo $HOST_TRIPLET | cut -d- -f1)
+            host_vendor=$(echo $HOST_TRIPLET | cut -d- -f2) 
+            host_os=$(echo $HOST_TRIPLET | cut -d- -f3)
+            
+            echo "Matrix HOST: ${{ matrix.host }}"
+            echo "Parsed components:"
+            echo "  arch: $host_arch"
+            echo "  vendor: $host_vendor"
+            echo "  os: $host_os"
+            
+            # Alternative approach - let config.guess do its job from depends directory
+            cd depends
+            make $MAKEJOBS HOST=${{ matrix.host }} ${{ matrix.dep_opts }}
+            cd ..
           else
             export MAKEJOBS="-j$(nproc)"
+            make $MAKEJOBS -C depends HOST=${{ matrix.host }} ${{ matrix.dep_opts }}
           fi
-          
-          make $MAKEJOBS -C depends HOST=${{ matrix.host }} host=${{ matrix.host }} ${{ matrix.dep_opts }}
 
       - name: Configure and build
         run: |

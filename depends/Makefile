@@ -58,15 +58,19 @@ host_os=$(full_host_os)
 endif
 
 # Debug platform detection
-$(info DEBUG: HOST = $(HOST))
-$(info DEBUG: canonical_host = $(canonical_host))
-$(info DEBUG: host_arch = $(host_arch))
-$(info DEBUG: host_vendor = $(host_vendor))
-$(info DEBUG: full_host_os = $(full_host_os))
-$(info DEBUG: host_os = $(host_os))
+$(info === PLATFORM DETECTION DEBUG ===)
+$(info Make variable HOST = $(HOST))
+$(info Make variable host = $(host))
+$(info config.sub result: canonical_host = $(canonical_host))
+$(info Parsed host_arch = $(host_arch))
+$(info Parsed host_vendor = $(host_vendor))
+$(info Parsed full_host_os = $(full_host_os))
+$(info Final host_os = $(host_os))
+$(info Current directory = $(shell pwd))
+$(info ================================)
 
 ifeq ($(host_os),)
-$(error Could not detect host OS. HOST=$(HOST), canonical_host=$(canonical_host), host_os=$(host_os))
+$(error Could not detect host OS. HOST=$(HOST), canonical_host=$(canonical_host), host_os=$(host_os). Try running from depends directory.)
 endif
 
 $(host_arch)_$(host_os)_prefix=$(BASEDIR)/$(host)
