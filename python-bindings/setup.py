@@ -3,10 +3,37 @@ from pybind11.setup_helpers import Pybind11Extension, build_ext
 from setuptools import setup
 import pybind11
 import os
+import sys
 
 # Make paths absolute for robustness
 script_dir = os.path.dirname(os.path.abspath(__file__))
 src_dir = os.path.abspath(os.path.join(script_dir, '..', 'src'))
+
+# Set up include directories
+include_dirs = [
+    # Path to pybind11 headers
+    pybind11.get_cmake_dir() + "/../../../include",
+    # Path to goldcoin source headers
+    src_dir,
+]
+
+# Dynamic OpenSSL path detection
+library_dirs = []
+if sys.platform == "darwin":
+    openssl_root = os.environ.get("OPENSSL_ROOT_DIR")
+    if openssl_root:
+        include_dirs.append(os.path.join(openssl_root, "include"))
+        library_dirs.append(os.path.join(openssl_root, "lib"))
+    else:
+        # Fallback to common Homebrew locations
+        for path in ["/opt/homebrew/opt/openssl@3", "/usr/local/opt/openssl@3"]:
+            if os.path.exists(os.path.join(path, "include")):
+                include_dirs.append(os.path.join(path, "include"))
+                library_dirs.append(os.path.join(path, "lib"))
+                break
+else:
+    # Linux/Unix standard paths
+    include_dirs.append("/usr/include")
 
 # Define the extension module
 ext_modules = [
@@ -18,14 +45,8 @@ ext_modules = [
             os.path.join(src_dir, "crypto/hmac_sha256.cpp"),
             os.path.join(src_dir, "crypto/sha256.cpp"),
         ],
-        include_dirs=[
-            # Path to pybind11 headers
-            pybind11.get_cmake_dir() + "/../../../include",
-            # Path to goldcoin source headers
-            src_dir,
-            # System includes for OpenSSL
-            "/usr/include/openssl",
-        ],
+        include_dirs=include_dirs,
+        library_dirs=library_dirs,
         libraries=["crypto", "ssl"],  # Link against OpenSSL
         cxx_std=11,
         extra_compile_args=['-std=c++11'],  # Explicit C++ standard

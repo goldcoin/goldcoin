@@ -305,7 +305,7 @@ jobs:
             export MAKEJOBS="-j$(nproc)"
           fi
           
-          make $MAKEJOBS -C depends HOST=${{ matrix.host }} ${{ matrix.dep_opts }}
+          make $MAKEJOBS -C depends HOST=${{ matrix.host }} host=${{ matrix.host }} ${{ matrix.dep_opts }}
 
       - name: Configure and build
         run: |
