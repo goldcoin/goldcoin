@@ -75,7 +75,11 @@
 #endif
 
 #ifdef HAVE_MALLOPT_ARENA_MAX
+#if defined(__APPLE__)
+#include <stdlib.h>
+#else
 #include <malloc.h>
+#endif
 #endif
 
 #include <boost/algorithm/string/case_conv.hpp> // for to_lower()

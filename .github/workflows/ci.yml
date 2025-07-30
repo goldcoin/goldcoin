@@ -191,13 +191,24 @@ jobs:
             echo "LDFLAGS=-L$(brew --prefix openssl@3)/lib -L$(brew --prefix berkeley-db@4)/lib -L$(brew --prefix boost)/lib" >> $GITHUB_ENV
             echo "CPPFLAGS=-I$(brew --prefix openssl@3)/include -I$(brew --prefix berkeley-db@4)/include -I$(brew --prefix boost)/include" >> $GITHUB_ENV
             
+            # Force PKG_CONFIG_PATH to have Qt5 first
+            export PKG_CONFIG_PATH="${Qt5_DIR}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+            echo "PKG_CONFIG_PATH=${PKG_CONFIG_PATH}" >> $GITHUB_ENV
+            
             # Verify Qt5 installation
             echo "=== Qt5 installation check ==="
             echo "Qt5_DIR: ${Qt5_DIR}"
             echo "PKG_CONFIG_PATH: $PKG_CONFIG_PATH"
+            
+            # Check Qt5 .pc files exist
+            echo "=== Checking Qt5 .pc files ==="
+            ls -la ${Qt5_DIR}/lib/pkgconfig/Qt5Core.pc || echo "Qt5Core.pc not found!"
             ls -la /usr/local/opt/qt@5/lib/pkgconfig/*.pc 2>/dev/null | head -5 || echo "Intel Qt5 .pc files not found"
             ls -la /opt/homebrew/opt/qt@5/lib/pkgconfig/*.pc 2>/dev/null | head -5 || echo "ARM Qt5 .pc files not found"
             ls -la ${Qt5_DIR}/lib/pkgconfig/Qt5*.pc | head -5 || echo "Qt5 .pc files not found at Qt5_DIR"
+            
+            # Test pkg-config directly
+            PKG_CONFIG_PATH="${Qt5_DIR}/lib/pkgconfig" pkg-config --exists Qt5Core && echo "Qt5Core detected with explicit path" || echo "Qt5Core still not found"
             pkg-config --exists Qt5Core && echo "Qt5Core found" || echo "Qt5Core NOT found"
             pkg-config --modversion Qt5Core || echo "Qt5Core version not available"
           else
