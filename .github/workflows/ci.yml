@@ -94,7 +94,7 @@ jobs:
             host: x86_64-apple-darwin
             packages: ""
             dep_opts: "NO_UPNP=1 DEBUG=1 FALLBACK_DOWNLOAD_PATH=https://bitcoincore.org/depends-sources"
-            bitcoin_config: "--enable-reduce-exports --enable-wallet --with-incompatible-bdb --with-gui=qt5 CPPFLAGS=-DDEBUG_LOCKORDER"
+            bitcoin_config: "--disable-gui --enable-reduce-exports --enable-wallet --with-incompatible-bdb CPPFLAGS=-DDEBUG_LOCKORDER"
             run_tests: false
             goldcoin_scrypt: 1
             goal: "install"
@@ -105,7 +105,7 @@ jobs:
             host: arm64-apple-darwin
             packages: ""
             dep_opts: "NO_UPNP=1 DEBUG=1 FALLBACK_DOWNLOAD_PATH=https://bitcoincore.org/depends-sources"
-            bitcoin_config: "--enable-reduce-exports --enable-wallet --with-incompatible-bdb --with-gui=qt5 CPPFLAGS=-DDEBUG_LOCKORDER"
+            bitcoin_config: "--disable-gui --enable-reduce-exports --enable-wallet --with-incompatible-bdb CPPFLAGS=-DDEBUG_LOCKORDER"
             run_tests: false
             goldcoin_scrypt: 1
             goal: "install"
@@ -138,15 +138,7 @@ jobs:
           key: ${{ matrix.host }}
           max-size: ${{ env.CCACHE_SIZE }}
 
-      - name: Install Qt5 (macOS)
-        if: runner.os == 'macOS'
-        uses: jurplel/install-qt-action@v4
-        with:
-          version: '5.15.2'
-          modules: 'qtbase qttools'
-          host: 'mac'
-          target: 'desktop'
-          cache: true
+      # Qt5 installation skipped - building without GUI
 
       - name: Set up build environment
         run: |
