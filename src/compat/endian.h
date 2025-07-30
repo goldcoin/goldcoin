@@ -13,14 +13,7 @@
 
 #include "compat/byteswap.h"
 
-// First, try system endian headers if available
-#if defined(HAVE_ENDIAN_H)
-#include <endian.h>
-#elif defined(HAVE_SYS_ENDIAN_H)
-#include <sys/endian.h>
-#endif
-
-// macOS specific implementation - define directly without checking
+// macOS specific implementation - define FIRST to avoid conflicts
 #if defined(__APPLE__)
 #include <libkern/OSByteOrder.h>
 
@@ -39,7 +32,12 @@
 #define be64toh(x) OSSwapBigToHostInt64(x)
 #define le64toh(x) OSSwapLittleToHostInt64(x)
 
-#endif // __APPLE__
+// Try system endian headers if available (but macOS definitions take precedence)
+#elif defined(HAVE_ENDIAN_H)
+#include <endian.h>
+#elif defined(HAVE_SYS_ENDIAN_H)
+#include <sys/endian.h>
+#endif
 
 // Windows specific implementation
 #if defined(_WIN32)
