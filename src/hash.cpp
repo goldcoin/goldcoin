@@ -4,6 +4,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "hash.h"
+#include "compat/byteswap.h"
+#include "compat/endian.h"
 #include "crypto/common.h"
 #include "crypto/hmac_sha512.h"
 #include "pubkey.h"

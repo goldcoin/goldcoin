@@ -5,6 +5,10 @@
 #include "support/lockedpool.h"
 #include "support/cleanse.h"
 
+// Additional threading headers for CI compatibility
+#include <mutex>
+#include <stdexcept>
+
 #if defined(HAVE_CONFIG_H)
 #include "config/bitcoin-config.h"
 #endif

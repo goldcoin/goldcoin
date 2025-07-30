@@ -36,7 +36,14 @@ from threading import RLock
 from threading import Thread
 import logging
 import copy
-import goldcoin_scrypt
+try:
+    import goldcoin_scrypt
+    HAS_GOLDCOIN_SCRYPT = True
+except ImportError:
+    HAS_GOLDCOIN_SCRYPT = False
+    # Use our fallback implementation
+    from . import scrypt_fallback as goldcoin_scrypt
+    logging.info("Using scrypt_fallback module instead of goldcoin_scrypt")
 from test_framework.siphash import siphash256
 
 BIP0031_VERSION = 60000

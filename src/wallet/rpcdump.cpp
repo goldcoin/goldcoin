@@ -17,9 +17,8 @@
 #include "core_io.h"
 
 #include <fstream>
+#include <sstream>
 #include <stdint.h>
-
-#include <boost/algorithm/string.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include <univalue.h>
@@ -456,7 +455,11 @@ UniValue importwallet(const JSONRPCRequest& request)
             continue;
 
         std::vector<std::string> vstr;
-        boost::split(vstr, line, boost::is_any_of(" "));
+        std::stringstream ss(line);
+        std::string token;
+        while (ss >> token) {
+            vstr.push_back(token);
+        }
         if (vstr.size() < 2)
             continue;
         CBitcoinSecret vchSecret;
@@ -474,13 +477,13 @@ UniValue importwallet(const JSONRPCRequest& request)
         std::string strLabel;
         bool fLabel = true;
         for (unsigned int nStr = 2; nStr < vstr.size(); nStr++) {
-            if (boost::algorithm::starts_with(vstr[nStr], "#"))
+            if (vstr[nStr].size() > 0 && vstr[nStr][0] == '#')
                 break;
             if (vstr[nStr] == "change=1")
                 fLabel = false;
             if (vstr[nStr] == "reserve=1")
                 fLabel = false;
-            if (boost::algorithm::starts_with(vstr[nStr], "label=")) {
+            if (vstr[nStr].size() >= 6 && vstr[nStr].substr(0, 6) == "label=") {
                 strLabel = DecodeDumpString(vstr[nStr].substr(6));
                 fLabel = true;
             }

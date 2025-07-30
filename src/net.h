@@ -9,6 +9,10 @@
 #ifndef BITCOIN_NET_H
 #define BITCOIN_NET_H
 
+#include <condition_variable>
+#include <mutex>
+#include <thread>
+
 #include "addrdb.h"
 #include "addrman.h"
 #include "amount.h"
@@ -26,10 +30,8 @@
 
 #include <atomic>
 #include <deque>
-#include <stdint.h>
-#include <thread>
 #include <memory>
-#include <condition_variable>
+#include <stdint.h>
 
 #ifndef WIN32
 #include <arpa/inet.h>

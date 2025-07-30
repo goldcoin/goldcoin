@@ -12,7 +12,7 @@
 
 #include "utiltime.h"
 
-#include <boost/date_time/posix_time/posix_time.hpp>
+#include <ctime>
 #include <boost/thread.hpp>
 
 using namespace std;
@@ -82,11 +82,11 @@ void MilliSleep(int64_t n)
 
 std::string DateTimeStrFormat(const char* pszFormat, int64_t nTime)
 {
-    static std::locale classic(std::locale::classic());
-    // std::locale takes ownership of the pointer
-    std::locale loc(classic, new boost::posix_time::time_facet(pszFormat));
-    std::stringstream ss;
-    ss.imbue(loc);
-    ss << boost::posix_time::from_time_t(nTime);
-    return ss.str();
+    time_t time = (time_t)nTime;
+    struct tm* tm = gmtime(&time);
+    if (!tm) return "";
+    
+    char buffer[200];
+    size_t ret = strftime(buffer, sizeof(buffer), pszFormat, tm);
+    return ret ? std::string(buffer) : "";
 }

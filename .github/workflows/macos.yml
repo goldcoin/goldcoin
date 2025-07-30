@@ -1,0 +1,133 @@
+name: macOS
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CCACHE_SIZE: 100M
+  SDK_URL: https://bitcoincore.org/depends-sources/sdks
+
+jobs:
+  macos-cross:
+    runs-on: macos-latest
+    name: macOS Cross Compile
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: macos-cross
+          max-size: ${{ env.CCACHE_SIZE }}
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake imagemagick libcap-dev librsvg2-bin libz-dev libbz2-dev libtiff-tools python3-dev curl libdb++-dev
+
+      - name: Download macOS SDK
+        run: |
+          mkdir -p depends/SDKs depends/sdk-sources
+          # Note: In production, you'd need to provide your own macOS SDK
+          # This is a placeholder for the SDK download process
+          echo "macOS SDK download would happen here"
+          echo "You need to provide MacOSX.sdk.tar.gz in depends/sdk-sources/"
+
+      - name: Build dependencies
+        run: |
+          export MAKEJOBS="-j$(nproc)"
+          export HOST=x86_64-apple-darwin
+          # Only proceed if SDK is available
+          if [ -f depends/sdk-sources/MacOSX*.sdk.tar.gz ]; then
+            tar -C depends/SDKs -xf depends/sdk-sources/MacOSX*.sdk.tar.gz
+            make $MAKEJOBS -C depends HOST=$HOST
+          else
+            echo "macOS SDK not available - skipping build"
+            exit 0
+          fi
+
+      - name: Configure and build
+        run: |
+          export MAKEJOBS="-j$(nproc)"
+          export HOST=x86_64-apple-darwin
+          export BASE_OUTDIR=${{ github.workspace }}/out
+          export OUTDIR=$BASE_OUTDIR/$HOST
+          
+          # Only proceed if dependencies were built
+          if [ -d "depends/$HOST" ]; then
+            export BITCOIN_CONFIG_ALL="--disable-dependency-tracking --prefix=${{ github.workspace }}/depends/$HOST --bindir=$OUTDIR/bin --libdir=$OUTDIR/lib"
+            
+            ./autogen.sh
+            mkdir -p build && cd build
+            ../configure --cache-file=config.cache $BITCOIN_CONFIG_ALL --enable-gui --enable-reduce-exports || (cat config.log && false)
+            make distdir VERSION=$HOST
+            cd goldcoin-$HOST
+            ./configure --cache-file=../config.cache $BITCOIN_CONFIG_ALL --enable-gui --enable-reduce-exports || (cat config.log && false)
+            make $MAKEJOBS deploy || (echo "Build failure. Verbose build follows." && make deploy V=1 && false)
+          else
+            echo "Dependencies not built - skipping configure and build"
+          fi
+
+      - name: Upload macOS artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: goldcoin-macos
+          path: |
+            out/
+            build/goldcoin-*/Goldcoin-Qt.dmg
+          retention-days: 7
+
+  macos-native:
+    runs-on: macos-latest
+    name: macOS Native Build
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: macos-native
+          max-size: ${{ env.CCACHE_SIZE }}
+
+      - name: Install dependencies
+        run: |
+          brew install automake libtool pkg-config boost libevent berkeley-db@4
+          
+      - name: Set BDB environment variables
+        run: |
+          echo "BDB_PREFIX=$(brew --prefix berkeley-db@4)" >> $GITHUB_ENV
+          echo "CPPFLAGS=-I$(brew --prefix berkeley-db@4)/include" >> $GITHUB_ENV
+          echo "LDFLAGS=-L$(brew --prefix berkeley-db@4)/lib" >> $GITHUB_ENV
+          
+      - name: Configure and build
+        run: |
+          export MAKEJOBS="-j$(sysctl -n hw.activecpu)"
+          
+          ./autogen.sh
+          ./configure --enable-reduce-exports --disable-bench --disable-gui
+          make $MAKEJOBS
+          
+      - name: Run tests
+        run: |
+          export MAKEJOBS="-j$(sysctl -n hw.activecpu)"
+          make $MAKEJOBS check VERBOSE=1
+
+      - name: Upload macOS native artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: goldcoin-macos-native
+          path: |
+            src/goldcoind
+            src/goldcoin-cli
+            src/goldcoin-tx
+          retention-days: 7
