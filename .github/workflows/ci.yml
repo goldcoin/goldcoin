@@ -267,8 +267,8 @@ jobs:
             
             cp packages/packages.mk packages/packages.mk.bak
             
-            # Remove boost from main packages
-            sed -i '' 's/packages:=boost openssl libevent zeromq/packages:=openssl libevent zeromq/' packages/packages.mk
+            # Remove boost and openssl from main packages
+            sed -i '' 's/packages:=boost openssl libevent zeromq/packages:=libevent zeromq/' packages/packages.mk
             
             # Remove qt packages
             sed -i '' 's/qt_packages = qrencode protobuf zlib/qt_packages =/' packages/packages.mk
@@ -293,9 +293,15 @@ jobs:
             echo "Qt5 prefix: $(brew --prefix qt@5)"
             ls -la $(brew --prefix qt@5)/lib/cmake/Qt5*/ | head -n 5 || echo "Qt5 cmake files not found"
             
+            echo "=== OpenSSL configuration ==="
+            echo "OPENSSL_ROOT_DIR: ${OPENSSL_ROOT_DIR}"
+            ls -la ${OPENSSL_ROOT_DIR}/include/openssl/sha.h || echo "OpenSSL headers not found!"
+            ls -la ${OPENSSL_ROOT_DIR}/lib/libssl.* | head -3 || echo "OpenSSL libs not found!"
+            
             echo "=== Environment variables check ==="
             echo "BOOST_ROOT: ${BOOST_ROOT}"
             echo "QT5_ROOT: ${QT5_ROOT}"
+            echo "OPENSSL_ROOT_DIR: ${OPENSSL_ROOT_DIR}"
             echo "SDKROOT: ${SDKROOT}"
             echo "PATH: ${PATH}"
             echo "PKG_CONFIG_PATH: ${PKG_CONFIG_PATH}"
@@ -366,13 +372,22 @@ jobs:
             echo "QT5_ROOT=${QT5_ROOT}" >> $GITHUB_ENV
             echo "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}" >> $GITHUB_ENV
             
+            # Set OpenSSL paths for configure
+            export OPENSSL_CFLAGS="-I${OPENSSL_ROOT_DIR}/include"
+            export OPENSSL_LIBS="-L${OPENSSL_ROOT_DIR}/lib -lssl -lcrypto"
+            export BITCOIN_CONFIG_OPENSSL="--with-openssl=${OPENSSL_ROOT_DIR}"
+            
             echo "=== Final configure environment ==="
             echo "BITCOIN_CONFIG_BOOST: ${BITCOIN_CONFIG_BOOST}"
+            echo "BITCOIN_CONFIG_OPENSSL: ${BITCOIN_CONFIG_OPENSSL}"
+            echo "OPENSSL_CFLAGS: ${OPENSSL_CFLAGS}"
+            echo "OPENSSL_LIBS: ${OPENSSL_LIBS}"
             echo "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}"
             echo "PKG_CONFIG_PATH: ${PKG_CONFIG_PATH}"
           else
             export MAKEJOBS="-j$(nproc)"
             export BITCOIN_CONFIG_BOOST=""
+            export BITCOIN_CONFIG_OPENSSL=""
           fi
           
           export BASE_OUTDIR=${{ github.workspace }}/out
@@ -405,10 +420,20 @@ jobs:
           
           # Build
           mkdir -p build && cd build
-          ../configure --cache-file=config.cache $BITCOIN_CONFIG_ALL $BITCOIN_CONFIG_BOOST ${{ matrix.bitcoin_config }} || (cat config.log && false)
+          
+          # Set OpenSSL configuration for macOS
+          if [[ "${{ runner.os }}" == "macOS" ]]; then
+            export OPENSSL_CFLAGS="${OPENSSL_CFLAGS}"
+            export OPENSSL_LIBS="${OPENSSL_LIBS}"
+            BITCOIN_CONFIG_EXTRA="$BITCOIN_CONFIG_BOOST $BITCOIN_CONFIG_OPENSSL"
+          else
+            BITCOIN_CONFIG_EXTRA="$BITCOIN_CONFIG_BOOST"
+          fi
+          
+          ../configure --cache-file=config.cache $BITCOIN_CONFIG_ALL $BITCOIN_CONFIG_EXTRA ${{ matrix.bitcoin_config }} || (cat config.log && false)
           make distdir VERSION=${{ matrix.host }}
           cd goldcoin-${{ matrix.host }}
-          ./configure --cache-file=../config.cache $BITCOIN_CONFIG_ALL $BITCOIN_CONFIG_BOOST ${{ matrix.bitcoin_config }} || (cat config.log && false)
+          ./configure --cache-file=../config.cache $BITCOIN_CONFIG_ALL $BITCOIN_CONFIG_EXTRA ${{ matrix.bitcoin_config }} || (cat config.log && false)
           make $MAKEJOBS ${{ matrix.goal }} || (echo "Build failure. Verbose build follows." && make ${{ matrix.goal }} V=1 && false)
 
       - name: Run tests
