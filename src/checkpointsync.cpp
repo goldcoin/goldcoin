@@ -178,12 +178,26 @@ bool CheckSyncCheckpoint(const uint256& hashBlock, const CBlockIndex* pindexPrev
 {
     int nHeight = pindexPrev->nHeight + 1;
 
-    // If the height is greater than syncChechpointHeight, then disregard
-    // synced checkpoints if the hashrate is high enough.
+    // Advanced Checkpointing System (ACP)
+    // 
+    // If the height is greater than syncCheckpointHeight, checkpoints are only
+    // enforced when the network hashrate is below a dynamic threshold.
+    // This provides 51% attack protection during low hashrate periods while
+    // allowing automatic transition to pure PoW consensus as the network grows.
+    //
+    // For detailed documentation, see: doc/checkpointing.md
     if(nHeight > Params().GetConsensus().syncCheckpointHeight) {
+        // Calculate current network hashrate (120 block average)
         UniValue hashrate = GetNetworkHashPS(120, pindexPrev->nHeight);
         int64_t now = GetAdjustedTime();
+        
+        // Dynamic threshold formula:
+        // - Base: 1 TH/s (1e12 H/s)
+        // - Growth: Doubles every 6 months
+        // - Start: September 9, 2018 (timestamp 1536541807)
         double toggleHashrate = 1e12 * pow(2, 2.0f*(now - 1536541807)/(365*24*60*60));
+        
+        // If network hashrate exceeds threshold, disable checkpoint enforcement
         if(hashrate.get_real() > toggleHashrate)
            return true;
     }
