@@ -7,7 +7,7 @@ $(package)_sha256_hash=4c01b7b0f1f3c1e05ae6bf53c66e49c65c6b3872475bac26b0fb22813
 $(package)_dependencies=openssl zlib
 $(package)_linux_dependencies=freetype fontconfig libxcb libX11 xproto libXext
 $(package)_build_subdir=qtbase
-$(package)_qt_libs=corelib network widgets gui plugins testlib
+$(package)_qt_libs=corelib network widgets gui plugins
 $(package)_patches=mac-qmake.conf
 $(package)_patches_linux=fix-xcb-include-order.patch
 
