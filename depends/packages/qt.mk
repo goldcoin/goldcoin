@@ -64,7 +64,6 @@ $(package)_config_opts += -static
 $(package)_config_opts += -silent
 $(package)_config_opts += -no-feature-printer
 $(package)_config_opts += -no-feature-printdialog
-$(package)_config_opts += -no-feature-rhi
 
 ifneq ($(build_os),darwin)
 $(package)_config_opts_darwin = -xplatform macx-clang-linux
