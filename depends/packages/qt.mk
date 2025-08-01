@@ -1,4 +1,4 @@
-PACKAGE=qt
+package=qt
 $(package)_version=5.15.12
 $(package)_download_path=https://download.qt.io/archive/qt/5.15/$($(package)_version)/submodules
 $(package)_suffix=everywhere-opensource-src-$($(package)_version).tar.xz
@@ -8,11 +8,10 @@ $(package)_dependencies=openssl zlib
 $(package)_linux_dependencies=freetype fontconfig libxcb libX11 xproto libXext
 $(package)_build_subdir=qtbase
 $(package)_qt_libs=corelib network widgets gui plugins testlib
-$(package)_patches=mac-qmake.conf mingw-uuidof.patch pidlist_absolute.patch fix-xcb-include-order.patch fix_qt_pkgconfig.patch fix-mingw-file-id-info-remove.patch
+$(package)_patches=mac-qmake.conf mingw-uuidof.patch pidlist_absolute.patch fix-xcb-include-order.patch fix_qt_pkgconfig.patch
 
 $(package)_qttranslations_file_name=qttranslations-$($(package)_suffix)
 $(package)_qttranslations_sha256_hash=a830ba6158ccb36fdae97ebfa33ac7c2c92f4b609786717830d65aa2e0e77612
-
 
 $(package)_qttools_file_name=qttools-$($(package)_suffix)
 $(package)_qttools_sha256_hash=9a4084fee80a2acebb6415efa5a28dd666960129895a0bb7d97468a9f0c66506
@@ -77,7 +76,6 @@ $(package)_config_opts += -system-zlib
 $(package)_config_opts += -reduce-exports
 $(package)_config_opts += -static
 $(package)_config_opts += -silent
-$(package)_config_opts += -v
 $(package)_config_opts += -no-feature-printer
 $(package)_config_opts += -no-feature-printdialog
 
@@ -123,7 +121,6 @@ define $(package)_extract_cmds
   tar --strip-components=1 -xf $($(package)_source_dir)/$($(package)_qttools_file_name) -C qttools
 endef
 
-
 define $(package)_preprocess_cmds
   sed -i.old "s|updateqm.commands = \$$$$\$$$$LRELEASE|updateqm.commands = $($(package)_extract_dir)/qttools/bin/lrelease|" qttranslations/translations/translations.pro && \
   sed -i.old "/updateqm.depends =/d" qttranslations/translations/translations.pro && \
@@ -140,14 +137,12 @@ define $(package)_preprocess_cmds
   patch -p1 < $($(package)_patch_dir)/pidlist_absolute.patch && \
   patch -p1 < $($(package)_patch_dir)/fix-xcb-include-order.patch && \
   patch -p1 < $($(package)_patch_dir)/fix_qt_pkgconfig.patch && \
-  patch -p1 < $($(package)_patch_dir)/fix-mingw-file-id-info-remove.patch && \
   echo "!host_build: QMAKE_CFLAGS     += $($(package)_cflags) $($(package)_cppflags)" >> qtbase/mkspecs/common/gcc-base.conf && \
   echo "!host_build: QMAKE_CXXFLAGS   += $($(package)_cxxflags) $($(package)_cppflags)" >> qtbase/mkspecs/common/gcc-base.conf && \
   echo "!host_build: QMAKE_LFLAGS     += $($(package)_ldflags)" >> qtbase/mkspecs/common/gcc-base.conf && \
   sed -i.old "s|QMAKE_CFLAGS            = |!host_build: QMAKE_CFLAGS            = $($(package)_cflags) $($(package)_cppflags) |" qtbase/mkspecs/win32-g++/qmake.conf && \
   sed -i.old "s|QMAKE_LFLAGS            = |!host_build: QMAKE_LFLAGS            = $($(package)_ldflags) |" qtbase/mkspecs/win32-g++/qmake.conf && \
   sed -i.old "s|QMAKE_CXXFLAGS          = |!host_build: QMAKE_CXXFLAGS            = $($(package)_cxxflags) $($(package)_cppflags) |" qtbase/mkspecs/win32-g++/qmake.conf
-
 endef
 
 define $(package)_config_cmds
