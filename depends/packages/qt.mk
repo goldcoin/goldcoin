@@ -50,7 +50,7 @@ $(package)_config_opts += -no-sql-sqlite2
 $(package)_config_opts += -nomake examples
 $(package)_config_opts += -nomake tests
 $(package)_config_opts += -opensource
-$(package)_config_opts += -openssl-linked
+$(package)_config_opts += -openssl
 $(package)_config_opts += -optimized-qmake
 $(package)_config_opts += -pch
 $(package)_config_opts += -pkg-config
@@ -134,7 +134,7 @@ define $(package)_config_cmds
   export PKG_CONFIG_SYSROOT_DIR=/ && \
   export PKG_CONFIG_LIBDIR=$(host_prefix)/lib/pkgconfig && \
   export PKG_CONFIG_PATH=$(host_prefix)/share/pkgconfig  && \
-  OPENSSL_LIBS="-L$(host_prefix)/lib -lssl -lcrypto" ./configure $($(package)_config_opts) -I $(host_prefix)/include && \
+  OPENSSL_LIBS="-L$(host_prefix)/lib -lssl -lcrypto -lws2_32 -lgdi32" ./configure $($(package)_config_opts) -I $(host_prefix)/include && \
   echo "host_build: QT_CONFIG ~= s/system-zlib/zlib" >> mkspecs/qconfig.pri && \
   echo "CONFIG += force_bootstrap" >> mkspecs/qconfig.pri && \
   $(MAKE) sub-src-clean && \
