@@ -1620,7 +1620,11 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
         while (!fHaveGenesis) {
             condvar_GenesisWait.wait(lock);
         }
-        uiInterface.NotifyBlockTip.disconnect(BlockNotifyGenesisWait);
+        // Boost 1.83+ compatibility: disconnect_all_slots() is safer than
+        // trying to disconnect a specific function pointer
+        // TODO: Better solution would be to track the connection with
+        // boost::signals2::scoped_connection at connection time
+        uiInterface.NotifyBlockTip.disconnect_all_slots();
     }
 
     // ********************************************************* Step 11: start node
