@@ -1620,7 +1620,9 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
         while (!fHaveGenesis) {
             condvar_GenesisWait.wait(lock);
         }
-        uiInterface.NotifyBlockTip.disconnect(BlockNotifyGenesisWait);
+        // Boost 1.83+ compatibility: disconnect_all_slots() prevents segfaults
+        // that occur when disconnecting specific function pointers with modern Boost
+        uiInterface.NotifyBlockTip.disconnect_all_slots();
     }
 
     // ********************************************************* Step 11: start node
