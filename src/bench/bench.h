@@ -7,6 +7,7 @@
 
 #include <map>
 #include <string>
+#include <limits> // For std::numeric_limits (required for GCC 13+)
 
 #include <boost/function.hpp>
 #include <boost/preprocessor/cat.hpp>
