@@ -6,6 +6,7 @@
 #include "test/test_bitcoin.h"
 #include "random.h"
 #include <thread>
+#include <deque> // For std::deque (required for GCC 13+)
 #include <boost/thread.hpp>
 
 
