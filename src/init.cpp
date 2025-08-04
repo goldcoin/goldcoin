@@ -53,10 +53,7 @@
 #include <signal.h>
 #endif
 
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/algorithm/string/replace.hpp>
-#include <boost/algorithm/string/split.hpp>
+#include <sstream>
 #include <boost/bind/bind.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/function.hpp>
@@ -538,13 +535,21 @@ static void BlockNotifyCallback(bool initialSync, const CBlockIndex *pBlockIndex
 
     std::string strCmd = GetArg("-blocknotify", "");
 
-    boost::replace_all(strCmd, "%s", pBlockIndex->GetBlockHash().GetHex());
+    // Replace all occurrences of "%s" with block hash
+    std::string search = "%s";
+    std::string replace = pBlockIndex->GetBlockHash().GetHex();
+    size_t pos = 0;
+    while ((pos = strCmd.find(search, pos)) != std::string::npos) {
+        strCmd.replace(pos, search.length(), replace);
+        pos += replace.length();
+    }
     boost::thread t(runCommand, strCmd); // thread runs free
 }
 
 static bool fHaveGenesis = false;
 static boost::mutex cs_GenesisWait;
 static CConditionVariable condvar_GenesisWait;
+static boost::signals2::connection genesisWaitConnection;
 
 static void BlockNotifyGenesisWait(bool, const CBlockIndex *pBlockIndex)
 {
@@ -1065,7 +1070,13 @@ bool AppInitParameterInteraction()
         // Minimal effort at forwards compatibility
         std::string strReplacementModeList = GetArg("-mempoolreplacement", "");  // default is impossible
         std::vector<std::string> vstrReplacementModes;
-        boost::split(vstrReplacementModes, strReplacementModeList, boost::is_any_of(","));
+        std::stringstream ss(strReplacementModeList);
+        std::string token;
+        while (std::getline(ss, token, ',')) {
+            if (!token.empty()) {
+                vstrReplacementModes.push_back(token);
+            }
+        }
         fEnableReplacement = (std::find(vstrReplacementModes.begin(), vstrReplacementModes.end(), "fee") != vstrReplacementModes.end());
     }
 
@@ -1077,7 +1088,13 @@ bool AppInitParameterInteraction()
         const std::vector<std::string>& deployments = mapMultiArgs.at("-bip9params");
         for (auto i : deployments) {
             std::vector<std::string> vDeploymentParams;
-            boost::split(vDeploymentParams, i, boost::is_any_of(":"));
+            std::stringstream ss(i);
+            std::string token;
+            while (std::getline(ss, token, ':')) {
+                if (!token.empty()) {
+                    vDeploymentParams.push_back(token);
+                }
+            }
             if (vDeploymentParams.size() != 3) {
                 return InitError("BIP9 parameters malformed, expecting deployment:start:end");
             }
@@ -1597,7 +1614,7 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
     // Either install a handler to notify us when genesis activates, or set fHaveGenesis directly.
     // No locking, as this happens before any background thread is started.
     if (chainActive.Tip() == NULL) {
-        uiInterface.NotifyBlockTip.connect(BlockNotifyGenesisWait);
+        genesisWaitConnection = uiInterface.NotifyBlockTip.connect(BlockNotifyGenesisWait);
     } else {
         fHaveGenesis = true;
     }
@@ -1620,7 +1637,7 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
         while (!fHaveGenesis) {
             condvar_GenesisWait.wait(lock);
         }
-        // Boost 1.83+ compatibility: disconnect_all_slots() is safer than
+// Boost 1.83+ compatibility: disconnect_all_slots() is safer than
         // trying to disconnect a specific function pointer which can cause
         // segfaults with modern Boost versions
         uiInterface.NotifyBlockTip.disconnect_all_slots();

@@ -1,0 +1,94 @@
+# Goldcoin Development Session Handoff
+# Generated: 2025-07-31 00:00 UTC
+
+## Current Status: Phase 1 Complete ✅
+Branch: modernize-python-312
+Version: v0.16.1-dev
+
+## Phase 1 Summary: Deprecated Wallet Account RPCs
+**Status: COMPLETE**
+- Removed 9 deprecated RPCs from src/wallet/rpcwallet.cpp
+- Total lines removed: 337
+- All builds passing
+- RPCs removed:
+  * getaccountaddress
+  * getaccount
+  * getaddressesbyaccount
+  * getreceivedbyaccount
+  * listaccounts
+  * listreceivedbyaccount
+  * move
+  * sendfrom
+  * setaccount
+
+## Remaining Account Code (Cannot Remove Yet)
+The following account-related code remains for compatibility:
+- GetAccountBalance() - Used by getbalance/sendmany RPCs
+- GetAccountAddresses() - May be used elsewhere
+- AccountFromValue() - Used for backward compatibility
+- strFromAccount in CWalletTx - Serialized for wallet compatibility
+- CAccountingEntry - Database format compatibility
+- AccountMove() - No longer called but may affect wallet format
+
+## Phase 2 Preparation: Boost::filesystem Migration
+**Total instances: 147** (much higher than initial estimate!)
+
+### Files with Most Instances:
+1. util.cpp - 28 instances
+2. init.cpp - 24 instances  
+3. qt/guiutil.cpp - 19 instances
+4. wallet/wallet.cpp - 12 instances
+5. test/dbwrapper_tests.cpp - 9 instances
+
+### Technical Requirements:
+- Currently using C++11 (need C++17 for std::filesystem)
+- Will need to update configure.ac to enable C++17
+- Alternative: Use std::experimental::filesystem with C++14
+
+## Next Session Quick Start
+```bash
+cd /home/microguy/git/microguy/goldcoin
+git status
+./restore-context.sh  # If implemented
+```
+
+## Immediate Next Steps
+1. Check if C++17 can be enabled (compiler support)
+2. If not, consider std::experimental::filesystem
+3. Start with util.cpp (28 instances) as first migration target
+4. Test thoroughly after each file migration
+
+## Active Issues
+- Gitian Windows build: Qt FILE_ID_INFO error (patch exists)
+- Gitian builds: Running with 2 cores, 2GB RAM limits
+
+## Key Decisions Made
+- Phase 1: Remove all deprecated account RPCs ✅
+- Phase 2: Migrate boost::filesystem (147 instances)
+- Phase 3: Other boost dependencies (bind, function, shared_ptr)
+- Keep some account infrastructure for compatibility
+
+## Commands for Testing
+```bash
+# Build test
+make -j4
+
+# Run specific tests
+./src/test/test_goldcoin
+
+# Check for remaining deprecated code
+grep -r "DEPRECATED" src/
+```
+
+## Contact/Questions
+- Lead Developer: [Current Human]
+- Previous session architect: Claude Opus
+- This session developer: Claude Code
+
+## Session Metrics
+- Duration: ~30 minutes
+- Lines removed: 337
+- Tests status: All passing
+- Build status: Success
+
+Remember: Always test after each change. The codebase is now cleaner and ready for Phase 2!

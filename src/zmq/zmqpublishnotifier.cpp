@@ -8,6 +8,7 @@
 #include "validation.h"
 #include "util.h"
 #include "rpc/server.h"
+#include "crypto/common.h"
 
 static std::multimap<std::string, CZMQAbstractPublishNotifier*> mapPublishNotifiers;
 

@@ -66,7 +66,15 @@ COVERAGE_INFO = baseline_filtered_combined.info baseline.info \
   leveldb_baseline_filtered.info test_bitcoin_coverage.info test_bitcoin.info
 
 dist-hook:
-	-$(GIT) archive --format=tar HEAD -- src/clientversion.cpp | $(AMTAR) -C $(top_distdir) -xf -
+	@echo "Ensuring src/clientversion.cpp is included in distribution..."
+	@if test -e $(top_srcdir)/src/clientversion.cpp; then \
+	  echo "Found src/clientversion.cpp in source tree"; \
+	  $(MKDIR_P) $(top_distdir)/src; \
+	  cp -f $(top_srcdir)/src/clientversion.cpp $(top_distdir)/src/; \
+	  echo "Copied src/clientversion.cpp to distribution"; \
+	else \
+	  echo "WARNING: src/clientversion.cpp not found in source tree"; \
+	fi
 
 $(BITCOIN_WIN_INSTALLER): all-recursive
 	$(MKDIR_P) $(top_builddir)/release
@@ -76,6 +84,13 @@ $(BITCOIN_WIN_INSTALLER): all-recursive
 	@test -f $(MAKENSIS) && $(MAKENSIS) -V2 $(top_builddir)/share/setup.nsi || \
 	  echo error: could not build $@
 	@echo built $@
+
+# Windows ZIP distribution
+BITCOIN_WIN_ZIP=$(PACKAGE)-$(PACKAGE_VERSION)-win$(WINDOWS_BITS).zip
+
+$(BITCOIN_WIN_ZIP): $(BITCOIN_WIN_INSTALLER)
+	cd $(top_builddir)/release && zip -r ../$(BITCOIN_WIN_ZIP) *
+	@echo "Created Windows ZIP: $(BITCOIN_WIN_ZIP)"
 
 $(OSX_APP)/Contents/PkgInfo:
 	$(MKDIR_P) $(@D)
@@ -154,7 +169,7 @@ appbundle: $(OSX_APP_BUILT)
 deploy: $(OSX_DMG)
 endif
 if TARGET_WINDOWS
-deploy: $(BITCOIN_WIN_INSTALLER)
+deploy: $(BITCOIN_WIN_INSTALLER) $(BITCOIN_WIN_ZIP)
 endif
 
 $(BITCOIN_QT_BIN): FORCE
@@ -223,7 +238,7 @@ dist_noinst_SCRIPTS = autogen.sh
 
 EXTRA_DIST = $(top_srcdir)/share/genbuild.sh qa/pull-tester/rpc-tests.py qa/rpc-tests $(DIST_CONTRIB) $(DIST_DOCS) $(WINDOWS_PACKAGING) $(OSX_PACKAGING) $(BIN_CHECKS)
 
-CLEANFILES = $(OSX_DMG) $(BITCOIN_WIN_INSTALLER)
+CLEANFILES = $(OSX_DMG) $(BITCOIN_WIN_INSTALLER) $(BITCOIN_WIN_ZIP)
 
 # This file is problematic for out-of-tree builds if it exists.
 DISTCLEANFILES = qa/pull-tester/tests_config.pyc

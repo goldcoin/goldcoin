@@ -5,10 +5,12 @@
 #ifndef BITCOIN_THREADINTERRUPT_H
 #define BITCOIN_THREADINTERRUPT_H
 
-#include <atomic>
-#include <chrono>
 #include <condition_variable>
 #include <mutex>
+#include <thread>
+
+#include <atomic>
+#include <chrono>
 
 /*
     A helper class for interruptible sleeps. Calling operator() will interrupt
