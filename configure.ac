@@ -5,7 +5,7 @@ define(_CLIENT_VERSION_MINOR, 16)
 define(_CLIENT_VERSION_REVISION, 0)
 define(_CLIENT_VERSION_BUILD, 0)
 define(_CLIENT_VERSION_IS_RELEASE, true)
-define(_COPYRIGHT_YEAR, 2023)
+define(_COPYRIGHT_YEAR, 2025)
 define(_COPYRIGHT_HOLDERS,[The %s developers])
 define(_COPYRIGHT_HOLDERS_SUBSTITUTION,[[Goldcoin Core]])
 AC_INIT([Goldcoin Core],[_CLIENT_VERSION_MAJOR._CLIENT_VERSION_MINOR._CLIENT_VERSION_REVISION],[https://github.com/goldcoin/goldcoin/issues],[goldcoin],[https://www.goldcoinproject.org])
@@ -55,7 +55,7 @@ case $host in
   ;;
 esac
 dnl Require C++11 compiler (no GNU extensions)
-AX_CXX_COMPILE_STDCXX([11], [noext], [mandatory], [nodefault])
+AX_CXX_COMPILE_STDCXX([14], [noext], [mandatory], [nodefault])
 dnl Check if -latomic is required for <std::atomic>
 CHECK_ATOMIC
 
