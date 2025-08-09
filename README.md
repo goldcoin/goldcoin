@@ -1,8 +1,8 @@
 Goldcoin Core integration/staging tree
 =====================================
 
-[![CI](https://github.com/goldcoin/goldcoin/workflows/CI/badge.svg?branch=goldcoin-master)](https://github.com/goldcoin/goldcoin/actions)
-[![Security](https://github.com/goldcoin/goldcoin/workflows/Security/badge.svg?branch=goldcoin-master)](https://github.com/goldcoin/goldcoin/actions)
+[//]:[![CI](https://github.com/goldcoin/goldcoin/workflows/CI/badge.svg?branch=goldcoin-master)](https://github.com/goldcoin/goldcoin/actions)
+[//]:[![Security](https://github.com/goldcoin/goldcoin/workflows/Security/badge.svg?branch=goldcoin-master)](https://github.com/goldcoin/goldcoin/actions)
 
 https://www.goldcoinproject.org
 
