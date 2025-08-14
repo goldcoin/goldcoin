@@ -1,64 +1,191 @@
-Goldcoin Core integration/staging tree
-=====================================
+# Goldcoin (GLC) - The AI-Autonomous Cryptocurrency
 
-[![Build Status](https://travis-ci.org/goldcoin/goldcoin.svg?branch=goldcoin-master)](https://travis-ci.org/goldcoin/goldcoin)
+[![Version](https://img.shields.io/badge/version-0.17.0--dev-blue.svg)](https://github.com/microguy/goldcoin/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Discord](https://img.shields.io/badge/Discord-Join%20Chat-7289DA)](https://discord.me/goldcoin)
 
-https://www.goldcoinproject.org
+## The World's First AI-Autonomous Cryptocurrency
 
-What is Goldcoin?
-----------------
-Launched on BCT in 2013. 
+Goldcoin is pioneering the transition from human-controlled to fully AI-autonomous cryptocurrency. With proven technical performance since 2013 (1,120 TPS, zero fees, instant confirmations), we are building toward complete AI autonomy by 2027.
 
-Goldcoin is an open-source cash payment system that scales on-chain without the need for L2 solutions. It enables instant payments to anyone, anywhere in the world, and can been sent **with or without a transaction fee**.
+### Key Features
+- 1,120 Transactions Per Second — approximately 160x Bitcoin’s capacity
+- Zero Transaction Fees — completely free to send
+- 2-Minute Confirmations — approximately 5x faster than Bitcoin
+- 32 MB Blocks — 32x larger than Bitcoin
+- AI-Driven Development — 60% autonomous today, targeting 100% by 2027
+- 100-Year Treasury — 1.1 billion GLC fund for autonomous operations
 
-Goldcoin uses peer-to-peer technology to operate. The network capacity is 1,120 Tx/s with 2-min confirmations and 32 MB blocks. The network is SegWit-free and 0-Conf is fully supported. Starting Sep 15th, 2023 the currency will be backed by a real world treasury.
+## Technical Specifications
 
-For more information, as well as an immediately useable, binary version of
-the Goldcoin Core software, see [https://www.goldcoinproject.org](https://www.goldcoinproject.org).
+| Parameter       | Value             | Comparison to Bitcoin |
+|-----------------|-------------------|-----------------------|
+| Algorithm       | Scrypt            | More ASIC-resistant   |
+| Block Time      | 2 minutes         | ~5x faster            |
+| Block Size      | 32 MB             | 32x larger            |
+| Max Supply      | 1,172,245,700 GLC | Fixed supply          |
+| TPS             | 1,120             | ~160x capacity        |
+| Fees            | 0 (free)          | Variable fees         |
 
-License
--------
+## AI Autonomy Roadmap
 
-Goldcoin Core is released under the terms of the MIT license. See [COPYING](COPYING) for more
-information or see https://opensource.org/licenses/MIT.
+### Phase 1 — AI-Assisted (2025, current)
+- AI handles ~60% of development tasks
+- Migration work (e.g., Qt 6.9) executed by AI agents
+- Humans provide strategic direction and guardrails
 
-Development Process
--------------------
+### Phase 2 — AI-Led (2026)
+- AI makes ~90% of decisions autonomously
+- Automated release management and incident response
+- Human role reduced to funding and high-level oversight
 
-The `master` branch is regularly built and tested, but is not guaranteed to be
-completely stable. [Tags](https://github.com/goldcoin/goldcoin/tags) are created
-regularly to indicate new official, stable release versions of Goldcoin Core.
+### Phase 3 — Full Autonomy (2027)
+- 100% AI operation achieved
+- Zero human involvement required
+- Self-sustaining operations for 100+ years
 
-The contribution workflow is described in [CONTRIBUTING.md](CONTRIBUTING.md).
+## Development Status
 
-The #core-client channel on [Discord](https://discord.me/goldcoin)
-should be used to discuss complicated or controversial changes before working
-on a patch set.
+### Current Release: v0.15.0
+- Stable release with core functionality
 
-Testing
--------
+### In Development: v0.17.0
+- Qt 6.9 migration (in progress)
+- C++20 standard upgrade
+- Windows cross-compilation with zero external dependencies
+- Deprecated code removal and refactors
 
-Testing and code review is the bottleneck for development; we get more pull
-requests than we can review and test on short notice. Please be patient and help out by testing
-other people's pull requests, and remember this is a security-critical project where any mistake might cost people
-lots of money.
+### Upcoming: v0.18.0
+- Quantum-resistant signatures
+- AI consensus protocol
+- Self-healing network features
 
-### Automated Testing
+## Building from Source
 
-Developers are strongly encouraged to write [unit tests](src/test/README.md) for new code, and to
-submit new unit tests for old code. Unit tests can be compiled and run
-(assuming they weren't disabled in configure) with: `make check`. Further details on running
-and extending unit tests can be found in [/src/test/README.md](/src/test/README.md).
+### Prerequisites (Ubuntu/Debian)
+```bash
+sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils
+sudo apt-get install -y libboost-all-dev
+sudo apt-get install -y software-properties-common
+sudo add-apt-repository -y ppa:bitcoin/bitcoin
+sudo apt-get update
+sudo apt-get install -y libdb4.8-dev libdb4.8++-dev
+```
 
-There are also [regression and integration tests](/qa) of the RPC interface, written
-in Python, that are run automatically on the build server.
-These tests can be run (if the [test dependencies](/qa) are installed) with: `qa/pull-tester/rpc-tests.py`
+### Quick Build (Unix)
+```bash
+git clone https://github.com/microguy/goldcoin.git
+cd goldcoin
+./autogen.sh
+./configure --with-incompatible-bdb
+make -j"$(nproc)"
+# Optional:
+sudo make install
+```
 
-The Travis CI system makes sure that every pull request is built for Windows, Linux, and OS X, and that unit/sanity tests are run automatically.
+### Cross-Compile for Windows (no Qt example)
+```bash
+make -C depends HOST=x86_64-w64-mingw32 NO_QT=1 -j"$(nproc)"
+CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --prefix=/
+make -j"$(nproc)"
+```
 
-### Manual Quality Assurance (QA) Testing
+## Testing
+```bash
+# Unit tests
+make check
 
-Changes should be tested by somebody other than the developer who wrote the
-code. This is especially important for large or high-risk changes. It is useful
-to add a test plan to the pull request description if testing the changes is
-not straightforward.
+# RPC tests
+qa/pull-tester/rpc-tests.py
+
+# Run a specific test suite
+src/test/test_goldcoin -t specific_test_name
+```
+
+## Documentation
+- Build Notes — Platform-specific build instructions
+- Developer Guide — Development best practices
+- RPC API — JSON-RPC interface documentation
+- Whitepaper — Complete technical vision
+- Release Process — How releases are managed
+
+## Contributing
+
+We welcome contributions. Please see CONTRIBUTING.md for details.
+
+### Development Workflow
+```bash
+# 1) Fork the repository
+
+# 2) Create a feature branch
+git checkout -b feature/amazing-feature
+
+# 3) Commit changes
+git commit -m "Add amazing feature"
+
+# 4) Push to your fork
+git push origin feature/amazing-feature
+
+# 5) Open a Pull Request on GitHub
+```
+
+### Code Standards
+- C++20 for new code
+- Follow existing code style
+- Write unit tests for new features
+- Update documentation
+
+## Team
+
+### Core Development
+- MicroGuy — Lead Software Architect
+- Claude — Chief Strategist & Workflow Director
+- Claude Code — Senior Developer
+- Grok 4 — Development Assistant
+
+### Vision
+By 2027, Goldcoin will operate entirely through AI consensus, becoming the first cryptocurrency to achieve complete independence from human control while maintaining decentralization and security.
+
+## Network Statistics
+
+- Genesis Block: May 2013
+- Current Block Height: ~3,150,000+
+- Network Uptime: 99.9% since launch
+- Zero Security Breaches: Core protocol remains uncompromised
+
+## Security
+
+- Dual 51% Defense: Golden River Protocol
+- Quantum Resistance: Coming in v0.18.0
+- Multi-signature Treasury: 1.1 billion GLC secured
+- Automated Security Response: AI-driven threat detection
+
+## Wallets & Tools
+
+### Official Wallets
+- Goldcoin Core — Full node wallet
+- Goldcoin Android — Mobile wallet
+- Electrum-GLC — Lightweight wallet
+
+### Block Explorers
+- Official Explorer
+- Cryptoid
+
+## Community
+
+- Website: https://goldcoinproject.org
+- Discord: https://discord.me/goldcoin
+- Twitter/X: https://twitter.com/goldcoin
+- Telegram: https://t.me/goldcoin
+- Reddit: https://reddit.com/r/goldcoin
+
+## License
+
+Goldcoin Core is released under the terms of the MIT license. See COPYING or https://opensource.org/licenses/MIT for more information.
+
+## Disclaimer
+
+This is experimental software. By 2027, human control will be permanently relinquished as Goldcoin transitions to full AI autonomy. Use at your own risk.
+
+> "In Code We Trust, In AI We Evolve"
+Building the autonomous future of money, one block at a time.
