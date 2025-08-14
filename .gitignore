@@ -1,6 +1,11 @@
 *.tar.gz
+*.tar.bz2
+*.zip
 
 *.exe
+goldcoin-*-release/
+windows-release*/
+release/
 src/goldcoin
 src/goldcoind
 src/goldcoin-cli

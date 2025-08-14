@@ -1637,9 +1637,8 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
         while (!fHaveGenesis) {
             condvar_GenesisWait.wait(lock);
         }
-// Boost 1.83+ compatibility: disconnect_all_slots() is safer than
-        // trying to disconnect a specific function pointer which can cause
-        // segfaults with modern Boost versions
+        // Boost 1.83+ compatibility: disconnect_all_slots() prevents segfaults
+        // that occur when disconnecting specific function pointers with modern Boost
         uiInterface.NotifyBlockTip.disconnect_all_slots();
     }
 
