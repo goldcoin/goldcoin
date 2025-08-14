@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include "utilstrencodings.h"
 
-#include <boost/algorithm/string.hpp> // boost::trim
+#include <sstream>
 #include <boost/foreach.hpp> //BOOST_FOREACH
 
 /** WWW-Authenticate to present with 401 Unauthorized response */
@@ -98,7 +98,18 @@ static bool multiUserAuthorized(std::string strUserPass)
         BOOST_FOREACH(std::string strRPCAuth, mapMultiArgs.at("-rpcauth"))
         {
             std::vector<std::string> vFields;
-            boost::split(vFields, strRPCAuth, boost::is_any_of(":$"));
+            // Split on ':' and '$' delimiters
+            std::string current = strRPCAuth;
+            size_t pos = 0;
+            while ((pos = current.find_first_of(":$")) != std::string::npos) {
+                if (pos > 0) {
+                    vFields.push_back(current.substr(0, pos));
+                }
+                current = current.substr(pos + 1);
+            }
+            if (!current.empty()) {
+                vFields.push_back(current);
+            }
             if (vFields.size() != 3) {
                 //Incorrect formatting in config file
                 continue;
@@ -134,7 +145,9 @@ static bool RPCAuthorized(const std::string& strAuth, std::string& strAuthUserna
     if (strAuth.substr(0, 6) != "Basic ")
         return false;
     std::string strUserPass64 = strAuth.substr(6);
-    boost::trim(strUserPass64);
+    // Trim whitespace from both ends
+    strUserPass64.erase(0, strUserPass64.find_first_not_of(" \t\n\r\f\v"));
+    strUserPass64.erase(strUserPass64.find_last_not_of(" \t\n\r\f\v") + 1);
     std::string strUserPass = DecodeBase64(strUserPass64);
 
     if (strUserPass.find(":") != std::string::npos)

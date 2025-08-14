@@ -41,6 +41,12 @@
 
 #include <math.h>
 
+// Standard library threading headers for CI compatibility
+#include <condition_variable>
+#include <functional>
+#include <mutex>
+#include <thread>
+
 // Dump addresses to peers.dat and banlist.dat every 15 minutes (900s)
 #define DUMP_ADDRESSES_INTERVAL 900
 

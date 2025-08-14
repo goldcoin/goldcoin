@@ -31,7 +31,6 @@
 
 #include <assert.h>
 
-#include <boost/algorithm/string/replace.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
 
@@ -992,7 +991,14 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFlushOnClose)
 
     if ( !strCmd.empty())
     {
-        boost::replace_all(strCmd, "%s", wtxIn.GetHash().GetHex());
+        // Replace %s with transaction hash
+        size_t pos = 0;
+        const std::string from = "%s";
+        const std::string to = wtxIn.GetHash().GetHex();
+        while ((pos = strCmd.find(from, pos)) != std::string::npos) {
+            strCmd.replace(pos, from.length(), to);
+            pos += to.length();
+        }
         boost::thread t(runCommand, strCmd); // thread runs free
     }
 

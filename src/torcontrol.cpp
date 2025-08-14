@@ -19,9 +19,6 @@
 #include <boost/signals2/signal.hpp>
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string/predicate.hpp>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/replace.hpp>
 
 #include <event2/bufferevent.h>
 #include <event2/buffer.h>
@@ -559,8 +556,18 @@ void TorController::protocolinfo_cb(TorControlConnection& _conn, const TorContro
             if (l.first == "AUTH") {
                 std::map<std::string,std::string> m = ParseTorReplyMapping(l.second);
                 std::map<std::string,std::string>::iterator i;
-                if ((i = m.find("METHODS")) != m.end())
-                    boost::split(methods, i->second, boost::is_any_of(","));
+                if ((i = m.find("METHODS")) != m.end()) {
+                    // Split on ',' delimiter
+                    methods.clear();
+                    size_t pos = 0;
+                    size_t found = 0;
+                    const std::string& str = i->second;
+                    while ((found = str.find(',', pos)) != std::string::npos) {
+                        methods.insert(str.substr(pos, found - pos));
+                        pos = found + 1;
+                    }
+                    methods.insert(str.substr(pos));
+                }
                 if ((i = m.find("COOKIEFILE")) != m.end())
                     cookiefile = i->second;
             } else if (l.first == "VERSION") {
@@ -583,7 +590,12 @@ void TorController::protocolinfo_cb(TorControlConnection& _conn, const TorContro
         if (!torpassword.empty()) {
             if (methods.count("HASHEDPASSWORD")) {
                 LogPrint("tor", "tor: Using HASHEDPASSWORD authentication\n");
-                boost::replace_all(torpassword, "\"", "\\\"");
+                // Replace all " with \\"
+                size_t pos = 0;
+                while ((pos = torpassword.find("\"", pos)) != std::string::npos) {
+                    torpassword.replace(pos, 1, "\\\"");
+                    pos += 2;
+                }
                 _conn.Command("AUTHENTICATE \"" + torpassword + "\"", boost::bind(&TorController::auth_cb, this,
                                                                                   boost::placeholders::_1,
                                                                                   boost::placeholders::_2));
