@@ -54,11 +54,13 @@ bool WalletFrame::addWallet(const QString& name, WalletModel *walletModel)
     walletStack->addWidget(walletView);
     mapWalletViews[name] = walletView;
 
-    // Ensure a walletView is able to show the main window
+    // Ensure a walletView is able to show the main window  
+    // TODO: Using SIGNAL/SLOT macros as workaround - BitcoinGUI::showNormalIfMinimized is private
+    // WalletView emits showNormalIfMinimized() with no parameters
+    // BitcoinGUI::showNormalIfMinimized(bool fToggleHidden = false) has optional bool parameter
+    // The old-style connection allows connecting to private slots and handles default parameters
     connect(walletView, SIGNAL(showNormalIfMinimized()), gui, SLOT(showNormalIfMinimized()));
-
-    connect(walletView, SIGNAL(outOfSyncWarningClicked()), this, SLOT(outOfSyncWarningClicked()));
-
+    connect(walletView, &WalletView::outOfSyncWarningClicked, this, &WalletFrame::outOfSyncWarningClicked);
     return true;
 }
 

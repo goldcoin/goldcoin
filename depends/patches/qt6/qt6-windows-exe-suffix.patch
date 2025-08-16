@@ -1,0 +1,39 @@
+diff --git a/cmake/QtBaseConfigureTests.cmake b/cmake/QtBaseConfigureTests.cmake
+--- a/cmake/QtBaseConfigureTests.cmake
++++ b/cmake/QtBaseConfigureTests.cmake
+@@ -45,17 +45,27 @@ function(qt_internal_run_config_test_architecture)
+     if(NOT DEFINED arch_test_location)
+         set(arch_test_location "config.tests/arch")
+     endif()
+ 
+-    set(_arch_file_suffix "${CMAKE_EXECUTABLE_SUFFIX}")
++    # Resolve proper executable suffix. When cross-compiling to Windows the toolchain should
++    # define CMAKE_EXECUTABLE_SUFFIX as ".exe". If it doesn't, fall back to ".exe".
++    set(_arch_file_suffix "${CMAKE_EXECUTABLE_SUFFIX}")
++    if(_arch_file_suffix STREQUAL "" AND (WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows" OR MINGW))
++        set(_arch_file_suffix ".exe")
++    endif()
+ 
+     set(arch_dir "${CMAKE_CURRENT_BINARY_DIR}/${arch_test_location}")
+     file(GLOB arch_dir_globbed_files RELATIVE "${arch_dir}" "${arch_dir}/*")
+     list(JOIN arch_dir_globbed_files "\n" arch_dir_globbed_files)
+-    set(_arch_file
+-        "${CMAKE_CURRENT_BINARY_DIR}/${arch_test_location}/architecture_test${_arch_file_suffix}")
++    set(_arch_file "${arch_dir}/architecture_test${_arch_file_suffix}")
+ 
+     if (NOT EXISTS "${_arch_file}")
+         message(FATAL_ERROR
+             "Failed to find compiled architecture detection executable at ${_arch_file}. \
+             The following files were found at: ${arch_dir} \
+             ${arch_dir_globbed_files}")
+     endif()
+     message(STATUS "Extracting architecture info from ${_arch_file}.")
+ 
+-    file(STRINGS "${_arch_file}" _arch_lines LENGTH_MINIMUM 16 LENGTH_MAXIMUM 1024 ENCODING UTF-8
+-         REGEX "==Qt=magic=Qt==")
++    # Scrape the embedded magic lines from the binary. Avoid forcing UTF-8 decoding
++    # so this works reliably with PE/COFF outputs when cross-compiling.
++    file(STRINGS "${_arch_file}" _arch_lines
++         LENGTH_MINIMUM 16
++         LENGTH_MAXIMUM 1024
++         REGEX "==Qt=magic=Qt==")

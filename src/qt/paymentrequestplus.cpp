@@ -17,7 +17,9 @@
 
 #include <QDateTime>
 #include <QDebug>
+#ifndef QT_NO_SSL
 #include <QSslCertificate>
+#endif
 
 class SSLVerifyError : public std::runtime_error
 {
@@ -92,6 +94,7 @@ bool PaymentRequestPlus::getMerchant(X509_STORE* certStore, QString& merchant) c
     const QDateTime currentTime = QDateTime::currentDateTime();
     for (int i = 0; i < certChain.certificate_size(); i++) {
         QByteArray certData(certChain.certificate(i).data(), certChain.certificate(i).size());
+#ifndef QT_NO_SSL
         QSslCertificate qCert(certData, QSsl::Der);
         if (currentTime < qCert.effectiveDate() || currentTime > qCert.expiryDate()) {
             qWarning() << "PaymentRequestPlus::getMerchant: Payment request: certificate expired or not yet active: " << qCert;
@@ -102,6 +105,7 @@ bool PaymentRequestPlus::getMerchant(X509_STORE* certStore, QString& merchant) c
             qWarning() << "PaymentRequestPlus::getMerchant: Payment request: certificate blacklisted: " << qCert;
             return false;
         }
+#endif
 #endif
         const unsigned char *data = (const unsigned char *)certChain.certificate(i).data();
         X509 *cert = d2i_X509(NULL, &data, certChain.certificate(i).size());
@@ -115,6 +119,7 @@ bool PaymentRequestPlus::getMerchant(X509_STORE* certStore, QString& merchant) c
 
     // The first cert is the signing cert, the rest are untrusted certs that chain
     // to a valid root authority. OpenSSL needs them separately.
+    // Use modern OpenSSL typed stack APIs with compatibility layer
     STACK_OF(X509) *chain = sk_X509_new_null();
     for (int i = certs.size() - 1; i > 0; i--) {
         sk_X509_push(chain, certs[i]);
@@ -159,24 +164,36 @@ bool PaymentRequestPlus::getMerchant(X509_STORE* certStore, QString& merchant) c
         std::string data_to_verify;                     // Everything but the signature
         rcopy.SerializeToString(&data_to_verify);
 
-#if HAVE_DECL_EVP_MD_CTX_NEW
-        EVP_MD_CTX *ctx = EVP_MD_CTX_new();
-        if (!ctx) throw SSLVerifyError("Error allocating OpenSSL context.");
-#else
-        EVP_MD_CTX _ctx;
-        EVP_MD_CTX *ctx;
-        ctx = &_ctx;
-#endif
+        // Modern OpenSSL 3.x signature verification
         EVP_PKEY *pubkey = X509_get_pubkey(signing_cert);
-        EVP_MD_CTX_init(ctx);
-        if (!EVP_VerifyInit_ex(ctx, digestAlgorithm, NULL) ||
-            !EVP_VerifyUpdate(ctx, data_to_verify.data(), data_to_verify.size()) ||
-            !EVP_VerifyFinal(ctx, (const unsigned char*)paymentRequest.signature().data(), (unsigned int)paymentRequest.signature().size(), pubkey)) {
+        if (!pubkey) {
+            throw SSLVerifyError("Error getting public key from certificate.");
+        }
+        
+        // Use modern EVP_MD_CTX API (OpenSSL 1.1.0+)
+        EVP_MD_CTX *ctx = EVP_MD_CTX_new();
+        if (!ctx) {
+            EVP_PKEY_free(pubkey);
+            throw SSLVerifyError("Error allocating OpenSSL context.");
+        }
+        
+        // Use EVP_DigestVerify* APIs with proper error handling
+        int verify_result = EVP_DigestVerifyInit(ctx, nullptr, digestAlgorithm, nullptr, pubkey);
+        if (verify_result == 1) {
+            verify_result = EVP_DigestVerifyUpdate(ctx, data_to_verify.data(), data_to_verify.size());
+        }
+        if (verify_result == 1) {
+            verify_result = EVP_DigestVerifyFinal(ctx, 
+                (const unsigned char*)paymentRequest.signature().data(),
+                paymentRequest.signature().size());
+        }
+        
+        EVP_MD_CTX_free(ctx);
+        EVP_PKEY_free(pubkey);
+        
+        if (result != 1) {
             throw SSLVerifyError("Bad signature, invalid payment request.");
         }
-#if HAVE_DECL_EVP_MD_CTX_NEW
-        EVP_MD_CTX_free(ctx);
-#endif
 
         // OpenSSL API for getting human printable strings from certs is baroque.
         int textlen = X509_NAME_get_text_by_NID(certname, NID_commonName, NULL, 0);

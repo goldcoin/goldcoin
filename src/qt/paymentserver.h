@@ -48,7 +48,12 @@ class QByteArray;
 class QLocalServer;
 class QNetworkAccessManager;
 class QNetworkReply;
+// SSL support disabled in Qt6 build
+#ifndef QT_NO_SSL
+#include <QSslError>
+#else
 class QSslError;
+#endif
 class QUrl;
 QT_END_NAMESPACE
 
@@ -121,7 +126,10 @@ public Q_SLOTS:
 private Q_SLOTS:
     void handleURIConnection();
     void netRequestFinished(QNetworkReply*);
+    // SSL support disabled in Qt6 build
+#ifndef QT_NO_SSL
     void reportSslErrors(QNetworkReply*, const QList<QSslError> &);
+#endif
     void handlePaymentACK(const QString& paymentACKMsg);
 
 protected:

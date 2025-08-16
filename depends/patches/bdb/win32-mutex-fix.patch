@@ -1,0 +1,23 @@
+--- a/src/mutex/mut_win32.c
++++ b/src/mutex/mut_win32.c
+@@ -588,9 +588,7 @@ __db_win32_mutex_unlock(env, mutex)
+ 			 * We have to wake up all threads waiting on the event and
+ 			 * let them all try to acquire the mutex.
+ 			 */
+-			if (InterlockedDecrement((interlocked_val)
+-			    (interlocked_val)(&atomic_read(
+-			    &mutexp->sharecount))) > 0)
++			if (InterlockedDecrement((LONG *)&mutexp->sharecount) > 0)
+ 				SetEvent(mutexp->event);
+ 			break;
+ 
+@@ -596,8 +594,7 @@ __db_win32_mutex_unlock(env, mutex)
+ 			 * We have to wake up all threads waiting on the event and
+ 			 * let them all try to acquire the mutex.
+ 			 */
+-			if (InterlockedDecrement((interlocked_val)
+-			    (&atomic_read(&mutexp->sharecount))) > 0)
++			if (InterlockedDecrement((LONG *)&mutexp->sharecount) > 0)
+ 				SetEvent(mutexp->event);
+ 			break;
+ 		}
