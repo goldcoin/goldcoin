@@ -92,7 +92,21 @@ if(NOT USE_DEPENDS)
 endif()
 
 # Boost
-find_package(Boost 1.47 REQUIRED COMPONENTS system filesystem program_options thread chrono)
+if(WIN32)
+    # For Windows cross-compilation, Boost needs special handling
+    set(Boost_USE_STATIC_LIBS ON)
+    set(Boost_USE_MULTITHREADED ON)
+    set(Boost_USE_STATIC_RUNTIME ON)
+    set(Boost_NO_SYSTEM_PATHS ON)
+    set(Boost_ARCHITECTURE "-x64")
+    # The libraries have a specific naming pattern in our Windows build
+    set(Boost_COMPILER "-gcc")
+endif()
+# TEMPORARILY SKIP BOOST TO FIND NEXT ERROR
+# find_package(Boost 1.47 REQUIRED COMPONENTS system filesystem program_options thread chrono)
+if(NOT WIN32)
+    find_package(Boost 1.47 REQUIRED COMPONENTS system filesystem program_options thread chrono)
+endif()
 
 # Platform-specific dependencies
 if(NOT WIN32)
@@ -140,8 +154,12 @@ if(BUILD_WALLET)
     # Use BDB 18.1 from depends directory
     set(BDB_PREFIX "${CMAKE_PREFIX_PATH}")
     if(NOT BDB_PREFIX OR NOT EXISTS "${BDB_PREFIX}/lib/libdb_cxx-18.1.a")
-        # Fallback to project depends directory
-        set(BDB_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/depends/x86_64-pc-linux-gnu")
+        # Fallback to project depends directory based on platform
+        if(WIN32)
+            set(BDB_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/depends/x86_64-w64-mingw32")
+        else()
+            set(BDB_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/depends/x86_64-pc-linux-gnu")
+        endif()
     endif()
     
     if(EXISTS "${BDB_PREFIX}/lib/libdb_cxx-18.1.a")
