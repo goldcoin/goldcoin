@@ -28,8 +28,7 @@ RecentRequestsTableModel::RecentRequestsTableModel(CWallet *wallet, WalletModel 
     /* These columns must match the indices in the ColumnIndex enumeration */
     columns << tr("Date") << tr("Label") << tr("Message") << getAmountTitle();
 
-    connect(walletModel->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
-}
+    connect(walletModel->getOptionsModel(), &OptionsModel::displayUnitChanged, this, &RecentRequestsTableModel::updateDisplayUnit);}
 
 RecentRequestsTableModel::~RecentRequestsTableModel()
 {
@@ -227,7 +226,7 @@ bool RecentRequestEntryLessThan::operator()(RecentRequestEntry &left, RecentRequ
     switch(column)
     {
     case RecentRequestsTableModel::Date:
-        return pLeft->date.toTime_t() < pRight->date.toTime_t();
+        return pLeft->date.toSecsSinceEpoch() < pRight->date.toSecsSinceEpoch();
     case RecentRequestsTableModel::Label:
         return pLeft->recipient.label < pRight->recipient.label;
     case RecentRequestsTableModel::Message:

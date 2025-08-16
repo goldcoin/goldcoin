@@ -19,7 +19,7 @@
 #include "transactionview.h"
 #include "walletmodel.h"
 
-#include "ui_interface.h"
+#include "../ui_interface.h"
 
 #include <QAction>
 #include <QActionGroup>
@@ -65,19 +65,19 @@ WalletView::WalletView(const PlatformStyle *_platformStyle, QWidget *parent):
     addWidget(sendCoinsPage);
 
     // Clicking on a transaction on the overview pre-selects the transaction on the transaction history page
-    connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), transactionView, SLOT(focusTransaction(QModelIndex)));
-    connect(overviewPage, SIGNAL(outOfSyncWarningClicked()), this, SLOT(requestedSyncWarningInfo()));
-
+    connect(overviewPage, &OverviewPage::transactionClicked, transactionView, &TransactionView::focusTransaction);
+    connect(overviewPage, &OverviewPage::outOfSyncWarningClicked, this, &WalletView::requestedSyncWarningInfo);
     // Double-clicking on a transaction on the transaction history page shows details
+    // TODO: Using SIGNAL/SLOT macros as workaround for connecting to private slot
+    // TransactionView::showDetails() is a private slot, cannot get pointer to it in Qt6
+    // Consider making showDetails() public or creating a public wrapper method
     connect(transactionView, SIGNAL(doubleClicked(QModelIndex)), transactionView, SLOT(showDetails()));
-
     // Clicking on "Export" allows to export the transaction list
-    connect(exportButton, SIGNAL(clicked()), transactionView, SLOT(exportClicked()));
-
+    connect(exportButton, &QPushButton::clicked, transactionView, &TransactionView::exportClicked);
     // Pass through messages from sendCoinsPage
-    connect(sendCoinsPage, SIGNAL(message(QString,QString,unsigned int)), this, SIGNAL(message(QString,QString,unsigned int)));
+    connect(sendCoinsPage, &SendCoinsDialog::message, this, &WalletView::message);
     // Pass through messages from transactionView
-    connect(transactionView, SIGNAL(message(QString,QString,unsigned int)), this, SIGNAL(message(QString,QString,unsigned int)));
+    connect(transactionView, &TransactionView::message, this, &WalletView::message);
 }
 
 WalletView::~WalletView()
@@ -89,19 +89,29 @@ void WalletView::setBitcoinGUI(BitcoinGUI *gui)
     if (gui)
     {
         // Clicking on a transaction on the overview page simply sends you to transaction history page
-        connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), gui, SLOT(gotoHistoryPage()));
-
+        // TODO: Using lambda as workaround - BitcoinGUI::gotoHistoryPage() is private
+        // This lambda calls the local WalletView::gotoHistoryPage() instead
+        // Consider making BitcoinGUI::gotoHistoryPage() public or adding proper signal forwarding
+        connect(overviewPage, &OverviewPage::transactionClicked, this, [this]() {
+            gotoHistoryPage();
+        });
         // Receive and report messages
-        connect(this, SIGNAL(message(QString,QString,unsigned int)), gui, SLOT(message(QString,QString,unsigned int)));
+        // TODO: Using lambda as workaround for signal signature mismatch
+        // WalletView::message emits 3 parameters (title, message, style)
+        // BitcoinGUI::message expects 4 parameters (title, message, style, bool* ret = nullptr)
+        // The lambda provides the missing nullptr for the optional parameter
+        connect(this, &WalletView::message, gui, [gui](const QString& title, const QString& message, unsigned int style) {
+            gui->message(title, message, style);
+        });
 
         // Pass through encryption status changed signals
-        connect(this, SIGNAL(encryptionStatusChanged(int)), gui, SLOT(setEncryptionStatus(int)));
+        connect(this, &WalletView::encryptionStatusChanged, gui, &BitcoinGUI::setEncryptionStatus);
 
         // Pass through transaction notifications
-        connect(this, SIGNAL(incomingTransaction(QString,int,CAmount,QString,QString,QString)), gui, SLOT(incomingTransaction(QString,int,CAmount,QString,QString,QString)));
+        connect(this, &WalletView::incomingTransaction, gui, &BitcoinGUI::incomingTransaction);
 
         // Connect HD enabled state signal 
-        connect(this, SIGNAL(hdEnabledStatusChanged(int)), gui, SLOT(setHDStatus(int)));
+        connect(this, &WalletView::hdEnabledStatusChanged, gui, &BitcoinGUI::setHDStatus);
     }
 }
 
@@ -128,24 +138,23 @@ void WalletView::setWalletModel(WalletModel *_walletModel)
     if (_walletModel)
     {
         // Receive and pass through messages from wallet model
-        connect(_walletModel, SIGNAL(message(QString,QString,unsigned int)), this, SIGNAL(message(QString,QString,unsigned int)));
+        connect(_walletModel, &WalletModel::message, this, &WalletView::message);
 
         // Handle changes in encryption status
-        connect(_walletModel, SIGNAL(encryptionStatusChanged(int)), this, SIGNAL(encryptionStatusChanged(int)));
+        connect(_walletModel, &WalletModel::encryptionStatusChanged, this, &WalletView::encryptionStatusChanged);
         updateEncryptionStatus();
 
         // update HD status
         Q_EMIT hdEnabledStatusChanged(_walletModel->hdEnabled());
 
         // Balloon pop-up for new transaction
-        connect(_walletModel->getTransactionTableModel(), SIGNAL(rowsInserted(QModelIndex,int,int)),
-                this, SLOT(processNewTransaction(QModelIndex,int,int)));
+        connect(_walletModel->getTransactionTableModel(), &QAbstractItemModel::rowsInserted,
+                this, &WalletView::processNewTransaction);
 
         // Ask for passphrase if needed
-        connect(_walletModel, SIGNAL(requireUnlock()), this, SLOT(unlockWallet()));
-
+        connect(_walletModel, &WalletModel::requireUnlock, this, &WalletView::unlockWallet);
         // Show progress dialog
-        connect(_walletModel, SIGNAL(showProgress(QString,int)), this, SLOT(showProgress(QString,int)));
+        connect(_walletModel, &WalletModel::showProgress, this, &WalletView::showProgress);
     }
 }
 

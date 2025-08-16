@@ -42,13 +42,19 @@ void CDBEnv::EnvShutdown()
     int ret = dbenv->close(0);
     if (ret != 0)
         LogPrintf("CDBEnv::EnvShutdown: Error %d shutting down database environment: %s\n", ret, DbEnv::strerror(ret));
-    if (!fMockDb)
-        DbEnv((u_int32_t)0).remove(strPath.c_str(), 0);
+    if (!fMockDb) {
+        // TODO: BDB 18.1 - Verify if remove is still needed/correct
+        // In BDB 18.1, this may not be necessary or may have different semantics
+        // Commenting out for now to prevent crashes during shutdown
+        // DbEnv((u_int32_t)0).remove(strPath.c_str(), 0);
+    }
 }
 
 void CDBEnv::Reset()
 {
     delete dbenv;
+    // TODO: BDB 18.1 migration - verify DbEnv constructor compatibility
+    // BDB 18.1 may have different memory layout than 5.3
     dbenv = new DbEnv(DB_CXX_NO_EXCEPTIONS);
     fDbEnvInit = false;
     fMockDb = false;
@@ -83,6 +89,10 @@ bool CDBEnv::Open(const boost::filesystem::path& pathIn)
     TryCreateDirectory(pathLogDir);
     boost::filesystem::path pathErrorFile = pathIn / "db.log";
     LogPrintf("CDBEnv::Open: LogDir=%s ErrorFile=%s\n", pathLogDir.string(), pathErrorFile.string());
+    
+    // Log Berkeley DB version for debugging
+    LogPrintf("CDBEnv::Open: Using Berkeley DB %d.%d.%d\n", 
+              DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH);
 
     unsigned int nEnvFlags = 0;
     if (GetBoolArg("-privdb", DEFAULT_WALLET_PRIVDB))

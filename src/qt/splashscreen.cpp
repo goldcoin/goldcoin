@@ -15,7 +15,7 @@
 #include "clientversion.h"
 #include "init.h"
 #include "util.h"
-#include "ui_interface.h"
+#include "../ui_interface.h"
 #include "version.h"
 
 #ifdef ENABLE_WALLET
@@ -24,7 +24,7 @@
 
 #include <QApplication>
 #include <QCloseEvent>
-#include <QDesktopWidget>
+// QScreen removed in Qt6, using QScreen instead
 #include <QPainter>
 #include <QRadialGradient>
 #include <QScreen>
@@ -226,7 +226,7 @@ void SplashScreen::unsubscribeFromCoreSignals()
                                                     boost::placeholders::_1,
                                                     boost::placeholders::_2));
 #ifdef ENABLE_WALLET
-    Q_FOREACH(CWallet* const & pwallet, connectedWallets) {
+    for(CWallet* const & pwallet : connectedWallets) {
         pwallet->ShowProgress.disconnect(boost::bind(ShowProgress, this,
                                                      boost::placeholders::_1,
                                                      boost::placeholders::_2));

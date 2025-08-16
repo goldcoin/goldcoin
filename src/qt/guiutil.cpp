@@ -48,7 +48,8 @@
 #include <QClipboard>
 #include <QDateTime>
 #include <QDesktopServices>
-#include <QDesktopWidget>
+#include <QScreen>
+#include <QWindow>
 #include <QDoubleValidator>
 #include <QFileDialog>
 #include <QFont>
@@ -57,6 +58,8 @@
 #include <QTextDocument> // for Qt::mightBeRichText
 #include <QThread>
 #include <QMouseEvent>
+#include <QRegularExpression>
+#include <QStandardPaths>
 
 #if QT_VERSION < 0x050000
 #include <QUrl>
@@ -86,12 +89,12 @@ namespace GUIUtil {
 
 QString dateTimeStr(const QDateTime &date)
 {
-    return date.date().toString(Qt::SystemLocaleShortDate) + QString(" ") + date.toString("hh:mm");
+    return date.date().toString(Qt::ISODate) + QString(" ") + date.toString("hh:mm");
 }
 
 QString dateTimeStr(qint64 nTime)
 {
-    return dateTimeStr(QDateTime::fromTime_t((qint32)nTime));
+    return dateTimeStr(QDateTime::fromSecsSinceEpoch((qint32)nTime));
 }
 
 QFont fixedPitchFont()
@@ -322,11 +325,12 @@ QString getSaveFileName(QWidget *parent, const QString &caption, const QString &
     QString result = QDir::toNativeSeparators(QFileDialog::getSaveFileName(parent, caption, myDir, filter, &selectedFilter));
 
     /* Extract first suffix from filter pattern "Description (*.foo)" or "Description (*.foo *.bar ...) */
-    QRegExp filter_re(".* \\(\\*\\.(.*)[ \\)]");
+    QRegularExpression filter_re(".* \\(\\*\\.(.*)[ \\)]");
     QString selectedSuffix;
-    if(filter_re.exactMatch(selectedFilter))
+    QRegularExpressionMatch match = filter_re.match(selectedFilter);
+    if(match.hasMatch())
     {
-        selectedSuffix = filter_re.cap(1);
+        selectedSuffix = match.captured(1);
     }
 
     /* Add suffix if needed */
@@ -374,11 +378,12 @@ QString getOpenFileName(QWidget *parent, const QString &caption, const QString &
     if(selectedSuffixOut)
     {
         /* Extract first suffix from filter pattern "Description (*.foo)" or "Description (*.foo *.bar ...) */
-        QRegExp filter_re(".* \\(\\*\\.(.*)[ \\)]");
+        QRegularExpression filter_re(".* \\(\\*\\.(.*)[ \\)]");
         QString selectedSuffix;
-        if(filter_re.exactMatch(selectedFilter))
+        QRegularExpressionMatch match = filter_re.match(selectedFilter);
+        if(match.hasMatch())
         {
-            selectedSuffix = filter_re.cap(1);
+            selectedSuffix = match.captured(1);
         }
         *selectedSuffixOut = selectedSuffix;
     }
@@ -485,16 +490,14 @@ bool ToolTipToRichTextFilter::eventFilter(QObject *obj, QEvent *evt)
 
 void TableViewLastColumnResizingFixer::connectViewHeadersSignals()
 {
-    connect(tableView->horizontalHeader(), SIGNAL(sectionResized(int,int,int)), this, SLOT(on_sectionResized(int,int,int)));
-    connect(tableView->horizontalHeader(), SIGNAL(geometriesChanged()), this, SLOT(on_geometriesChanged()));
-}
+    connect(tableView->horizontalHeader(), &QHeaderView::sectionResized, this, &TableViewLastColumnResizingFixer::on_sectionResized);
+    connect(tableView->horizontalHeader(), &QHeaderView::geometriesChanged, this, &TableViewLastColumnResizingFixer::on_geometriesChanged);}
 
 // We need to disconnect these while handling the resize events, otherwise we can enter infinite loops.
 void TableViewLastColumnResizingFixer::disconnectViewHeadersSignals()
 {
-    disconnect(tableView->horizontalHeader(), SIGNAL(sectionResized(int,int,int)), this, SLOT(on_sectionResized(int,int,int)));
-    disconnect(tableView->horizontalHeader(), SIGNAL(geometriesChanged()), this, SLOT(on_geometriesChanged()));
-}
+    disconnect(tableView->horizontalHeader(), &QHeaderView::sectionResized, this, &TableViewLastColumnResizingFixer::on_sectionResized);
+    disconnect(tableView->horizontalHeader(), &QHeaderView::geometriesChanged, this, &TableViewLastColumnResizingFixer::on_geometriesChanged);}
 
 // Setup the resize mode, handles compatibility for Qt5 and below as the method signatures changed.
 // Refactored here for readability.
@@ -849,8 +852,6 @@ void restoreWindowGeometry(const QString& strSetting, const QSize& defaultSize, 
     QSize size = settings.value(strSetting + "Size", defaultSize).toSize();
 
     if (!pos.x() && !pos.y()) {
-        
-        // QRect screen = QApplication::desktop()->screenGeometry(); // deprecated: Use QGuiApplication::screens()
         QRect screen = QGuiApplication::primaryScreen()->availableGeometry();
         
         pos.setX((screen.width() - size.width()) / 2);

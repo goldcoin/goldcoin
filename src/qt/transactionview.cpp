@@ -17,7 +17,7 @@
 #include "transactiontablemodel.h"
 #include "walletmodel.h"
 
-#include "ui_interface.h"
+#include "../ui_interface.h"
 
 #include <QComboBox>
 #include <QDateTimeEdit>
@@ -162,27 +162,18 @@ TransactionView::TransactionView(const PlatformStyle *platformStyle, QWidget *pa
     mapperThirdPartyTxUrls = new QSignalMapper(this);
 
     // Connect actions
-    connect(mapperThirdPartyTxUrls, SIGNAL(mapped(QString)), this, SLOT(openThirdPartyTxUrl(QString)));
+    // Qt 6: Replace QSignalMapper with lambdas in menu action connections
 
-    connect(dateWidget, SIGNAL(activated(int)), this, SLOT(chooseDate(int)));
-    connect(typeWidget, SIGNAL(activated(int)), this, SLOT(chooseType(int)));
-    connect(watchOnlyWidget, SIGNAL(activated(int)), this, SLOT(chooseWatchonly(int)));
-    connect(addressWidget, SIGNAL(textChanged(QString)), this, SLOT(changedPrefix(QString)));
-    connect(amountWidget, SIGNAL(textChanged(QString)), this, SLOT(changedAmount(QString)));
+    connect(dateWidget, qOverload<int>(&QComboBox::activated), this, &TransactionView::chooseDate);
+    connect(typeWidget, qOverload<int>(&QComboBox::activated), this, &TransactionView::chooseType);
+    connect(watchOnlyWidget, qOverload<int>(&QComboBox::activated), this, &TransactionView::chooseWatchonly);
+    connect(addressWidget, &QLineEdit::textChanged, this, &TransactionView::changedPrefix);
+    connect(amountWidget, &QLineEdit::textChanged, this, &TransactionView::changedAmount);
 
-    connect(view, SIGNAL(doubleClicked(QModelIndex)), this, SIGNAL(doubleClicked(QModelIndex)));
-    connect(view, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextualMenu(QPoint)));
+    connect(view, &QTableView::doubleClicked, this, &TransactionView::doubleClicked);
+    connect(view, &QWidget::customContextMenuRequested, this, &TransactionView::contextualMenu);
 
-    connect(abandonAction, SIGNAL(triggered()), this, SLOT(abandonTx()));
-    connect(copyAddressAction, SIGNAL(triggered()), this, SLOT(copyAddress()));
-    connect(copyLabelAction, SIGNAL(triggered()), this, SLOT(copyLabel()));
-    connect(copyAmountAction, SIGNAL(triggered()), this, SLOT(copyAmount()));
-    connect(copyTxIDAction, SIGNAL(triggered()), this, SLOT(copyTxID()));
-    connect(copyTxHexAction, SIGNAL(triggered()), this, SLOT(copyTxHex()));
-    connect(copyTxPlainText, SIGNAL(triggered()), this, SLOT(copyTxPlainText()));
-    connect(editLabelAction, SIGNAL(triggered()), this, SLOT(editLabel()));
-    connect(showDetailsAction, SIGNAL(triggered()), this, SLOT(showDetails()));
-}
+    connect(abandonAction, &QAction::triggered, this, &TransactionView::abandonTx);    connect(copyAddressAction, &QAction::triggered, this, &TransactionView::copyAddress);    connect(copyLabelAction, &QAction::triggered, this, &TransactionView::copyLabel);    connect(copyAmountAction, &QAction::triggered, this, &TransactionView::copyAmount);    connect(copyTxIDAction, &QAction::triggered, this, &TransactionView::copyTxID);    connect(copyTxHexAction, &QAction::triggered, this, &TransactionView::copyTxHex);    connect(copyTxPlainText, &QAction::triggered, this, &TransactionView::copyTxPlainText);    connect(editLabelAction, &QAction::triggered, this, &TransactionView::editLabel);    connect(showDetailsAction, &QAction::triggered, this, &TransactionView::showDetails);}
 
 void TransactionView::setModel(WalletModel *_model)
 {
@@ -241,7 +232,7 @@ void TransactionView::setModel(WalletModel *_model)
         updateWatchOnlyColumn(_model->haveWatchOnly());
 
         // Watch-only signal
-        connect(_model, SIGNAL(notifyWatchonlyChanged(bool)), this, SLOT(updateWatchOnlyColumn(bool)));
+        connect(_model, &WalletModel::notifyWatchonlyChanged, this, &TransactionView::updateWatchOnlyColumn);
     }
 }
 
@@ -529,9 +520,8 @@ QWidget *TransactionView::createDateRangeWidget()
     dateRangeWidget->setVisible(false);
 
     // Notify on change
-    connect(dateFrom, SIGNAL(dateChanged(QDate)), this, SLOT(dateRangeChanged()));
-    connect(dateTo, SIGNAL(dateChanged(QDate)), this, SLOT(dateRangeChanged()));
-
+    connect(dateFrom, &QDateTimeEdit::dateChanged, this, &TransactionView::dateRangeChanged);
+    connect(dateTo, &QDateTimeEdit::dateChanged, this, &TransactionView::dateRangeChanged);
     return dateRangeWidget;
 }
 

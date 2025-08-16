@@ -118,3 +118,6 @@ contrib/devtools/split-debug.sh
 .vscode/
 *.cflags
 *.cxxflags
+
+# Private/sensitive project documentation
+CLAUDE.md

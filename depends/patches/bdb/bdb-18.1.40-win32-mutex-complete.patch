@@ -1,0 +1,31 @@
+--- a/src/mutex/mut_win32.c
++++ b/src/mutex/mut_win32.c
+@@ -424,7 +426,7 @@ __db_win32_mutex_shared_lock(env, mutex, nowait)
+ 		if (F_ISSET(mutexp, DB_MUTEX_OWNER_DEAD) &&
+ 		    !F_ISSET(dbenv, DB_ENV_FAILCHK)) {
+ 			InterlockedDecrement(
+-			    (interlocked_val)&mutexp->sharecount);
++			    (LONG *)&mutexp->sharecount);
+ 			ret = __mutex_died(env, mutex);
+ 			goto failed;
+ 		}
+@@ -588,16 +590,14 @@ __db_win32_mutex_unlock(env, mutex)
+ 		}
+ 		if (F_ISSET(mutexp, DB_MUTEX_LOCKED)) {
+ 			F_CLR(mutexp, DB_MUTEX_LOCKED);
+-			if ((ret = InterlockedExchange(
+-			    (interlocked_val)(&atomic_read(
+-			    &mutexp->sharecount)), 0)) !=
++			if ((ret = InterlockedExchange((LONG *)
++			    &mutexp->sharecount, 0)) !=
+ 			    MUTEX_SHARE_ISEXCLUSIVE) {
+ 				ret = DB_RUNRECOVERY;
+ 				goto err;
+ 			}
+ 		} else {
+-			if (InterlockedDecrement((interlocked_val)
+-			    (&atomic_read(&mutexp->sharecount))) > 0)
++			if (InterlockedDecrement((LONG *)&mutexp->sharecount) > 0)
+ 				goto finish_shared;
+ 		}
+ 	} else
