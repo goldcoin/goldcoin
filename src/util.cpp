@@ -96,6 +96,7 @@
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
 #include <openssl/conf.h>
+#include <openssl/opensslv.h>
 
 // Work around clang compilation problem in Boost 1.46:
 // /usr/include/boost/program_options/detail/config_file.hpp:163:17: error: call to function 'to_internal' that is neither visible in the template definition nor found by argument-dependent lookup
@@ -129,6 +130,8 @@ std::atomic<bool> fReopenDebugLog(false);
 CTranslationInterface translationInterface;
 
 /** Init OpenSSL library multithreading support */
+// OpenSSL 1.1.0+ has built-in thread safety, so locking callbacks are no longer needed
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
 static CCriticalSection** ppmutexOpenSSL;
 void locking_callback(int mode, int i, const char* file, int line) NO_THREAD_SAFETY_ANALYSIS
 {
@@ -138,6 +141,7 @@ void locking_callback(int mode, int i, const char* file, int line) NO_THREAD_SAF
         LEAVE_CRITICAL_SECTION(*ppmutexOpenSSL[i]);
     }
 }
+#endif
 
 // Init
 class CInit
@@ -145,7 +149,8 @@ class CInit
 public:
     CInit()
     {
-        // Init OpenSSL library multithreading support
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+        // Init OpenSSL library multithreading support (only needed for OpenSSL < 1.1.0)
         ppmutexOpenSSL = (CCriticalSection**)OPENSSL_malloc(CRYPTO_num_locks() * sizeof(CCriticalSection*));
         for (int i = 0; i < CRYPTO_num_locks(); i++)
             ppmutexOpenSSL[i] = new CCriticalSection();
@@ -157,10 +162,17 @@ public:
         // or corrupt. Explicitly tell OpenSSL not to try to load the file. The result for our libs will be
         // that the config appears to have been loaded and there are no modules/engines available.
         OPENSSL_no_config();
+#else
+        // OpenSSL 1.1.0+ auto-initializes and has built-in thread safety
+        // No explicit initialization needed
+#endif
 
 #ifdef WIN32
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
         // Seed OpenSSL PRNG with current contents of the screen
+        // RAND_screen() was removed in OpenSSL 1.1.0
         RAND_screen();
+#endif
 #endif
 
         // Seed OpenSSL PRNG with performance counter
@@ -168,13 +180,17 @@ public:
     }
     ~CInit()
     {
-        // Securely erase the memory used by the PRNG
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+        // Securely erase the memory used by the PRNG (no-op in OpenSSL 1.1.0+)
         RAND_cleanup();
         // Shutdown OpenSSL library multithreading support
         CRYPTO_set_locking_callback(NULL);
         for (int i = 0; i < CRYPTO_num_locks(); i++)
             delete ppmutexOpenSSL[i];
         OPENSSL_free(ppmutexOpenSSL);
+#else
+        // OpenSSL 1.1.0+ handles cleanup automatically
+#endif
     }
 }
 instance_of_cinit;

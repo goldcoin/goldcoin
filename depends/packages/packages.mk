@@ -1,14 +1,15 @@
 packages:=boost openssl libevent zeromq
 native_packages := native_ccache
 
-qt_native_packages = native_protobuf
+qt_native_packages = native_protobuf native_cmake
 qt_packages = qrencode protobuf zlib
 
-qt_x86_64_linux_packages:=qt expat dbus libxcb xcb_proto libXau xproto freetype fontconfig libX11 xextproto libXext xtrans
+# For Qt6 builds, replace 'qt' with 'qt6' in the lines below
+qt_x86_64_linux_packages:=qt6 expat dbus libxcb xcb_proto libXau xproto freetype fontconfig libX11 xextproto libXext xtrans
 qt_i686_linux_packages:=$(qt_x86_64_linux_packages)
 
-qt_darwin_packages=qt
-qt_mingw32_packages=qt
+qt_darwin_packages=qt6
+qt_mingw32_packages=qt6
 
 wallet_packages=bdb
 

@@ -11,7 +11,7 @@
 #include "base58.h"
 #include "chainparams.h"
 #include "policy/policy.h"
-#include "ui_interface.h"
+#include "../ui_interface.h"
 #include "util.h"
 #include "wallet/wallet.h"
 
@@ -34,9 +34,11 @@
 #include <QNetworkProxy>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#ifndef QT_NO_SSL
 #include <QSslCertificate>
 #include <QSslError>
 #include <QSslSocket>
+#endif
 #include <QStringList>
 #include <QTextDocument>
 
@@ -96,6 +98,7 @@ static QString ipcServerName()
 
 static QList<QString> savedPaymentRequests;
 
+#ifndef QT_NO_SSL
 static void ReportInvalidCertificate(const QSslCertificate& cert)
 {
 #if QT_VERSION < 0x050000
@@ -104,6 +107,7 @@ static void ReportInvalidCertificate(const QSslCertificate& cert)
     qDebug() << QString("%1: Payment server found an invalid certificate: ").arg(__func__) << cert.serialNumber() << cert.subjectInfo(QSslCertificate::CommonName) << cert.subjectInfo(QSslCertificate::DistinguishedNameQualifier) << cert.subjectInfo(QSslCertificate::OrganizationalUnitName);
 #endif
 }
+#endif
 
 //
 // Load OpenSSL's list of root certificate authorities
@@ -120,6 +124,7 @@ void PaymentServer::LoadRootCAs(X509_STORE* _store)
     // Normal execution, use either -rootcertificates or system certs:
     certStore.reset(X509_STORE_new());
 
+#ifndef QT_NO_SSL
     // Note: use "-system-" default here so that users can pass -rootcertificates=""
     // and get 'I don't like X.509 certificates, don't trust anybody' behavior:
     QString certFile = QString::fromStdString(GetArg("-rootcertificates", "-system-"));
@@ -145,7 +150,7 @@ void PaymentServer::LoadRootCAs(X509_STORE* _store)
     int nRootCerts = 0;
     const QDateTime currentTime = QDateTime::currentDateTime();
 
-    Q_FOREACH (const QSslCertificate& cert, certList) {
+    for (const QSslCertificate& cert : certList) {
         // Don't log NULL certificates
         if (cert.isNull())
             continue;
@@ -189,6 +194,9 @@ void PaymentServer::LoadRootCAs(X509_STORE* _store)
     //   would it be easier to just use a compiled-in blacklist?
     //    or use Qt's blacklist?
     //   "certificate stapling" with server-side caching is more efficient
+#else
+    qWarning() << "PaymentServer::LoadRootCAs: SSL support not available, skipping certificate loading";
+#endif
 }
 
 //
@@ -266,7 +274,7 @@ void PaymentServer::ipcParseCommandLine(int argc, char* argv[])
 bool PaymentServer::ipcSendCommandLine()
 {
     bool fResult = false;
-    Q_FOREACH (const QString& r, savedPaymentRequests)
+    for (const QString& r : savedPaymentRequests)
     {
         QLocalSocket* socket = new QLocalSocket();
         socket->connectToServer(ipcServerName(), QIODevice::WriteOnly);
@@ -328,8 +336,8 @@ PaymentServer::PaymentServer(QObject* parent, bool startLocalServer) :
                 tr("Cannot start goldcoin: click-to-pay handler"));
         }
         else {
-            connect(uriServer, SIGNAL(newConnection()), this, SLOT(handleURIConnection()));
-            connect(this, SIGNAL(receivedPaymentACK(QString)), this, SLOT(handlePaymentACK(QString)));
+            connect(uriServer, &QLocalServer::newConnection, this, &PaymentServer::handleURIConnection);
+            connect(this, &PaymentServer::receivedPaymentACK, this, &PaymentServer::handlePaymentACK);
         }
     }
 }
@@ -380,10 +388,12 @@ void PaymentServer::initNetManager()
     else
         qDebug() << "PaymentServer::initNetManager: No active proxy server found.";
 
-    connect(netManager, SIGNAL(finished(QNetworkReply*)),
-            this, SLOT(netRequestFinished(QNetworkReply*)));
-    connect(netManager, SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError> &)),
-            this, SLOT(reportSslErrors(QNetworkReply*, const QList<QSslError> &)));
+    connect(netManager, &QNetworkAccessManager::finished,
+            this, &PaymentServer::netRequestFinished);
+#ifndef QT_NO_SSL
+    connect(netManager, &QNetworkAccessManager::sslErrors,
+            this, &PaymentServer::reportSslErrors);
+#endif
 }
 
 void PaymentServer::uiReady()
@@ -391,7 +401,7 @@ void PaymentServer::uiReady()
     initNetManager();
 
     saveURIs = false;
-    Q_FOREACH (const QString& s, savedPaymentRequests)
+    for (const QString& s : savedPaymentRequests)
     {
         handleURIOrFile(s);
     }
@@ -481,8 +491,8 @@ void PaymentServer::handleURIConnection()
     while (clientConnection->bytesAvailable() < (int)sizeof(quint32))
         clientConnection->waitForReadyRead();
 
-    connect(clientConnection, SIGNAL(disconnected()),
-            clientConnection, SLOT(deleteLater()));
+    connect(clientConnection, &QLocalSocket::disconnected,
+            clientConnection, &QObject::deleteLater);
 
     QDataStream in(clientConnection);
     in.setVersion(QDataStream::Qt_4_0);
@@ -742,17 +752,19 @@ void PaymentServer::netRequestFinished(QNetworkReply* reply)
     }
 }
 
+#ifndef QT_NO_SSL
 void PaymentServer::reportSslErrors(QNetworkReply* reply, const QList<QSslError> &errs)
 {
     Q_UNUSED(reply);
 
     QString errString;
-    Q_FOREACH (const QSslError& err, errs) {
+    for (const QSslError& err : errs) {
         qWarning() << "PaymentServer::reportSslErrors: " << err;
         errString += err.errorString() + "\n";
     }
     Q_EMIT message(tr("Network request error"), errString, CClientUIInterface::MSG_ERROR);
 }
+#endif
 
 void PaymentServer::setOptionsModel(OptionsModel *_optionsModel)
 {

@@ -17,10 +17,19 @@ struct zero_after_free_allocator : public std::allocator<T> {
     typedef std::allocator<T> base;
     typedef typename base::size_type size_type;
     typedef typename base::difference_type difference_type;
+#if __cplusplus < 202002L
+    // These typedefs were removed in C++20
     typedef typename base::pointer pointer;
     typedef typename base::const_pointer const_pointer;
     typedef typename base::reference reference;
     typedef typename base::const_reference const_reference;
+#else
+    // For C++20 and later, define these ourselves
+    typedef T* pointer;
+    typedef const T* const_pointer;
+    typedef T& reference;
+    typedef const T& const_reference;
+#endif
     typedef typename base::value_type value_type;
     zero_after_free_allocator() throw() {}
     zero_after_free_allocator(const zero_after_free_allocator& a) throw() : base(a) {}

@@ -28,7 +28,7 @@
 #include "init.h"
 #include "rpc/server.h"
 #include "scheduler.h"
-#include "ui_interface.h"
+#include "../ui_interface.h"
 #include "util.h"
 #include "warnings.h"
 
@@ -50,7 +50,7 @@
 #include <QThread>
 #include <QTimer>
 #include <QTranslator>
-#include <QSslConfiguration>
+// #include <QSslConfiguration> // Qt6 built without SSL support
 
 #if defined(QT_STATICPLUGIN)
 #include <QtPlugin>
@@ -74,13 +74,16 @@ Q_IMPORT_PLUGIN(QCocoaIntegrationPlugin);
 #endif
 #endif
 
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QTextCodec>
 #endif
 
 // Declare meta types used for QMetaObject::invokeMethod
 Q_DECLARE_METATYPE(bool*)
+// Qt6 already has metatypes for int64_t/long, so CAmount doesn't need declaration
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 Q_DECLARE_METATYPE(CAmount)
+#endif
 
 static void InitMessage(const std::string &message)
 {
@@ -132,11 +135,19 @@ static void initTranslations(QTranslator &qtTranslatorBase, QTranslator &qtTrans
     // - Then load the more specific locale translator
 
     // Load e.g. qt_de.qm
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    if (qtTranslatorBase.load("qt_" + lang, QLibraryInfo::path(QLibraryInfo::TranslationsPath)))
+#else
     if (qtTranslatorBase.load("qt_" + lang, QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
+#endif
         QApplication::installTranslator(&qtTranslatorBase);
 
     // Load e.g. qt_de_DE.qm
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    if (qtTranslator.load("qt_" + lang_territory, QLibraryInfo::path(QLibraryInfo::TranslationsPath)))
+#else
     if (qtTranslator.load("qt_" + lang_territory, QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
+#endif
         QApplication::installTranslator(&qtTranslator);
 
     // Load e.g. bitcoin_de.qm (shortcut "de" needs to be defined in bitcoin.qrc)
@@ -249,6 +260,9 @@ private:
     std::unique_ptr<QWidget> shutdownWindow;
 
     void startThread();
+
+    static const QString DEFAULT_WALLET;
+    static const std::string DEFAULT_UIPLATFORM;
 };
 
 #include "bitcoin.moc"
@@ -329,7 +343,7 @@ BitcoinApplication::BitcoinApplication(int &argc, char **argv):
     // This must be done inside the BitcoinApplication constructor, or after it, because
     // PlatformStyle::instantiate requires a QApplication
     std::string platformName;
-    platformName = GetArg("-uiplatform", BitcoinGUI::DEFAULT_UIPLATFORM);
+    platformName = GetArg("-uiplatform", DEFAULT_UIPLATFORM);
     platformStyle = PlatformStyle::instantiate(QString::fromStdString(platformName));
     if (!platformStyle) // Fall back to "other" if specified name not found
         platformStyle = PlatformStyle::instantiate("other");
@@ -375,7 +389,7 @@ void BitcoinApplication::createWindow(const NetworkStyle *networkStyle)
     window = new BitcoinGUI(platformStyle, networkStyle, 0);
 
     pollShutdownTimer = new QTimer(window);
-    connect(pollShutdownTimer, SIGNAL(timeout()), window, SLOT(detectShutdown()));
+    connect(pollShutdownTimer, &QTimer::timeout, window, &BitcoinGUI::detectShutdown);
     pollShutdownTimer->start(200);
 }
 
@@ -385,9 +399,8 @@ void BitcoinApplication::createSplashScreen(const NetworkStyle *networkStyle)
     // We don't hold a direct pointer to the splash screen after creation, but the splash
     // screen will take care of deleting itself when slotFinish happens.
     splash->show();
-    connect(this, SIGNAL(splashFinished(QWidget*)), splash, SLOT(slotFinish(QWidget*)));
-    connect(this, SIGNAL(requestedShutdown()), splash, SLOT(close()));
-}
+    connect(this, &BitcoinApplication::splashFinished, splash, &SplashScreen::slotFinish);
+    connect(this, &BitcoinApplication::requestedShutdown, splash, &QWidget::close);}
 
 void BitcoinApplication::startThread()
 {
@@ -398,15 +411,14 @@ void BitcoinApplication::startThread()
     executor->moveToThread(coreThread);
 
     /*  communication to and from thread */
-    connect(executor, SIGNAL(initializeResult(int)), this, SLOT(initializeResult(int)));
-    connect(executor, SIGNAL(shutdownResult(int)), this, SLOT(shutdownResult(int)));
-    connect(executor, SIGNAL(runawayException(QString)), this, SLOT(handleRunawayException(QString)));
-    connect(this, SIGNAL(requestedInitialize()), executor, SLOT(initialize()));
-    connect(this, SIGNAL(requestedShutdown()), executor, SLOT(shutdown()));
+    connect(executor, &BitcoinCore::initializeResult, this, &BitcoinApplication::initializeResult);
+    connect(executor, &BitcoinCore::shutdownResult, this, &BitcoinApplication::shutdownResult);
+    connect(executor, &BitcoinCore::runawayException, this, &BitcoinApplication::handleRunawayException);
+    connect(this, &BitcoinApplication::requestedInitialize, executor, &BitcoinCore::initialize);
+    connect(this, &BitcoinApplication::requestedShutdown, executor, &BitcoinCore::shutdown);
     /*  make sure executor object is deleted in its own thread */
-    connect(this, SIGNAL(stopThread()), executor, SLOT(deleteLater()));
-    connect(this, SIGNAL(stopThread()), coreThread, SLOT(quit()));
-
+    connect(this, &BitcoinApplication::stopThread, executor, &QObject::deleteLater);
+    connect(this, &BitcoinApplication::stopThread, coreThread, &QThread::quit);
     coreThread->start();
 }
 
@@ -472,11 +484,11 @@ void BitcoinApplication::initializeResult(int retval)
         {
             walletModel = new WalletModel(platformStyle, pwalletMain, optionsModel);
 
-            window->addWallet(BitcoinGUI::DEFAULT_WALLET, walletModel);
-            window->setCurrentWallet(BitcoinGUI::DEFAULT_WALLET);
+            window->addWallet(DEFAULT_WALLET, walletModel);
+            window->setCurrentWallet(DEFAULT_WALLET);
 
-            connect(walletModel, SIGNAL(coinsSent(CWallet*,SendCoinsRecipient,QByteArray)),
-                             paymentServer, SLOT(fetchPaymentACK(CWallet*,const SendCoinsRecipient&,QByteArray)));
+            connect(walletModel, &WalletModel::coinsSent,
+                             paymentServer, &PaymentServer::fetchPaymentACK);
         }
 #endif
 
@@ -494,13 +506,15 @@ void BitcoinApplication::initializeResult(int retval)
 #ifdef ENABLE_WALLET
         // Now that initialization/startup is done, process any command-line
         // bitcoin: URIs or payment requests:
-        connect(paymentServer, SIGNAL(receivedPaymentRequest(SendCoinsRecipient)),
-                         window, SLOT(handlePaymentRequest(SendCoinsRecipient)));
-        connect(window, SIGNAL(receivedURI(QString)),
-                         paymentServer, SLOT(handleURIOrFile(QString)));
-        connect(paymentServer, SIGNAL(message(QString,QString,unsigned int)),
-                         window, SLOT(message(QString,QString,unsigned int)));
-        QTimer::singleShot(100, paymentServer, SLOT(uiReady()));
+        connect(paymentServer, &PaymentServer::receivedPaymentRequest,
+                         window, &BitcoinGUI::handlePaymentRequest);
+        connect(window, &BitcoinGUI::receivedURI,
+                         paymentServer, &PaymentServer::handleURIOrFile);
+        connect(paymentServer, &PaymentServer::message,
+                         window, [this](const QString& title, const QString& message, unsigned int style) {
+                             window->message(title, message, style);
+                         });
+        QTimer::singleShot(100, paymentServer, &PaymentServer::uiReady);
 #endif
     } else {
         quit(); // Exit main loop
@@ -515,7 +529,7 @@ void BitcoinApplication::shutdownResult(int retval)
 
 void BitcoinApplication::handleRunawayException(const QString &message)
 {
-    QMessageBox::critical(0, "Runaway exception", BitcoinGUI::tr("A fatal error occurred. Goldcoin can no longer continue safely and will quit.") + QString("\n\n") + message);
+    QMessageBox::critical(0, "Runaway exception", BitcoinApplication::tr("A fatal error occurred. Goldcoin can no longer continue safely and will quit.") + QString("\n\n") + message);
     ::exit(EXIT_FAILURE);
 }
 
@@ -546,32 +560,42 @@ int main(int argc, char *argv[])
 #endif
 
     Q_INIT_RESOURCE(bitcoin);
-    Q_INIT_RESOURCE(bitcoin_locale);
+    // Q_INIT_RESOURCE(bitcoin_locale); // Skip locale resources for now
 
     BitcoinApplication app(argc, argv);
-#if QT_VERSION > 0x050100
-    // Generate high-dpi pixmaps
+#if QT_VERSION > 0x050100 && QT_VERSION < 0x060000
+    // Generate high-dpi pixmaps (always enabled in Qt6)
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 #endif
-#if QT_VERSION >= 0x050600
+#if QT_VERSION >= 0x050600 && QT_VERSION < 0x060000
+    // High-DPI scaling is always enabled in Qt6, so only set this for Qt5
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 #ifdef Q_OS_MAC
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QApplication::setAttribute(Qt::AA_DontShowIconsInMenus);
+#endif
+    // Qt 6: AA_DontShowIconsInMenus is removed, icon display in menus is platform-specific
 #endif
 #if QT_VERSION >= 0x050500
     // Because of the POODLE attack it is recommended to disable SSLv3 (https://disablessl3.com/),
     // so set SSL protocols to TLS1.0+.
-    QSslConfiguration sslconf = QSslConfiguration::defaultConfiguration();
-    sslconf.setProtocol(QSsl::TlsV1_0OrLater);
-    QSslConfiguration::setDefaultConfiguration(sslconf);
+    // Note: Qt6 was built without SSL support, so this is disabled
+    // QSslConfiguration sslconf = QSslConfiguration::defaultConfiguration();
+    // sslconf.setProtocol(QSsl::TlsV1_0OrLater);
+    // QSslConfiguration::setDefaultConfiguration(sslconf);
 #endif
 
     // Register meta types used for QMetaObject::invokeMethod
     qRegisterMetaType< bool* >();
     //   Need to pass name here as CAmount is a typedef (see http://qt-project.org/doc/qt-5/qmetatype.html#qRegisterMetaType)
     //   IMPORTANT if it is no longer a typedef use the normal variant above
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     qRegisterMetaType< CAmount >("CAmount");
+#else
+    // Qt6 already has built-in support for int64_t/long
+    qRegisterMetaType< int64_t >("CAmount");
+#endif
 
     /// 3. Application identification
     // must be set before OptionsModel is initialized or translations are loaded,
@@ -702,3 +726,6 @@ int main(int argc, char *argv[])
     return app.getReturnValue();
 }
 #endif // BITCOIN_QT_TEST
+
+const QString BitcoinApplication::DEFAULT_WALLET = QString("~Default");
+const std::string BitcoinApplication::DEFAULT_UIPLATFORM = "other";
