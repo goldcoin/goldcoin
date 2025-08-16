@@ -121,3 +121,29 @@ contrib/devtools/split-debug.sh
 
 # Private/sensitive project documentation
 CLAUDE.md
+CLAUDE*.md
+
+# Work logs and temporary files  
+*.log
+modernization_report.*
+matches.txt
+test_openssl.cpp
+
+# Build and work scripts
+ai-build-*.sh
+build-*.sh
+fix-*.sh
+modernize-*.sh
+refactor-*.sh
+modernize-*.py
+refactor-*.py
+env_script.sh
+env-qt6-*.sh
+*.lineno
+
+# Backup and work directories
+backup_*/
+build-iterate/
+build-windows/
+docs-backup/
+.git-rewrite/
