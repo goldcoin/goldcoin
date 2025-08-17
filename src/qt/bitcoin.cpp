@@ -65,16 +65,6 @@ int main(int argc, char *argv[]) {
 
 #if defined(QT_STATICPLUGIN)
 #include <QtPlugin>
-#if QT_VERSION < 0x050000
-Q_IMPORT_PLUGIN(qcncodecs)
-Q_IMPORT_PLUGIN(qjpcodecs)
-Q_IMPORT_PLUGIN(qtwcodecs)
-Q_IMPORT_PLUGIN(qkrcodecs)
-Q_IMPORT_PLUGIN(qtaccessiblewidgets)
-#else
-#if QT_VERSION < 0x050400
-Q_IMPORT_PLUGIN(AccessibleFactory)
-#endif
 #if defined(QT_QPA_PLATFORM_XCB)
 Q_IMPORT_PLUGIN(QXcbIntegrationPlugin);
 #elif defined(QT_QPA_PLATFORM_WINDOWS)
@@ -83,18 +73,12 @@ Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin);
 Q_IMPORT_PLUGIN(QCocoaIntegrationPlugin);
 #endif
 #endif
-#endif
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-// QTextCodec removed - Qt6 uses UTF-8 by default
-#endif
+// Qt6 uses UTF-8 by default
 
 // Declare meta types used for QMetaObject::invokeMethod
 Q_DECLARE_METATYPE(bool*)
 // Qt6 already has metatypes for int64_t/long, so CAmount doesn't need declaration
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-Q_DECLARE_METATYPE(CAmount)
-#endif
 
 static void InitMessage(const std::string &message)
 {
@@ -146,19 +130,11 @@ static void initTranslations(QTranslator &qtTranslatorBase, QTranslator &qtTrans
     // - Then load the more specific locale translator
 
     // Load e.g. qt_de.qm
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     if (qtTranslatorBase.load("qt_" + lang, QLibraryInfo::path(QLibraryInfo::TranslationsPath)))
-#else
-    if (qtTranslatorBase.load("qt_" + lang, QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
-#endif
         QApplication::installTranslator(&qtTranslatorBase);
 
     // Load e.g. qt_de_DE.qm
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     if (qtTranslator.load("qt_" + lang_territory, QLibraryInfo::path(QLibraryInfo::TranslationsPath)))
-#else
-    if (qtTranslator.load("qt_" + lang_territory, QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
-#endif
         QApplication::installTranslator(&qtTranslator);
 
     // Load e.g. bitcoin_de.qm (shortcut "de" needs to be defined in bitcoin.qrc)
@@ -171,20 +147,12 @@ static void initTranslations(QTranslator &qtTranslatorBase, QTranslator &qtTrans
 }
 
 /* qDebug() message handler --> debug.log */
-#if QT_VERSION < 0x050000
-void DebugMessageHandler(QtMsgType type, const char *msg)
-{
-    const char *category = (type == QtDebugMsg) ? "qt" : NULL;
-    LogPrint(category, "GUI: %s\n", msg);
-}
-#else
 void DebugMessageHandler(QtMsgType type, const QMessageLogContext& context, const QString &msg)
 {
     Q_UNUSED(context);
     const char *category = (type == QtDebugMsg) ? "qt" : NULL;
     LogPrint(category, "GUI: %s\n", msg.toStdString());
 }
-#endif
 
 /** Class encapsulating Bitcoin Core startup and shutdown.
  * Allows running startup and shutdown in a different thread from the UI thread.
@@ -570,39 +538,17 @@ int main(int argc, char *argv[])
     // Q_INIT_RESOURCE(bitcoin_locale); // Skip locale resources for now
 
     BitcoinApplication app(argc, argv);
-#if QT_VERSION > 0x050100 && QT_VERSION < 0x060000
-    // Generate high-dpi pixmaps (always enabled in Qt6)
-    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-#endif
-#if QT_VERSION >= 0x050600 && QT_VERSION < 0x060000
-    // High-DPI scaling is always enabled in Qt6, so only set this for Qt5
-    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-#endif
+    // High-DPI support is automatic in Qt6
 #ifdef Q_OS_MAC
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    QApplication::setAttribute(Qt::AA_DontShowIconsInMenus);
-#endif
     // Qt 6: AA_DontShowIconsInMenus is removed, icon display in menus is platform-specific
 #endif
-#if QT_VERSION >= 0x050500
-    // Because of the POODLE attack it is recommended to disable SSLv3 (https://disablessl3.com/),
-    // so set SSL protocols to TLS1.0+.
-    // Note: Qt6 was built without SSL support, so this is disabled
-    // QSslConfiguration sslconf = QSslConfiguration::defaultConfiguration();
-    // sslconf.setProtocol(QSsl::TlsV1_0OrLater);
-    // QSslConfiguration::setDefaultConfiguration(sslconf);
-#endif
+    // SSL configuration: Qt6 handles SSL/TLS configuration automatically
+    // Modern TLS versions are enabled by default
 
     // Register meta types used for QMetaObject::invokeMethod
     qRegisterMetaType< bool* >();
-    //   Need to pass name here as CAmount is a typedef (see http://qt-project.org/doc/qt-5/qmetatype.html#qRegisterMetaType)
-    //   IMPORTANT if it is no longer a typedef use the normal variant above
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    qRegisterMetaType< CAmount >("CAmount");
-#else
     // Qt6 already has built-in support for int64_t/long
     qRegisterMetaType< int64_t >("CAmount");
-#endif
 
     /// 3. Application identification
     // must be set before OptionsModel is initialized or translations are loaded,
@@ -694,17 +640,12 @@ int main(int argc, char *argv[])
     /// 9. Main GUI initialization
     // Install global event filter that makes sure that long tooltips can be word-wrapped
     app.installEventFilter(new GUIUtil::ToolTipToRichTextFilter(TOOLTIP_WRAP_THRESHOLD, &app));
-#if QT_VERSION < 0x050000
-    // Install qDebug() message handler to route to debug.log
-    qInstallMsgHandler(DebugMessageHandler);
-#else
 #if defined(Q_OS_WIN)
     // Install global event filter for processing Windows session related Windows messages (WM_QUERYENDSESSION and WM_ENDSESSION)
     qApp->installNativeEventFilter(new WinShutdownMonitor());
 #endif
     // Install qDebug() message handler to route to debug.log
     qInstallMessageHandler(DebugMessageHandler);
-#endif
     // Allow parameter interaction before we create the options model
     app.parameterSetup();
     // Load GUI settings from QSettings
@@ -720,7 +661,7 @@ int main(int argc, char *argv[])
     {
         app.createWindow(networkStyle.data());
         app.requestInitialize();
-#if defined(Q_OS_WIN) && QT_VERSION >= 0x050000
+#if defined(Q_OS_WIN)
         WinShutdownMonitor::registerShutdownBlockReason(QObject::tr("%1 didn't yet exit safely...").arg(QObject::tr(PACKAGE_NAME)), (HWND)app.getMainWinId());
 #endif
         app.exec();

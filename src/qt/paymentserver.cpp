@@ -217,11 +217,7 @@ void PaymentServer::handleURIOrFile(const QString& s)
 
     if (s.startsWith(BITCOIN_IPC_PREFIX, Qt::CaseInsensitive)) // bitcoin: URI
     {
-#if QT_VERSION < 0x050000
-        QUrl uri(s);
-#else
         QUrlQuery uri((QUrl(s)));
-#endif
         // BIP70 payment requests are no longer supported
         if (uri.hasQueryItem("r"))
         {
