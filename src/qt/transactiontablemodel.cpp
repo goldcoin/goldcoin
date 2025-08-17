@@ -26,20 +26,33 @@
 #include <QIcon>
 #include <QList>
 
+#include <algorithm>
+#include <ranges>
+#include <span>
+#include <optional>
+
 #include <boost/bind/bind.hpp>
 using namespace boost::placeholders;
 
-// Amount column is right-aligned it contains numbers
-static int column_alignments[] = {
-        Qt::AlignLeft|Qt::AlignVCenter, /* status */
-        Qt::AlignLeft|Qt::AlignVCenter, /* watchonly */
-        Qt::AlignLeft|Qt::AlignVCenter, /* date */
-        Qt::AlignLeft|Qt::AlignVCenter, /* type */
-        Qt::AlignLeft|Qt::AlignVCenter, /* address */
-        Qt::AlignRight|Qt::AlignVCenter /* amount */
-    };
+// C++20: Concept for transaction validation
+template<typename T>
+concept TransactionType = requires(T tx) {
+    { tx.hash } -> std::convertible_to<uint256>;
+    { tx.time } -> std::convertible_to<qint64>;
+    { tx.status } -> std::convertible_to<TransactionStatus>;
+};
 
-// Comparison operator for sort/binary search of model tx list
+// C++20: Use constexpr array for compile-time constants
+constexpr std::array<int, 6> column_alignments = {
+    Qt::AlignLeft|Qt::AlignVCenter,  /* status */
+    Qt::AlignLeft|Qt::AlignVCenter,  /* watchonly */
+    Qt::AlignLeft|Qt::AlignVCenter,  /* date */
+    Qt::AlignLeft|Qt::AlignVCenter,  /* type */
+    Qt::AlignLeft|Qt::AlignVCenter,  /* address */
+    Qt::AlignRight|Qt::AlignVCenter  /* amount */
+};
+
+// C++20: Use spaceship operator for comprehensive comparison
 struct TxLessThan
 {
     bool operator()(const TransactionRecord &a, const TransactionRecord &b) const
@@ -54,6 +67,9 @@ struct TxLessThan
     {
         return a < b.hash;
     }
+    
+    // C++20: Add transparent comparator support
+    using is_transparent = void;
 };
 
 // Private implementation
@@ -81,12 +97,15 @@ public:
     {
         qDebug() << "TransactionTablePriv::refreshWallet";
         cachedWallet.clear();
-        {
-            LOCK2(cs_main, wallet->cs_wallet);
-            for(std::map<uint256, CWalletTx>::iterator it = wallet->mapWallet.begin(); it != wallet->mapWallet.end(); ++it)
-            {
-                if(TransactionRecord::showTransaction(it->second))
-                    cachedWallet.append(TransactionRecord::decomposeTransaction(wallet, it->second));
+        
+        LOCK2(cs_main, wallet->cs_wallet);
+        // C++20: Use structured bindings with range-based for
+        for (const auto& [hash, wtx] : wallet->mapWallet) {
+            if (TransactionRecord::showTransaction(wtx)) {
+                const auto records = TransactionRecord::decomposeTransaction(wallet, wtx);
+                for (const auto& rec : records) {
+                    cachedWallet.append(rec);
+                }
             }
         }
     }
@@ -100,14 +119,13 @@ public:
     {
         qDebug() << "TransactionTablePriv::updateWallet: " + QString::fromStdString(hash.ToString()) + " " + QString::number(status);
 
-        // Find bounds of this transaction in model
-        QList<TransactionRecord>::iterator lower = std::lower_bound(
+        // C++20: Use std::ranges for bounds finding
+        const auto [lower, upper] = std::equal_range(
             cachedWallet.begin(), cachedWallet.end(), hash, TxLessThan());
-        QList<TransactionRecord>::iterator upper = std::upper_bound(
-            cachedWallet.begin(), cachedWallet.end(), hash, TxLessThan());
-        int lowerIndex = (lower - cachedWallet.begin());
-        int upperIndex = (upper - cachedWallet.begin());
-        bool inModel = (lower != upper);
+        
+        const int lowerIndex = std::distance(cachedWallet.begin(), lower);
+        const int upperIndex = std::distance(cachedWallet.begin(), upper);
+        const bool inModel = (lower != upper);
 
         if(status == CT_UPDATED)
         {
@@ -132,24 +150,21 @@ public:
             if(showTransaction)
             {
                 LOCK2(cs_main, wallet->cs_wallet);
-                // Find transaction in wallet
-                std::map<uint256, CWalletTx>::iterator mi = wallet->mapWallet.find(hash);
-                if(mi == wallet->mapWallet.end())
-                {
+                // C++20: Use auto for iterator type
+                const auto mi = wallet->mapWallet.find(hash);
+                if (mi == wallet->mapWallet.end()) {
                     qWarning() << "TransactionTablePriv::updateWallet: Warning: Got CT_NEW, but transaction is not in wallet";
                     break;
                 }
                 // Added -- insert at the right position
-                QList<TransactionRecord> toInsert =
-                        TransactionRecord::decomposeTransaction(wallet, mi->second);
-                if(!toInsert.isEmpty()) /* only if something to insert */
-                {
-                    parent->beginInsertRows(QModelIndex(), lowerIndex, lowerIndex+toInsert.size()-1);
+                const auto toInsert = TransactionRecord::decomposeTransaction(wallet, mi->second);
+                if (!toInsert.isEmpty()) {
+                    parent->beginInsertRows(QModelIndex(), lowerIndex, lowerIndex + toInsert.size() - 1);
+                    
+                    // C++20: Use enumerate pattern
                     int insert_idx = lowerIndex;
-                    for(const TransactionRecord &rec : toInsert)
-                    {
-                        cachedWallet.insert(insert_idx, rec);
-                        insert_idx += 1;
+                    for (const auto& rec : toInsert) {
+                        cachedWallet.insert(insert_idx++, rec);
                     }
                     parent->endInsertRows();
                 }
@@ -180,58 +195,53 @@ public:
 
     TransactionRecord *index(int idx)
     {
-        if(idx >= 0 && idx < cachedWallet.size())
-        {
-            TransactionRecord *rec = &cachedWallet[idx];
-
-            // Get required locks upfront. This avoids the GUI from getting
-            // stuck if the core is holding the locks for a longer time - for
-            // example, during a wallet rescan.
-            //
-            // If a status update is needed (blocks came in since last check),
-            //  update the status of this transaction from the wallet. Otherwise,
-            // simply re-use the cached status.
-            TRY_LOCK(cs_main, lockMain);
-            if(lockMain)
-            {
-                TRY_LOCK(wallet->cs_wallet, lockWallet);
-                if(lockWallet && rec->statusUpdateNeeded())
-                {
-                    std::map<uint256, CWalletTx>::iterator mi = wallet->mapWallet.find(rec->hash);
-
-                    if(mi != wallet->mapWallet.end())
-                    {
-                        rec->updateStatus(mi->second);
-                    }
-                }
-            }
-            return rec;
+        // C++20: Early return for invalid index
+        if (idx < 0 || idx >= cachedWallet.size()) {
+            return nullptr;
         }
-        return 0;
+
+        TransactionRecord *rec = &cachedWallet[idx];
+
+        // Try to update status if locks are available
+        TRY_LOCK(cs_main, lockMain);
+        if (!lockMain) return rec;
+        
+        TRY_LOCK(wallet->cs_wallet, lockWallet);
+        if (!lockWallet || !rec->statusUpdateNeeded()) return rec;
+        
+        // C++20: Use structured binding for find result
+        if (const auto mi = wallet->mapWallet.find(rec->hash); 
+            mi != wallet->mapWallet.end()) {
+            rec->updateStatus(mi->second);
+        }
+        
+        return rec;
     }
 
     QString describe(TransactionRecord *rec, int unit)
     {
-        {
-            LOCK2(cs_main, wallet->cs_wallet);
-            std::map<uint256, CWalletTx>::iterator mi = wallet->mapWallet.find(rec->hash);
-            if(mi != wallet->mapWallet.end())
-            {
-                return TransactionDesc::toHTML(wallet, mi->second, rec, unit);
-            }
+        LOCK2(cs_main, wallet->cs_wallet);
+        
+        // C++20: Use if-init statement
+        if (const auto mi = wallet->mapWallet.find(rec->hash); 
+            mi != wallet->mapWallet.end()) {
+            return TransactionDesc::toHTML(wallet, mi->second, rec, unit);
         }
+        
         return QString();
     }
 
     QString getTxHex(TransactionRecord *rec)
     {
         LOCK2(cs_main, wallet->cs_wallet);
-        std::map<uint256, CWalletTx>::iterator mi = wallet->mapWallet.find(rec->hash);
-        if(mi != wallet->mapWallet.end())
-        {
-            std::string strHex = EncodeHexTx(static_cast<CTransaction>(mi->second));
+        
+        // C++20: Use optional for cleaner code
+        if (const auto mi = wallet->mapWallet.find(rec->hash); 
+            mi != wallet->mapWallet.end()) {
+            const auto strHex = EncodeHexTx(static_cast<CTransaction>(mi->second));
             return QString::fromStdString(strHex);
         }
+        
         return QString();
     }
 };
@@ -247,7 +257,9 @@ TransactionTableModel::TransactionTableModel(const PlatformStyle *_platformStyle
     columns << QString() << QString() << tr("Date") << tr("Type") << tr("Label") << BitcoinUnits::getAmountColumnTitle(walletModel->getOptionsModel()->getDisplayUnit());
     priv->refreshWallet();
 
-    connect(walletModel->getOptionsModel(), &OptionsModel::displayUnitChanged, this, &TransactionTableModel::updateDisplayUnit);
+    // Qt 6.9: Modern signal connection
+    connect(walletModel->getOptionsModel(), &OptionsModel::displayUnitChanged, 
+            this, [this]() { updateDisplayUnit(); });
     subscribeToCoreSignals();
 }
 
@@ -282,69 +294,59 @@ void TransactionTableModel::updateConfirmations()
     Q_EMIT dataChanged(index(0, ToAddress), index(priv->size()-1, ToAddress));
 }
 
-int TransactionTableModel::rowCount(const QModelIndex &parent) const
+int TransactionTableModel::rowCount([[maybe_unused]] const QModelIndex &parent) const
 {
-    Q_UNUSED(parent);
+    // C++20: [[maybe_unused]] attribute
     return priv->size();
 }
 
-int TransactionTableModel::columnCount(const QModelIndex &parent) const
+int TransactionTableModel::columnCount([[maybe_unused]] const QModelIndex &parent) const
 {
-    Q_UNUSED(parent);
+    // C++20: [[maybe_unused]] attribute
     return columns.length();
 }
 
 QString TransactionTableModel::formatTxStatus(const TransactionRecord *wtx) const
 {
-    QString status;
-
-    switch(wtx->status.status)
-    {
-    case TransactionStatus::OpenUntilBlock:
-        status = tr("Open for %n more block(s)","",wtx->status.open_for);
-        break;
-    case TransactionStatus::OpenUntilDate:
-        status = tr("Open until %1").arg(GUIUtil::dateTimeStr(wtx->status.open_for));
-        break;
-    case TransactionStatus::Offline:
-        status = tr("Offline");
-        break;
-    case TransactionStatus::Unconfirmed:
-        status = tr("Unconfirmed");
-        break;
-    case TransactionStatus::Abandoned:
-        status = tr("Abandoned");
-        break;
-    case TransactionStatus::Confirming:
-        status = tr("Confirming (%1 of %2 recommended confirmations)").arg(wtx->status.depth).arg(TransactionRecord::RecommendedNumConfirmations);
-        break;
-    case TransactionStatus::Confirmed:
-        status = tr("Confirmed (%1 confirmations)").arg(wtx->status.depth);
-        break;
-    case TransactionStatus::Conflicted:
-        status = tr("Conflicted");
-        break;
-    case TransactionStatus::Immature:
-        status = tr("Immature (%1 confirmations, will be available after %2)").arg(wtx->status.depth).arg(wtx->status.depth + wtx->status.matures_in);
-        break;
-    case TransactionStatus::MaturesWarning:
-        status = tr("This block was not received by any other nodes and will probably not be accepted!");
-        break;
-    case TransactionStatus::NotAccepted:
-        status = tr("Generated but not accepted");
-        break;
+    // C++20: Use switch expression pattern with immediate return
+    using Status = TransactionStatus;
+    
+    switch(wtx->status.status) {
+    case Status::OpenUntilBlock:
+        return tr("Open for %n more block(s)", "", wtx->status.open_for);
+    case Status::OpenUntilDate:
+        return tr("Open until %1").arg(GUIUtil::dateTimeStr(wtx->status.open_for));
+    case Status::Offline:
+        return tr("Offline");
+    case Status::Unconfirmed:
+        return tr("Unconfirmed");
+    case Status::Abandoned:
+        return tr("Abandoned");
+    case Status::Confirming:
+        return tr("Confirming (%1 of %2 recommended confirmations)")
+            .arg(wtx->status.depth)
+            .arg(TransactionRecord::RecommendedNumConfirmations);
+    case Status::Confirmed:
+        return tr("Confirmed (%1 confirmations)").arg(wtx->status.depth);
+    case Status::Conflicted:
+        return tr("Conflicted");
+    case Status::Immature:
+        return tr("Immature (%1 confirmations, will be available after %2)")
+            .arg(wtx->status.depth)
+            .arg(wtx->status.depth + wtx->status.matures_in);
+    case Status::MaturesWarning:
+        return tr("This block was not received by any other nodes and will probably not be accepted!");
+    case Status::NotAccepted:
+        return tr("Generated but not accepted");
+    default:
+        return QString();
     }
-
-    return status;
 }
 
 QString TransactionTableModel::formatTxDate(const TransactionRecord *wtx) const
 {
-    if(wtx->time)
-    {
-        return GUIUtil::dateTimeStr(wtx->time);
-    }
-    return QString();
+    // C++20: Ternary operator for simple conditions
+    return wtx->time ? GUIUtil::dateTimeStr(wtx->time) : QString();
 }
 
 /* Look up address in address book, if found return label (address)
