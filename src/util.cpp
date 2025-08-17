@@ -575,7 +575,7 @@ void ClearDatadirCache()
 boost::filesystem::path GetConfigFile(const std::string& confPath)
 {
     boost::filesystem::path pathConfigFile(confPath);
-    if (!pathConfigFile.is_complete())
+    if (!pathConfigFile.is_absolute())
         pathConfigFile = GetDataDir(false) / pathConfigFile;
 
     return pathConfigFile;
@@ -826,9 +826,11 @@ void SetupEnvironment()
     // arenas per core. This is known to cause excessive virtual address space
     // usage in our usage. Work around it by setting the maximum number of
     // arenas to 1.
+#ifdef __linux__
     if (sizeof(void*) == 4) {
         mallopt(M_ARENA_MAX, 1);
     }
+#endif
 #endif
     // On most POSIX systems (e.g. Linux, but not BSD) the environment's locale
     // may be invalid, in which case the "C" locale is used as fallback.
