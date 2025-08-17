@@ -9,12 +9,15 @@
 #include "walletmodel.h"
 
 #include <QUrl>
+#include <string_view>
+#include <optional>
 
 OpenURIDialog::OpenURIDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::OpenURIDialog)
 {
     ui->setupUi(this);
+    // Qt 6.9: Placeholder text is always supported
     ui->uriEdit->setPlaceholderText("goldcoin:");
 }
 
@@ -30,10 +33,11 @@ QString OpenURIDialog::getURI()
 
 void OpenURIDialog::accept()
 {
+    // C++20: Early validation pattern
     SendCoinsRecipient rcp;
-    if(GUIUtil::parseBitcoinURI(getURI(), &rcp))
-    {
-        /* Only accept value URIs */
+    
+    if (GUIUtil::parseBitcoinURI(getURI(), &rcp)) {
+        // Only accept valid URIs
         QDialog::accept();
     } else {
         ui->uriEdit->setValid(false);
@@ -42,9 +46,15 @@ void OpenURIDialog::accept()
 
 void OpenURIDialog::on_selectFileButton_clicked()
 {
-    QString filename = GUIUtil::getOpenFileName(this, tr("Select payment request file to open"), "", "", NULL);
-    if(filename.isEmpty())
-        return;
-    QUrl fileUri = QUrl::fromLocalFile(filename);
+    // C++20: Use nullptr instead of NULL
+    const auto filename = GUIUtil::getOpenFileName(
+        this, 
+        tr("Select payment request file to open"), 
+        "", "", nullptr);
+    
+    if (filename.isEmpty()) return;
+    
+    // Build URI from selected file
+    const QUrl fileUri = QUrl::fromLocalFile(filename);
     ui->uriEdit->setText("goldcoin:?r=" + QUrl::toPercentEncoding(fileUri.toString()));
 }

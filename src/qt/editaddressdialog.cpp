@@ -11,32 +11,47 @@
 #include <QDataWidgetMapper>
 #include <QMessageBox>
 
+#include <optional>
+#include <string_view>
+
+// C++20: Concept for address validation
+template<typename T>
+concept AddressModel = requires(T* model) {
+    { model->addRow(std::declval<AddressTableModel::Mode>(), 
+                    std::declval<QString>(), 
+                    std::declval<QString>()) } -> std::convertible_to<QString>;
+    { model->getEditStatus() } -> std::convertible_to<AddressTableModel::EditStatus>;
+};
+
 EditAddressDialog::EditAddressDialog(Mode _mode, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::EditAddressDialog),
-    mapper(0),
+    mapper(nullptr),
     mode(_mode),
-    model(0)
+    model(nullptr)
 {
     ui->setupUi(this);
 
     GUIUtil::setupAddressWidget(ui->addressEdit, this);
 
-    switch(mode)
-    {
+    // C++20: Structured dialog setup
+    const auto setupDialog = [this](std::string_view title, bool enableAddress) {
+        setWindowTitle(tr(title.data()));
+        ui->addressEdit->setEnabled(enableAddress);
+    };
+
+    switch(mode) {
     case NewReceivingAddress:
-        setWindowTitle(tr("New receiving address"));
-        ui->addressEdit->setEnabled(false);
+        setupDialog("New receiving address", false);
         break;
     case NewSendingAddress:
-        setWindowTitle(tr("New sending address"));
+        setupDialog("New sending address", true);
         break;
     case EditReceivingAddress:
-        setWindowTitle(tr("Edit receiving address"));
-        ui->addressEdit->setEnabled(false);
+        setupDialog("Edit receiving address", false);
         break;
     case EditSendingAddress:
-        setWindowTitle(tr("Edit sending address"));
+        setupDialog("Edit sending address", true);
         break;
     }
 
@@ -52,9 +67,9 @@ EditAddressDialog::~EditAddressDialog()
 void EditAddressDialog::setModel(AddressTableModel *_model)
 {
     this->model = _model;
-    if(!_model)
-        return;
+    if (!_model) return;
 
+    // Configure data mapper
     mapper->setModel(_model);
     mapper->addMapping(ui->labelEdit, AddressTableModel::Label);
     mapper->addMapping(ui->addressEdit, AddressTableModel::Address);
@@ -67,69 +82,85 @@ void EditAddressDialog::loadRow(int row)
 
 bool EditAddressDialog::saveCurrentRow()
 {
-    if(!model)
-        return false;
+    if (!model) return false;
 
-    switch(mode)
-    {
+    // C++20: Use optional for cleaner result handling
+    std::optional<QString> result;
+
+    switch(mode) {
     case NewReceivingAddress:
-    case NewSendingAddress:
-        address = model->addRow(
-                mode == NewSendingAddress ? AddressTableModel::Send : AddressTableModel::Receive,
-                ui->labelEdit->text(),
-                ui->addressEdit->text());
+    case NewSendingAddress: {
+        // C++20: Ternary for mode selection
+        const auto addressMode = (mode == NewSendingAddress) 
+            ? AddressTableModel::Send 
+            : AddressTableModel::Receive;
+        
+        result = model->addRow(addressMode, 
+                              ui->labelEdit->text(), 
+                              ui->addressEdit->text());
         break;
+    }
     case EditReceivingAddress:
     case EditSendingAddress:
-        if(mapper->submit())
-        {
-            address = ui->addressEdit->text();
+        if (mapper->submit()) {
+            result = ui->addressEdit->text();
         }
         break;
+    }
+
+    if (result.has_value()) {
+        address = result.value();
     }
     return !address.isEmpty();
 }
 
 void EditAddressDialog::accept()
 {
-    if(!model)
-        return;
+    if (!model) return;
 
-    if(!saveCurrentRow())
-    {
-        switch(model->getEditStatus())
-        {
-        case AddressTableModel::OK:
-            // Failed with unknown reason. Just reject.
-            break;
-        case AddressTableModel::NO_CHANGES:
-            // No changes were made during edit operation. Just reject.
-            break;
-        case AddressTableModel::INVALID_ADDRESS:
-            QMessageBox::warning(this, windowTitle(),
-                tr("The entered address \"%1\" is not a valid Goldcoin address.").arg(ui->addressEdit->text()),
-                QMessageBox::Ok, QMessageBox::Ok);
-            break;
-        case AddressTableModel::DUPLICATE_ADDRESS:
-            QMessageBox::warning(this, windowTitle(),
-                tr("The entered address \"%1\" is already in the address book.").arg(ui->addressEdit->text()),
-                QMessageBox::Ok, QMessageBox::Ok);
-            break;
-        case AddressTableModel::WALLET_UNLOCK_FAILURE:
-            QMessageBox::critical(this, windowTitle(),
-                tr("Could not unlock wallet."),
-                QMessageBox::Ok, QMessageBox::Ok);
-            break;
-        case AddressTableModel::KEY_GENERATION_FAILURE:
-            QMessageBox::critical(this, windowTitle(),
-                tr("New key generation failed."),
-                QMessageBox::Ok, QMessageBox::Ok);
-            break;
-
-        }
+    if (saveCurrentRow()) {
+        QDialog::accept();
         return;
     }
-    QDialog::accept();
+
+    // C++20: Lambda for error display
+    const auto showError = [this](const QString& message, bool critical = false) {
+        if (critical) {
+            QMessageBox::critical(this, windowTitle(), message, 
+                                QMessageBox::Ok, QMessageBox::Ok);
+        } else {
+            QMessageBox::warning(this, windowTitle(), message, 
+                               QMessageBox::Ok, QMessageBox::Ok);
+        }
+    };
+
+    // C++20: Use structured bindings for cleaner code
+    const auto address = ui->addressEdit->text();
+    
+    switch(model->getEditStatus()) {
+    case AddressTableModel::OK:
+    case AddressTableModel::NO_CHANGES:
+        // Silent failure - just reject
+        break;
+        
+    case AddressTableModel::INVALID_ADDRESS:
+        showError(tr("The entered address \"%1\" is not a valid Goldcoin address.")
+                 .arg(address));
+        break;
+        
+    case AddressTableModel::DUPLICATE_ADDRESS:
+        showError(tr("The entered address \"%1\" is already in the address book.")
+                 .arg(address));
+        break;
+        
+    case AddressTableModel::WALLET_UNLOCK_FAILURE:
+        showError(tr("Could not unlock wallet."), true);
+        break;
+        
+    case AddressTableModel::KEY_GENERATION_FAILURE:
+        showError(tr("New key generation failed."), true);
+        break;
+    }
 }
 
 QString EditAddressDialog::getAddress() const
