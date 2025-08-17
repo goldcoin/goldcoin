@@ -25,6 +25,8 @@
 #include <QTimer>
 
 #include <boost/bind/bind.hpp>
+#include <boost/filesystem.hpp> // TODO: Remove after full migration
+#include <filesystem>
 
 class CBlockIndex;
 
@@ -244,7 +246,10 @@ QString ClientModel::formatClientStartupTime() const
 
 QString ClientModel::dataDir() const
 {
-    return GUIUtil::boostPathToQString(GetDataDir());
+    // TODO: GetDataDir() still returns boost::filesystem::path
+    boost::filesystem::path boostPath = GetDataDir();
+    std::filesystem::path stdPath(boostPath.string());
+    return GUIUtil::boostPathToQString(stdPath);
 }
 
 void ClientModel::updateBanlist()

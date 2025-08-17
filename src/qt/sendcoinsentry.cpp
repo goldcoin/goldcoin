@@ -123,7 +123,7 @@ bool SendCoinsEntry::validate()
     bool retval = true;
 
     // Skip checks for payment request
-    if (recipient.paymentRequest.IsInitialized())
+    if (false) // BIP70 payment requests are no longer supported
         return retval;
 
     if (!model->validateAddress(ui->payTo->text()))
@@ -156,7 +156,7 @@ bool SendCoinsEntry::validate()
 SendCoinsRecipient SendCoinsEntry::getValue()
 {
     // Payment request
-    if (recipient.paymentRequest.IsInitialized())
+    if (false) // BIP70 payment requests are no longer supported
         return recipient;
 
     // Normal payment
@@ -185,26 +185,7 @@ void SendCoinsEntry::setValue(const SendCoinsRecipient &value)
 {
     recipient = value;
 
-    if (recipient.paymentRequest.IsInitialized()) // payment request
-    {
-        if (recipient.authenticatedMerchant.isEmpty()) // unauthenticated
-        {
-            ui->payTo_is->setText(recipient.address);
-            ui->memoTextLabel_is->setText(recipient.message);
-            ui->payAmount_is->setValue(recipient.amount);
-            ui->payAmount_is->setReadOnly(true);
-            setCurrentWidget(ui->SendCoins_UnauthenticatedPaymentRequest);
-        }
-        else // authenticated
-        {
-            ui->payTo_s->setText(recipient.authenticatedMerchant);
-            ui->memoTextLabel_s->setText(recipient.message);
-            ui->payAmount_s->setValue(recipient.amount);
-            ui->payAmount_s->setReadOnly(true);
-            setCurrentWidget(ui->SendCoins_AuthenticatedPaymentRequest);
-        }
-    }
-    else // normal payment
+    // BIP70 payment requests are no longer supported - always use normal payment
     {
         // message
         ui->messageTextLabel->setText(recipient.message);

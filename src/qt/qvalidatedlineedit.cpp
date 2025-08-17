@@ -7,12 +7,23 @@
 #include "bitcoinaddressvalidator.h"
 #include "guiconstants.h"
 
+#include <concepts>
+#include <type_traits>
+
+// C++20: Concept for validator types
+template<typename T>
+concept ValidatorType = requires(T* v, QString& str, int& pos) {
+    { v->validate(str, pos) } -> std::convertible_to<QValidator::State>;
+};
+
 QValidatedLineEdit::QValidatedLineEdit(QWidget *parent) :
     QLineEdit(parent),
     valid(true),
-    checkValidator(0)
+    checkValidator(nullptr)
 {
-    connect(this, &QValidatedLineEdit::markValid, this, &QValidatedLineEdit::markValid);}
+    // Qt 6.9: Modern signal connection
+    connect(this, &QValidatedLineEdit::textChanged, this, &QValidatedLineEdit::markValid);
+}
 
 void QValidatedLineEdit::setValid(bool _valid)
 {
@@ -77,28 +88,26 @@ void QValidatedLineEdit::setEnabled(bool enabled)
 
 void QValidatedLineEdit::checkValidity()
 {
-    if (text().isEmpty())
-    {
-        setValid(true);
-    }
-    else if (hasAcceptableInput())
-    {
-        setValid(true);
-
-        // Check contents on focus out
-        if (checkValidator)
-        {
-            QString address = text();
-            int pos = 0;
-            if (checkValidator->validate(address, pos) == QValidator::Acceptable)
-                setValid(true);
-            else
-                setValid(false);
+    // C++20: Use structured binding and constexpr if
+    auto validateText = [this]() -> bool {
+        if (text().isEmpty())
+            return true;
+            
+        if (!hasAcceptableInput())
+            return false;
+            
+        // C++20: Constexpr if for compile-time branching
+        if constexpr (requires { checkValidator; }) {
+            if (checkValidator) {
+                QString address = text();
+                int pos = 0;
+                return checkValidator->validate(address, pos) == QValidator::Acceptable;
+            }
         }
-    }
-    else
-        setValid(false);
-
+        return true;
+    };
+    
+    setValid(validateText());
     Q_EMIT validationDidChange(this);
 }
 

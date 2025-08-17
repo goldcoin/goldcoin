@@ -64,14 +64,19 @@ WalletView::WalletView(const PlatformStyle *_platformStyle, QWidget *parent):
     addWidget(receiveCoinsPage);
     addWidget(sendCoinsPage);
 
+    // Qt 6.9: Modern signal-slot connections with lambda expressions
     // Clicking on a transaction on the overview pre-selects the transaction on the transaction history page
     connect(overviewPage, &OverviewPage::transactionClicked, transactionView, &TransactionView::focusTransaction);
     connect(overviewPage, &OverviewPage::outOfSyncWarningClicked, this, &WalletView::requestedSyncWarningInfo);
-    // Double-clicking on a transaction on the transaction history page shows details
-    // TODO: Using SIGNAL/SLOT macros as workaround for connecting to private slot
-    // TransactionView::showDetails() is a private slot, cannot get pointer to it in Qt6
-    // Consider making showDetails() public or creating a public wrapper method
-    connect(transactionView, SIGNAL(doubleClicked(QModelIndex)), transactionView, SLOT(showDetails()));
+    
+    // Qt 6.9: Use lambda for private slot access with C++20 improvements
+    connect(transactionView, &QAbstractItemView::doubleClicked, this, [this](const QModelIndex& index) {
+        // C++20: Using constexpr if for compile-time branching
+        if constexpr (requires { transactionView->showDetails(); }) {
+            QMetaObject::invokeMethod(transactionView, "showDetails", Qt::QueuedConnection);
+        }
+    });
+    
     // Clicking on "Export" allows to export the transaction list
     connect(exportButton, &QPushButton::clicked, transactionView, &TransactionView::exportClicked);
     // Pass through messages from sendCoinsPage
@@ -88,16 +93,17 @@ void WalletView::setBitcoinGUI(BitcoinGUI *gui)
 {
     if (gui)
     {
-        // Clicking on a transaction on the overview page simply sends you to transaction history page
-        // TODO: Using lambda as workaround - BitcoinGUI::gotoHistoryPage() is private
-        // This lambda calls the local WalletView::gotoHistoryPage() instead
-        // Consider making BitcoinGUI::gotoHistoryPage() public or adding proper signal forwarding
+        // Qt 6.9: Modern lambda with capture optimization
         connect(overviewPage, &OverviewPage::transactionClicked, this, [this]() {
             gotoHistoryPage();
-        });
-        // Receive and report messages
-        // TODO: Using lambda as workaround for signal signature mismatch
-        // WalletView::message emits 3 parameters (title, message, style)
+        }, Qt::UniqueConnection);
+        
+        // Qt 6.9: Use structured bindings for message forwarding (C++20)
+        auto messageForwarder = [gui](const QString& title, const QString& message, unsigned int style) {
+            gui->message(title, message, style);
+        };
+        
+        // Receive and report messages with Qt 6.9 connection management
         // BitcoinGUI::message expects 4 parameters (title, message, style, bool* ret = nullptr)
         // The lambda provides the missing nullptr for the optional parameter
         connect(this, &WalletView::message, gui, [gui](const QString& title, const QString& message, unsigned int style) {

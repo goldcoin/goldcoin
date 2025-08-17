@@ -14,7 +14,9 @@
 #include "clientmodel.h"
 #include "guiconstants.h"
 #include "intro.h"
+#ifdef ENABLE_BIP70
 #include "paymentrequestplus.h"
+#endif
 #include "guiutil.h"
 
 #include "clientversion.h"

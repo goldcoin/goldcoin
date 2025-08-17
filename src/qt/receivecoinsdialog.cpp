@@ -56,10 +56,21 @@ ReceiveCoinsDialog::ReceiveCoinsDialog(const PlatformStyle *_platformStyle, QWid
     contextMenu->addAction(copyMessageAction);
     contextMenu->addAction(copyAmountAction);
 
-    // context menu signals
+    // Qt 6.9: Modern signal connections with lambdas for better type safety
     connect(ui->recentRequestsView, &QWidget::customContextMenuRequested, this, &ReceiveCoinsDialog::showMenu);
-    connect(copyURIAction, &QAction::triggered, this, &ReceiveCoinsDialog::copyURI);    connect(copyLabelAction, &QAction::triggered, this, &ReceiveCoinsDialog::copyLabel);    connect(copyMessageAction, &QAction::triggered, this, &ReceiveCoinsDialog::copyMessage);    connect(copyAmountAction, &QAction::triggered, this, &ReceiveCoinsDialog::copyAmount);
-    connect(ui->clearButton, &QPushButton::clicked, this, &ReceiveCoinsDialog::clear);}
+    
+    // Qt 6.9: Use lambdas with C++20 features for context menu actions
+    connect(copyURIAction, &QAction::triggered, this, [this]() { copyURI(); });
+    connect(copyLabelAction, &QAction::triggered, this, [this]() { copyLabel(); });
+    connect(copyMessageAction, &QAction::triggered, this, [this]() { copyMessage(); });
+    connect(copyAmountAction, &QAction::triggered, this, [this]() { copyAmount(); });
+    
+    // C++20: Use lambda with [[nodiscard]] attribute hint
+    connect(ui->clearButton, &QPushButton::clicked, this, [this]() [[nodiscard]] { 
+        clear(); 
+        return true; 
+    });
+}
 
 void ReceiveCoinsDialog::setModel(WalletModel *_model)
 {
@@ -68,7 +79,12 @@ void ReceiveCoinsDialog::setModel(WalletModel *_model)
     if(_model && _model->getOptionsModel())
     {
         _model->getRecentRequestsTableModel()->sort(RecentRequestsTableModel::Date, Qt::DescendingOrder);
-        connect(_model->getOptionsModel(), &OptionsModel::displayUnitChanged, this, &ReceiveCoinsDialog::updateDisplayUnit);        updateDisplayUnit();
+        
+        // Qt 6.9: Use Qt::SingleShotConnection for one-time connections where appropriate
+        connect(_model->getOptionsModel(), &OptionsModel::displayUnitChanged, 
+                this, &ReceiveCoinsDialog::updateDisplayUnit, Qt::UniqueConnection);
+        
+        updateDisplayUnit();
 
         QTableView* tableView = ui->recentRequestsView;
 

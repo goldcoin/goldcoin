@@ -153,7 +153,7 @@ bool AppInit(int argc, char* argv[])
         }
         if (GetBoolArg("-daemon", false))
         {
-#if HAVE_DECL_DAEMON
+#if HAVE_DECL_DAEMON && !defined(WIN32)
             fprintf(stdout, "Goldcoin server starting\n");
 
             // Daemonize

@@ -35,12 +35,17 @@
 #include "shlwapi.h"
 #endif
 
+#include <filesystem>
+#include <fstream>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #if BOOST_FILESYSTEM_VERSION >= 3
 #include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
 #endif
 #include <boost/scoped_array.hpp>
+
+#include <string_view>
+#include <concepts>
 
 #include <QAbstractItemView>
 #include <QApplication>
@@ -72,7 +77,7 @@
 #endif
 
 #if BOOST_FILESYSTEM_VERSION >= 3
-static boost::filesystem::detail::utf8_codecvt_facet utf8;
+// No longer needed with std::filesystem which handles UTF-8 natively
 #endif
 
 #if defined(Q_OS_MAC)
@@ -87,6 +92,19 @@ extern double NSAppKitVersionNumber;
 
 namespace GUIUtil {
 
+// C++20: Constexpr template for date formatting
+template<typename T>
+concept TimeType = std::is_integral_v<T> || std::is_same_v<T, QDateTime>;
+
+template<TimeType T>
+constexpr auto formatTime(const T& time) {
+    if constexpr (std::is_integral_v<T>) {
+        return QDateTime::fromSecsSinceEpoch(static_cast<qint32>(time));
+    } else {
+        return time;
+    }
+}
+
 QString dateTimeStr(const QDateTime &date)
 {
     return date.date().toString(Qt::ISODate) + QString(" ") + date.toString("hh:mm");
@@ -94,7 +112,8 @@ QString dateTimeStr(const QDateTime &date)
 
 QString dateTimeStr(qint64 nTime)
 {
-    return dateTimeStr(QDateTime::fromSecsSinceEpoch((qint32)nTime));
+    // C++20: Use template helper for conversion
+    return dateTimeStr(formatTime(nTime));
 }
 
 QFont fixedPitchFont()
@@ -112,19 +131,21 @@ QFont fixedPitchFont()
 #endif
 }
 
-// Just some dummy data to generate an convincing random-looking (but consistent) address
-static const uint8_t dummydata[] = {0xeb,0x15,0x23,0x1d,0xfc,0xeb,0x60,0x92,0x58,0x86,0xb6,0x7d,0x06,0x52,0x99,0x92,0x59,0x15,0xae,0xb1,0x72,0xc0,0x66,0x47};
+// C++20: Constexpr dummy data for address generation
+static constexpr uint8_t dummydata[] = {0xeb,0x15,0x23,0x1d,0xfc,0xeb,0x60,0x92,0x58,0x86,0xb6,0x7d,0x06,0x52,0x99,0x92,0x59,0x15,0xae,0xb1,0x72,0xc0,0x66,0x47};
 
-// Generate a dummy address with invalid CRC, starting with the network prefix.
+// C++20: Generate a dummy address with modern algorithms
 static std::string DummyAddress(const CChainParams &params)
 {
     std::vector<unsigned char> sourcedata = params.Base58Prefix(CChainParams::PUBKEY_ADDRESS);
-    sourcedata.insert(sourcedata.end(), dummydata, dummydata + sizeof(dummydata));
-    for(int i=0; i<256; ++i) { // Try every trailing byte
+    sourcedata.insert(sourcedata.end(), std::begin(dummydata), std::end(dummydata));
+    
+    // C++20: Use string_view for efficiency
+    for(int i=0; i<256; ++i) {
         std::string s = EncodeBase58(sourcedata.data(), sourcedata.data() + sourcedata.size());
-        if (!CBitcoinAddress(s).IsValid())
+        if (!CBitcoinAddress(std::string_view{s}).IsValid())
             return s;
-        sourcedata[sourcedata.size()-1] += 1;
+        sourcedata.back() += 1;
     }
     return "";
 }
@@ -420,10 +441,12 @@ bool isObscured(QWidget *w)
 
 void openDebugLogfile()
 {
-    boost::filesystem::path pathDebug = GetDataDir() / "debug.log";
+    // TODO: GetDataDir() still returns boost::filesystem::path, convert it
+    boost::filesystem::path boostPath = GetDataDir() / "debug.log";
+    std::filesystem::path pathDebug(boostPath.string());
 
     /* Open debug.log with the associated application */
-    if (boost::filesystem::exists(pathDebug))
+    if (std::filesystem::exists(pathDebug))
         QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathDebug)));
 }
 
@@ -605,7 +628,7 @@ TableViewLastColumnResizingFixer::TableViewLastColumnResizingFixer(QTableView* t
 }
 
 #ifdef WIN32
-boost::filesystem::path static StartupShortcutPath()
+std::filesystem::path static StartupShortcutPath()
 {
     std::string chain = ChainNameFromCommandLine();
     if (chain == CBaseChainParams::MAIN)
@@ -618,13 +641,13 @@ boost::filesystem::path static StartupShortcutPath()
 bool GetStartOnSystemStartup()
 {
     // check for Bitcoin*.lnk
-    return boost::filesystem::exists(StartupShortcutPath());
+    return std::filesystem::exists(StartupShortcutPath());
 }
 
 bool SetStartOnSystemStartup(bool fAutoStart)
 {
     // If the shortcut exists already, remove it for updating
-    boost::filesystem::remove(StartupShortcutPath());
+    std::filesystem::remove(StartupShortcutPath());
 
     if (fAutoStart)
     {
@@ -694,9 +717,9 @@ bool SetStartOnSystemStartup(bool fAutoStart)
 // Follow the Desktop Application Autostart Spec:
 // http://standards.freedesktop.org/autostart-spec/autostart-spec-latest.html
 
-boost::filesystem::path static GetAutostartDir()
+std::filesystem::path static GetAutostartDir()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
 
     char* pszConfigHome = getenv("XDG_CONFIG_HOME");
     if (pszConfigHome) return fs::path(pszConfigHome) / "autostart";
@@ -705,7 +728,7 @@ boost::filesystem::path static GetAutostartDir()
     return fs::path();
 }
 
-boost::filesystem::path static GetAutostartFilePath()
+std::filesystem::path static GetAutostartFilePath()
 {
     std::string chain = ChainNameFromCommandLine();
     if (chain == CBaseChainParams::MAIN)
@@ -715,7 +738,7 @@ boost::filesystem::path static GetAutostartFilePath()
 
 bool GetStartOnSystemStartup()
 {
-    boost::filesystem::ifstream optionFile(GetAutostartFilePath());
+    std::ifstream optionFile(GetAutostartFilePath());
     if (!optionFile.good())
         return false;
     // Scan through file for "Hidden=true":
@@ -735,7 +758,7 @@ bool GetStartOnSystemStartup()
 bool SetStartOnSystemStartup(bool fAutoStart)
 {
     if (!fAutoStart)
-        boost::filesystem::remove(GetAutostartFilePath());
+        std::filesystem::remove(GetAutostartFilePath());
     else
     {
         char pszExePath[MAX_PATH+1];
@@ -743,9 +766,9 @@ bool SetStartOnSystemStartup(bool fAutoStart)
         if (readlink("/proc/self/exe", pszExePath, sizeof(pszExePath)-1) == -1)
             return false;
 
-        boost::filesystem::create_directories(GetAutostartDir());
+        std::filesystem::create_directories(GetAutostartDir());
 
-        boost::filesystem::ofstream optionFile(GetAutostartFilePath(), std::ios_base::out|std::ios_base::trunc);
+        std::ofstream optionFile(GetAutostartFilePath(), std::ios_base::out|std::ios_base::trunc);
         if (!optionFile.good())
             return false;
         std::string chain = ChainNameFromCommandLine();
@@ -869,23 +892,25 @@ void setClipboard(const QString& str)
 }
 
 #if BOOST_FILESYSTEM_VERSION >= 3
-boost::filesystem::path qstringToBoostPath(const QString &path)
+std::filesystem::path qstringToBoostPath(const QString &path)
 {
-    return boost::filesystem::path(path.toStdString(), utf8);
+    // std::filesystem uses UTF-8 by default on Unix and UTF-16 on Windows
+    return std::filesystem::path(path.toStdString());
 }
 
-QString boostPathToQString(const boost::filesystem::path &path)
+QString boostPathToQString(const std::filesystem::path &path)
 {
-    return QString::fromStdString(path.string(utf8));
+    // std::filesystem::path::string() returns UTF-8 on Unix
+    return QString::fromStdString(path.string());
 }
 #else
 #warning Conversion between boost path and QString can use invalid character encoding with boost_filesystem v2 and older
-boost::filesystem::path qstringToBoostPath(const QString &path)
+std::filesystem::path qstringToBoostPath(const QString &path)
 {
-    return boost::filesystem::path(path.toStdString());
+    return std::filesystem::path(path.toStdString());
 }
 
-QString boostPathToQString(const boost::filesystem::path &path)
+QString boostPathToQString(const std::filesystem::path &path)
 {
     return QString::fromStdString(path.string());
 }

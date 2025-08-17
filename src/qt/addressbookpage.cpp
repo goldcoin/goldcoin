@@ -21,6 +21,10 @@
 #include <QMessageBox>
 #include <QSortFilterProxyModel>
 
+#include <algorithm>
+#include <array>
+#include <ranges>
+
 AddressBookPage::AddressBookPage(const PlatformStyle *platformStyle, Mode _mode, Tabs _tab, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AddressBookPage),
@@ -75,26 +79,47 @@ AddressBookPage::AddressBookPage(const PlatformStyle *platformStyle, Mode _mode,
         break;
     }
 
-    // Context menu actions
-    QAction *copyAddressAction = new QAction(tr("&Copy Address"), this);
-    QAction *copyLabelAction = new QAction(tr("Copy &Label"), this);
-    QAction *editAction = new QAction(tr("&Edit"), this);
-    deleteAction = new QAction(ui->deleteAddress->text(), this);
-
-    // Build context menu
+    // Qt 6.9 & C++20: Modern context menu setup with structured bindings
+    struct MenuAction {
+        const char* text;
+        void (AddressBookPage::*handler)();
+        bool visibleForSending = true;
+    };
+    
+    std::array<MenuAction, 4> menuActions = {{
+        {"&Copy Address", &AddressBookPage::on_copyAddress_clicked, true},
+        {"Copy &Label", &AddressBookPage::onCopyLabelAction, true},
+        {"&Edit", &AddressBookPage::onEditAction, true},
+        {nullptr, &AddressBookPage::on_deleteAddress_clicked, true}  // Text set from UI
+    }};
+    
+    // Build context menu with C++20 ranges
     contextMenu = new QMenu(this);
-    contextMenu->addAction(copyAddressAction);
-    contextMenu->addAction(copyLabelAction);
-    contextMenu->addAction(editAction);
+    
+    // Create actions and add to menu using ranges
+    auto createAndConnectAction = [this](const MenuAction& ma) -> QAction* {
+        const char* text = ma.text ? ma.text : ui->deleteAddress->text().toStdString().c_str();
+        QAction* action = new QAction(tr(text), this);
+        connect(action, &QAction::triggered, this, ma.handler);
+        return action;
+    };
+    
+    // Process first 3 actions
+    auto normalActions = menuActions | std::views::take(3);
+    std::ranges::for_each(normalActions, [this, &createAndConnectAction](const auto& ma) {
+        contextMenu->addAction(createAndConnectAction(ma));
+    });
+    
+    // Special handling for delete action
+    deleteAction = createAndConnectAction(menuActions[3]);
     if(tab == SendingTab)
         contextMenu->addAction(deleteAction);
     contextMenu->addSeparator();
-
-    // Connect signals for context menu actions
-    connect(copyAddressAction, &QAction::triggered, this, &AddressBookPage::on_copyAddress_clicked);    connect(copyLabelAction, &QAction::triggered, this, &AddressBookPage::onCopyLabelAction);    connect(editAction, &QAction::triggered, this, &AddressBookPage::onEditAction);    connect(deleteAction, &QAction::triggered, this, &AddressBookPage::on_deleteAddress_clicked);
+    
+    // Qt 6.9: Modern signal connections
     connect(ui->tableView, &QWidget::customContextMenuRequested, this, &AddressBookPage::contextualMenu);
-
-    connect(ui->closeButton, &QPushButton::clicked, this, &AddressBookPage::accept);}
+    connect(ui->closeButton, &QPushButton::clicked, this, &AddressBookPage::accept);
+}
 
 AddressBookPage::~AddressBookPage()
 {

@@ -13,7 +13,8 @@
 
 #include "util.h"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+#include <boost/filesystem.hpp> // TODO: Remove after full migration
 
 #include <QFileDialog>
 #include <QSettings>
@@ -70,7 +71,7 @@ FreespaceChecker::FreespaceChecker(Intro *_intro)
 
 void FreespaceChecker::check()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     QString dataDirStr = intro->getPathToCheck();
     fs::path dataDir = GUIUtil::qstringToBoostPath(dataDirStr);
     uint64_t freeBytesAvailable = 0;
@@ -167,12 +168,15 @@ void Intro::setDataDirectory(const QString &dataDir)
 
 QString Intro::getDefaultDataDirectory()
 {
-    return GUIUtil::boostPathToQString(GetDefaultDataDir());
+    // TODO: GetDefaultDataDir() still returns boost::filesystem::path
+    boost::filesystem::path boostPath = GetDefaultDataDir();
+    std::filesystem::path stdPath(boostPath.string());
+    return GUIUtil::boostPathToQString(stdPath);
 }
 
 bool Intro::pickDataDirectory()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
     QSettings settings;
     /* If data directory provided on command line, no need to look at settings
        or show a picking dialog */
@@ -199,7 +203,9 @@ bool Intro::pickDataDirectory()
             }
             dataDir = intro.getDataDirectory();
             try {
-                TryCreateDirectory(GUIUtil::qstringToBoostPath(dataDir));
+                // TODO: TryCreateDirectory expects boost::filesystem::path
+                boost::filesystem::path boostPath(GUIUtil::qstringToBoostPath(dataDir).string());
+                TryCreateDirectory(boostPath);
                 break;
             } catch (const fs::filesystem_error&) {
                 QMessageBox::critical(0, tr(PACKAGE_NAME),

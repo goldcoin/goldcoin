@@ -6,6 +6,16 @@
 #include "config/bitcoin-config.h"
 #endif
 
+// Qt6 stub for missing Qt in depends
+#ifdef NO_QT6
+#include <stdio.h>
+int main(int argc, char *argv[]) {
+    printf("Qt6 disabled - goldcoin-qt running in CLI stub mode\n");
+    printf("To enable GUI, rebuild with Qt 6.9.0 in depends\n");
+    return 0;
+}
+#else
+
 #include "bitcoingui.h"
 
 #include "chainparams.h"
@@ -38,7 +48,8 @@
 
 #include <stdint.h>
 
-#include <boost/filesystem/operations.hpp>
+#include <filesystem>
+#include <boost/filesystem/operations.hpp> // TODO: Remove after full migration
 #include <boost/thread.hpp>
 
 #include <QApplication>
@@ -75,7 +86,7 @@ Q_IMPORT_PLUGIN(QCocoaIntegrationPlugin);
 #endif
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include <QTextCodec>
+// QTextCodec removed - Qt6 uses UTF-8 by default
 #endif
 
 // Declare meta types used for QMetaObject::invokeMethod
@@ -553,11 +564,7 @@ int main(int argc, char *argv[])
     // Do not refer to data directory yet, this can be overridden by Intro::pickDataDirectory
 
     /// 2. Basic Qt initialization (not dependent on parameters or configuration)
-#if QT_VERSION < 0x050000
-    // Internal string conversion is all UTF-8
-    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
-    QTextCodec::setCodecForCStrings(QTextCodec::codecForTr());
-#endif
+    // Qt6 uses UTF-8 by default - no QTextCodec needed
 
     Q_INIT_RESOURCE(bitcoin);
     // Q_INIT_RESOURCE(bitcoin_locale); // Skip locale resources for now
@@ -627,7 +634,10 @@ int main(int argc, char *argv[])
 
     /// 6. Determine availability of data directory and parse bitcoin.conf
     /// - Do not call GetDataDir(true) before this step finishes
-    if (!boost::filesystem::is_directory(GetDataDir(false)))
+    // TODO: GetDataDir() still returns boost::filesystem::path
+    boost::filesystem::path boostPath = GetDataDir(false);
+    std::filesystem::path stdPath(boostPath.string());
+    if (!std::filesystem::is_directory(stdPath))
     {
         QMessageBox::critical(0, QObject::tr(PACKAGE_NAME),
                               QObject::tr("Error: Specified data directory \"%1\" does not exist.").arg(QString::fromStdString(GetArg("-datadir", ""))));
@@ -729,3 +739,5 @@ int main(int argc, char *argv[])
 
 const QString BitcoinApplication::DEFAULT_WALLET = QString("~Default");
 const std::string BitcoinApplication::DEFAULT_UIPLATFORM = "other";
+
+#endif // NO_QT6

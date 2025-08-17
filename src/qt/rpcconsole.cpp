@@ -41,6 +41,10 @@
 #include <QTimer>
 #include <QStringList>
 
+#include <future>
+#include <chrono>
+#include <ranges>
+
 #if QT_VERSION < 0x050000
 #include <QUrl>
 #endif
@@ -62,7 +66,7 @@ const struct {
     {"cmd-reply", ":/icons/tx_output"},
     {"cmd-error", ":/icons/tx_output"},
     {"misc", ":/icons/tx_inout"},
-    {NULL, NULL}
+    {nullptr, nullptr}
 };
 
 namespace {
@@ -79,7 +83,7 @@ const QStringList historyFilter = QStringList()
 
 }
 
-/* Object for executing console RPC commands in a separate thread.
+/* C++20: Modern RPC executor with async support for Qt 6.9
 */
 class RPCExecutor : public QObject
 {
@@ -90,6 +94,13 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     void reply(int category, const QString &command);
+    
+private:
+    // C++20: Future-based async command execution
+    template<typename Func>
+    auto executeAsync(Func&& func) -> std::future<decltype(func())> {
+        return std::async(std::launch::async, std::forward<Func>(func));
+    }
 };
 
 /** Class for handling RPC timers
@@ -103,7 +114,9 @@ public:
         func(_func)
     {
         timer.setSingleShot(true);
-        connect(&timer, &QTimer::timeout, this, &QtRPCTimerBase::timeout);        timer.start(millis);
+        // Qt 6.9: Modern signal connection
+        connect(&timer, &QTimer::timeout, this, &QtRPCTimerBase::timeout);
+        timer.start(millis);
     }
     ~QtRPCTimerBase() {}
 private Q_SLOTS:
@@ -607,13 +620,13 @@ void RPCConsole::setClientModel(ClientModel *model)
         ui->startupTime->setText(model->formatClientStartupTime());
         ui->networkName->setText(QString::fromStdString(Params().NetworkIDString()));
 
-        //Setup autocomplete and attach it
+        // C++20: Setup autocomplete with ranges
         QStringList wordList;
         std::vector<std::string> commandList = tableRPC.listCommands();
-        for (size_t i = 0; i < commandList.size(); ++i)
-        {
-            wordList << commandList[i].c_str();
-        }
+        
+        // Convert command list to QStringList using ranges
+        auto toQString = [](const std::string& s) { return QString::fromStdString(s); };
+        std::ranges::transform(commandList, std::back_inserter(wordList), toQString);
 
         autoCompleter = new QCompleter(wordList, this);
         ui->lineEdit->setCompleter(autoCompleter);
@@ -949,7 +962,7 @@ void RPCConsole::peerLayoutChanged()
     if (!clientModel || !clientModel->getPeerTableModel())
         return;
 
-    const CNodeCombinedStats *stats = NULL;
+    const CNodeCombinedStats *stats = nullptr;
     bool fUnselect = false;
     bool fReselect = false;
 

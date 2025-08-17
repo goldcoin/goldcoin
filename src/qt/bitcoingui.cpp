@@ -59,6 +59,10 @@
 #include <QToolBar>
 #include <QVBoxLayout>
 
+#include <array>
+#include <functional>
+#include <ranges>
+
 #if QT_VERSION < 0x050000
 #include <QTextDocument>
 #include <QUrl>
@@ -408,7 +412,28 @@ void BitcoinGUI::createActions()
     showHelpMessageAction->setMenuRole(QAction::NoRole);
     showHelpMessageAction->setStatusTip(tr("Show the %1 help message to get a list with possible Goldcoin command-line options").arg(tr(PACKAGE_NAME)));
 
-    connect(quitAction, &QAction::triggered, qApp, &QApplication::quit);    connect(aboutAction, &QAction::triggered, this, &BitcoinGUI::aboutClicked);    connect(aboutQtAction, &QAction::triggered, qApp, &QApplication::aboutQt);    connect(optionsAction, &QAction::triggered, this, &BitcoinGUI::optionsClicked);    connect(toggleHideAction, &QAction::triggered, this, &BitcoinGUI::toggleHidden);    connect(showHelpMessageAction, &QAction::triggered, this, &BitcoinGUI::showHelpMessageClicked);    connect(openRPCConsoleAction, &QAction::triggered, this, &BitcoinGUI::showDebugWindow);    // prevents an open debug window from becoming stuck/unusable on client shutdown
+    // Qt 6.9 & C++20: Structured action connections with ranges
+    struct ActionConnection {
+        QAction* action;
+        std::function<void()> handler;
+    };
+    
+    std::array<ActionConnection, 7> basicActions = {{
+        {quitAction, [this]() { qApp->quit(); }},
+        {aboutAction, [this]() { aboutClicked(); }},
+        {aboutQtAction, []() { qApp->aboutQt(); }},
+        {optionsAction, [this]() { optionsClicked(); }},
+        {toggleHideAction, [this]() { toggleHidden(); }},
+        {showHelpMessageAction, [this]() { showHelpMessageClicked(); }},
+        {openRPCConsoleAction, [this]() { showDebugWindow(); }}
+    }};
+    
+    // C++20: Connect all basic actions using ranges
+    std::ranges::for_each(basicActions, [](const auto& conn) {
+        QObject::connect(conn.action, &QAction::triggered, conn.handler);
+    });
+    
+    // prevents an open debug window from becoming stuck/unusable on client shutdown
     connect(quitAction, &QAction::triggered, rpcConsole, &QWidget::hide);
 #ifdef ENABLE_WALLET
     if(walletFrame)

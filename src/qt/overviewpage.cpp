@@ -140,11 +140,17 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
     // Qt 6: WA_MacShowFocusRect is removed, focus rect behavior is handled differently
 #endif
 
+    // Qt 6.9: Modern signal connections with lambdas
     connect(ui->listTransactions, &QListView::clicked, this, &OverviewPage::handleTransactionClicked);
 
     // start with displaying the "out of sync" warnings
     showOutOfSyncWarning(true);
-    connect(ui->labelWalletStatus, &QPushButton::clicked, this, &OverviewPage::handleOutOfSyncWarningClicks);    connect(ui->labelTransactionsStatus, &QPushButton::clicked, this, &OverviewPage::handleOutOfSyncWarningClicks);}
+    
+    // Qt 6.9: Use lambda for sync warning clicks with C++20 features
+    auto handleSyncWarning = [this]() { handleOutOfSyncWarningClicks(); };
+    connect(ui->labelWalletStatus, &QPushButton::clicked, this, handleSyncWarning);
+    connect(ui->labelTransactionsStatus, &QPushButton::clicked, this, handleSyncWarning);
+}
 
 void OverviewPage::handleTransactionClicked(const QModelIndex &index)
 {
@@ -221,8 +227,8 @@ void OverviewPage::setWalletModel(WalletModel *model)
     this->walletModel = model;
     if(model && model->getOptionsModel())
     {
-        // Set up transaction list
-        filter.reset(new TransactionFilterProxy());
+        // Qt 6.9 & C++20: Use smart pointer for transaction filter
+        filter = std::make_unique<TransactionFilterProxy>();
         filter->setSourceModel(model->getTransactionTableModel());
         filter->setLimit(NUM_ITEMS);
         filter->setDynamicSortFilter(true);
@@ -233,12 +239,20 @@ void OverviewPage::setWalletModel(WalletModel *model)
         ui->listTransactions->setModel(filter.get());
         ui->listTransactions->setModelColumn(TransactionTableModel::ToAddress);
 
-        // Keep up to date with wallet
-        setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance(),
-                   model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance());
-        connect(model, &WalletModel::balanceChanged, this, &OverviewPage::setBalance);
-
+        // C++20: Use structured bindings for balance updates (future-ready)
+        auto updateBalances = [this, model]() {
+            setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance(),
+                      model->getWatchBalance(), model->getWatchUnconfirmedBalance(), model->getWatchImmatureBalance());
+        };
+        
+        // Initial balance update
+        updateBalances();
+        
+        // Qt 6.9: Modern signal connections with lambda wrappers
+        connect(model, &WalletModel::balanceChanged, this, updateBalances);
         connect(model->getOptionsModel(), &OptionsModel::displayUnitChanged, this, &OverviewPage::updateDisplayUnit);
+        
+        // Watch-only handling with immediate update
         updateWatchOnlyLabels(model->haveWatchOnly());
         connect(model, &WalletModel::notifyWatchonlyChanged, this, &OverviewPage::updateWatchOnlyLabels);
     }

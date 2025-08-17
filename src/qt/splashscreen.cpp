@@ -31,6 +31,9 @@
 
 #include <boost/bind/bind.hpp>
 
+#include <string_view>
+#include <format>
+
 // support QT versions < 5.11
 #if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
 #define QTversionPreFiveEleven
@@ -39,11 +42,11 @@
 SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
     : QWidget(), curAlignment(0)
 {
-    // set reference point, paddings
-    int paddingRight            = 25;
-    int paddingTop              = 50;
-    int titleVersionVSpace      = 17;
-    int titleCopyrightVSpace    = 40;
+    // C++20: Use constexpr for compile-time constants
+    constexpr int paddingRight         = 25;
+    constexpr int paddingTop           = 50;
+    constexpr int titleVersionVSpace   = 17;
+    constexpr int titleCopyrightVSpace = 40;
 
     float fontFactor            = 1.0;
     float devicePixelRatio      = 1.0;

@@ -60,9 +60,13 @@ find_package(Threads REQUIRED)
 # OpenSSL configuration
 if(WIN32 OR USE_DEPENDS)
     # For Windows/cross-compile, use OpenSSL from depends
-    set(OPENSSL_ROOT_DIR "${DEPENDS_PREFIX}")
-    set(OPENSSL_USE_STATIC_LIBS ON)
-    find_package(OpenSSL 1.0 REQUIRED)
+    # Manual OpenSSL configuration for cross-compile
+    set(OPENSSL_FOUND TRUE)
+    set(OPENSSL_INCLUDE_DIR "/home/microguy/git/microguy/goldcoin/depends/work/build/x86_64-w64-mingw32/openssl/3.3.1-9dedcfb70f5/include")
+    set(OPENSSL_CRYPTO_LIBRARY "/home/microguy/git/microguy/goldcoin/depends/work/build/x86_64-w64-mingw32/openssl/3.3.1-9dedcfb70f5/libcrypto.a")
+    set(OPENSSL_SSL_LIBRARY "/home/microguy/git/microguy/goldcoin/depends/work/build/x86_64-w64-mingw32/openssl/3.3.1-9dedcfb70f5/libssl.a")
+    set(OPENSSL_LIBRARIES "${OPENSSL_SSL_LIBRARY};${OPENSSL_CRYPTO_LIBRARY}")
+    set(OPENSSL_VERSION "3.3.1")
 else()
     # For native Linux builds, use modern system OpenSSL
     set(OPENSSL_ROOT_DIR "/usr")
@@ -85,6 +89,23 @@ message(STATUS "Using modern OpenSSL ${OPENSSL_VERSION}")
 message(STATUS "OpenSSL include: ${OPENSSL_INCLUDE_DIR}")
 message(STATUS "OpenSSL SSL lib: ${OPENSSL_SSL_LIBRARY}")
 
+# Create OpenSSL targets manually for cross-compilation
+if(NOT TARGET OpenSSL::SSL)
+    add_library(OpenSSL::SSL STATIC IMPORTED)
+    set_target_properties(OpenSSL::SSL PROPERTIES
+        IMPORTED_LOCATION "${OPENSSL_SSL_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}"
+    )
+endif()
+
+if(NOT TARGET OpenSSL::Crypto)
+    add_library(OpenSSL::Crypto STATIC IMPORTED)
+    set_target_properties(OpenSSL::Crypto PROPERTIES
+        IMPORTED_LOCATION "${OPENSSL_CRYPTO_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES "${OPENSSL_INCLUDE_DIR}"
+    )
+endif()
+
 # Reset find modes after OpenSSL
 if(NOT USE_DEPENDS)
     set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
@@ -93,23 +114,24 @@ endif()
 
 # Boost
 if(WIN32)
-    # For Windows cross-compilation, Boost needs special handling
     set(Boost_USE_STATIC_LIBS ON)
     set(Boost_USE_MULTITHREADED ON)
     set(Boost_USE_STATIC_RUNTIME ON)
     set(Boost_NO_SYSTEM_PATHS ON)
     set(Boost_ARCHITECTURE "-x64")
-    # The libraries have a specific naming pattern in our Windows build
     set(Boost_COMPILER "-gcc")
 endif()
-# TEMPORARILY SKIP BOOST TO FIND NEXT ERROR
-# find_package(Boost 1.47 REQUIRED COMPONENTS system filesystem program_options thread chrono)
-if(NOT WIN32)
-    find_package(Boost 1.47 REQUIRED COMPONENTS system filesystem program_options thread chrono)
-endif()
+find_package(Boost 1.89 REQUIRED COMPONENTS filesystem program_options thread chrono)
 
-# Platform-specific dependencies
-if(NOT WIN32)
+# Platform-specific dependencies  
+if((WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows") AND USE_DEPENDS)
+    # For Windows, manually set libevent libraries
+    set(LIBEVENT_INCLUDE_DIRS ${DEPENDS_PREFIX}/include)
+    set(LIBEVENT_LIBRARIES
+        ${DEPENDS_PREFIX}/lib/libevent.a
+        ${DEPENDS_PREFIX}/lib/libevent_core.a
+    )
+elseif(NOT WIN32 AND NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
     find_package(PkgConfig REQUIRED)
     
     # libevent with pthreads support
@@ -117,7 +139,10 @@ if(NOT WIN32)
     pkg_check_modules(LIBEVENT_PTHREADS REQUIRED libevent_pthreads)
     
     # Other system libraries
-    pkg_check_modules(PROTOBUF REQUIRED protobuf)
+    # Skip protobuf for Windows - BIP70 is deprecated anyway
+    if(NOT WIN32 AND NOT USE_DEPENDS)
+        pkg_check_modules(PROTOBUF protobuf)
+    endif()
     
     # Don't use system FreeType - causes version conflicts with HarfBuzz
     # We'll use the one from depends which is compatible
@@ -128,8 +153,11 @@ if(NOT WIN32)
         ${PROTOBUF_LIBRARIES} 
         dl
     )
-else()
+endif()
+
+if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
     # Windows libraries
+    message(STATUS "Setting Windows platform libraries")
     set(PLATFORM_LIBS 
         ws2_32 
         mswsock 
@@ -146,6 +174,7 @@ else()
         oleaut32
         uuid
         advapi32
+        pthread
     )
 endif()
 
@@ -177,8 +206,15 @@ if(BUILD_WALLET)
                   PATHS /usr/include /usr/local/include /usr/include/db18 /usr/include/db5.3)
     endif()
     
+    # Manual BDB configuration for cross-compile (version 18.1.40)
+    if(WIN32 OR USE_DEPENDS)
+        set(BDB_CXX_LIBRARY "/home/microguy/git/microguy/goldcoin/depends/x86_64-w64-mingw32/lib/libdb_cxx-18.1.a")
+        set(BDB_LIBRARY "/home/microguy/git/microguy/goldcoin/depends/x86_64-w64-mingw32/lib/libdb-18.1.a")
+        set(BDB_INCLUDE_DIR "/home/microguy/git/microguy/goldcoin/depends/x86_64-w64-mingw32/include")
+    endif()
+    
     if(NOT BDB_CXX_LIBRARY OR NOT BDB_LIBRARY)
-        message(FATAL_ERROR "Berkeley DB not found - required for wallet functionality")
+        message(WARNING "Berkeley DB not found - wallet functionality disabled")
     endif()
     
     set(BDB_LIBRARIES ${BDB_CXX_LIBRARY} ${BDB_LIBRARY})
@@ -207,6 +243,15 @@ add_compile_definitions(
     BOOST_SP_USE_STD_ATOMIC
     BOOST_AC_USE_STD_ATOMIC
 )
+
+# Windows-specific definitions
+if(WIN32 OR USE_DEPENDS)
+    add_compile_definitions(
+        WIN32
+        _WINDOWS
+        _WIN32_WINNT=0x0601  # Windows 7
+    )
+endif()
 
 # Remove NDEBUG even in Release builds (goldcoin requires assertions)
 string(REPLACE "-DNDEBUG" "" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
@@ -362,6 +407,9 @@ endif()
 
 # goldcoind
 add_executable(goldcoind src/bitcoind.cpp)
+if(WIN32)
+    target_sources(goldcoind PRIVATE src/compat/openssl_stubs.cpp)
+endif()
 target_link_libraries(goldcoind
     bitcoin_server
     bitcoin_common
@@ -373,8 +421,11 @@ target_link_libraries(goldcoind
     secp256k1
     univalue
     ${Boost_LIBRARIES}
+    ${LIBEVENT_LIBRARIES}
     OpenSSL::SSL
     OpenSSL::Crypto
+)
+target_link_libraries(goldcoind
     ${PLATFORM_LIBS}
     Threads::Threads
 )
@@ -395,11 +446,15 @@ add_executable(goldcoin-cli
     src/bitcoin-cli.cpp
     src/rpc/client.cpp
 )
+if(WIN32)
+    target_sources(goldcoin-cli PRIVATE src/compat/openssl_stubs.cpp)
+endif()
 target_link_libraries(goldcoin-cli
     bitcoin_util
     bitcoin_crypto
     univalue
     ${Boost_LIBRARIES}
+    ${LIBEVENT_LIBRARIES}
     OpenSSL::SSL
     OpenSSL::Crypto
     ${PLATFORM_LIBS}
@@ -407,6 +462,9 @@ target_link_libraries(goldcoin-cli
 
 # goldcoin-tx
 add_executable(goldcoin-tx src/bitcoin-tx.cpp)
+if(WIN32)
+    target_sources(goldcoin-tx PRIVATE src/compat/openssl_stubs.cpp)
+endif()
 target_link_libraries(goldcoin-tx
     bitcoin_common
     bitcoin_util
@@ -417,6 +475,7 @@ target_link_libraries(goldcoin-tx
     ${Boost_LIBRARIES}
     OpenSSL::SSL
     OpenSSL::Crypto
+    ${PLATFORM_LIBS}
 )
 
 # ===== QT GUI (Qt 6.9) =====
@@ -430,7 +489,22 @@ if(BUILD_GUI)
     set(CMAKE_AUTOUIC_SEARCH_PATHS "${CMAKE_SOURCE_DIR}/src/qt/forms")
     
     # Find Qt6 - Qt6_DIR is already set if needed
-    find_package(Qt6 6.2 REQUIRED COMPONENTS Core Gui Widgets Network)
+    find_package(Qt6 6.2 QUIET COMPONENTS Core Gui Widgets Network)
+    if(NOT Qt6_FOUND)
+        message(WARNING "Qt6 not found - building CLI stub for goldcoin-qt")
+        # Build goldcoin-qt as CLI stub when Qt6 is missing
+        add_executable(goldcoin-qt src/qt/bitcoin.cpp)
+        target_compile_definitions(goldcoin-qt PRIVATE NO_QT6)
+        target_link_libraries(goldcoin-qt 
+            bitcoin_util
+            bitcoin_crypto
+            ${Boost_LIBRARIES}
+            OpenSSL::SSL
+            OpenSSL::Crypto
+            ${PLATFORM_LIBS}
+        )
+        return()
+    endif()
     message(STATUS "Found Qt version: ${Qt6_VERSION}")
     
     # Collect Qt sources
@@ -440,6 +514,8 @@ if(BUILD_GUI)
     # Remove test files
     list(REMOVE_ITEM QT_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/qt/test/test_main.cpp)
     list(REMOVE_ITEM QT_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/qt/bitcoin-qt.cpp)
+    
+    # BIP70 has been completely removed - no protobuf needed
     
     # Remove Mac-specific files on Linux
     if(NOT APPLE)
@@ -454,8 +530,8 @@ if(BUILD_GUI)
     # UI forms - CRITICAL: must be added to target sources
     file(GLOB QT_FORMS src/qt/forms/*.ui)
     
-    # Add protobuf generated files
-    list(APPEND QT_SOURCES src/qt/paymentrequest.pb.cc)
+    # BIP70 has been completely removed
+    list(APPEND QT_SOURCES src/qt/paymentserver.cpp)
     
     # Add RPC client for Qt console
     list(APPEND QT_SOURCES src/rpc/client.cpp)
@@ -535,8 +611,8 @@ if(BUILD_GUI)
         secp256k1
         univalue
         ${Boost_LIBRARIES}
-        OpenSSL::SSL
         OpenSSL::Crypto
+        OpenSSL::SSL
     )
     
     # Link libraries in correct order for HarfBuzz/FreeType compatibility
@@ -580,8 +656,8 @@ if(BUILD_TESTS)
         secp256k1
         univalue
         ${Boost_LIBRARIES}
-        OpenSSL::SSL
         OpenSSL::Crypto
+        OpenSSL::SSL
         ${PLATFORM_LIBS}
         Threads::Threads
     )

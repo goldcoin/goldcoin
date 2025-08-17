@@ -29,6 +29,8 @@
 #include <QTextDocument>
 #include <QTimer>
 
+#include <array>
+
 #define SEND_CONFIRM_DELAY   3
 
 SendCoinsDialog::SendCoinsDialog(const PlatformStyle *_platformStyle, QWidget *parent) :
@@ -56,27 +58,45 @@ SendCoinsDialog::SendCoinsDialog(const PlatformStyle *_platformStyle, QWidget *p
 
     addEntry();
 
-    connect(ui->addButton, &QPushButton::clicked, this, &SendCoinsDialog::addEntry);    connect(ui->clearButton, &QPushButton::clicked, this, &SendCoinsDialog::clear);
-    // Coin Control
+    // Qt 6.9: Modern signal connections for main buttons
+    connect(ui->addButton, &QPushButton::clicked, this, &SendCoinsDialog::addEntry);
+    connect(ui->clearButton, &QPushButton::clicked, this, &SendCoinsDialog::clear);
+    
+    // Coin Control with Qt 6.9 signals
     connect(ui->pushButtonCoinControl, &QPushButton::clicked, this, &SendCoinsDialog::coinControlButtonClicked);
     connect(ui->checkBoxCoinControlChange, &QCheckBox::stateChanged, this, &SendCoinsDialog::coinControlChangeChecked);
     connect(ui->lineEditCoinControlChange, &QLineEdit::textEdited, this, &SendCoinsDialog::coinControlChangeEdited);
 
-    // Coin Control: clipboard actions
-    QAction *clipboardQuantityAction = new QAction(tr("Copy quantity"), this);
-    QAction *clipboardAmountAction = new QAction(tr("Copy amount"), this);
-    QAction *clipboardFeeAction = new QAction(tr("Copy fee"), this);
-    QAction *clipboardAfterFeeAction = new QAction(tr("Copy after fee"), this);
-    QAction *clipboardBytesAction = new QAction(tr("Copy bytes"), this);
-    QAction *clipboardLowOutputAction = new QAction(tr("Copy dust"), this);
-    QAction *clipboardChangeAction = new QAction(tr("Copy change"), this);
-    connect(clipboardQuantityAction, &QAction::triggered, this, &SendCoinsDialog::coinControlClipboardQuantity);    connect(clipboardAmountAction, &QAction::triggered, this, &SendCoinsDialog::coinControlClipboardAmount);    connect(clipboardFeeAction, &QAction::triggered, this, &SendCoinsDialog::coinControlClipboardFee);    connect(clipboardAfterFeeAction, &QAction::triggered, this, &SendCoinsDialog::coinControlClipboardAfterFee);    connect(clipboardBytesAction, &QAction::triggered, this, &SendCoinsDialog::coinControlClipboardBytes);    connect(clipboardLowOutputAction, &QAction::triggered, this, &SendCoinsDialog::coinControlClipboardLowOutput);    connect(clipboardChangeAction, &QAction::triggered, this, &SendCoinsDialog::coinControlClipboardChange);    ui->labelCoinControlQuantity->addAction(clipboardQuantityAction);
-    ui->labelCoinControlAmount->addAction(clipboardAmountAction);
-    ui->labelCoinControlFee->addAction(clipboardFeeAction);
-    ui->labelCoinControlAfterFee->addAction(clipboardAfterFeeAction);
-    ui->labelCoinControlBytes->addAction(clipboardBytesAction);
-    ui->labelCoinControlLowOutput->addAction(clipboardLowOutputAction);
-    ui->labelCoinControlChange->addAction(clipboardChangeAction);
+    // C++20: Use structured bindings and lambdas for clipboard actions
+    struct ClipboardAction {
+        const char* text;
+        void (SendCoinsDialog::*handler)();
+    };
+    
+    std::array<ClipboardAction, 7> clipboardActions = {{
+        {"Copy quantity", &SendCoinsDialog::coinControlClipboardQuantity},
+        {"Copy amount", &SendCoinsDialog::coinControlClipboardAmount},
+        {"Copy fee", &SendCoinsDialog::coinControlClipboardFee},
+        {"Copy after fee", &SendCoinsDialog::coinControlClipboardAfterFee},
+        {"Copy bytes", &SendCoinsDialog::coinControlClipboardBytes},
+        {"Copy dust", &SendCoinsDialog::coinControlClipboardLowOutput},
+        {"Copy change", &SendCoinsDialog::coinControlClipboardChange}
+    }};
+    
+    // Qt 6.9: Create and connect actions with modern syntax
+    auto createAction = [this](const char* text, auto handler) {
+        QAction* action = new QAction(tr(text), this);
+        connect(action, &QAction::triggered, this, handler);
+        return action;
+    };
+    
+    ui->labelCoinControlQuantity->addAction(createAction("Copy quantity", &SendCoinsDialog::coinControlClipboardQuantity));
+    ui->labelCoinControlAmount->addAction(createAction("Copy amount", &SendCoinsDialog::coinControlClipboardAmount));
+    ui->labelCoinControlFee->addAction(createAction("Copy fee", &SendCoinsDialog::coinControlClipboardFee));
+    ui->labelCoinControlAfterFee->addAction(createAction("Copy after fee", &SendCoinsDialog::coinControlClipboardAfterFee));
+    ui->labelCoinControlBytes->addAction(createAction("Copy bytes", &SendCoinsDialog::coinControlClipboardBytes));
+    ui->labelCoinControlLowOutput->addAction(createAction("Copy dust", &SendCoinsDialog::coinControlClipboardLowOutput));
+    ui->labelCoinControlChange->addAction(createAction("Copy change", &SendCoinsDialog::coinControlClipboardChange));
 
     // init transaction fee section
     QSettings settings;

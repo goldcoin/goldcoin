@@ -35,6 +35,9 @@
 #include <QUrl>
 #include <QVBoxLayout>
 
+#include <algorithm>
+#include <ranges>
+
 TransactionView::TransactionView(const PlatformStyle *platformStyle, QWidget *parent) :
     QWidget(parent), model(0), transactionProxyModel(0),
     transactionView(0), abandonAction(0), columnResizingFixer(0)
@@ -161,9 +164,7 @@ TransactionView::TransactionView(const PlatformStyle *platformStyle, QWidget *pa
 
     mapperThirdPartyTxUrls = new QSignalMapper(this);
 
-    // Connect actions
-    // Qt 6: Replace QSignalMapper with lambdas in menu action connections
-
+    // Qt 6.9: Modern signal connections with lambdas
     connect(dateWidget, qOverload<int>(&QComboBox::activated), this, &TransactionView::chooseDate);
     connect(typeWidget, qOverload<int>(&QComboBox::activated), this, &TransactionView::chooseType);
     connect(watchOnlyWidget, qOverload<int>(&QComboBox::activated), this, &TransactionView::chooseWatchonly);
@@ -173,7 +174,29 @@ TransactionView::TransactionView(const PlatformStyle *platformStyle, QWidget *pa
     connect(view, &QTableView::doubleClicked, this, &TransactionView::doubleClicked);
     connect(view, &QWidget::customContextMenuRequested, this, &TransactionView::contextualMenu);
 
-    connect(abandonAction, &QAction::triggered, this, &TransactionView::abandonTx);    connect(copyAddressAction, &QAction::triggered, this, &TransactionView::copyAddress);    connect(copyLabelAction, &QAction::triggered, this, &TransactionView::copyLabel);    connect(copyAmountAction, &QAction::triggered, this, &TransactionView::copyAmount);    connect(copyTxIDAction, &QAction::triggered, this, &TransactionView::copyTxID);    connect(copyTxHexAction, &QAction::triggered, this, &TransactionView::copyTxHex);    connect(copyTxPlainText, &QAction::triggered, this, &TransactionView::copyTxPlainText);    connect(editLabelAction, &QAction::triggered, this, &TransactionView::editLabel);    connect(showDetailsAction, &QAction::triggered, this, &TransactionView::showDetails);}
+    // C++20: Use structured bindings for action connections
+    struct ActionConnection {
+        QAction* action;
+        void (TransactionView::*slot)();
+    };
+    
+    std::array<ActionConnection, 9> actions = {{
+        {abandonAction, &TransactionView::abandonTx},
+        {copyAddressAction, &TransactionView::copyAddress},
+        {copyLabelAction, &TransactionView::copyLabel},
+        {copyAmountAction, &TransactionView::copyAmount},
+        {copyTxIDAction, &TransactionView::copyTxID},
+        {copyTxHexAction, &TransactionView::copyTxHex},
+        {copyTxPlainText, &TransactionView::copyTxPlainText},
+        {editLabelAction, &TransactionView::editLabel},
+        {showDetailsAction, &TransactionView::showDetails}
+    }};
+    
+    // Qt 6.9: Use ranges to connect all actions
+    std::ranges::for_each(actions, [this](const auto& conn) {
+        connect(conn.action, &QAction::triggered, this, conn.slot);
+    });
+}
 
 void TransactionView::setModel(WalletModel *_model)
 {

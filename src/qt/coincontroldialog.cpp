@@ -32,6 +32,10 @@
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 
+#include <algorithm>
+#include <array>
+#include <ranges>
+
 QList<CAmount> CoinControlDialog::payAmounts;
 CCoinControl* CoinControlDialog::coinControl = new CCoinControl();
 bool CoinControlDialog::fSubtractFeeFromAmount = false;
@@ -69,26 +73,43 @@ CoinControlDialog::CoinControlDialog(const PlatformStyle *_platformStyle, QWidge
     contextMenu->addAction(lockAction);
     contextMenu->addAction(unlockAction);
 
-    // context menu signals
+    // Qt 6.9: Modern signal connections for context menu
     connect(ui->treeWidget, &QWidget::customContextMenuRequested, this, &CoinControlDialog::showMenu);
-    connect(copyAddressAction, &QAction::triggered, this, &CoinControlDialog::copyAddress);    connect(copyLabelAction, &QAction::triggered, this, &CoinControlDialog::copyLabel);    connect(copyAmountAction, &QAction::triggered, this, &CoinControlDialog::copyAmount);    connect(copyTransactionHashAction, &QAction::triggered, this, &CoinControlDialog::copyTransactionHash);    connect(lockAction, &QAction::triggered, this, &CoinControlDialog::lockCoin);    connect(unlockAction, &QAction::triggered, this, &CoinControlDialog::unlockCoin);
-    // clipboard actions
-    QAction *clipboardQuantityAction = new QAction(tr("Copy quantity"), this);
-    QAction *clipboardAmountAction = new QAction(tr("Copy amount"), this);
-    QAction *clipboardFeeAction = new QAction(tr("Copy fee"), this);
-    QAction *clipboardAfterFeeAction = new QAction(tr("Copy after fee"), this);
-    QAction *clipboardBytesAction = new QAction(tr("Copy bytes"), this);
-    QAction *clipboardLowOutputAction = new QAction(tr("Copy dust"), this);
-    QAction *clipboardChangeAction = new QAction(tr("Copy change"), this);
-
-    connect(clipboardQuantityAction, &QAction::triggered, this, &CoinControlDialog::clipboardQuantity);    connect(clipboardAmountAction, &QAction::triggered, this, &CoinControlDialog::clipboardAmount);    connect(clipboardFeeAction, &QAction::triggered, this, &CoinControlDialog::clipboardFee);    connect(clipboardAfterFeeAction, &QAction::triggered, this, &CoinControlDialog::clipboardAfterFee);    connect(clipboardBytesAction, &QAction::triggered, this, &CoinControlDialog::clipboardBytes);    connect(clipboardLowOutputAction, &QAction::triggered, this, &CoinControlDialog::clipboardLowOutput);    connect(clipboardChangeAction, &QAction::triggered, this, &CoinControlDialog::clipboardChange);
-    ui->labelCoinControlQuantity->addAction(clipboardQuantityAction);
-    ui->labelCoinControlAmount->addAction(clipboardAmountAction);
-    ui->labelCoinControlFee->addAction(clipboardFeeAction);
-    ui->labelCoinControlAfterFee->addAction(clipboardAfterFeeAction);
-    ui->labelCoinControlBytes->addAction(clipboardBytesAction);
-    ui->labelCoinControlLowOutput->addAction(clipboardLowOutputAction);
-    ui->labelCoinControlChange->addAction(clipboardChangeAction);
+    
+    // C++20: Use structured bindings for context menu actions
+    struct ContextAction {
+        QAction* action;
+        void (CoinControlDialog::*handler)();
+    };
+    
+    std::array<ContextAction, 6> contextActions = {{
+        {copyAddressAction, &CoinControlDialog::copyAddress},
+        {copyLabelAction, &CoinControlDialog::copyLabel},
+        {copyAmountAction, &CoinControlDialog::copyAmount},
+        {copyTransactionHashAction, &CoinControlDialog::copyTransactionHash},
+        {lockAction, &CoinControlDialog::lockCoin},
+        {unlockAction, &CoinControlDialog::unlockCoin}
+    }};
+    
+    // Qt 6.9: Connect all context actions using ranges
+    std::ranges::for_each(contextActions, [this](const auto& conn) {
+        connect(conn.action, &QAction::triggered, this, conn.handler);
+    });
+    
+    // C++20: Clipboard actions with lambda factory
+    auto createClipboardAction = [this](const char* text, auto handler) {
+        QAction* action = new QAction(tr(text), this);
+        connect(action, &QAction::triggered, this, handler);
+        return action;
+    };
+    
+    ui->labelCoinControlQuantity->addAction(createClipboardAction("Copy quantity", &CoinControlDialog::clipboardQuantity));
+    ui->labelCoinControlAmount->addAction(createClipboardAction("Copy amount", &CoinControlDialog::clipboardAmount));
+    ui->labelCoinControlFee->addAction(createClipboardAction("Copy fee", &CoinControlDialog::clipboardFee));
+    ui->labelCoinControlAfterFee->addAction(createClipboardAction("Copy after fee", &CoinControlDialog::clipboardAfterFee));
+    ui->labelCoinControlBytes->addAction(createClipboardAction("Copy bytes", &CoinControlDialog::clipboardBytes));
+    ui->labelCoinControlLowOutput->addAction(createClipboardAction("Copy dust", &CoinControlDialog::clipboardLowOutput));
+    ui->labelCoinControlChange->addAction(createClipboardAction("Copy change", &CoinControlDialog::clipboardChange));
 
     // toggle tree/list mode
     connect(ui->radioTreeMode, &QRadioButton::toggled, this, &CoinControlDialog::radioTreeMode);
@@ -163,24 +184,38 @@ void CoinControlDialog::buttonBoxClicked(QAbstractButton* button)
         done(QDialog::Accepted); // closes the dialog
 }
 
-// (un)select all
+// C++20: Concept for tree widget items that can be selected
+template<typename T>
+concept SelectableItem = requires(T* item) {
+    { item->checkState(0) } -> std::convertible_to<Qt::CheckState>;
+    { item->setCheckState(0, Qt::Checked) };
+};
+
+// (un)select all - Qt 6.9 with C++20 ranges
 void CoinControlDialog::buttonSelectAllClicked()
 {
-    Qt::CheckState state = Qt::Checked;
-    for (int i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
-    {
-        if (ui->treeWidget->topLevelItem(i)->checkState(COLUMN_CHECKBOX) != Qt::Unchecked)
-        {
-            state = Qt::Unchecked;
-            break;
-        }
-    }
+    // C++20: Use ranges to check if any item is checked
+    const int itemCount = ui->treeWidget->topLevelItemCount();
+    auto items = std::views::iota(0, itemCount) 
+        | std::views::transform([this](int i) { return ui->treeWidget->topLevelItem(i); });
+    
+    Qt::CheckState targetState = std::ranges::any_of(items, 
+        [](auto* item) { return item->checkState(COLUMN_CHECKBOX) != Qt::Unchecked; }) 
+        ? Qt::Unchecked : Qt::Checked;
+    
     ui->treeWidget->setEnabled(false);
-    for (int i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
-            if (ui->treeWidget->topLevelItem(i)->checkState(COLUMN_CHECKBOX) != state)
-                ui->treeWidget->topLevelItem(i)->setCheckState(COLUMN_CHECKBOX, state);
+    
+    // C++20: Apply state change to all items using ranges
+    std::ranges::for_each(items, [targetState](auto* item) {
+        if constexpr (requires { item->setCheckState(COLUMN_CHECKBOX, targetState); }) {
+            if (item->checkState(COLUMN_CHECKBOX) != targetState)
+                item->setCheckState(COLUMN_CHECKBOX, targetState);
+        }
+    });
+    
     ui->treeWidget->setEnabled(true);
-    if (state == Qt::Unchecked)
+    
+    if (targetState == Qt::Unchecked)
         coinControl->UnSelectAll(); // just to be sure
     CoinControlDialog::updateLabels(model, this);
 }
@@ -660,7 +695,7 @@ void CoinControlDialog::updateView()
             QString sAddress = "";
             if(ExtractDestination(out.tx->tx->vout[out.i].scriptPubKey, outputAddress))
             {
-                sAddress = QString::fromStdString(CBitcoinAddress(outputAddress).ToString());
+                sAddress = QString::fromStdString(EncodeDestination(outputAddress));
 
                 // if listMode or change => show bitcoin address. In tree mode, address is not shown again for direct wallet address outputs
                 if (!treeMode || (!(sAddress == sWalletAddress)))

@@ -12,6 +12,10 @@
 #include <QResizeEvent>
 #include <QPropertyAnimation>
 
+#include <algorithm>
+#include <chrono>
+#include <ranges>
+
 ModalOverlay::ModalOverlay(QWidget *parent) :
 QWidget(parent),
 ui(new Ui::ModalOverlay),
@@ -21,7 +25,10 @@ layerIsVisible(false),
 userClosed(false)
 {
     ui->setupUi(this);
-    connect(ui->closeButton, &QPushButton::clicked, this, &ModalOverlay::closeClicked);    if (parent) {
+    // Qt 6.9: Modern signal connection
+    connect(ui->closeButton, &QPushButton::clicked, this, &ModalOverlay::closeClicked);
+    
+    if (parent) {
         parent->installEventFilter(this);
         raise();
     }
@@ -75,42 +82,50 @@ void ModalOverlay::setKnownBestHeight(int count, const QDateTime& blockDate)
 
 void ModalOverlay::tipUpdate(int count, const QDateTime& blockDate, double nVerificationProgress)
 {
-    QDateTime currentDate = QDateTime::currentDateTime();
+    // C++20: Use chrono for time handling
+    using namespace std::chrono;
+    auto currentDate = QDateTime::currentDateTime();
+    auto currentMs = currentDate.toMSecsSinceEpoch();
 
     // keep a vector of samples of verification progress at height
-    blockProcessTime.push_front(qMakePair(currentDate.toMSecsSinceEpoch(), nVerificationProgress));
+    blockProcessTime.push_front(qMakePair(currentMs, nVerificationProgress));
 
     // show progress speed if we have more then one sample
     if (blockProcessTime.size() >= 2)
     {
-        double progressStart = blockProcessTime[0].second;
-        double progressDelta = 0;
-        double progressPerHour = 0;
-        qint64 timeDelta = 0;
-        qint64 remainingMSecs = 0;
+        // C++20: Use structured bindings and ranges for cleaner code
+        auto [startTime, startProgress] = blockProcessTime[0];
         double remainingProgress = 1.0 - nVerificationProgress;
-        for (int i = 1; i < blockProcessTime.size(); i++)
-        {
-            QPair<qint64, double> sample = blockProcessTime[i];
-
+        
+        // C++20: Find appropriate sample using ranges
+        auto isOldEnough = [currentMs](const auto& sample) {
+            return sample.first < (currentMs - 500 * 1000);
+        };
+        
+        auto samples = blockProcessTime | std::views::drop(1);
+        for (const auto& [sampleTime, sampleProgress] : samples) {
             // take first sample after 500 seconds or last available one
-            if (sample.first < (currentDate.toMSecsSinceEpoch() - 500 * 1000) || i == blockProcessTime.size() - 1) {
-                progressDelta = progressStart-sample.second;
-                timeDelta = blockProcessTime[0].first - sample.first;
-                progressPerHour = progressDelta/(double)timeDelta*1000*3600;
-                remainingMSecs = remainingProgress / progressDelta * timeDelta;
+            if (isOldEnough(qMakePair(sampleTime, sampleProgress)) || 
+                &qMakePair(sampleTime, sampleProgress) == &blockProcessTime.back()) {
+                
+                double progressDelta = startProgress - sampleProgress;
+                qint64 timeDelta = startTime - sampleTime;
+                double progressPerHour = progressDelta / static_cast<double>(timeDelta) * 1000 * 3600;
+                qint64 remainingMSecs = remainingProgress / progressDelta * timeDelta;
+                
+                // show progress increase per hour
+                ui->progressIncreasePerH->setText(QString::number(progressPerHour * 100, 'f', 2) + "%");
+                
+                // show expected remaining time
+                ui->expectedTimeLeft->setText(GUIUtil::formatNiceTimeOffset(remainingMSecs / 1000.0));
                 break;
             }
         }
-        // show progress increase per hour
-        ui->progressIncreasePerH->setText(QString::number(progressPerHour*100, 'f', 2)+"%");
-
-        // show expected remaining time
-        ui->expectedTimeLeft->setText(GUIUtil::formatNiceTimeOffset(remainingMSecs/1000.0));
-
-        static const int MAX_SAMPLES = 5000;
+        
+        // C++20: Constexpr for compile-time constant
+        constexpr int MAX_SAMPLES = 5000;
         if (blockProcessTime.count() > MAX_SAMPLES)
-            blockProcessTime.remove(MAX_SAMPLES, blockProcessTime.count()-MAX_SAMPLES);
+            blockProcessTime.remove(MAX_SAMPLES, blockProcessTime.count() - MAX_SAMPLES);
     }
 
     // show the last block date

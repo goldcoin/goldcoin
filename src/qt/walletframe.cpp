@@ -12,6 +12,9 @@
 #include <QHBoxLayout>
 #include <QLabel>
 
+#include <algorithm>
+#include <ranges>
+
 WalletFrame::WalletFrame(const PlatformStyle *_platformStyle, BitcoinGUI *_gui) :
     QFrame(_gui),
     gui(_gui),
@@ -87,9 +90,10 @@ bool WalletFrame::removeWallet(const QString &name)
 
 void WalletFrame::removeAllWallets()
 {
-    QMap<QString, WalletView*>::const_iterator i;
-    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        walletStack->removeWidget(i.value());
+    // C++20: Use ranges to remove all wallet widgets
+    std::ranges::for_each(mapWalletViews, [this](const auto& pair) {
+        walletStack->removeWidget(pair.second);
+    });
     mapWalletViews.clear();
 }
 
@@ -105,37 +109,47 @@ bool WalletFrame::handlePaymentRequest(const SendCoinsRecipient &recipient)
 void WalletFrame::showOutOfSyncWarning(bool fShow)
 {
     bOutOfSync = fShow;
-    QMap<QString, WalletView*>::const_iterator i;
-    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        i.value()->showOutOfSyncWarning(fShow);
+    // C++20: Use ranges with values view
+    auto walletViews = mapWalletViews | std::views::values;
+    std::ranges::for_each(walletViews, [fShow](WalletView* view) {
+        view->showOutOfSyncWarning(fShow);
+    });
 }
 
 void WalletFrame::gotoOverviewPage()
 {
-    QMap<QString, WalletView*>::const_iterator i;
-    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        i.value()->gotoOverviewPage();
+    // C++20: Apply operation to all wallet views using ranges
+    auto walletViews = mapWalletViews | std::views::values;
+    std::ranges::for_each(walletViews, [](WalletView* view) {
+        view->gotoOverviewPage();
+    });
 }
 
 void WalletFrame::gotoHistoryPage()
 {
-    QMap<QString, WalletView*>::const_iterator i;
-    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        i.value()->gotoHistoryPage();
+    // C++20: Modern iteration with ranges
+    auto walletViews = mapWalletViews | std::views::values;
+    std::ranges::for_each(walletViews, [](WalletView* view) {
+        view->gotoHistoryPage();
+    });
 }
 
 void WalletFrame::gotoReceiveCoinsPage()
 {
-    QMap<QString, WalletView*>::const_iterator i;
-    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        i.value()->gotoReceiveCoinsPage();
+    // C++20: Simplify with ranges
+    auto walletViews = mapWalletViews | std::views::values;
+    std::ranges::for_each(walletViews, [](WalletView* view) {
+        view->gotoReceiveCoinsPage();
+    });
 }
 
 void WalletFrame::gotoSendCoinsPage(QString addr)
 {
-    QMap<QString, WalletView*>::const_iterator i;
-    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        i.value()->gotoSendCoinsPage(addr);
+    // C++20: Use ranges with capture
+    auto walletViews = mapWalletViews | std::views::values;
+    std::ranges::for_each(walletViews, [&addr](WalletView* view) {
+        view->gotoSendCoinsPage(addr);
+    });
 }
 
 void WalletFrame::gotoSignMessageTab(QString addr)
