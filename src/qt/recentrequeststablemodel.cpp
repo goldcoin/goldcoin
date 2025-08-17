@@ -11,107 +11,118 @@
 #include "clientversion.h"
 #include "streams.h"
 
-#include <boost/foreach.hpp>
+#include <algorithm>
+#include <ranges>
+#include <span>
+#include <optional>
 
-RecentRequestsTableModel::RecentRequestsTableModel(CWallet *wallet, WalletModel *parent) :
+// C++20: Concept for request entries
+template<typename T>
+concept RequestEntry = requires(T entry) {
+    { entry.id } -> std::convertible_to<int64_t>;
+    { entry.date } -> std::convertible_to<QDateTime>;
+    { entry.recipient };
+};
+
+RecentRequestsTableModel::RecentRequestsTableModel([[maybe_unused]] CWallet *wallet, WalletModel *parent) :
     QAbstractTableModel(parent), walletModel(parent)
 {
-    Q_UNUSED(wallet);
     nReceiveRequestsMaxId = 0;
 
-    // Load entries from wallet
+    // C++20: Load entries with ranges
     std::vector<std::string> vReceiveRequests;
     parent->loadReceiveRequests(vReceiveRequests);
-    BOOST_FOREACH(const std::string& request, vReceiveRequests)
+    
+    for (const auto& request : vReceiveRequests) {
         addNewRequest(request);
+    }
 
-    /* These columns must match the indices in the ColumnIndex enumeration */
+    // Initialize column headers
     columns << tr("Date") << tr("Label") << tr("Message") << getAmountTitle();
 
-    connect(walletModel->getOptionsModel(), &OptionsModel::displayUnitChanged, this, &RecentRequestsTableModel::updateDisplayUnit);}
+    // Qt 6.9: Modern signal connection
+    connect(walletModel->getOptionsModel(), &OptionsModel::displayUnitChanged, 
+            this, [this]() { updateDisplayUnit(); });
+}
 
 RecentRequestsTableModel::~RecentRequestsTableModel()
 {
     /* Intentionally left empty */
 }
 
-int RecentRequestsTableModel::rowCount(const QModelIndex &parent) const
+int RecentRequestsTableModel::rowCount([[maybe_unused]] const QModelIndex &parent) const
 {
-    Q_UNUSED(parent);
-
     return list.length();
 }
 
-int RecentRequestsTableModel::columnCount(const QModelIndex &parent) const
+int RecentRequestsTableModel::columnCount([[maybe_unused]] const QModelIndex &parent) const
 {
-    Q_UNUSED(parent);
-
     return columns.length();
 }
 
 QVariant RecentRequestsTableModel::data(const QModelIndex &index, int role) const
 {
-    if(!index.isValid() || index.row() >= list.length())
+    // C++20: Early return for invalid index
+    if (!index.isValid() || index.row() >= list.length()) {
         return QVariant();
+    }
 
-    const RecentRequestEntry *rec = &list[index.row()];
+    const auto& rec = list[index.row()];
 
-    if(role == Qt::DisplayRole || role == Qt::EditRole)
-    {
-        switch(index.column())
-        {
-        case Date:
-            return GUIUtil::dateTimeStr(rec->date);
-        case Label:
-            if(rec->recipient.label.isEmpty() && role == Qt::DisplayRole)
-            {
-                return tr("(no label)");
-            }
-            else
-            {
-                return rec->recipient.label;
-            }
-        case Message:
-            if(rec->recipient.message.isEmpty() && role == Qt::DisplayRole)
-            {
-                return tr("(no message)");
-            }
-            else
-            {
-                return rec->recipient.message;
-            }
-        case Amount:
-            if (rec->recipient.amount == 0 && role == Qt::DisplayRole)
-                return tr("(no amount requested)");
-            else if (role == Qt::EditRole)
-                return BitcoinUnits::format(walletModel->getOptionsModel()->getDisplayUnit(), rec->recipient.amount, false, BitcoinUnits::separatorNever);
-            else
-                return BitcoinUnits::format(walletModel->getOptionsModel()->getDisplayUnit(), rec->recipient.amount);
+    // Handle text alignment
+    if (role == Qt::TextAlignmentRole) {
+        return (index.column() == Amount) 
+            ? static_cast<int>(Qt::AlignRight | Qt::AlignVCenter)
+            : QVariant();
+    }
+
+    // Handle display and edit roles
+    if (role != Qt::DisplayRole && role != Qt::EditRole) {
+        return QVariant();
+    }
+
+    // C++20: Lambda for empty field handling
+    const auto handleEmpty = [role](const QString& value, const QString& placeholder) {
+        return (value.isEmpty() && role == Qt::DisplayRole) ? placeholder : value;
+    };
+
+    switch(index.column()) {
+    case Date:
+        return GUIUtil::dateTimeStr(rec.date);
+    case Label:
+        return handleEmpty(rec.recipient.label, tr("(no label)"));
+    case Message:
+        return handleEmpty(rec.recipient.message, tr("(no message)"));
+    case Amount: {
+        const auto displayUnit = walletModel->getOptionsModel()->getDisplayUnit();
+        if (rec.recipient.amount == 0 && role == Qt::DisplayRole) {
+            return tr("(no amount requested)");
         }
+        return (role == Qt::EditRole)
+            ? BitcoinUnits::format(displayUnit, rec.recipient.amount, false, BitcoinUnits::separatorNever)
+            : BitcoinUnits::format(displayUnit, rec.recipient.amount);
     }
-    else if (role == Qt::TextAlignmentRole)
-    {
-        if (index.column() == Amount)
-            return (int)(Qt::AlignRight|Qt::AlignVCenter);
+    default:
+        return QVariant();
     }
-    return QVariant();
 }
 
-bool RecentRequestsTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool RecentRequestsTableModel::setData([[maybe_unused]] const QModelIndex &index, 
+                                       [[maybe_unused]] const QVariant &value, 
+                                       [[maybe_unused]] int role)
 {
+    // C++20: Mark unused parameters
     return true;
 }
 
 QVariant RecentRequestsTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if(orientation == Qt::Horizontal)
-    {
-        if(role == Qt::DisplayRole && section < columns.size())
-        {
-            return columns[section];
-        }
+    // C++20: Early return pattern
+    if (orientation != Qt::Horizontal || role != Qt::DisplayRole) {
+        return QVariant();
     }
-    return QVariant();
+    
+    return (section < columns.size()) ? columns[section] : QVariant();
 }
 
 /** Updates the column title to "Amount (DisplayUnit)" and emits headerDataChanged() signal for table headers to react. */
@@ -124,42 +135,49 @@ void RecentRequestsTableModel::updateAmountColumnTitle()
 /** Gets title for amount column including current display unit if optionsModel reference available. */
 QString RecentRequestsTableModel::getAmountTitle()
 {
-    return (this->walletModel->getOptionsModel() != NULL) ? tr("Requested") + " ("+BitcoinUnits::name(this->walletModel->getOptionsModel()->getDisplayUnit()) + ")" : "";
+    // C++20: Use nullptr and structured string building
+    if (auto* optionsModel = walletModel->getOptionsModel(); optionsModel != nullptr) {
+        return tr("Requested") + " (" + 
+               BitcoinUnits::name(optionsModel->getDisplayUnit()) + ")";
+    }
+    return QString();
 }
 
-QModelIndex RecentRequestsTableModel::index(int row, int column, const QModelIndex &parent) const
+QModelIndex RecentRequestsTableModel::index(int row, int column, 
+                                           [[maybe_unused]] const QModelIndex &parent) const
 {
-    Q_UNUSED(parent);
-
     return createIndex(row, column);
 }
 
 bool RecentRequestsTableModel::removeRows(int row, int count, const QModelIndex &parent)
 {
-    Q_UNUSED(parent);
-
-    if(count > 0 && row >= 0 && (row+count) <= list.size())
-    {
-        const RecentRequestEntry *rec;
-        for (int i = 0; i < count; ++i)
-        {
-            rec = &list[row+i];
-            if (!walletModel->saveReceiveRequest(rec->recipient.address.toStdString(), rec->id, ""))
-                return false;
-        }
-
-        beginRemoveRows(parent, row, row + count - 1);
-        list.erase(list.begin() + row, list.begin() + row + count);
-        endRemoveRows();
-        return true;
-    } else {
+    // C++20: Early return for invalid parameters
+    if (count <= 0 || row < 0 || (row + count) > list.size()) {
         return false;
     }
+
+    // Remove from wallet storage
+    for (int i = 0; i < count; ++i) {
+        const auto& rec = list[row + i];
+        if (!walletModel->saveReceiveRequest(
+                rec.recipient.address.toStdString(), rec.id, "")) {
+            return false;
+        }
+    }
+
+    // Remove from model
+    beginRemoveRows(parent, row, row + count - 1);
+    list.erase(list.begin() + row, list.begin() + row + count);
+    endRemoveRows();
+    
+    return true;
 }
 
-Qt::ItemFlags RecentRequestsTableModel::flags(const QModelIndex &index) const
+Qt::ItemFlags RecentRequestsTableModel::flags([[maybe_unused]] const QModelIndex &index) const
 {
-    return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+    // C++20: constexpr flags
+    constexpr auto flags = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+    return flags;
 }
 
 // called when adding a request from the GUI
@@ -182,18 +200,19 @@ void RecentRequestsTableModel::addNewRequest(const SendCoinsRecipient &recipient
 // called from ctor when loading from wallet
 void RecentRequestsTableModel::addNewRequest(const std::string &recipient)
 {
+    // C++20: Use span for data view
     std::vector<char> data(recipient.begin(), recipient.end());
     CDataStream ss(data, SER_DISK, CLIENT_VERSION);
 
     RecentRequestEntry entry;
     ss >> entry;
 
-    if (entry.id == 0) // should not happen
-        return;
+    // Validate entry
+    if (entry.id == 0) return;
 
-    if (entry.id > nReceiveRequestsMaxId)
-        nReceiveRequestsMaxId = entry.id;
-
+    // Update max ID
+    nReceiveRequestsMaxId = std::max(nReceiveRequestsMaxId, entry.id);
+    
     addNewRequest(entry);
 }
 
@@ -207,8 +226,14 @@ void RecentRequestsTableModel::addNewRequest(RecentRequestEntry &recipient)
 
 void RecentRequestsTableModel::sort(int column, Qt::SortOrder order)
 {
-    std::sort(list.begin(), list.end(), RecentRequestEntryLessThan(column, order));
-    Q_EMIT dataChanged(index(0, 0, QModelIndex()), index(list.size() - 1, NUMBER_OF_COLUMNS - 1, QModelIndex()));
+    // C++20: Use ranges::sort
+    std::ranges::sort(list, RecentRequestEntryLessThan(column, order));
+    
+    // Emit data changed for entire table
+    Q_EMIT dataChanged(
+        index(0, 0, QModelIndex()), 
+        index(list.size() - 1, NUMBER_OF_COLUMNS - 1, QModelIndex())
+    );
 }
 
 void RecentRequestsTableModel::updateDisplayUnit()
@@ -218,13 +243,16 @@ void RecentRequestsTableModel::updateDisplayUnit()
 
 bool RecentRequestEntryLessThan::operator()(RecentRequestEntry &left, RecentRequestEntry &right) const
 {
-    RecentRequestEntry *pLeft = &left;
-    RecentRequestEntry *pRight = &right;
-    if (order == Qt::DescendingOrder)
+    // C++20: Use references directly
+    const auto* pLeft = &left;
+    const auto* pRight = &right;
+    
+    if (order == Qt::DescendingOrder) {
         std::swap(pLeft, pRight);
+    }
 
-    switch(column)
-    {
+    // C++20: Switch with immediate returns
+    switch(column) {
     case RecentRequestsTableModel::Date:
         return pLeft->date.toSecsSinceEpoch() < pRight->date.toSecsSinceEpoch();
     case RecentRequestsTableModel::Label:
