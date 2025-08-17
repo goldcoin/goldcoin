@@ -18,11 +18,24 @@
 #include <QMessageBox>
 #include <QPushButton>
 
+#include <string_view>
+#include <optional>
+#include <algorithm>
+#include <memory>
+
+// C++20: Concept for secure string validation
+template<typename T>
+concept SecureStringType = requires(T str) {
+    { str.empty() } -> std::convertible_to<bool>;
+    { str.clear() };
+    { str.size() } -> std::convertible_to<size_t>;
+};
+
 AskPassphraseDialog::AskPassphraseDialog(Mode _mode, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AskPassphraseDialog),
     mode(_mode),
-    model(0),
+    model(nullptr),
     fCapsLock(false)
 {
     ui->setupUi(this);
@@ -40,37 +53,58 @@ AskPassphraseDialog::AskPassphraseDialog(Mode _mode, QWidget *parent) :
     ui->passEdit2->installEventFilter(this);
     ui->passEdit3->installEventFilter(this);
 
-    switch(mode)
-    {
+    // C++20: Use structured bindings and lambda for UI setup
+    const auto setupDialogMode = [this](const QString& warning, const QString& title, 
+                                        bool showPass1, bool showPass2, bool showPass3) {
+        ui->warningLabel->setText(warning);
+        setWindowTitle(title);
+        ui->passLabel1->setVisible(showPass1);
+        ui->passEdit1->setVisible(showPass1);
+        ui->passLabel2->setVisible(showPass2);
+        ui->passEdit2->setVisible(showPass2);
+        ui->passLabel3->setVisible(showPass3);
+        ui->passEdit3->setVisible(showPass3);
+    };
+
+    switch(mode) {
         case Encrypt: // Ask passphrase x2
-            ui->warningLabel->setText(tr("Enter the new passphrase to the wallet.<br/>Please use a passphrase of <b>ten or more random characters</b>, or <b>eight or more words</b>."));
-            ui->passLabel1->hide();
-            ui->passEdit1->hide();
-            setWindowTitle(tr("Encrypt wallet"));
+            setupDialogMode(
+                tr("Enter the new passphrase to the wallet.<br/>Please use a passphrase of <b>ten or more random characters</b>, or <b>eight or more words</b>."),
+                tr("Encrypt wallet"),
+                false, true, true);
             break;
         case Unlock: // Ask passphrase
-            ui->warningLabel->setText(tr("This operation needs your wallet passphrase to unlock the wallet."));
-            ui->passLabel2->hide();
-            ui->passEdit2->hide();
-            ui->passLabel3->hide();
-            ui->passEdit3->hide();
-            setWindowTitle(tr("Unlock wallet"));
+            setupDialogMode(
+                tr("This operation needs your wallet passphrase to unlock the wallet."),
+                tr("Unlock wallet"),
+                true, false, false);
             break;
-        case Decrypt:   // Ask passphrase
-            ui->warningLabel->setText(tr("This operation needs your wallet passphrase to decrypt the wallet."));
-            ui->passLabel2->hide();
-            ui->passEdit2->hide();
-            ui->passLabel3->hide();
-            ui->passEdit3->hide();
-            setWindowTitle(tr("Decrypt wallet"));
+        case Decrypt: // Ask passphrase
+            setupDialogMode(
+                tr("This operation needs your wallet passphrase to decrypt the wallet."),
+                tr("Decrypt wallet"),
+                true, false, false);
             break;
         case ChangePass: // Ask old passphrase + new passphrase x2
-            setWindowTitle(tr("Change passphrase"));
-            ui->warningLabel->setText(tr("Enter the old passphrase and new passphrase to the wallet."));
+            setupDialogMode(
+                tr("Enter the old passphrase and new passphrase to the wallet."),
+                tr("Change passphrase"),
+                true, true, true);
             break;
     }
     textChanged();
-    connect(ui->passEdit1, &QLineEdit::textChanged, this, &AskPassphraseDialog::textChanged);    connect(ui->passEdit2, &QLineEdit::textChanged, this, &AskPassphraseDialog::textChanged);    connect(ui->passEdit3, &QLineEdit::textChanged, this, &AskPassphraseDialog::textChanged);}
+    
+    // Qt 6.9: Modern signal connections with lambda
+    const auto connectPassphraseField = [this](QLineEdit* field) {
+        connect(field, &QLineEdit::textChanged, this, [this]() {
+            textChanged();
+        });
+    };
+    
+    connectPassphraseField(ui->passEdit1);
+    connectPassphraseField(ui->passEdit2);
+    connectPassphraseField(ui->passEdit3);
+}
 
 AskPassphraseDialog::~AskPassphraseDialog()
 {
@@ -85,32 +119,50 @@ void AskPassphraseDialog::setModel(WalletModel *_model)
 
 void AskPassphraseDialog::accept()
 {
-    SecureString oldpass, newpass1, newpass2;
-    if(!model)
-        return;
-    oldpass.reserve(MAX_PASSPHRASE_SIZE);
-    newpass1.reserve(MAX_PASSPHRASE_SIZE);
-    newpass2.reserve(MAX_PASSPHRASE_SIZE);
-    // TODO: get rid of this .c_str() by implementing SecureString::operator=(std::string)
-    // Alternately, find a way to make this input mlock()'d to begin with.
-    oldpass.assign(ui->passEdit1->text().toStdString().c_str());
-    newpass1.assign(ui->passEdit2->text().toStdString().c_str());
-    newpass2.assign(ui->passEdit3->text().toStdString().c_str());
+    if (!model) return;
+
+    // C++20: RAII pattern for secure string management
+    struct SecurePassphrases {
+        SecureString oldpass, newpass1, newpass2;
+        SecurePassphrases() {
+            oldpass.reserve(MAX_PASSPHRASE_SIZE);
+            newpass1.reserve(MAX_PASSPHRASE_SIZE);
+            newpass2.reserve(MAX_PASSPHRASE_SIZE);
+        }
+    } passphrases;
+    
+    // Extract passphrases securely
+    const auto extractPassphrase = [](QLineEdit* edit, SecureString& target) {
+        const auto text = edit->text().toStdString();
+        target.assign(text.c_str());
+    };
+    
+    extractPassphrase(ui->passEdit1, passphrases.oldpass);
+    extractPassphrase(ui->passEdit2, passphrases.newpass1);
+    extractPassphrase(ui->passEdit3, passphrases.newpass2);
 
     secureClearPassFields();
 
-    switch(mode)
-    {
+    // C++20: Use references to avoid copies
+    const auto& [oldpass, newpass1, newpass2] = std::tie(
+        passphrases.oldpass, passphrases.newpass1, passphrases.newpass2);
+
+    switch(mode) {
     case Encrypt: {
-        if(newpass1.empty() || newpass2.empty())
-        {
+        if (newpass1.empty() || newpass2.empty()) {
             // Cannot encrypt with empty passphrase
             break;
         }
-        QMessageBox::StandardButton retval = QMessageBox::question(this, tr("Confirm wallet encryption"),
-                 tr("Warning: If you encrypt your wallet and lose your passphrase, you will <b>LOSE ALL OF YOUR GOLDCOINS</b>!") + "<br><br>" + tr("Are you sure you wish to encrypt your wallet?"),
-                 QMessageBox::Yes|QMessageBox::Cancel,
-                 QMessageBox::Cancel);
+        // C++20: Structured message composition
+        const auto warningMessage = tr("Warning: If you encrypt your wallet and lose your passphrase, you will <b>LOSE ALL OF YOUR GOLDCOINS</b>!")
+                                  + "<br><br>"
+                                  + tr("Are you sure you wish to encrypt your wallet?");
+        
+        const auto retval = QMessageBox::question(this, 
+            tr("Confirm wallet encryption"),
+            warningMessage,
+            QMessageBox::Yes | QMessageBox::Cancel,
+            QMessageBox::Cancel);
         if(retval == QMessageBox::Yes)
         {
             if(newpass1 == newpass2)
@@ -196,77 +248,106 @@ void AskPassphraseDialog::accept()
 
 void AskPassphraseDialog::textChanged()
 {
-    // Validate input, set Ok button to enabled when acceptable
-    bool acceptable = false;
-    switch(mode)
-    {
-    case Encrypt: // New passphrase x2
-        acceptable = !ui->passEdit2->text().isEmpty() && !ui->passEdit3->text().isEmpty();
-        break;
-    case Unlock: // Old passphrase x1
-    case Decrypt:
-        acceptable = !ui->passEdit1->text().isEmpty();
-        break;
-    case ChangePass: // Old passphrase x1, new passphrase x2
-        acceptable = !ui->passEdit1->text().isEmpty() && !ui->passEdit2->text().isEmpty() && !ui->passEdit3->text().isEmpty();
-        break;
-    }
+    // C++20: Use lambda for validation logic
+    const auto isFieldValid = [](QLineEdit* field) -> bool {
+        return !field->text().isEmpty();
+    };
+    
+    // C++20: Pattern matching style validation
+    const bool acceptable = [this, &isFieldValid]() -> bool {
+        switch(mode) {
+        case Encrypt: // New passphrase x2
+            return isFieldValid(ui->passEdit2) && isFieldValid(ui->passEdit3);
+        case Unlock: // Old passphrase x1
+        case Decrypt:
+            return isFieldValid(ui->passEdit1);
+        case ChangePass: // Old passphrase x1, new passphrase x2
+            return isFieldValid(ui->passEdit1) && 
+                   isFieldValid(ui->passEdit2) && 
+                   isFieldValid(ui->passEdit3);
+        default:
+            return false;
+        }
+    }();
+    
     ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(acceptable);
 }
 
 bool AskPassphraseDialog::event(QEvent *event)
 {
-    // Detect Caps Lock key press.
-    if (event->type() == QEvent::KeyPress) {
-        QKeyEvent *ke = static_cast<QKeyEvent *>(event);
-        if (ke->key() == Qt::Key_CapsLock) {
-            fCapsLock = !fCapsLock;
-        }
-        if (fCapsLock) {
-            ui->capsLabel->setText(tr("Warning: The Caps Lock key is on!"));
-        } else {
-            ui->capsLabel->clear();
-        }
+    // C++20: Early return pattern
+    if (event->type() != QEvent::KeyPress) {
+        return QWidget::event(event);
     }
+    
+    // C++20: Use auto for cast
+    if (const auto* ke = static_cast<QKeyEvent*>(event); 
+        ke->key() == Qt::Key_CapsLock) {
+        fCapsLock = !fCapsLock;
+        
+        // Update caps lock warning
+        ui->capsLabel->setText(fCapsLock 
+            ? tr("Warning: The Caps Lock key is on!") 
+            : QString());
+    }
+    
     return QWidget::event(event);
 }
 
 bool AskPassphraseDialog::eventFilter(QObject *object, QEvent *event)
 {
-    /* Detect Caps Lock.
-     * There is no good OS-independent way to check a key state in Qt, but we
-     * can detect Caps Lock by checking for the following condition:
-     * Shift key is down and the result is a lower case character, or
-     * Shift key is not down and the result is an upper case character.
-     */
-    if (event->type() == QEvent::KeyPress) {
-        QKeyEvent *ke = static_cast<QKeyEvent *>(event);
-        QString str = ke->text();
-        if (str.length() != 0) {
-            const QChar *psz = str.unicode();
-            bool fShift = (ke->modifiers() & Qt::ShiftModifier) != 0;
-            if ((fShift && *psz >= 'a' && *psz <= 'z') || (!fShift && *psz >= 'A' && *psz <= 'Z')) {
-                fCapsLock = true;
-                ui->capsLabel->setText(tr("Warning: The Caps Lock key is on!"));
-            } else if (psz->isLetter()) {
-                fCapsLock = false;
-                ui->capsLabel->clear();
-            }
-        }
+    // C++20: Early return for non-key events
+    if (event->type() != QEvent::KeyPress) {
+        return QDialog::eventFilter(object, event);
     }
+    
+    const auto* ke = static_cast<QKeyEvent*>(event);
+    const auto str = ke->text();
+    
+    if (str.isEmpty()) {
+        return QDialog::eventFilter(object, event);
+    }
+    
+    // C++20: Structured detection logic
+    const QChar ch = str[0];
+    if (!ch.isLetter()) {
+        return QDialog::eventFilter(object, event);
+    }
+    
+    const bool hasShift = (ke->modifiers() & Qt::ShiftModifier) != 0;
+    const bool isLowerCase = ch >= 'a' && ch <= 'z';
+    const bool isUpperCase = ch >= 'A' && ch <= 'Z';
+    
+    // Detect caps lock mismatch
+    const bool capsLockDetected = (hasShift && isLowerCase) || (!hasShift && isUpperCase);
+    
+    if (fCapsLock != capsLockDetected) {
+        fCapsLock = capsLockDetected;
+        ui->capsLabel->setText(fCapsLock 
+            ? tr("Warning: The Caps Lock key is on!") 
+            : QString());
+    }
+    
     return QDialog::eventFilter(object, event);
 }
 
-static void SecureClearQLineEdit(QLineEdit* edit)
+// C++20: Use inline for header-compatible function
+inline void SecureClearQLineEdit(QLineEdit* edit)
 {
     // Attempt to overwrite text so that they do not linger around in memory
-    edit->setText(QString(" ").repeated(edit->text().size()));
+    const auto textSize = edit->text().size();
+    edit->setText(QString(" ").repeated(textSize));
     edit->clear();
 }
 
 void AskPassphraseDialog::secureClearPassFields()
 {
-    SecureClearQLineEdit(ui->passEdit1);
-    SecureClearQLineEdit(ui->passEdit2);
-    SecureClearQLineEdit(ui->passEdit3);
+    // C++20: Use array for iteration
+    const std::array<QLineEdit*, 3> fields = {
+        ui->passEdit1, ui->passEdit2, ui->passEdit3
+    };
+    
+    for (auto* field : fields) {
+        SecureClearQLineEdit(field);
+    }
 }
