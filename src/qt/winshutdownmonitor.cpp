@@ -4,7 +4,7 @@
 
 #include "winshutdownmonitor.h"
 
-#if defined(Q_OS_WIN) && QT_VERSION >= 0x050000
+#if defined(Q_OS_WIN)
 #include "init.h"
 #include "util.h"
 
@@ -22,15 +22,8 @@ bool WinShutdownMonitor::nativeEventFilter(const QByteArray &eventType, void *pM
 
        MSG *pMsg = static_cast<MSG *>(pMessage);
 
-       // Seed OpenSSL PRNG with Windows event data (e.g.  mouse movements and other user interactions)
-       if (RAND_event(pMsg->message, pMsg->wParam, pMsg->lParam) == 0) {
-            // Warn only once as this is performance-critical
-            static bool warned = false;
-            if (!warned) {
-                LogPrintf("%s: OpenSSL RAND_event() failed to seed OpenSSL PRNG with enough data.\n", __func__);
-                warned = true;
-            }
-       }
+       // TODO: OpenSSL 3.x deprecated RAND_event() - modern OpenSSL automatically seeds from OS entropy
+       // This code can be removed as OpenSSL 3.x handles entropy gathering automatically
 
        switch(pMsg->message)
        {

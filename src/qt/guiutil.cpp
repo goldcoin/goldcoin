@@ -37,12 +37,8 @@
 
 #include <filesystem>
 #include <fstream>
+// Keep boost::filesystem only for GetDataDir() compatibility
 #include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
-#if BOOST_FILESYSTEM_VERSION >= 3
-#include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
-#endif
-#include <boost/scoped_array.hpp>
 
 #include <string_view>
 #include <concepts>
@@ -66,19 +62,11 @@
 #include <QRegularExpression>
 #include <QStandardPaths>
 
-#if QT_VERSION < 0x050000
-#include <QUrl>
-#else
 #include <QUrlQuery>
-#endif
 
-#if QT_VERSION >= 0x50200
 #include <QFontDatabase>
-#endif
 
-#if BOOST_FILESYSTEM_VERSION >= 3
-// No longer needed with std::filesystem which handles UTF-8 natively
-#endif
+// std::filesystem handles UTF-8 natively
 
 #if defined(Q_OS_MAC)
 extern double NSAppKitVersionNumber;
@@ -155,12 +143,10 @@ void setupAddressWidget(QValidatedLineEdit *widget, QWidget *parent)
     parent->setFocusProxy(widget);
 
     widget->setFont(fixedPitchFont());
-#if QT_VERSION >= 0x040700
     // We don't want translators to use own addresses in translations
     // and this is the only place, where this address is supplied.
     widget->setPlaceholderText(QObject::tr("Enter a Goldcoin address (e.g. %1)").arg(
         QString::fromStdString(DummyAddress(Params()))));
-#endif
     widget->setValidator(new BitcoinAddressEntryValidator(parent));
     widget->setCheckValidator(new BitcoinAddressCheckValidator(parent));
 }
@@ -188,12 +174,8 @@ bool parseBitcoinURI(const QUrl &uri, SendCoinsRecipient *out)
     }
     rv.amount = 0;
 
-#if QT_VERSION < 0x050000
-    QList<QPair<QString, QString> > items = uri.queryItems();
-#else
     QUrlQuery uriQuery(uri);
     QList<QPair<QString, QString> > items = uriQuery.queryItems();
-#endif
     for (QList<QPair<QString, QString> >::iterator i = items.begin(); i != items.end(); i++)
     {
         bool fShouldReturnFalse = false;
@@ -287,11 +269,7 @@ bool isDust(const QString& address, const CAmount& amount)
 
 QString HtmlEscape(const QString& str, bool fMultiLine)
 {
-#if QT_VERSION < 0x050000
-    QString escaped = Qt::escape(str);
-#else
     QString escaped = str.toHtmlEscaped();
-#endif
     if(fMultiLine)
     {
         escaped = escaped.replace("\n", "<br>\n");
@@ -332,11 +310,7 @@ QString getSaveFileName(QWidget *parent, const QString &caption, const QString &
     QString myDir;
     if(dir.isEmpty()) // Default to user documents location
     {
-#if QT_VERSION < 0x050000
-        myDir = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
-#else
         myDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-#endif
     }
     else
     {
@@ -383,11 +357,7 @@ QString getOpenFileName(QWidget *parent, const QString &caption, const QString &
     QString myDir;
     if(dir.isEmpty()) // Default to user documents location
     {
-#if QT_VERSION < 0x050000
-        myDir = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
-#else
         myDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-#endif
     }
     else
     {
@@ -526,11 +496,7 @@ void TableViewLastColumnResizingFixer::disconnectViewHeadersSignals()
 // Refactored here for readability.
 void TableViewLastColumnResizingFixer::setViewHeaderResizeMode(int logicalIndex, QHeaderView::ResizeMode resizeMode)
 {
-#if QT_VERSION < 0x050000
-    tableView->horizontalHeader()->setResizeMode(logicalIndex, resizeMode);
-#else
     tableView->horizontalHeader()->setSectionResizeMode(logicalIndex, resizeMode);
-#endif
 }
 
 void TableViewLastColumnResizingFixer::resizeColumn(int nColumnIndex, int width)
@@ -891,7 +857,6 @@ void setClipboard(const QString& str)
     QApplication::clipboard()->setText(str, QClipboard::Selection);
 }
 
-#if BOOST_FILESYSTEM_VERSION >= 3
 std::filesystem::path qstringToBoostPath(const QString &path)
 {
     // std::filesystem uses UTF-8 by default on Unix and UTF-16 on Windows
@@ -903,18 +868,6 @@ QString boostPathToQString(const std::filesystem::path &path)
     // std::filesystem::path::string() returns UTF-8 on Unix
     return QString::fromStdString(path.string());
 }
-#else
-#warning Conversion between boost path and QString can use invalid character encoding with boost_filesystem v2 and older
-std::filesystem::path qstringToBoostPath(const QString &path)
-{
-    return std::filesystem::path(path.toStdString());
-}
-
-QString boostPathToQString(const std::filesystem::path &path)
-{
-    return QString::fromStdString(path.string());
-}
-#endif
 
 QString formatDurationStr(int secs)
 {
@@ -1030,20 +983,13 @@ void ClickableProgressBar::mouseReleaseEvent(QMouseEvent *event)
     
     QDateTime StartOfDay(const QDate& date)
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     return date.startOfDay();
-#else
-    return QDateTime(date);
-#endif
 }
 
 bool HasPixmap(const QLabel* label)
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-    return !label->pixmap(Qt::ReturnByValue).isNull();
-#else
-    return label->pixmap() != nullptr;
-#endif
+    // Qt6 always uses value semantics for pixmap
+    return !label->pixmap().isNull();
 }
 
 QImage GetImage(const QLabel* label)
@@ -1052,11 +998,8 @@ QImage GetImage(const QLabel* label)
         return QImage();
     }
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-    return label->pixmap(Qt::ReturnByValue).toImage();
-#else
-    return label->pixmap()->toImage();
-#endif
+    // Qt6 always uses value semantics for pixmap
+    return label->pixmap().toImage();
 }
 
     
