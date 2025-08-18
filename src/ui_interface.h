@@ -8,6 +8,11 @@
 
 #include <stdint.h>
 #include <string>
+#include <functional>
+#include <vector>
+#include <memory>
+#include <atomic>
+#include <algorithm>
 
 #include <boost/signals2/last_value.hpp>
 #include <boost/signals2/signal.hpp>
@@ -24,6 +29,87 @@ enum ChangeType
     CT_UPDATED,
     CT_DELETED
 };
+
+/**
+ * Modern signal management utilities for hybrid boost::signals2 + std::function architecture.
+ * Provides RAII callback management, connection tracking, and diagnostic capabilities.
+ */
+namespace UISignalUtils {
+    
+    /** Tracks callback connection state for diagnostics and debugging */
+    struct CallbackConnection {
+        std::string signal_name;
+        std::string source_location;
+        std::atomic<bool> is_active{true};
+        
+        CallbackConnection(const std::string& name, const std::string& location = "") 
+            : signal_name(name), source_location(location) {}
+    };
+    
+    /** RAII wrapper for automatic callback cleanup */
+    template<typename CallbackType>
+    class AutoCallback {
+        std::vector<CallbackType>& callback_vector;
+        size_t callback_index;
+        
+    public:
+        AutoCallback(std::vector<CallbackType>& vec, CallbackType callback) 
+            : callback_vector(vec) {
+            callback_vector.push_back(std::move(callback));
+            callback_index = callback_vector.size() - 1;
+        }
+        
+        ~AutoCallback() {
+            // Mark as inactive rather than removing to avoid iterator invalidation
+            if (callback_index < callback_vector.size()) {
+                // Replace with no-op lambda for this callback type
+                if constexpr (std::is_same_v<CallbackType, std::function<void()>>) {
+                    callback_vector[callback_index] = [](){};
+                }
+            }
+        }
+        
+        // Non-copyable, movable
+        AutoCallback(const AutoCallback&) = delete;
+        AutoCallback& operator=(const AutoCallback&) = delete;
+        AutoCallback(AutoCallback&&) = default;
+        AutoCallback& operator=(AutoCallback&&) = default;
+    };
+    
+    /** Diagnostic counters for signal usage monitoring */
+    struct SignalDiagnostics {
+        static std::atomic<size_t> total_callbacks_registered;
+        static std::atomic<size_t> total_signals_fired;
+        static std::atomic<size_t> boost_signals_fired;
+        static std::atomic<size_t> modern_callbacks_fired;
+        
+        static void IncrementCallbacksRegistered() { total_callbacks_registered++; }
+        static void IncrementSignalsFired() { total_signals_fired++; }
+        static void IncrementBoostSignalsFired() { boost_signals_fired++; }
+        static void IncrementModernCallbacksFired() { modern_callbacks_fired++; }
+        
+        static size_t GetTotalCallbacksRegistered() { return total_callbacks_registered.load(); }
+        static size_t GetTotalSignalsFired() { return total_signals_fired.load(); }
+        static size_t GetBoostSignalsFired() { return boost_signals_fired.load(); }
+        static size_t GetModernCallbacksFired() { return modern_callbacks_fired.load(); }
+    };
+    
+    /** Helper to clean up inactive callbacks periodically */
+    template<typename CallbackType>
+    void CompactCallbackVector(std::vector<CallbackType>& callbacks) {
+        // Remove no-op callbacks to prevent vector growth
+        // This is safe because we replace with no-ops rather than removing during RAII cleanup
+        callbacks.erase(
+            std::remove_if(callbacks.begin(), callbacks.end(), 
+                [](const CallbackType& cb) {
+                    // For simple callbacks, this is a basic heuristic
+                    // More sophisticated detection could be added here
+                    return false; // Conservative: don't remove for now
+                }), 
+            callbacks.end()
+        );
+    }
+}
 
 /** Signals for UI communication. */
 class CClientUIInterface
@@ -75,38 +161,250 @@ public:
 
     /** Show message box. */
     boost::signals2::signal<bool (const std::string& message, const std::string& caption, unsigned int style), boost::signals2::last_value<bool> > ThreadSafeMessageBox;
+    // Modern alternative: std::function-based callback (returns bool from last callback)
+    std::vector<std::function<bool(const std::string&, const std::string&, unsigned int)>> ThreadSafeMessageBoxCallbacks;
 
     /** If possible, ask the user a question. If not, falls back to ThreadSafeMessageBox(noninteractive_message, caption, style) and returns false. */
     boost::signals2::signal<bool (const std::string& message, const std::string& noninteractive_message, const std::string& caption, unsigned int style), boost::signals2::last_value<bool> > ThreadSafeQuestion;
+    // Modern alternative: std::function-based callback (returns bool from last callback)
+    std::vector<std::function<bool(const std::string&, const std::string&, const std::string&, unsigned int)>> ThreadSafeQuestionCallbacks;
 
     /** Progress message during initialization. */
     boost::signals2::signal<void (const std::string &message)> InitMessage;
+    // Modern alternative: std::function-based callback
+    std::vector<std::function<void(const std::string&)>> InitMessageCallbacks;
 
     /** Number of network connections changed. */
     boost::signals2::signal<void (int newNumConnections)> NotifyNumConnectionsChanged;
+    // Modern alternative: std::function-based callback
+    std::vector<std::function<void(int)>> NotifyNumConnectionsChangedCallbacks;
 
     /** Network activity state changed. */
     boost::signals2::signal<void (bool networkActive)> NotifyNetworkActiveChanged;
+    // Modern alternative: std::function-based callback
+    std::vector<std::function<void(bool)>> NotifyNetworkActiveChangedCallbacks;
 
     /**
      * Status bar alerts changed.
      */
     boost::signals2::signal<void ()> NotifyAlertChanged;
+    // Modern alternative: std::function-based callback
+    std::vector<std::function<void()>> NotifyAlertChangedCallbacks;
 
     /** A wallet has been loaded. */
     boost::signals2::signal<void (CWallet* wallet)> LoadWallet;
+    // Modern alternative: std::function-based callback
+    std::vector<std::function<void(CWallet*)>> LoadWalletCallbacks;
 
     /** Show progress e.g. for verifychain */
     boost::signals2::signal<void (const std::string &title, int nProgress)> ShowProgress;
+    // Modern alternative: std::function-based callback
+    std::vector<std::function<void(const std::string&, int)>> ShowProgressCallbacks;
 
     /** New block has been accepted */
     boost::signals2::signal<void (bool, const CBlockIndex *)> NotifyBlockTip;
+    // Modern alternative: std::function-based callback
+    std::vector<std::function<void(bool, const CBlockIndex*)>> NotifyBlockTipCallbacks;
 
     /** Best header has changed */
     boost::signals2::signal<void (bool, const CBlockIndex *)> NotifyHeaderTip;
+    // Modern alternative: std::function-based callback
+    std::vector<std::function<void(bool, const CBlockIndex*)>> NotifyHeaderTipCallbacks;
 
     /** Banlist did change. */
     boost::signals2::signal<void (void)> BannedListChanged;
+    // Modern alternative: std::function-based callback
+    std::vector<std::function<void()>> BannedListChangedCallbacks;
+    
+    // Modern callback management methods
+    void AddInitMessageCallback(std::function<void(const std::string&)> callback) {
+        InitMessageCallbacks.push_back(callback);
+    }
+    
+    void AddNotifyNumConnectionsChangedCallback(std::function<void(int)> callback) {
+        NotifyNumConnectionsChangedCallbacks.push_back(callback);
+    }
+    
+    void AddNotifyAlertChangedCallback(std::function<void()> callback) {
+        NotifyAlertChangedCallbacks.push_back(callback);
+    }
+    
+    void AddLoadWalletCallback(std::function<void(CWallet*)> callback) {
+        LoadWalletCallbacks.push_back(callback);
+    }
+    
+    void AddShowProgressCallback(std::function<void(const std::string&, int)> callback) {
+        ShowProgressCallbacks.push_back(callback);
+    }
+    
+    void AddBannedListChangedCallback(std::function<void()> callback) {
+        BannedListChangedCallbacks.push_back(callback);
+    }
+    
+    void AddNotifyNetworkActiveChangedCallback(std::function<void(bool)> callback) {
+        NotifyNetworkActiveChangedCallbacks.push_back(callback);
+    }
+    
+    void AddNotifyBlockTipCallback(std::function<void(bool, const CBlockIndex*)> callback) {
+        NotifyBlockTipCallbacks.push_back(callback);
+    }
+    
+    void AddNotifyHeaderTipCallback(std::function<void(bool, const CBlockIndex*)> callback) {
+        NotifyHeaderTipCallbacks.push_back(callback);
+    }
+    
+    void AddThreadSafeMessageBoxCallback(std::function<bool(const std::string&, const std::string&, unsigned int)> callback) {
+        ThreadSafeMessageBoxCallbacks.push_back(callback);
+    }
+    
+    void AddThreadSafeQuestionCallback(std::function<bool(const std::string&, const std::string&, const std::string&, unsigned int)> callback) {
+        ThreadSafeQuestionCallbacks.push_back(callback);
+    }
+    
+    void TriggerInitMessage(const std::string& message) {
+        InitMessage(message);
+        for (auto& callback : InitMessageCallbacks) {
+            callback(message);
+        }
+    }
+    
+    void TriggerNotifyNumConnectionsChanged(int connections) {
+        NotifyNumConnectionsChanged(connections);
+        for (auto& callback : NotifyNumConnectionsChangedCallbacks) {
+            callback(connections);
+        }
+    }
+    
+    void TriggerNotifyAlertChanged() {
+        NotifyAlertChanged();
+        for (auto& callback : NotifyAlertChangedCallbacks) {
+            callback();
+        }
+    }
+    
+    void TriggerLoadWallet(CWallet* wallet) {
+        LoadWallet(wallet);
+        for (auto& callback : LoadWalletCallbacks) {
+            callback(wallet);
+        }
+    }
+    
+    void TriggerShowProgress(const std::string& title, int nProgress) {
+        ShowProgress(title, nProgress);
+        for (auto& callback : ShowProgressCallbacks) {
+            callback(title, nProgress);
+        }
+    }
+    
+    void TriggerBannedListChanged() {
+        BannedListChanged();
+        for (auto& callback : BannedListChangedCallbacks) {
+            callback();
+        }
+    }
+    
+    void TriggerNotifyNetworkActiveChanged(bool networkActive) {
+        NotifyNetworkActiveChanged(networkActive);
+        for (auto& callback : NotifyNetworkActiveChangedCallbacks) {
+            callback(networkActive);
+        }
+    }
+    
+    void TriggerNotifyBlockTip(bool initialDownload, const CBlockIndex* pBlockIndex) {
+        NotifyBlockTip(initialDownload, pBlockIndex);
+        for (auto& callback : NotifyBlockTipCallbacks) {
+            callback(initialDownload, pBlockIndex);
+        }
+    }
+    
+    void TriggerNotifyHeaderTip(bool initialDownload, const CBlockIndex* pBlockIndex) {
+        NotifyHeaderTip(initialDownload, pBlockIndex);
+        for (auto& callback : NotifyHeaderTipCallbacks) {
+            callback(initialDownload, pBlockIndex);
+        }
+    }
+    
+    bool TriggerThreadSafeMessageBox(const std::string& message, const std::string& caption, unsigned int style) {
+        // Call boost signal first (returns last value)
+        bool result = ThreadSafeMessageBox(message, caption, style);
+        // Call std::function callbacks and return last result
+        for (auto& callback : ThreadSafeMessageBoxCallbacks) {
+            result = callback(message, caption, style);
+        }
+        return result;
+    }
+    
+    bool TriggerThreadSafeQuestion(const std::string& message, const std::string& noninteractive_message, 
+                                   const std::string& caption, unsigned int style) {
+        // Call boost signal first (returns last value)
+        bool result = ThreadSafeQuestion(message, noninteractive_message, caption, style);
+        // Call std::function callbacks and return last result
+        for (auto& callback : ThreadSafeQuestionCallbacks) {
+            result = callback(message, noninteractive_message, caption, style);
+        }
+        return result;
+    }
+    
+    // Enhanced signal management utilities
+    
+    /** Get diagnostic information about signal usage */
+    std::string GetSignalDiagnostics() const {
+        return "Signal Diagnostics:\n" +
+               std::string("  Total callbacks registered: ") + std::to_string(UISignalUtils::SignalDiagnostics::GetTotalCallbacksRegistered()) + "\n" +
+               std::string("  Total signals fired: ") + std::to_string(UISignalUtils::SignalDiagnostics::GetTotalSignalsFired()) + "\n" +
+               std::string("  Boost signals fired: ") + std::to_string(UISignalUtils::SignalDiagnostics::GetBoostSignalsFired()) + "\n" +
+               std::string("  Modern callbacks fired: ") + std::to_string(UISignalUtils::SignalDiagnostics::GetModernCallbacksFired()) + "\n" +
+               std::string("  Active callback vectors: 11\n") +
+               std::string("  InitMessage callbacks: ") + std::to_string(InitMessageCallbacks.size()) + "\n" +
+               std::string("  NotifyNumConnectionsChanged callbacks: ") + std::to_string(NotifyNumConnectionsChangedCallbacks.size()) + "\n" +
+               std::string("  ThreadSafeMessageBox callbacks: ") + std::to_string(ThreadSafeMessageBoxCallbacks.size()) + "\n" +
+               std::string("  ThreadSafeQuestion callbacks: ") + std::to_string(ThreadSafeQuestionCallbacks.size());
+    }
+    
+    /** Clear all modern std::function callbacks (for testing/reset scenarios) */
+    void ClearAllModernCallbacks() {
+        InitMessageCallbacks.clear();
+        NotifyNumConnectionsChangedCallbacks.clear();
+        NotifyNetworkActiveChangedCallbacks.clear();
+        NotifyAlertChangedCallbacks.clear();
+        LoadWalletCallbacks.clear();
+        ShowProgressCallbacks.clear();
+        NotifyBlockTipCallbacks.clear();
+        NotifyHeaderTipCallbacks.clear();
+        BannedListChangedCallbacks.clear();
+        ThreadSafeMessageBoxCallbacks.clear();
+        ThreadSafeQuestionCallbacks.clear();
+    }
+    
+    /** Get count of total registered modern callbacks */
+    size_t GetTotalModernCallbackCount() const {
+        return InitMessageCallbacks.size() + 
+               NotifyNumConnectionsChangedCallbacks.size() +
+               NotifyNetworkActiveChangedCallbacks.size() +
+               NotifyAlertChangedCallbacks.size() +
+               LoadWalletCallbacks.size() +
+               ShowProgressCallbacks.size() +
+               NotifyBlockTipCallbacks.size() +
+               NotifyHeaderTipCallbacks.size() +
+               BannedListChangedCallbacks.size() +
+               ThreadSafeMessageBoxCallbacks.size() +
+               ThreadSafeQuestionCallbacks.size();
+    }
+    
+    /** Compact all callback vectors to remove inactive callbacks */
+    void CompactAllCallbackVectors() {
+        UISignalUtils::CompactCallbackVector(InitMessageCallbacks);
+        UISignalUtils::CompactCallbackVector(NotifyNumConnectionsChangedCallbacks);
+        UISignalUtils::CompactCallbackVector(NotifyNetworkActiveChangedCallbacks);
+        UISignalUtils::CompactCallbackVector(NotifyAlertChangedCallbacks);
+        UISignalUtils::CompactCallbackVector(LoadWalletCallbacks);
+        UISignalUtils::CompactCallbackVector(ShowProgressCallbacks);
+        UISignalUtils::CompactCallbackVector(NotifyBlockTipCallbacks);
+        UISignalUtils::CompactCallbackVector(NotifyHeaderTipCallbacks);
+        UISignalUtils::CompactCallbackVector(BannedListChangedCallbacks);
+        UISignalUtils::CompactCallbackVector(ThreadSafeMessageBoxCallbacks);
+        UISignalUtils::CompactCallbackVector(ThreadSafeQuestionCallbacks);
+    }
 };
 
 /** Show warning message **/

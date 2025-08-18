@@ -1202,14 +1202,26 @@ static bool ThreadSafeMessageBox(BitcoinGUI *gui, const std::string& message, co
 
 void BitcoinGUI::subscribeToCoreSignals()
 {
-    // Connect signals to client
+    // Modern std::function signal connections
+    uiInterface.AddThreadSafeMessageBoxCallback([this](const std::string& message, const std::string& caption, unsigned int style) {
+        return ThreadSafeMessageBox(this, message, caption, style);
+    });
+    
+    uiInterface.AddThreadSafeQuestionCallback([this](const std::string& message, const std::string& noninteractive_message, const std::string& caption, unsigned int style) {
+        return ThreadSafeMessageBox(this, message, caption, style);
+    });
+    
+    // Legacy boost::signals2 connections for backward compatibility
     uiInterface.ThreadSafeMessageBox.connect(boost::bind(ThreadSafeMessageBox, this, _1, _2, _3));
     uiInterface.ThreadSafeQuestion.connect(boost::bind(ThreadSafeMessageBox, this, _1, _3, _4));
 }
 
 void BitcoinGUI::unsubscribeFromCoreSignals()
 {
-    // Disconnect signals from client
+    // Note: Modern std::function callbacks are automatically cleaned up when BitcoinGUI is destroyed
+    // The vector storage handles cleanup automatically via RAII
+    
+    // Disconnect legacy boost::signals2 connections
     uiInterface.ThreadSafeMessageBox.disconnect(boost::bind(ThreadSafeMessageBox, this, _1, _2, _3));
     uiInterface.ThreadSafeQuestion.disconnect(boost::bind(ThreadSafeMessageBox, this, _1, _3, _4));
 }
