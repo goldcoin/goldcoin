@@ -10,6 +10,9 @@
 #include "serialize.h"
 #include "support/allocators/secure.h"
 
+#include <functional>
+#include <vector>
+
 class uint256;
 
 const unsigned int WALLET_CRYPTO_KEY_SIZE = 32;
@@ -194,6 +197,20 @@ public:
      * Note: Called without locks held.
      */
     boost::signals2::signal<void (CCryptoKeyStore* wallet)> NotifyStatusChanged;
+    // Modern alternative: std::function-based callback
+    std::vector<std::function<void(CCryptoKeyStore*)>> NotifyStatusChangedCallbacks;
+    
+    // Modern callback management methods
+    void AddNotifyStatusChangedCallback(std::function<void(CCryptoKeyStore*)> callback) {
+        NotifyStatusChangedCallbacks.push_back(callback);
+    }
+    
+    void TriggerNotifyStatusChanged(CCryptoKeyStore* wallet) {
+        NotifyStatusChanged(wallet);
+        for (auto& callback : NotifyStatusChangedCallbacks) {
+            callback(wallet);
+        }
+    }
 };
 
 #endif // BITCOIN_WALLET_CRYPTER_H
