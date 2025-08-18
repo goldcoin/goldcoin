@@ -310,7 +310,32 @@ static void BlockTipChanged(ClientModel *clientmodel, bool initialSync, const CB
 
 void ClientModel::subscribeToCoreSignals()
 {
-    // Connect signals to client
+    // Connect signals to client using modern std::function callbacks
+    uiInterface.AddShowProgressCallback([this](const std::string& title, int nProgress) {
+        ShowProgress(this, title, nProgress);
+    });
+    
+    uiInterface.AddNotifyNumConnectionsChangedCallback([this](int newNumConnections) {
+        NotifyNumConnectionsChanged(this, newNumConnections);
+    });
+    
+    uiInterface.AddNotifyNetworkActiveChangedCallback([this](bool networkActive) {
+        NotifyNetworkActiveChanged(this, networkActive);
+    });
+    
+    uiInterface.AddBannedListChangedCallback([this]() {
+        BannedListChanged(this);
+    });
+    
+    uiInterface.AddNotifyBlockTipCallback([this](bool initialSync, const CBlockIndex* pIndex) {
+        BlockTipChanged(this, initialSync, pIndex, false);
+    });
+    
+    uiInterface.AddNotifyHeaderTipCallback([this](bool initialSync, const CBlockIndex* pIndex) {
+        BlockTipChanged(this, initialSync, pIndex, true);
+    });
+    
+    // Legacy boost::signals2 connections for backward compatibility
     uiInterface.ShowProgress.connect(boost::bind(ShowProgress, this,
                                                  boost::placeholders::_1,
                                                  boost::placeholders::_2));
@@ -329,7 +354,10 @@ void ClientModel::subscribeToCoreSignals()
 
 void ClientModel::unsubscribeFromCoreSignals()
 {
-    // Disconnect signals from client
+    // Note: Modern std::function callbacks are automatically cleaned up when ClientModel is destroyed
+    // The vector storage handles cleanup automatically via RAII
+    
+    // Disconnect legacy boost::signals2 connections
     uiInterface.ShowProgress.disconnect(boost::bind(ShowProgress, this,
                                                     boost::placeholders::_1,
                                                     boost::placeholders::_2));

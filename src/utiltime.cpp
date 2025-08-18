@@ -12,6 +12,8 @@
 
 #include "utiltime.h"
 
+#include <chrono>
+#include <thread>
 #include <ctime>
 #include <boost/thread.hpp>
 
@@ -71,7 +73,7 @@ void MilliSleep(int64_t n)
  * See: https://svn.boost.org/trac/boost/ticket/7238
  */
 #if defined(HAVE_WORKING_BOOST_SLEEP_FOR)
-    boost::this_thread::sleep_for(boost::chrono::milliseconds(n));
+    std::this_thread::sleep_for(std::chrono::milliseconds(n));
 #elif defined(HAVE_WORKING_BOOST_SLEEP)
     boost::this_thread::sleep(boost::posix_time::milliseconds(n));
 #else
