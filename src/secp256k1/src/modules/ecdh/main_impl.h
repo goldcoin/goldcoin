@@ -16,9 +16,9 @@ int secp256k1_ecdh(const secp256k1_context* ctx, unsigned char *result, const se
     secp256k1_gej res;
     secp256k1_ge pt;
     secp256k1_scalar s;
-    ARG_CHECK(result != NULL);
-    ARG_CHECK(point != NULL);
-    ARG_CHECK(scalar != NULL);
+    ARG_CHECK(result != nullptr);
+    ARG_CHECK(point != nullptr);
+    ARG_CHECK(scalar != nullptr);
     (void)ctx;
 
     secp256k1_pubkey_load(ctx, &pt, point);

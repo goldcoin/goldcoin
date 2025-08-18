@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(for f in src/torcontrol.cpp src/bitcoin-tx.cpp src/coins.cpp src/core_write.cpp)",
+      "Bash(done)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(grep:*)",
+      "Bash(g++:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(find:*)",
+      "Bash(git pull:*)",
+      "Bash(for:*)",
+      "Bash(sed:*)",
+      "Bash(git checkout:*)",
+      "Bash(chmod:*)",
+      "Bash(./modernize_typedef.sh:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

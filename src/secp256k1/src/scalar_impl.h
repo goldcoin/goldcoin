@@ -271,7 +271,7 @@ static void secp256k1_scalar_inverse_var(secp256k1_scalar *r, const secp256k1_sc
     secp256k1_scalar_order_get_num(&m);
     secp256k1_num_mod_inverse(&n, &n, &m);
     secp256k1_num_get_bin(b, 32, &n);
-    secp256k1_scalar_set_b32(r, b, NULL);
+    secp256k1_scalar_set_b32(r, b, nullptr);
     /* Verify that the inverse was computed correctly, without GMP code. */
     secp256k1_scalar_mul(&t, &t, r);
     CHECK(secp256k1_scalar_is_one(&t));

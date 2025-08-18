@@ -57,7 +57,7 @@ struct secure_allocator : public std::allocator<T> {
 
     void deallocate(T* p, std::size_t n)
     {
-        if (p != NULL) {
+        if (p != nullptr) {
             memory_cleanse(p, sizeof(T) * n);
         }
         LockedPoolManager::Instance().free(p);
@@ -65,6 +65,6 @@ struct secure_allocator : public std::allocator<T> {
 };
 
 // This is exactly like std::string, but with a custom allocator.
-typedef std::basic_string<char, std::char_traits<char>, secure_allocator<char> > SecureString;
+using SecureString = std::basic_string<char, std::char_traits<char>, secure_allocator<char> >;
 
 #endif // BITCOIN_SUPPORT_ALLOCATORS_SECURE_H

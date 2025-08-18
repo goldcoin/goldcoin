@@ -22,7 +22,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 	unsigned int nProofOfWorkLimit = bnProofOfWorkLimit.GetCompact();
 
 	// Genesis block
-	if (pindexLast == NULL) {
+	if (pindexLast == nullptr) {
 		return nProofOfWorkLimit;
 	}
 

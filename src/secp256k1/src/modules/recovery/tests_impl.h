@@ -33,15 +33,15 @@ void test_ecdsa_recovery_end_to_end(void) {
 
     /* Serialize/parse compact and verify/recover. */
     extra[0] = 0;
-    CHECK(secp256k1_ecdsa_sign_recoverable(ctx, &rsignature[0], message, privkey, NULL, NULL) == 1);
-    CHECK(secp256k1_ecdsa_sign(ctx, &signature[0], message, privkey, NULL, NULL) == 1);
-    CHECK(secp256k1_ecdsa_sign_recoverable(ctx, &rsignature[4], message, privkey, NULL, NULL) == 1);
-    CHECK(secp256k1_ecdsa_sign_recoverable(ctx, &rsignature[1], message, privkey, NULL, extra) == 1);
+    CHECK(secp256k1_ecdsa_sign_recoverable(ctx, &rsignature[0], message, privkey, nullptr, nullptr) == 1);
+    CHECK(secp256k1_ecdsa_sign(ctx, &signature[0], message, privkey, nullptr, nullptr) == 1);
+    CHECK(secp256k1_ecdsa_sign_recoverable(ctx, &rsignature[4], message, privkey, nullptr, nullptr) == 1);
+    CHECK(secp256k1_ecdsa_sign_recoverable(ctx, &rsignature[1], message, privkey, nullptr, extra) == 1);
     extra[31] = 1;
-    CHECK(secp256k1_ecdsa_sign_recoverable(ctx, &rsignature[2], message, privkey, NULL, extra) == 1);
+    CHECK(secp256k1_ecdsa_sign_recoverable(ctx, &rsignature[2], message, privkey, nullptr, extra) == 1);
     extra[31] = 0;
     extra[0] = 1;
-    CHECK(secp256k1_ecdsa_sign_recoverable(ctx, &rsignature[3], message, privkey, NULL, extra) == 1);
+    CHECK(secp256k1_ecdsa_sign_recoverable(ctx, &rsignature[3], message, privkey, nullptr, extra) == 1);
     CHECK(secp256k1_ecdsa_recoverable_signature_serialize_compact(ctx, sig, &recid, &rsignature[4]) == 1);
     CHECK(secp256k1_ecdsa_recoverable_signature_convert(ctx, &signature[4], &rsignature[4]) == 1);
     CHECK(memcmp(&signature[4], &signature[0], 64) == 0);

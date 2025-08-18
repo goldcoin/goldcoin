@@ -40,7 +40,7 @@ extern "C" {
  *  Regarding randomization, either do it once at creation time (in which case
  *  you do not need any locking for the other calls), or use a read-write lock.
  */
-typedef struct secp256k1_context_struct secp256k1_context;
+using secp256k1_context = struct secp256k1_context_struct;
 
 /** Opaque data structure that holds a parsed and valid public key.
  *
@@ -71,10 +71,10 @@ typedef struct {
  *
  * Returns: 1 if a nonce was successfully generated. 0 will cause signing to fail.
  * Out:     nonce32:   pointer to a 32-byte array to be filled by the function.
- * In:      msg32:     the 32-byte message hash being verified (will not be NULL)
- *          key32:     pointer to a 32-byte secret key (will not be NULL)
+ * In:      msg32:     the 32-byte message hash being verified (will not be nullptr)
+ *          key32:     pointer to a 32-byte secret key (will not be nullptr)
  *          algo16:    pointer to a 16-byte array describing the signature
- *                     algorithm (will be NULL for ECDSA for compatibility).
+ *                     algorithm (will be nullptr for ECDSA for compatibility).
  *          data:      Arbitrary data pointer that is passed through.
  *          attempt:   how many iterations we have tried to find a nonce.
  *                     This will almost always be 0, but different attempt values
@@ -171,7 +171,7 @@ SECP256K1_API secp256k1_context* secp256k1_context_create(
 /** Copies a secp256k1 context object.
  *
  *  Returns: a newly created context object.
- *  Args:    ctx: an existing context to copy (cannot be NULL)
+ *  Args:    ctx: an existing context to copy (cannot be nullptr)
  */
 SECP256K1_API secp256k1_context* secp256k1_context_clone(
     const secp256k1_context* ctx
@@ -180,7 +180,7 @@ SECP256K1_API secp256k1_context* secp256k1_context_clone(
 /** Destroy a secp256k1 context object.
  *
  *  The context pointer may not be used afterwards.
- *  Args:   ctx: an existing context to destroy (cannot be NULL)
+ *  Args:   ctx: an existing context to destroy (cannot be nullptr)
  */
 SECP256K1_API void secp256k1_context_destroy(
     secp256k1_context* ctx
@@ -200,10 +200,10 @@ SECP256K1_API void secp256k1_context_destroy(
  *  to cause a crash, though its return value and output arguments are
  *  undefined.
  *
- *  Args: ctx:  an existing context object (cannot be NULL)
+ *  Args: ctx:  an existing context object (cannot be nullptr)
  *  In:   fun:  a pointer to a function to call when an illegal argument is
  *              passed to the API, taking a message and an opaque pointer
- *              (NULL restores a default handler that calls abort).
+ *              (nullptr restores a default handler that calls abort).
  *        data: the opaque pointer to pass to fun above.
  */
 SECP256K1_API void secp256k1_context_set_illegal_callback(
@@ -222,9 +222,9 @@ SECP256K1_API void secp256k1_context_set_illegal_callback(
  *  for that). After this callback returns, anything may happen, including
  *  crashing.
  *
- *  Args: ctx:  an existing context object (cannot be NULL)
+ *  Args: ctx:  an existing context object (cannot be nullptr)
  *  In:   fun:  a pointer to a function to call when an internal error occurs,
- *              taking a message and an opaque pointer (NULL restores a default
+ *              taking a message and an opaque pointer (nullptr restores a default
  *              handler that calls abort).
  *        data: the opaque pointer to pass to fun above.
  */
@@ -359,9 +359,9 @@ SECP256K1_API int secp256k1_ecdsa_signature_serialize_compact(
  *  Returns: 1: correct signature
  *           0: incorrect or unparseable signature
  *  Args:    ctx:       a secp256k1 context object, initialized for verification.
- *  In:      sig:       the signature being verified (cannot be NULL)
- *           msg32:     the 32-byte message hash being verified (cannot be NULL)
- *           pubkey:    pointer to an initialized public key to verify with (cannot be NULL)
+ *  In:      sig:       the signature being verified (cannot be nullptr)
+ *           msg32:     the 32-byte message hash being verified (cannot be nullptr)
+ *           pubkey:    pointer to an initialized public key to verify with (cannot be nullptr)
  *
  * To avoid accepting malleable signatures, only ECDSA signatures in lower-S
  * form are accepted.
@@ -384,10 +384,10 @@ SECP256K1_API SECP256K1_WARN_UNUSED_RESULT int secp256k1_ecdsa_verify(
  *  Returns: 1 if sigin was not normalized, 0 if it already was.
  *  Args: ctx:    a secp256k1 context object
  *  Out:  sigout: a pointer to a signature to fill with the normalized form,
- *                or copy if the input was already normalized. (can be NULL if
+ *                or copy if the input was already normalized. (can be nullptr if
  *                you're only interested in whether the input was already
  *                normalized).
- *  In:   sigin:  a pointer to a signature to check/normalize (cannot be NULL,
+ *  In:   sigin:  a pointer to a signature to check/normalize (cannot be nullptr,
  *                can be identical to sigout)
  *
  *  With ECDSA a third-party can forge a second distinct signature of the same
@@ -440,12 +440,12 @@ SECP256K1_API extern const secp256k1_nonce_function secp256k1_nonce_function_def
  *
  *  Returns: 1: signature created
  *           0: the nonce generation function failed, or the private key was invalid.
- *  Args:    ctx:    pointer to a context object, initialized for signing (cannot be NULL)
- *  Out:     sig:    pointer to an array where the signature will be placed (cannot be NULL)
- *  In:      msg32:  the 32-byte message hash being signed (cannot be NULL)
- *           seckey: pointer to a 32-byte secret key (cannot be NULL)
- *           noncefp:pointer to a nonce generation function. If NULL, secp256k1_nonce_function_default is used
- *           ndata:  pointer to arbitrary data used by the nonce generation function (can be NULL)
+ *  Args:    ctx:    pointer to a context object, initialized for signing (cannot be nullptr)
+ *  Out:     sig:    pointer to an array where the signature will be placed (cannot be nullptr)
+ *  In:      msg32:  the 32-byte message hash being signed (cannot be nullptr)
+ *           seckey: pointer to a 32-byte secret key (cannot be nullptr)
+ *           noncefp:pointer to a nonce generation function. If nullptr, secp256k1_nonce_function_default is used
+ *           ndata:  pointer to arbitrary data used by the nonce generation function (can be nullptr)
  *
  * The created signature is always in lower-S form. See
  * secp256k1_ecdsa_signature_normalize for more details.
@@ -463,8 +463,8 @@ SECP256K1_API int secp256k1_ecdsa_sign(
  *
  *  Returns: 1: secret key is valid
  *           0: secret key is invalid
- *  Args:    ctx: pointer to a context object (cannot be NULL)
- *  In:      seckey: pointer to a 32-byte secret key (cannot be NULL)
+ *  Args:    ctx: pointer to a context object (cannot be nullptr)
+ *  In:      seckey: pointer to a 32-byte secret key (cannot be nullptr)
  */
 SECP256K1_API SECP256K1_WARN_UNUSED_RESULT int secp256k1_ec_seckey_verify(
     const secp256k1_context* ctx,
@@ -475,9 +475,9 @@ SECP256K1_API SECP256K1_WARN_UNUSED_RESULT int secp256k1_ec_seckey_verify(
  *
  *  Returns: 1: secret was valid, public key stores
  *           0: secret was invalid, try again
- *  Args:   ctx:        pointer to a context object, initialized for signing (cannot be NULL)
- *  Out:    pubkey:     pointer to the created public key (cannot be NULL)
- *  In:     seckey:     pointer to a 32-byte private key (cannot be NULL)
+ *  Args:   ctx:        pointer to a context object, initialized for signing (cannot be nullptr)
+ *  Out:    pubkey:     pointer to the created public key (cannot be nullptr)
+ *  In:     seckey:     pointer to a 32-byte private key (cannot be nullptr)
  */
 SECP256K1_API SECP256K1_WARN_UNUSED_RESULT int secp256k1_ec_pubkey_create(
     const secp256k1_context* ctx,
@@ -490,7 +490,7 @@ SECP256K1_API SECP256K1_WARN_UNUSED_RESULT int secp256k1_ec_pubkey_create(
  *          uniformly random 32-byte arrays, or if the resulting private key
  *          would be invalid (only when the tweak is the complement of the
  *          private key). 1 otherwise.
- * Args:    ctx:    pointer to a context object (cannot be NULL).
+ * Args:    ctx:    pointer to a context object (cannot be nullptr).
  * In/Out:  seckey: pointer to a 32-byte private key.
  * In:      tweak:  pointer to a 32-byte tweak.
  */
@@ -506,7 +506,7 @@ SECP256K1_API SECP256K1_WARN_UNUSED_RESULT int secp256k1_ec_privkey_tweak_add(
  *          would be invalid (only when the tweak is the complement of the
  *          corresponding private key). 1 otherwise.
  * Args:    ctx:    pointer to a context object initialized for validation
- *                  (cannot be NULL).
+ *                  (cannot be nullptr).
  * In/Out:  pubkey: pointer to a public key object.
  * In:      tweak:  pointer to a 32-byte tweak.
  */
@@ -519,7 +519,7 @@ SECP256K1_API SECP256K1_WARN_UNUSED_RESULT int secp256k1_ec_pubkey_tweak_add(
 /** Tweak a private key by multiplying it by a tweak.
  * Returns: 0 if the tweak was out of range (chance of around 1 in 2^128 for
  *          uniformly random 32-byte arrays, or equal to zero. 1 otherwise.
- * Args:   ctx:    pointer to a context object (cannot be NULL).
+ * Args:   ctx:    pointer to a context object (cannot be nullptr).
  * In/Out: seckey: pointer to a 32-byte private key.
  * In:     tweak:  pointer to a 32-byte tweak.
  */
@@ -533,7 +533,7 @@ SECP256K1_API SECP256K1_WARN_UNUSED_RESULT int secp256k1_ec_privkey_tweak_mul(
  * Returns: 0 if the tweak was out of range (chance of around 1 in 2^128 for
  *          uniformly random 32-byte arrays, or equal to zero. 1 otherwise.
  * Args:    ctx:    pointer to a context object initialized for validation
- *                 (cannot be NULL).
+ *                 (cannot be nullptr).
  * In/Out:  pubkey: pointer to a public key obkect.
  * In:      tweak:  pointer to a 32-byte tweak.
  */
@@ -546,8 +546,8 @@ SECP256K1_API SECP256K1_WARN_UNUSED_RESULT int secp256k1_ec_pubkey_tweak_mul(
 /** Updates the context randomization.
  *  Returns: 1: randomization successfully updated
  *           0: error
- *  Args:    ctx:       pointer to a context object (cannot be NULL)
- *  In:      seed32:    pointer to a 32-byte random seed (NULL resets to initial state)
+ *  Args:    ctx:       pointer to a context object (cannot be nullptr)
+ *  In:      seed32:    pointer to a 32-byte random seed (nullptr resets to initial state)
  */
 SECP256K1_API SECP256K1_WARN_UNUSED_RESULT int secp256k1_context_randomize(
     secp256k1_context* ctx,
@@ -559,8 +559,8 @@ SECP256K1_API SECP256K1_WARN_UNUSED_RESULT int secp256k1_context_randomize(
  *           0: the sum of the public keys is not valid.
  *  Args:   ctx:        pointer to a context object
  *  Out:    out:        pointer to a public key object for placing the resulting public key
- *                      (cannot be NULL)
- *  In:     ins:        pointer to array of pointers to public keys (cannot be NULL)
+ *                      (cannot be nullptr)
+ *  In:     ins:        pointer to array of pointers to public keys (cannot be nullptr)
  *          n:          the number of public keys to add together (must be at least 1)
  */
 SECP256K1_API SECP256K1_WARN_UNUSED_RESULT int secp256k1_ec_pubkey_combine(

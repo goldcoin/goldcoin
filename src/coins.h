@@ -282,7 +282,7 @@ struct CCoinsCacheEntry
     CCoinsCacheEntry() : coins(), flags(0) {}
 };
 
-typedef boost::unordered_map<uint256, CCoinsCacheEntry, SaltedTxidHasher> CCoinsMap;
+using CCoinsMap = boost::unordered_map<uint256, CCoinsCacheEntry, SaltedTxidHasher>;
 
 /** Cursor for iterating over CoinsView state */
 class CCoinsViewCursor
@@ -407,7 +407,7 @@ public:
     bool HaveCoinsInCache(const uint256 &txid) const;
 
     /**
-     * Return a pointer to CCoins in the cache, or NULL if not found. This is
+     * Return a pointer to CCoins in the cache, or nullptr if not found. This is
      * more efficient than GetCoins. Modifications to other cache entries are
      * allowed while accessing the returned pointer.
      */

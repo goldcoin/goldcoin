@@ -100,12 +100,12 @@ public:
     }
 };
 
-typedef CCriticalSection CDynamicCriticalSection;
+using CDynamicCriticalSection = CCriticalSection;
 /** Wrapped boost mutex: supports waiting but not recursive locking */
-typedef AnnotatedMixin<boost::mutex> CWaitableCriticalSection;
+using CWaitableCriticalSection = AnnotatedMixin<boost::mutex>;
 
 /** Just a typedef for boost::condition_variable, can be wrapped later if desired */
-typedef boost::condition_variable CConditionVariable;
+using CConditionVariable = boost::condition_variable;
 
 #ifdef DEBUG_LOCKCONTENTION
 void PrintLockContention(const char* pszName, const char* pszFile, int nLine);
@@ -172,7 +172,7 @@ public:
     }
 };
 
-typedef CMutexLock<CCriticalSection> CCriticalBlock;
+using CCriticalBlock = CMutexLock<CCriticalSection>;
 
 #define PASTE(x, y) x ## y
 #define PASTE2(x, y) PASTE(x, y)
@@ -270,7 +270,7 @@ public:
         fHaveGrant = false;
     }
 
-    CSemaphoreGrant() : sem(NULL), fHaveGrant(false) {}
+    CSemaphoreGrant() : sem(nullptr), fHaveGrant(false) {}
 
     CSemaphoreGrant(CSemaphore& sema, bool fTry = false) : sem(&sema), fHaveGrant(false)
     {
