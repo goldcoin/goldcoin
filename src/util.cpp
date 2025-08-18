@@ -218,8 +218,8 @@ static boost::once_flag debugPrintInitFlag = BOOST_ONCE_INIT;
  * tested, explicit destruction of these objects can be implemented.
  */
 static FILE* fileout = nullptr;
-static boost::mutex* mutexDebugLog = nullptr;
-static list<string> *vMsgsBeforeOpenLog;
+static std::unique_ptr<boost::mutex> mutexDebugLog;
+static std::unique_ptr<list<string>> vMsgsBeforeOpenLog;
 
 static int FileWriteStr(const std::string &str, FILE *fp)
 {
@@ -229,8 +229,8 @@ static int FileWriteStr(const std::string &str, FILE *fp)
 static void DebugPrintInit()
 {
     assert(mutexDebugLog == nullptr);
-    mutexDebugLog = new boost::mutex();
-    vMsgsBeforeOpenLog = new list<string>;
+    mutexDebugLog = std::make_unique<boost::mutex>();
+    vMsgsBeforeOpenLog = std::make_unique<list<string>>();
 }
 
 void OpenDebugLog()
@@ -251,8 +251,7 @@ void OpenDebugLog()
         }
     }
 
-    delete vMsgsBeforeOpenLog;
-    vMsgsBeforeOpenLog = nullptr;
+    vMsgsBeforeOpenLog.reset(); // Clear the unique_ptr
 }
 
 bool LogAcceptCategory(const char* category)
