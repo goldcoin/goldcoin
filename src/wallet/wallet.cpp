@@ -8,6 +8,8 @@
 
 #include "wallet/wallet.h"
 
+#include <memory>
+
 #include "base58.h"
 #include "checkpoints.h"
 #include "chain.h"
@@ -383,11 +385,14 @@ bool CWallet::SetMinVersion(enum WalletFeature nVersion, CWalletDB* pwalletdbIn,
 
     if (fFileBacked)
     {
-        CWalletDB* pwalletdb = pwalletdbIn ? pwalletdbIn : new CWalletDB(strWalletFile);
+        std::unique_ptr<CWalletDB> pwalletdb_deleter;
+        CWalletDB* pwalletdb = pwalletdbIn;
+        if (!pwalletdbIn) {
+            pwalletdb_deleter = std::make_unique<CWalletDB>(strWalletFile);
+            pwalletdb = pwalletdb_deleter.get();
+        }
         if (nWalletVersion > 40000)
             pwalletdb->WriteMinVersion(nWalletVersion);
-        if (!pwalletdbIn)
-            delete pwalletdb;
     }
 
     return true;
