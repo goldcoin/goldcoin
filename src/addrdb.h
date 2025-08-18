@@ -19,17 +19,17 @@ class CSubNet;
 class CAddrMan;
 class CDataStream;
 
-typedef enum BanReason
+enum class BanReason : int
 {
-    BanReasonUnknown          = 0,
-    BanReasonNodeMisbehaving  = 1,
-    BanReasonManuallyAdded    = 2
-} BanReason;
+    Unknown          = 0,
+    NodeMisbehaving  = 1,
+    ManuallyAdded    = 2
+};
 
 class CBanEntry
 {
 public:
-    static const int CURRENT_VERSION=1;
+    static constexpr int CURRENT_VERSION = 1;
     int nVersion;
     int64_t nCreateTime;
     int64_t nBanUntil;
@@ -61,15 +61,15 @@ public:
         nVersion = CBanEntry::CURRENT_VERSION;
         nCreateTime = 0;
         nBanUntil = 0;
-        banReason = BanReasonUnknown;
+        banReason = static_cast<uint8_t>(BanReason::Unknown);
     }
 
     std::string banReasonToString()
     {
-        switch (banReason) {
-        case BanReasonNodeMisbehaving:
+        switch (static_cast<BanReason>(banReason)) {
+        case BanReason::NodeMisbehaving:
             return "node misbehaving";
-        case BanReasonManuallyAdded:
+        case BanReason::ManuallyAdded:
             return "manually added";
         default:
             return "unknown";

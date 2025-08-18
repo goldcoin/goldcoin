@@ -520,7 +520,7 @@ UniValue setban(const JSONRPCRequest& request)
         if (request.params.size() == 4 && request.params[3].isTrue())
             absolute = true;
 
-        isSubnet ? g_connman->Ban(subNet, BanReasonManuallyAdded, banTime, absolute) : g_connman->Ban(netAddr, BanReasonManuallyAdded, banTime, absolute);
+        isSubnet ? g_connman->Ban(subNet, BanReason::ManuallyAdded, banTime, absolute) : g_connman->Ban(netAddr, BanReason::ManuallyAdded, banTime, absolute);
     }
     else if(strCommand == "remove")
     {

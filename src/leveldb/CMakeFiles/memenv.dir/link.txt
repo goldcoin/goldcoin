@@ -1,0 +1,2 @@
+/usr/bin/ar qc ../../lib/libmemenv.a CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o
+/usr/bin/ranlib ../../lib/libmemenv.a
