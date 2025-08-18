@@ -10,7 +10,7 @@ extern "C" {
 /** Compute an EC Diffie-Hellman secret in constant time
  *  Returns: 1: exponentiation was successful
  *           0: scalar was invalid (zero or overflow)
- *  Args:    ctx:        pointer to a context object (cannot be NULL)
+ *  Args:    ctx:        pointer to a context object (cannot be nullptr)
  *  Out:     result:     a 32-byte array which will be populated by an ECDH
  *                       secret computed from the point and scalar
  *  In:      pubkey:     a pointer to a secp256k1_pubkey containing an

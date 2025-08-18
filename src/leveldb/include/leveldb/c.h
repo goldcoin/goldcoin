@@ -21,11 +21,11 @@
   the caller has to pass the pointer and length as separate
   arguments.
 
-  (3) Errors are represented by a null-terminated c string.  NULL
+  (3) Errors are represented by a null-terminated c string.  nullptr
   means no error.  All operations that can raise an error are passed
   a "char** errptr" as the last argument.  One of the following must
   be true on entry:
-     *errptr == NULL
+     *errptr == nullptr
      *errptr points to a malloc()ed null-terminated error message
        (On Windows, *errptr must have been malloc()-ed by this library.)
   On success, a leveldb routine leaves *errptr unchanged.
@@ -34,7 +34,7 @@
 
   (4) Bools have the type unsigned char (0 == false; rest == true)
 
-  (5) All of the pointer arguments must be non-NULL.
+  (5) All of the pointer arguments must be non-nullptr.
 */
 
 #ifndef STORAGE_LEVELDB_INCLUDE_C_H_
@@ -95,7 +95,7 @@ extern void leveldb_write(
     leveldb_writebatch_t* batch,
     char** errptr);
 
-/* Returns NULL if not found.  A malloc()ed array otherwise.
+/* Returns nullptr if not found.  A malloc()ed array otherwise.
    Stores the length of the array in *vallen. */
 extern char* leveldb_get(
     leveldb_t* db,
@@ -115,7 +115,7 @@ extern void leveldb_release_snapshot(
     leveldb_t* db,
     const leveldb_snapshot_t* snapshot);
 
-/* Returns NULL if property name is unknown.
+/* Returns nullptr if property name is unknown.
    Else returns a pointer to a malloc()-ed null-terminated value. */
 extern char* leveldb_property_value(
     leveldb_t* db,

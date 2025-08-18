@@ -62,7 +62,7 @@ const struct {
     {"cmd-reply", ":/icons/tx_output"},
     {"cmd-error", ":/icons/tx_output"},
     {"misc", ":/icons/tx_inout"},
-    {NULL, NULL}
+    {nullptr, nullptr}
 };
 
 namespace {
@@ -523,7 +523,7 @@ void RPCConsole::setClientModel(ClientModel *model)
         setNumConnections(model->getNumConnections());
         connect(model, &ClientModel::numConnectionsChanged, this, &RPCConsole::setNumConnections);
 
-        setNumBlocks(model->getNumBlocks(), model->getLastBlockDate(), model->getVerificationProgress(NULL), false);
+        setNumBlocks(model->getNumBlocks(), model->getLastBlockDate(), model->getVerificationProgress(nullptr), false);
         connect(model, &ClientModel::numBlocksChanged, this, &RPCConsole::setNumBlocks);
 
         updateNetworkState();
@@ -949,7 +949,7 @@ void RPCConsole::peerLayoutChanged()
     if (!clientModel || !clientModel->getPeerTableModel())
         return;
 
-    const CNodeCombinedStats *stats = NULL;
+    const CNodeCombinedStats *stats = nullptr;
     bool fUnselect = false;
     bool fReselect = false;
 

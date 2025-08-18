@@ -263,7 +263,7 @@ UniValue gettxoutproof(const JSONRPCRequest& request)
 
     LOCK(cs_main);
 
-    CBlockIndex* pblockindex = NULL;
+    CBlockIndex* pblockindex = nullptr;
 
     uint256 hashBlock;
     if (request.params.size() > 1)
@@ -278,7 +278,7 @@ UniValue gettxoutproof(const JSONRPCRequest& request)
             pblockindex = chainActive[coins.nHeight];
     }
 
-    if (pblockindex == NULL)
+    if (pblockindex == nullptr)
     {
         CTransactionRef tx;
         if (!GetTransaction(oneTxid, tx, Params().GetConsensus(), hashBlock, false) || hashBlock.IsNull())
@@ -647,7 +647,7 @@ UniValue signrawtransaction(const JSONRPCRequest& request)
         );
 
 #ifdef ENABLE_WALLET
-    LOCK2(cs_main, pwalletMain ? &pwalletMain->cs_wallet : NULL);
+    LOCK2(cs_main, pwalletMain ? &pwalletMain->cs_wallet : nullptr);
 #else
     LOCK(cs_main);
 #endif
@@ -813,7 +813,7 @@ UniValue signrawtransaction(const JSONRPCRequest& request)
     for (unsigned int i = 0; i < mergedTx.vin.size(); i++) {
         CTxIn& txin = mergedTx.vin[i];
         const CCoins* coins = view.AccessCoins(txin.prevout.hash);
-        if (coins == NULL || !coins->IsAvailable(txin.prevout.n)) {
+        if (coins == nullptr || !coins->IsAvailable(txin.prevout.n)) {
             TxInErrorToJSON(txin, vErrors, "Input not found or already spent");
             continue;
         }
@@ -896,7 +896,7 @@ UniValue sendrawtransaction(const JSONRPCRequest& request)
         // push to local node and sync with wallets
         CValidationState state;
         bool fMissingInputs;
-        if (!AcceptToMemoryPool(mempool, state, std::move(tx), fLimitFree, &fMissingInputs, NULL, false, nMaxRawTxFee)) {
+        if (!AcceptToMemoryPool(mempool, state, std::move(tx), fLimitFree, &fMissingInputs, nullptr, false, nMaxRawTxFee)) {
             if (state.IsInvalid()) {
                 throw JSONRPCError(RPC_TRANSACTION_REJECTED, strprintf("%i: %s", state.GetRejectCode(), state.GetRejectReason()));
             } else {

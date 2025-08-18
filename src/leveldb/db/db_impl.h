@@ -130,7 +130,7 @@ class DBImpl : public DB {
   // table_cache_ provides its own synchronization
   TableCache* table_cache_;
 
-  // Lock over the persistent DB state.  Non-NULL iff successfully acquired.
+  // Lock over the persistent DB state.  Non-nullptr iff successfully acquired.
   FileLock* db_lock_;
 
   // State below is protected by mutex_
@@ -139,7 +139,7 @@ class DBImpl : public DB {
   port::CondVar bg_cv_;          // Signalled when background work finishes
   MemTable* mem_;
   MemTable* imm_;                // Memtable being compacted
-  port::AtomicPointer has_imm_;  // So bg thread can detect non-NULL imm_
+  port::AtomicPointer has_imm_;  // So bg thread can detect non-nullptr imm_
   WritableFile* logfile_;
   uint64_t logfile_number_;
   log::Writer* log_;
@@ -162,8 +162,8 @@ class DBImpl : public DB {
   struct ManualCompaction {
     int level;
     bool done;
-    const InternalKey* begin;   // NULL means beginning of key range
-    const InternalKey* end;     // NULL means end of key range
+    const InternalKey* begin;   // nullptr means beginning of key range
+    const InternalKey* end;     // nullptr means end of key range
     InternalKey tmp_storage;    // Used to keep track of compaction progress
   };
   ManualCompaction* manual_compaction_;
