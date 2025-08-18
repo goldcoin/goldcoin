@@ -52,6 +52,6 @@ struct zero_after_free_allocator : public std::allocator<T> {
 };
 
 // Byte-vector that clears its contents before deletion.
-typedef std::vector<char, zero_after_free_allocator<char> > CSerializeData;
+using CSerializeData = std::vector<char, zero_after_free_allocator<char> >;
 
 #endif // BITCOIN_SUPPORT_ALLOCATORS_ZEROAFTERFREE_H

@@ -723,7 +723,7 @@ public:
 };
 
 // We want to sort transactions by coin age priority
-typedef std::pair<double, CTxMemPool::txiter> TxCoinAgePriority;
+using TxCoinAgePriority = std::pair<double, CTxMemPool::txiter>;
 
 struct TxCoinAgePriorityCompare
 {
