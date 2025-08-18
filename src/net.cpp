@@ -494,7 +494,7 @@ void CConnman::Ban(const CNetAddr& addr, const BanReason &banReason, int64_t ban
 
 void CConnman::Ban(const CSubNet& subNet, const BanReason &banReason, int64_t bantimeoffset, bool sinceUnixEpoch) {
     CBanEntry banEntry(GetTime());
-    banEntry.banReason = banReason;
+    banEntry.banReason = static_cast<uint8_t>(banReason);
     if (bantimeoffset <= 0)
     {
         bantimeoffset = GetArg("-bantime", DEFAULT_MISBEHAVING_BANTIME);
@@ -520,7 +520,7 @@ void CConnman::Ban(const CSubNet& subNet, const BanReason &banReason, int64_t ba
                 pnode->fDisconnect = true;
         }
     }
-    if(banReason == BanReasonManuallyAdded)
+    if(banReason == BanReason::ManuallyAdded)
         DumpBanlist(); //store banlist to disk immediately if user requested ban
 }
 

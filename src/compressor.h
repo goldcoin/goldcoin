@@ -37,7 +37,7 @@ private:
      * transactions, in which case this value becomes dependent on nVersion
      * and nHeight of the enclosing transaction.
      */
-    static const unsigned int nSpecialScripts = 6;
+    static constexpr unsigned int nSpecialScripts = 6;
 
     CScript &script;
 protected:

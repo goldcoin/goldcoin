@@ -17,8 +17,8 @@
 /** Amount in satoshis (Can be negative) */
 using CAmount = int64_t;
 
-static const CAmount COIN = 100000000;
-static const CAmount CENT = 1000000;
+static constexpr CAmount COIN = 100000000;
+static constexpr CAmount CENT = 1000000;
 
 extern const std::string CURRENCY_UNIT;
 
@@ -29,7 +29,7 @@ extern const std::string CURRENCY_UNIT;
  * value of the MAX_MONEY constant is consensus critical. Here we allow
  * for the super block used to fund the new Goldcoin Treasury.
  */
-static const CAmount MAX_MONEY = 10000000000 * COIN; // Treasury Fork: max transaction 10,000,000,000 coins
+static constexpr CAmount MAX_MONEY = 10000000000 * COIN; // Treasury Fork: max transaction 10,000,000,000 coins
 inline bool MoneyRange(const CAmount& nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
 
 /**
