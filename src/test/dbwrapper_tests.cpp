@@ -7,6 +7,7 @@
 #include "random.h"
 #include "test/test_bitcoin.h"
 
+#include <memory>
 #include <boost/assign/std/vector.hpp> // for 'operator+=()'
 #include <boost/assert.hpp>
 #include <boost/test/unit_test.hpp>
@@ -130,17 +131,16 @@ BOOST_AUTO_TEST_CASE(existing_data_no_obfuscate)
     create_directories(ph);
 
     // Set up a non-obfuscated wrapper to write some initial data.
-    CDBWrapper* dbw = new CDBWrapper(ph, (1 << 10), false, false, false);
-    char key = 'k';
-    uint256 in = GetRandHash();
-    uint256 res;
+    {
+        auto dbw = std::make_unique<CDBWrapper>(ph, (1 << 10), false, false, false);
+        char key = 'k';
+        uint256 in = GetRandHash();
+        uint256 res;
 
-    BOOST_CHECK(dbw->Write(key, in));
-    BOOST_CHECK(dbw->Read(key, res));
-    BOOST_CHECK_EQUAL(res.ToString(), in.ToString());
-
-    // Call the destructor to free leveldb LOCK
-    delete dbw;
+        BOOST_CHECK(dbw->Write(key, in));
+        BOOST_CHECK(dbw->Read(key, res));
+        BOOST_CHECK_EQUAL(res.ToString(), in.ToString());
+    }  // Destructor called here to free leveldb LOCK
 
     // Now, set up another wrapper that wants to obfuscate the same directory
     CDBWrapper odbw(ph, (1 << 10), false, false, true);
@@ -171,17 +171,16 @@ BOOST_AUTO_TEST_CASE(existing_data_reindex)
     create_directories(ph);
 
     // Set up a non-obfuscated wrapper to write some initial data.
-    CDBWrapper* dbw = new CDBWrapper(ph, (1 << 10), false, false, false);
-    char key = 'k';
-    uint256 in = GetRandHash();
-    uint256 res;
+    {
+        auto dbw = std::make_unique<CDBWrapper>(ph, (1 << 10), false, false, false);
+        char key = 'k';
+        uint256 in = GetRandHash();
+        uint256 res;
 
-    BOOST_CHECK(dbw->Write(key, in));
-    BOOST_CHECK(dbw->Read(key, res));
-    BOOST_CHECK_EQUAL(res.ToString(), in.ToString());
-
-    // Call the destructor to free leveldb LOCK
-    delete dbw;
+        BOOST_CHECK(dbw->Write(key, in));
+        BOOST_CHECK(dbw->Read(key, res));
+        BOOST_CHECK_EQUAL(res.ToString(), in.ToString());
+    }  // Destructor called here to free leveldb LOCK
 
     // Simulate a -reindex by wiping the existing data store
     CDBWrapper odbw(ph, (1 << 10), false, true, true);
