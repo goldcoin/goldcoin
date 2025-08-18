@@ -182,7 +182,7 @@ struct evhttp* eventHTTP = 0;
 //! List of subnets to allow RPC connections from
 static std::vector<CSubNet> rpc_allow_subnets;
 //! Work queue for handling longer requests off the event loop thread
-static WorkQueue<HTTPClosure>* workQueue = 0;
+static std::unique_ptr<WorkQueue<HTTPClosure>> workQueue;
 //! Handlers for (sub)paths
 std::vector<HTTPPathHandler> pathHandlers;
 //! Bound listening sockets
@@ -441,7 +441,7 @@ bool InitHTTPServer()
     int workQueueDepth = std::max((long)GetArg("-rpcworkqueue", DEFAULT_HTTP_WORKQUEUE), 1L);
     LogPrintf("HTTP: creating work queue of depth %d\n", workQueueDepth);
 
-    workQueue = new WorkQueue<HTTPClosure>(workQueueDepth);
+    workQueue = std::make_unique<WorkQueue<HTTPClosure>>(workQueueDepth);
     eventBase = base;
     eventHTTP = http;
     return true;
@@ -487,7 +487,7 @@ void StopHTTPServer()
     if (workQueue) {
         LogPrint("http", "Waiting for HTTP worker threads to exit\n");
         workQueue->WaitExit();
-        delete workQueue;
+        workQueue.reset(); // Clear the unique_ptr
     }
     if (eventBase) {
         LogPrint("http", "Waiting for HTTP event thread to exit\n");
