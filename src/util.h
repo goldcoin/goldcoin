@@ -24,6 +24,7 @@
 #include <atomic>
 #include <exception>
 #include <map>
+#include <optional>
 #include <stdint.h>
 #include <string>
 #include <vector>
@@ -59,12 +60,13 @@ extern const char * const BITCOIN_CONF_FILENAME;
 extern const char * const BITCOIN_PID_FILENAME;
 
 /**
- * Translation function: Call Translate signal on UI interface, which returns a boost::optional result.
+ * Translation function: Call Translate signal on UI interface, which returns a std::optional result.
  * If no translation slot is registered, nothing is returned, and simply return the input.
  */
 inline std::string _(const char* psz)
 {
-    boost::optional<std::string> rv = translationInterface.Translate(psz);
+    auto boost_result = translationInterface.Translate(psz);
+    std::optional<std::string> rv = boost_result ? std::make_optional(*boost_result) : std::nullopt;
     return rv ? (*rv) : psz;
 }
 
