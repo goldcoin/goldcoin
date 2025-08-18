@@ -941,7 +941,11 @@ CMakeFiles/bitcoin_server.dir/src/addrdb.cpp.o: \
  /home/microguy/git/microguy/goldcoin/src/tinyformat.h \
  /usr/include/c++/11/iostream \
  /home/microguy/git/microguy/goldcoin/src/utiltime.h \
- /usr/include/c++/11/optional /usr/include/boost/signals2/signal.hpp \
+ /usr/include/c++/11/optional /usr/include/c++/11/filesystem \
+ /usr/include/c++/11/bits/fs_fwd.h /usr/include/c++/11/bits/fs_path.h \
+ /usr/include/c++/11/iomanip /usr/include/c++/11/bits/quoted_string.h \
+ /usr/include/c++/11/codecvt /usr/include/c++/11/bits/fs_dir.h \
+ /usr/include/c++/11/bits/fs_ops.h /usr/include/boost/signals2/signal.hpp \
  /usr/include/boost/core/noncopyable.hpp /usr/include/boost/function.hpp \
  /usr/include/boost/preprocessor/iterate.hpp \
  /usr/include/boost/preprocessor/iteration/iterate.hpp \
@@ -1238,15 +1242,4 @@ CMakeFiles/bitcoin_server.dir/src/addrdb.cpp.o: \
  /home/microguy/git/microguy/goldcoin/src/crypto/sha256.h \
  /home/microguy/git/microguy/goldcoin/src/streams.h \
  /home/microguy/git/microguy/goldcoin/src/support/allocators/zeroafterfree.h \
- /home/microguy/git/microguy/goldcoin/src/support/cleanse.h \
- /usr/include/boost/filesystem.hpp \
- /usr/include/boost/filesystem/exception.hpp \
- /usr/include/boost/smart_ptr/intrusive_ptr.hpp \
- /usr/include/boost/smart_ptr/intrusive_ref_counter.hpp \
- /usr/include/boost/smart_ptr/detail/atomic_count.hpp \
- /usr/include/boost/smart_ptr/detail/atomic_count_std_atomic.hpp \
- /usr/include/boost/filesystem/directory.hpp \
- /usr/include/boost/filesystem/file_status.hpp \
- /usr/include/boost/detail/bitmask.hpp \
- /usr/include/boost/filesystem/operations.hpp \
- /usr/include/boost/filesystem/convenience.hpp
+ /home/microguy/git/microguy/goldcoin/src/support/cleanse.h
