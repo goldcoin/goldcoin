@@ -1431,6 +1431,9 @@ CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcwallet.cpp.o: \
  /home/microguy/git/microguy/goldcoin/src/timedata.h \
  /home/microguy/git/microguy/goldcoin/src/util.h \
  /home/microguy/git/microguy/goldcoin/src/utiltime.h \
+ /usr/include/c++/11/filesystem /usr/include/c++/11/bits/fs_fwd.h \
+ /usr/include/c++/11/bits/fs_path.h /usr/include/c++/11/codecvt \
+ /usr/include/c++/11/bits/fs_dir.h /usr/include/c++/11/bits/fs_ops.h \
  /usr/include/boost/signals2/signal.hpp /usr/include/boost/function.hpp \
  /usr/include/boost/function/detail/prologue.hpp \
  /usr/include/boost/function/detail/requires_cxx11.hpp \
@@ -1531,17 +1534,6 @@ CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcwallet.cpp.o: \
  /home/microguy/git/microguy/goldcoin/src/script/standard.h \
  /home/microguy/git/microguy/goldcoin/src/rpc/server.h \
  /home/microguy/git/microguy/goldcoin/src/rpc/protocol.h \
- /usr/include/boost/filesystem.hpp \
- /usr/include/boost/filesystem/exception.hpp \
- /usr/include/boost/smart_ptr/intrusive_ptr.hpp \
- /usr/include/boost/smart_ptr/intrusive_ref_counter.hpp \
- /usr/include/boost/smart_ptr/detail/atomic_count.hpp \
- /usr/include/boost/smart_ptr/detail/atomic_count_std_atomic.hpp \
- /usr/include/boost/filesystem/directory.hpp \
- /usr/include/boost/filesystem/file_status.hpp \
- /usr/include/boost/detail/bitmask.hpp \
- /usr/include/boost/filesystem/operations.hpp \
- /usr/include/boost/filesystem/convenience.hpp \
  /home/microguy/git/microguy/goldcoin/src/univalue/include/univalue.h \
  /home/microguy/git/microguy/goldcoin/src/script/sign.h \
  /home/microguy/git/microguy/goldcoin/src/timedata.h \

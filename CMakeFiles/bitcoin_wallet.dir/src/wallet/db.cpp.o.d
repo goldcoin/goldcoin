@@ -956,7 +956,11 @@ CMakeFiles/bitcoin_wallet.dir/src/wallet/db.cpp.o: \
  /home/microguy/git/microguy/goldcoin/src/util.h \
  /home/microguy/git/microguy/goldcoin/src/tinyformat.h \
  /home/microguy/git/microguy/goldcoin/src/utiltime.h \
- /usr/include/c++/11/optional /usr/include/boost/signals2/signal.hpp \
+ /usr/include/c++/11/optional /usr/include/c++/11/filesystem \
+ /usr/include/c++/11/bits/fs_fwd.h /usr/include/c++/11/bits/fs_path.h \
+ /usr/include/c++/11/iomanip /usr/include/c++/11/bits/quoted_string.h \
+ /usr/include/c++/11/codecvt /usr/include/c++/11/bits/fs_dir.h \
+ /usr/include/c++/11/bits/fs_ops.h /usr/include/boost/signals2/signal.hpp \
  /usr/include/boost/core/noncopyable.hpp /usr/include/boost/function.hpp \
  /usr/include/boost/preprocessor/iterate.hpp \
  /usr/include/boost/preprocessor/iteration/iterate.hpp \
@@ -1444,7 +1448,6 @@ CMakeFiles/bitcoin_wallet.dir/src/wallet/db.cpp.o: \
  /usr/include/boost/exception/detail/is_output_streamable.hpp \
  /usr/include/boost/exception/detail/object_hex_dump.hpp \
  /usr/include/boost/exception/detail/type_info.hpp \
- /usr/include/c++/11/iomanip /usr/include/c++/11/bits/quoted_string.h \
  /usr/include/boost/exception/detail/error_info_impl.hpp \
  /usr/include/boost/exception/detail/shared_ptr.hpp \
  /usr/include/boost/exception/diagnostic_information.hpp \

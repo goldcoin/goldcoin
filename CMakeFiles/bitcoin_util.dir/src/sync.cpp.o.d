@@ -851,81 +851,17 @@ CMakeFiles/bitcoin_util.dir/src/sync.cpp.o: \
  /home/microguy/git/microguy/goldcoin/src/tinyformat.h \
  /usr/include/c++/11/iostream \
  /home/microguy/git/microguy/goldcoin/src/utiltime.h \
- /usr/include/c++/11/optional /usr/include/boost/filesystem/path.hpp \
- /usr/include/boost/filesystem/config.hpp \
- /usr/include/boost/filesystem/detail/path_traits.hpp \
+ /usr/include/c++/11/optional /usr/include/c++/11/filesystem \
+ /usr/include/c++/11/bits/fs_fwd.h /usr/include/c++/11/bits/fs_path.h \
  /usr/include/c++/11/locale \
  /usr/include/c++/11/bits/locale_facets_nonio.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h \
  /usr/include/libintl.h /usr/include/c++/11/bits/codecvt.h \
  /usr/include/c++/11/bits/locale_facets_nonio.tcc \
- /usr/include/c++/11/bits/locale_conv.h \
- /usr/include/boost/iterator/is_iterator.hpp \
- /usr/include/boost/type_traits/negation.hpp \
- /usr/include/boost/type_traits/conjunction.hpp /usr/include/c++/11/list \
- /usr/include/c++/11/bits/stl_list.h /usr/include/c++/11/bits/list.tcc \
- /usr/include/boost/filesystem/detail/header.hpp \
- /usr/include/boost/filesystem/detail/footer.hpp \
- /usr/include/boost/iterator/iterator_facade.hpp \
- /usr/include/boost/iterator/interoperable.hpp \
- /usr/include/boost/iterator/detail/config_def.hpp \
- /usr/include/boost/iterator/detail/config_undef.hpp \
- /usr/include/boost/iterator/iterator_traits.hpp \
- /usr/include/boost/iterator/iterator_categories.hpp \
- /usr/include/boost/mpl/placeholders.hpp /usr/include/boost/mpl/arg.hpp \
- /usr/include/boost/mpl/arg_fwd.hpp \
- /usr/include/boost/mpl/aux_/na_assert.hpp \
- /usr/include/boost/mpl/assert.hpp \
- /usr/include/boost/mpl/aux_/config/gpu.hpp \
- /usr/include/boost/mpl/aux_/config/pp_counter.hpp \
- /usr/include/boost/mpl/aux_/arity_spec.hpp \
- /usr/include/boost/mpl/aux_/arg_typedef.hpp \
- /usr/include/boost/mpl/aux_/preprocessed/gcc/arg.hpp \
- /usr/include/boost/mpl/aux_/preprocessed/gcc/placeholders.hpp \
- /usr/include/boost/iterator/detail/facade_iterator_category.hpp \
- /usr/include/boost/core/use_default.hpp \
- /usr/include/boost/type_traits/is_const.hpp \
- /usr/include/boost/detail/indirect_traits.hpp \
- /usr/include/boost/type_traits/is_pointer.hpp \
- /usr/include/boost/type_traits/is_volatile.hpp \
- /usr/include/boost/type_traits/is_member_function_pointer.hpp \
- /usr/include/boost/type_traits/detail/is_member_function_pointer_cxx_11.hpp \
- /usr/include/boost/type_traits/is_member_pointer.hpp \
- /usr/include/boost/type_traits/remove_pointer.hpp \
- /usr/include/boost/detail/select_type.hpp \
- /usr/include/boost/iterator/detail/enable_if.hpp \
- /usr/include/boost/type_traits/add_const.hpp \
- /usr/include/boost/type_traits/remove_const.hpp \
- /usr/include/boost/type_traits/is_pod.hpp \
- /usr/include/boost/type_traits/is_scalar.hpp \
- /usr/include/boost/mpl/always.hpp /usr/include/boost/mpl/apply.hpp \
- /usr/include/boost/mpl/apply_fwd.hpp \
- /usr/include/boost/mpl/aux_/preprocessed/gcc/apply_fwd.hpp \
- /usr/include/boost/mpl/lambda.hpp /usr/include/boost/mpl/bind.hpp \
- /usr/include/boost/mpl/bind_fwd.hpp \
- /usr/include/boost/mpl/aux_/config/bind.hpp \
- /usr/include/boost/mpl/aux_/preprocessed/gcc/bind_fwd.hpp \
- /usr/include/boost/mpl/next.hpp /usr/include/boost/mpl/next_prior.hpp \
- /usr/include/boost/mpl/aux_/common_name_wknd.hpp \
- /usr/include/boost/mpl/protect.hpp \
- /usr/include/boost/mpl/aux_/preprocessed/gcc/bind.hpp \
- /usr/include/boost/mpl/aux_/full_lambda.hpp \
- /usr/include/boost/mpl/quote.hpp \
- /usr/include/boost/mpl/aux_/has_type.hpp \
- /usr/include/boost/mpl/aux_/config/bcc.hpp \
- /usr/include/boost/mpl/aux_/preprocessed/gcc/quote.hpp \
- /usr/include/boost/mpl/aux_/template_arity.hpp \
- /usr/include/boost/mpl/aux_/preprocessed/gcc/template_arity.hpp \
- /usr/include/boost/mpl/aux_/preprocessed/gcc/full_lambda.hpp \
- /usr/include/boost/mpl/aux_/preprocessed/gcc/apply.hpp \
- /usr/include/boost/io/quoted.hpp \
- /usr/include/boost/io/detail/buffer_fill.hpp \
- /usr/include/boost/io/detail/ostream_guard.hpp \
- /usr/include/boost/io/ios_state.hpp /usr/include/boost/io_fwd.hpp \
- /usr/include/boost/functional/hash_fwd.hpp \
- /usr/include/boost/container_hash/hash_fwd.hpp \
- /usr/include/boost/type_traits/disjunction.hpp \
+ /usr/include/c++/11/bits/locale_conv.h /usr/include/c++/11/iomanip \
+ /usr/include/c++/11/bits/quoted_string.h /usr/include/c++/11/codecvt \
+ /usr/include/c++/11/bits/fs_dir.h /usr/include/c++/11/bits/fs_ops.h \
  /usr/include/boost/signals2/signal.hpp \
  /usr/include/boost/core/noncopyable.hpp /usr/include/boost/function.hpp \
  /usr/include/boost/preprocessor/iterate.hpp \
@@ -943,11 +879,19 @@ CMakeFiles/bitcoin_util.dir/src/sync.cpp.o: \
  /usr/include/x86_64-linux-gnu/c++/11/bits/cxxabi_tweaks.h \
  /usr/include/boost/core/ref.hpp \
  /usr/include/boost/type_traits/has_trivial_copy.hpp \
+ /usr/include/boost/type_traits/is_pod.hpp \
+ /usr/include/boost/type_traits/is_scalar.hpp \
+ /usr/include/boost/type_traits/is_pointer.hpp \
+ /usr/include/boost/type_traits/is_member_pointer.hpp \
+ /usr/include/boost/type_traits/is_member_function_pointer.hpp \
+ /usr/include/boost/type_traits/detail/is_member_function_pointer_cxx_11.hpp \
  /usr/include/boost/type_traits/is_copy_constructible.hpp \
  /usr/include/boost/type_traits/is_constructible.hpp \
  /usr/include/boost/type_traits/is_destructible.hpp \
  /usr/include/boost/type_traits/is_default_constructible.hpp \
  /usr/include/boost/type_traits/has_trivial_destructor.hpp \
+ /usr/include/boost/type_traits/is_const.hpp \
+ /usr/include/boost/type_traits/is_volatile.hpp \
  /usr/include/boost/type_traits/composite_traits.hpp \
  /usr/include/boost/type_traits/is_union.hpp \
  /usr/include/boost/type_traits/alignment_of.hpp \
@@ -978,6 +922,50 @@ CMakeFiles/bitcoin_util.dir/src/sync.cpp.o: \
  /usr/include/boost/core/swap.hpp \
  /usr/include/boost/iterator/reverse_iterator.hpp \
  /usr/include/boost/iterator/iterator_adaptor.hpp \
+ /usr/include/boost/core/use_default.hpp \
+ /usr/include/boost/iterator/iterator_categories.hpp \
+ /usr/include/boost/iterator/detail/config_def.hpp \
+ /usr/include/boost/mpl/placeholders.hpp /usr/include/boost/mpl/arg.hpp \
+ /usr/include/boost/mpl/arg_fwd.hpp \
+ /usr/include/boost/mpl/aux_/na_assert.hpp \
+ /usr/include/boost/mpl/assert.hpp \
+ /usr/include/boost/mpl/aux_/config/gpu.hpp \
+ /usr/include/boost/mpl/aux_/config/pp_counter.hpp \
+ /usr/include/boost/mpl/aux_/arity_spec.hpp \
+ /usr/include/boost/mpl/aux_/arg_typedef.hpp \
+ /usr/include/boost/mpl/aux_/preprocessed/gcc/arg.hpp \
+ /usr/include/boost/mpl/aux_/preprocessed/gcc/placeholders.hpp \
+ /usr/include/boost/iterator/detail/config_undef.hpp \
+ /usr/include/boost/iterator/iterator_facade.hpp \
+ /usr/include/boost/iterator/interoperable.hpp \
+ /usr/include/boost/iterator/iterator_traits.hpp \
+ /usr/include/boost/iterator/detail/facade_iterator_category.hpp \
+ /usr/include/boost/detail/indirect_traits.hpp \
+ /usr/include/boost/type_traits/remove_pointer.hpp \
+ /usr/include/boost/detail/select_type.hpp \
+ /usr/include/boost/iterator/detail/enable_if.hpp \
+ /usr/include/boost/type_traits/add_const.hpp \
+ /usr/include/boost/type_traits/remove_const.hpp \
+ /usr/include/boost/mpl/always.hpp /usr/include/boost/mpl/apply.hpp \
+ /usr/include/boost/mpl/apply_fwd.hpp \
+ /usr/include/boost/mpl/aux_/preprocessed/gcc/apply_fwd.hpp \
+ /usr/include/boost/mpl/lambda.hpp /usr/include/boost/mpl/bind.hpp \
+ /usr/include/boost/mpl/bind_fwd.hpp \
+ /usr/include/boost/mpl/aux_/config/bind.hpp \
+ /usr/include/boost/mpl/aux_/preprocessed/gcc/bind_fwd.hpp \
+ /usr/include/boost/mpl/next.hpp /usr/include/boost/mpl/next_prior.hpp \
+ /usr/include/boost/mpl/aux_/common_name_wknd.hpp \
+ /usr/include/boost/mpl/protect.hpp \
+ /usr/include/boost/mpl/aux_/preprocessed/gcc/bind.hpp \
+ /usr/include/boost/mpl/aux_/full_lambda.hpp \
+ /usr/include/boost/mpl/quote.hpp \
+ /usr/include/boost/mpl/aux_/has_type.hpp \
+ /usr/include/boost/mpl/aux_/config/bcc.hpp \
+ /usr/include/boost/mpl/aux_/preprocessed/gcc/quote.hpp \
+ /usr/include/boost/mpl/aux_/template_arity.hpp \
+ /usr/include/boost/mpl/aux_/preprocessed/gcc/template_arity.hpp \
+ /usr/include/boost/mpl/aux_/preprocessed/gcc/full_lambda.hpp \
+ /usr/include/boost/mpl/aux_/preprocessed/gcc/apply.hpp \
  /usr/include/boost/signals2/detail/scope_guard.hpp \
  /usr/include/boost/type_traits/aligned_storage.hpp \
  /usr/include/boost/type_traits/type_with_alignment.hpp \
@@ -1059,6 +1047,7 @@ CMakeFiles/bitcoin_util.dir/src/sync.cpp.o: \
  /usr/include/boost/variant/variant.hpp /usr/include/boost/type_index.hpp \
  /usr/include/boost/type_index/stl_type_index.hpp \
  /usr/include/boost/type_index/type_index_facade.hpp \
+ /usr/include/boost/container_hash/hash_fwd.hpp \
  /usr/include/boost/variant/detail/backup_holder.hpp \
  /usr/include/boost/variant/detail/enable_recursive_fwd.hpp \
  /usr/include/boost/variant/detail/forced_return.hpp \
@@ -1105,6 +1094,7 @@ CMakeFiles/bitcoin_util.dir/src/sync.cpp.o: \
  /usr/include/boost/variant/detail/cast_storage.hpp \
  /usr/include/boost/variant/detail/hash_variant.hpp \
  /usr/include/boost/variant/static_visitor.hpp \
+ /usr/include/boost/functional/hash_fwd.hpp \
  /usr/include/boost/variant/detail/std_hash.hpp \
  /usr/include/boost/blank.hpp \
  /usr/include/boost/detail/templated_streams.hpp \
@@ -1171,6 +1161,8 @@ CMakeFiles/bitcoin_util.dir/src/sync.cpp.o: \
  /usr/include/boost/optional.hpp /usr/include/boost/optional/optional.hpp \
  /usr/include/boost/core/explicit_operator_bool.hpp \
  /usr/include/boost/optional/bad_optional_access.hpp \
+ /usr/include/boost/type_traits/conjunction.hpp \
+ /usr/include/boost/type_traits/disjunction.hpp \
  /usr/include/boost/none.hpp /usr/include/boost/none_t.hpp \
  /usr/include/boost/utility/compare_pointees.hpp \
  /usr/include/boost/utility/result_of.hpp \
@@ -1185,6 +1177,8 @@ CMakeFiles/bitcoin_util.dir/src/sync.cpp.o: \
  /usr/include/boost/optional/detail/optional_reference_spec.hpp \
  /usr/include/boost/optional/detail/optional_relops.hpp \
  /usr/include/boost/optional/detail/optional_swap.hpp \
+ /usr/include/c++/11/list /usr/include/c++/11/bits/stl_list.h \
+ /usr/include/c++/11/bits/list.tcc \
  /usr/include/boost/signals2/detail/slot_call_iterator.hpp \
  /usr/include/boost/signals2/optional_last_value.hpp \
  /usr/include/boost/signals2/mutex.hpp \
@@ -1231,7 +1225,8 @@ CMakeFiles/bitcoin_util.dir/src/sync.cpp.o: \
  /usr/include/boost/thread/detail/make_tuple_indices.hpp \
  /usr/include/boost/thread/detail/invoke.hpp \
  /usr/include/boost/thread/detail/is_convertible.hpp \
- /usr/include/c++/11/stdlib.h /usr/include/boost/functional/hash.hpp \
+ /usr/include/c++/11/stdlib.h /usr/include/boost/io/ios_state.hpp \
+ /usr/include/boost/io_fwd.hpp /usr/include/boost/functional/hash.hpp \
  /usr/include/boost/container_hash/hash.hpp \
  /usr/include/boost/container_hash/detail/requires_cxx11.hpp \
  /usr/include/boost/container_hash/is_range.hpp \
@@ -1409,7 +1404,6 @@ CMakeFiles/bitcoin_util.dir/src/sync.cpp.o: \
  /usr/include/boost/exception/detail/is_output_streamable.hpp \
  /usr/include/boost/exception/detail/object_hex_dump.hpp \
  /usr/include/boost/exception/detail/type_info.hpp \
- /usr/include/c++/11/iomanip /usr/include/c++/11/bits/quoted_string.h \
  /usr/include/boost/exception/detail/error_info_impl.hpp \
  /usr/include/boost/exception/detail/shared_ptr.hpp \
  /usr/include/boost/exception/diagnostic_information.hpp \
@@ -1431,6 +1425,8 @@ CMakeFiles/bitcoin_util.dir/src/sync.cpp.o: \
  /usr/include/boost/type_traits/has_plus_assign.hpp \
  /usr/include/boost/type_traits/has_minus.hpp \
  /usr/include/boost/type_traits/has_minus_assign.hpp \
+ /usr/include/boost/iterator/is_iterator.hpp \
+ /usr/include/boost/type_traits/negation.hpp \
  /usr/include/boost/iterator/advance.hpp \
  /usr/include/boost/scoped_array.hpp \
  /usr/include/boost/smart_ptr/scoped_array.hpp \

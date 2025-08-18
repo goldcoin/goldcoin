@@ -742,72 +742,18 @@ CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.o: \
  /usr/include/c++/11/bits/sstream.tcc \
  /home/microguy/git/microguy/goldcoin/src/utiltime.h \
  /usr/include/c++/11/atomic /usr/include/c++/11/optional \
- /usr/include/boost/filesystem/path.hpp \
- /usr/include/boost/filesystem/config.hpp \
- /usr/include/boost/system/api_config.hpp \
- /usr/include/boost/config/auto_link.hpp \
- /usr/include/boost/filesystem/detail/path_traits.hpp \
- /usr/include/c++/11/locale \
- /usr/include/c++/11/bits/locale_facets_nonio.h /usr/include/c++/11/ctime \
+ /usr/include/c++/11/filesystem /usr/include/c++/11/bits/fs_fwd.h \
+ /usr/include/c++/11/chrono /usr/include/c++/11/ratio \
+ /usr/include/c++/11/ctime /usr/include/c++/11/bits/parse_numbers.h \
+ /usr/include/c++/11/bits/fs_path.h /usr/include/c++/11/locale \
+ /usr/include/c++/11/bits/locale_facets_nonio.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h \
  /usr/include/libintl.h /usr/include/c++/11/bits/codecvt.h \
  /usr/include/c++/11/bits/locale_facets_nonio.tcc \
- /usr/include/c++/11/bits/locale_conv.h \
- /usr/include/boost/system/error_category.hpp \
- /usr/include/boost/system/detail/error_category.hpp \
- /usr/include/boost/system/detail/config.hpp \
- /usr/include/boost/system/detail/requires_cxx11.hpp \
- /usr/include/boost/system/detail/error_category_impl.hpp \
- /usr/include/boost/system/detail/error_condition.hpp \
- /usr/include/boost/system/detail/generic_category.hpp \
- /usr/include/boost/system/detail/generic_category_message.hpp \
- /usr/include/boost/system/detail/enable_if.hpp \
- /usr/include/boost/system/detail/is_same.hpp \
- /usr/include/boost/system/detail/errc.hpp \
- /usr/include/boost/system/is_error_condition_enum.hpp \
- /usr/include/boost/system/detail/cerrno.hpp \
- /usr/include/boost/system/detail/append_int.hpp \
- /usr/include/boost/system/detail/snprintf.hpp \
- /usr/include/c++/11/cstdarg \
- /usr/include/boost/system/detail/error_code.hpp \
- /usr/include/boost/system/is_error_code_enum.hpp \
- /usr/include/boost/system/detail/system_category.hpp \
- /usr/include/boost/system/detail/system_category_impl.hpp \
- /usr/include/boost/system/detail/system_category_message.hpp \
- /usr/include/boost/system/detail/interop_category.hpp \
- /usr/include/boost/system/detail/std_category.hpp \
- /usr/include/boost/system/detail/std_category_impl.hpp \
- /usr/include/boost/system/detail/mutex.hpp /usr/include/c++/11/mutex \
- /usr/include/c++/11/chrono /usr/include/c++/11/ratio \
- /usr/include/c++/11/bits/parse_numbers.h \
- /usr/include/c++/11/bits/unique_lock.h \
- /usr/include/boost/iterator/is_iterator.hpp \
- /usr/include/boost/type_traits/negation.hpp \
- /usr/include/boost/type_traits/conjunction.hpp /usr/include/c++/11/list \
- /usr/include/c++/11/bits/stl_list.h /usr/include/c++/11/bits/list.tcc \
- /usr/include/boost/filesystem/detail/header.hpp \
- /usr/include/boost/config/abi_prefix.hpp \
- /usr/include/boost/filesystem/detail/footer.hpp \
- /usr/include/boost/config/abi_suffix.hpp \
- /usr/include/boost/iterator/iterator_facade.hpp \
- /usr/include/boost/iterator/interoperable.hpp \
- /usr/include/boost/iterator/detail/config_def.hpp \
- /usr/include/boost/iterator/detail/config_undef.hpp \
- /usr/include/boost/iterator/iterator_traits.hpp \
- /usr/include/boost/iterator/iterator_categories.hpp \
- /usr/include/boost/iterator/detail/facade_iterator_category.hpp \
- /usr/include/boost/core/use_default.hpp \
- /usr/include/boost/detail/indirect_traits.hpp \
- /usr/include/boost/type_traits/remove_pointer.hpp \
- /usr/include/boost/detail/select_type.hpp \
- /usr/include/boost/iterator/detail/enable_if.hpp \
- /usr/include/boost/type_traits/remove_const.hpp \
- /usr/include/boost/io/quoted.hpp \
- /usr/include/boost/io/detail/buffer_fill.hpp \
- /usr/include/boost/io/detail/ostream_guard.hpp \
- /usr/include/boost/io/ios_state.hpp /usr/include/boost/io_fwd.hpp \
- /usr/include/boost/type_traits/disjunction.hpp \
+ /usr/include/c++/11/bits/locale_conv.h /usr/include/c++/11/iomanip \
+ /usr/include/c++/11/bits/quoted_string.h /usr/include/c++/11/codecvt \
+ /usr/include/c++/11/bits/fs_dir.h /usr/include/c++/11/bits/fs_ops.h \
  /usr/include/boost/signals2/signal.hpp \
  /usr/include/boost/core/noncopyable.hpp /usr/include/boost/function.hpp \
  /usr/include/boost/function/detail/prologue.hpp \
@@ -867,6 +813,19 @@ CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.o: \
  /usr/include/boost/core/swap.hpp \
  /usr/include/boost/iterator/reverse_iterator.hpp \
  /usr/include/boost/iterator/iterator_adaptor.hpp \
+ /usr/include/boost/core/use_default.hpp \
+ /usr/include/boost/iterator/iterator_categories.hpp \
+ /usr/include/boost/iterator/detail/config_def.hpp \
+ /usr/include/boost/iterator/detail/config_undef.hpp \
+ /usr/include/boost/iterator/iterator_facade.hpp \
+ /usr/include/boost/iterator/interoperable.hpp \
+ /usr/include/boost/iterator/iterator_traits.hpp \
+ /usr/include/boost/iterator/detail/facade_iterator_category.hpp \
+ /usr/include/boost/detail/indirect_traits.hpp \
+ /usr/include/boost/type_traits/remove_pointer.hpp \
+ /usr/include/boost/detail/select_type.hpp \
+ /usr/include/boost/iterator/detail/enable_if.hpp \
+ /usr/include/boost/type_traits/remove_const.hpp \
  /usr/include/boost/signals2/detail/scope_guard.hpp \
  /usr/include/boost/type_traits/has_trivial_assign.hpp \
  /usr/include/boost/signals2/detail/null_output_iterator.hpp \
@@ -905,6 +864,8 @@ CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.o: \
  /usr/include/boost/optional.hpp /usr/include/boost/optional/optional.hpp \
  /usr/include/boost/core/explicit_operator_bool.hpp \
  /usr/include/boost/optional/bad_optional_access.hpp \
+ /usr/include/boost/type_traits/conjunction.hpp \
+ /usr/include/boost/type_traits/disjunction.hpp \
  /usr/include/boost/type_traits/decay.hpp \
  /usr/include/boost/type_traits/remove_bounds.hpp \
  /usr/include/boost/type_traits/remove_extent.hpp \
@@ -922,6 +883,8 @@ CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.o: \
  /usr/include/boost/optional/detail/optional_reference_spec.hpp \
  /usr/include/boost/optional/detail/optional_relops.hpp \
  /usr/include/boost/optional/detail/optional_swap.hpp \
+ /usr/include/c++/11/list /usr/include/c++/11/bits/stl_list.h \
+ /usr/include/c++/11/bits/list.tcc \
  /usr/include/boost/signals2/detail/slot_call_iterator.hpp \
  /usr/include/boost/signals2/optional_last_value.hpp \
  /usr/include/boost/signals2/mutex.hpp \
@@ -948,13 +911,43 @@ CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.o: \
  /usr/include/boost/thread/detail/platform.hpp \
  /usr/include/boost/config/requires_threads.hpp \
  /usr/include/boost/thread/detail/thread_safety.hpp \
+ /usr/include/boost/config/auto_link.hpp \
  /usr/include/boost/system/system_error.hpp \
  /usr/include/boost/system/errc.hpp \
+ /usr/include/boost/system/detail/errc.hpp \
+ /usr/include/boost/system/is_error_condition_enum.hpp \
+ /usr/include/boost/system/detail/cerrno.hpp \
+ /usr/include/boost/system/detail/error_code.hpp \
+ /usr/include/boost/system/is_error_code_enum.hpp \
+ /usr/include/boost/system/detail/error_category.hpp \
+ /usr/include/boost/system/detail/config.hpp \
+ /usr/include/boost/system/detail/requires_cxx11.hpp \
+ /usr/include/boost/system/detail/error_condition.hpp \
+ /usr/include/boost/system/detail/generic_category.hpp \
+ /usr/include/boost/system/detail/generic_category_message.hpp \
+ /usr/include/boost/system/detail/enable_if.hpp \
+ /usr/include/boost/system/detail/is_same.hpp \
+ /usr/include/boost/system/detail/append_int.hpp \
+ /usr/include/boost/system/detail/snprintf.hpp \
+ /usr/include/c++/11/cstdarg \
+ /usr/include/boost/system/detail/system_category.hpp \
+ /usr/include/boost/system/detail/system_category_impl.hpp \
+ /usr/include/boost/system/detail/system_category_message.hpp \
+ /usr/include/boost/system/api_config.hpp \
+ /usr/include/boost/system/detail/interop_category.hpp \
+ /usr/include/boost/system/detail/std_category.hpp \
+ /usr/include/boost/system/detail/error_category_impl.hpp \
+ /usr/include/boost/system/detail/std_category_impl.hpp \
+ /usr/include/boost/system/detail/mutex.hpp /usr/include/c++/11/mutex \
+ /usr/include/c++/11/bits/unique_lock.h \
  /usr/include/boost/system/error_code.hpp \
+ /usr/include/boost/system/error_category.hpp \
  /usr/include/boost/system/error_condition.hpp \
  /usr/include/boost/system/generic_category.hpp \
  /usr/include/boost/system/system_category.hpp \
  /usr/include/boost/system/detail/throws.hpp \
+ /usr/include/boost/config/abi_prefix.hpp \
+ /usr/include/boost/config/abi_suffix.hpp \
  /home/microguy/git/microguy/goldcoin/src/utilstrencodings.h \
  /usr/include/boost/foreach.hpp /usr/include/boost/noncopyable.hpp \
  /usr/include/boost/range/end.hpp /usr/include/boost/range/config.hpp \

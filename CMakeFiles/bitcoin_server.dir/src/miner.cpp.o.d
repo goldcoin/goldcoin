@@ -1638,6 +1638,9 @@ CMakeFiles/bitcoin_server.dir/src/miner.cpp.o: \
  /home/microguy/git/microguy/goldcoin/src/timedata.h \
  /home/microguy/git/microguy/goldcoin/src/util.h \
  /home/microguy/git/microguy/goldcoin/src/utiltime.h \
+ /usr/include/c++/11/filesystem /usr/include/c++/11/bits/fs_fwd.h \
+ /usr/include/c++/11/bits/fs_path.h /usr/include/c++/11/codecvt \
+ /usr/include/c++/11/bits/fs_dir.h /usr/include/c++/11/bits/fs_ops.h \
  /home/microguy/git/microguy/goldcoin/src/bloom.h \
  /home/microguy/git/microguy/goldcoin/src/limitedmap.h \
  /home/microguy/git/microguy/goldcoin/src/streams.h \

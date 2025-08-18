@@ -967,7 +967,11 @@ CMakeFiles/bitcoin_server.dir/src/checkpointsync.cpp.o: \
  /home/microguy/git/microguy/goldcoin/src/tinyformat.h \
  /usr/include/c++/11/iostream \
  /home/microguy/git/microguy/goldcoin/src/utiltime.h \
- /usr/include/c++/11/optional /usr/include/boost/signals2/signal.hpp \
+ /usr/include/c++/11/optional /usr/include/c++/11/filesystem \
+ /usr/include/c++/11/bits/fs_fwd.h /usr/include/c++/11/bits/fs_path.h \
+ /usr/include/c++/11/iomanip /usr/include/c++/11/bits/quoted_string.h \
+ /usr/include/c++/11/codecvt /usr/include/c++/11/bits/fs_dir.h \
+ /usr/include/c++/11/bits/fs_ops.h /usr/include/boost/signals2/signal.hpp \
  /usr/include/boost/core/noncopyable.hpp /usr/include/boost/function.hpp \
  /usr/include/boost/preprocessor/iterate.hpp \
  /usr/include/boost/preprocessor/iteration/iterate.hpp \
@@ -1559,7 +1563,6 @@ CMakeFiles/bitcoin_server.dir/src/checkpointsync.cpp.o: \
  /usr/include/boost/date_time/date_formatting.hpp \
  /usr/include/boost/date_time/iso_format.hpp \
  /usr/include/boost/date_time/parse_format_base.hpp \
- /usr/include/c++/11/iomanip /usr/include/c++/11/bits/quoted_string.h \
  /usr/include/boost/date_time/date_format_simple.hpp \
  /usr/include/boost/date_time/gregorian/gregorian_io.hpp \
  /usr/include/boost/date_time/date_facet.hpp \

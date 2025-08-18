@@ -1233,24 +1233,17 @@ CMakeFiles/bitcoin_common.dir/src/keystore.cpp.o: \
  /home/microguy/git/microguy/goldcoin/src/tinyformat.h \
  /usr/include/c++/11/iostream \
  /home/microguy/git/microguy/goldcoin/src/utiltime.h \
- /usr/include/c++/11/optional /usr/include/boost/filesystem/path.hpp \
- /usr/include/boost/filesystem/config.hpp \
- /usr/include/boost/filesystem/detail/path_traits.hpp \
+ /usr/include/c++/11/optional /usr/include/c++/11/filesystem \
+ /usr/include/c++/11/bits/fs_fwd.h /usr/include/c++/11/bits/fs_path.h \
  /usr/include/c++/11/locale \
  /usr/include/c++/11/bits/locale_facets_nonio.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h \
  /usr/include/libintl.h /usr/include/c++/11/bits/codecvt.h \
  /usr/include/c++/11/bits/locale_facets_nonio.tcc \
- /usr/include/c++/11/bits/locale_conv.h \
- /usr/include/boost/iterator/is_iterator.hpp \
- /usr/include/boost/type_traits/negation.hpp \
- /usr/include/boost/filesystem/detail/header.hpp \
- /usr/include/boost/filesystem/detail/footer.hpp \
- /usr/include/boost/io/quoted.hpp \
- /usr/include/boost/io/detail/buffer_fill.hpp \
- /usr/include/boost/io/detail/ostream_guard.hpp \
- /usr/include/boost/io/ios_state.hpp /usr/include/boost/io_fwd.hpp \
+ /usr/include/c++/11/bits/locale_conv.h /usr/include/c++/11/iomanip \
+ /usr/include/c++/11/bits/quoted_string.h /usr/include/c++/11/codecvt \
+ /usr/include/c++/11/bits/fs_dir.h /usr/include/c++/11/bits/fs_ops.h \
  /usr/include/boost/foreach.hpp /usr/include/boost/noncopyable.hpp \
  /usr/include/boost/range/end.hpp /usr/include/boost/range/config.hpp \
  /usr/include/boost/range/detail/implementation_help.hpp \
