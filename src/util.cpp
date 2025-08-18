@@ -228,7 +228,7 @@ static int FileWriteStr(const std::string &str, FILE *fp)
 
 static void DebugPrintInit()
 {
-    assert(mutexDebugLog == nullptr);
+    assert(!mutexDebugLog);
     mutexDebugLog = std::make_unique<boost::mutex>();
     vMsgsBeforeOpenLog = std::make_unique<list<string>>();
 }
