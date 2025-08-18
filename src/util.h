@@ -29,7 +29,7 @@
 #include <string>
 #include <vector>
 
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <boost/signals2/signal.hpp>
 #include <boost/thread/exceptions.hpp>
 
@@ -101,19 +101,19 @@ void FileCommit(FILE *file);
 bool TruncateFile(FILE *file, unsigned int length);
 int RaiseFileDescriptorLimit(int nMinFD);
 void AllocateFileRange(FILE *file, unsigned int offset, unsigned int length);
-bool RenameOver(boost::filesystem::path src, boost::filesystem::path dest);
-bool TryCreateDirectory(const boost::filesystem::path& p);
-boost::filesystem::path GetDefaultDataDir();
-const boost::filesystem::path &GetDataDir(bool fNetSpecific = true);
+bool RenameOver(std::filesystem::path src, std::filesystem::path dest);
+bool TryCreateDirectory(const std::filesystem::path& p);
+std::filesystem::path GetDefaultDataDir();
+const std::filesystem::path &GetDataDir(bool fNetSpecific = true);
 void ClearDatadirCache();
-boost::filesystem::path GetConfigFile(const std::string& confPath);
+std::filesystem::path GetConfigFile(const std::string& confPath);
 #ifndef WIN32
-boost::filesystem::path GetPidFile();
-void CreatePidFile(const boost::filesystem::path &path, pid_t pid);
+std::filesystem::path GetPidFile();
+void CreatePidFile(const std::filesystem::path &path, pid_t pid);
 #endif
 void ReadConfigFile(const std::string& confPath);
 #ifdef WIN32
-boost::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate = true);
+std::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate = true);
 #endif
 void OpenDebugLog();
 void ShrinkDebugFile();
