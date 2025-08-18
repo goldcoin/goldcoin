@@ -27,7 +27,7 @@ static const struct {
     /* Other: linux, unix, ... */
     {"other", true, true, false}
 };
-static const unsigned platform_styles_count = sizeof(platform_styles)/sizeof(*platform_styles);
+static constexpr unsigned platform_styles_count = sizeof(platform_styles)/sizeof(*platform_styles);
 
 namespace {
 /* Local functions for colorizing single-color images */

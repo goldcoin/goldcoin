@@ -23,7 +23,7 @@
 
 #include <db_cxx.h>
 
-static const unsigned int DEFAULT_WALLET_DBLOGSIZE = 100;
+static constexpr unsigned int DEFAULT_WALLET_DBLOGSIZE = 100;
 static const bool DEFAULT_WALLET_PRIVDB = true;
 
 class CDBEnv
@@ -48,7 +48,7 @@ public:
     void Reset();
 
     void MakeMock();
-    bool IsMock() { return fMockDb; }
+    [[nodiscard]] bool IsMock() { return fMockDb; }
 
     /**
      * Verify that database file strFile is OK. If it is not,

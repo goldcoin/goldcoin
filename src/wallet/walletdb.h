@@ -51,7 +51,7 @@ public:
     uint32_t nExternalChainCounter;
     CKeyID masterKeyID; //!< master key hash160
 
-    static const int CURRENT_VERSION = 1;
+    static constexpr int CURRENT_VERSION = 1;
     int nVersion;
 
     CHDChain() { SetNull(); }
@@ -75,9 +75,9 @@ public:
 class CKeyMetadata
 {
 public:
-    static const int VERSION_BASIC=1;
-    static const int VERSION_WITH_HDDATA=10;
-    static const int CURRENT_VERSION=VERSION_WITH_HDDATA;
+    static constexpr int VERSION_BASIC=1;
+    static constexpr int VERSION_WITH_HDDATA=10;
+    static constexpr int CURRENT_VERSION=VERSION_WITH_HDDATA;
     int nVersion;
     int64_t nCreateTime; // 0 means unknown
     std::string hdKeypath; //optional HD/bip32 keypath
@@ -166,7 +166,7 @@ public:
     /// Erase destination data tuple from wallet database
     bool EraseDestData(const std::string &address, const std::string &key);
 
-    CAmount GetAccountCreditDebit(const std::string& strAccount);
+    [[nodiscard]] CAmount GetAccountCreditDebit(const std::string& strAccount);
     void ListAccountCreditDebit(const std::string& strAccount, std::list<CAccountingEntry>& acentries);
 
     DBErrors LoadWallet(CWallet* pwallet);

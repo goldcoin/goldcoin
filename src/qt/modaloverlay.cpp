@@ -108,7 +108,7 @@ void ModalOverlay::tipUpdate(int count, const QDateTime& blockDate, double nVeri
         // show expected remaining time
         ui->expectedTimeLeft->setText(GUIUtil::formatNiceTimeOffset(remainingMSecs/1000.0));
 
-        static const int MAX_SAMPLES = 5000;
+        static constexpr int MAX_SAMPLES = 5000;
         if (blockProcessTime.count() > MAX_SAMPLES)
             blockProcessTime.remove(MAX_SAMPLES, blockProcessTime.count()-MAX_SAMPLES);
     }

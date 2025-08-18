@@ -33,7 +33,7 @@ public:
     bool parse(const QByteArray& data);
     bool SerializeToString(std::string* output) const;
 
-    bool IsInitialized() const;
+    [[nodiscard]] bool IsInitialized() const;
     // Returns true if merchant's identity is authenticated, and
     // returns human-readable merchant identity in merchant
     bool getMerchant(X509_STORE* certStore, QString& merchant) const;
