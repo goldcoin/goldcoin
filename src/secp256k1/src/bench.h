@@ -13,7 +13,7 @@
 
 static double gettimedouble(void) {
     struct timeval tv;
-    gettimeofday(&tv, nullptr);
+    gettimeofday(&tv, NULL);
     return tv.tv_usec * 0.000001 + tv.tv_sec;
 }
 
@@ -37,13 +37,13 @@ void run_benchmark(char *name, void (*benchmark)(void*), void (*setup)(void*), v
     double max = 0.0;
     for (i = 0; i < count; i++) {
         double begin, total;
-        if (setup != nullptr) {
+        if (setup != NULL) {
             setup(data);
         }
         begin = gettimedouble();
         benchmark(data);
         total = gettimedouble() - begin;
-        if (teardown != nullptr) {
+        if (teardown != NULL) {
             teardown(data);
         }
         if (total < min) {
