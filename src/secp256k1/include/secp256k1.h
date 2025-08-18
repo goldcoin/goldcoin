@@ -40,7 +40,7 @@ extern "C" {
  *  Regarding randomization, either do it once at creation time (in which case
  *  you do not need any locking for the other calls), or use a read-write lock.
  */
-using secp256k1_context = struct secp256k1_context_struct;
+typedef struct secp256k1_context_struct secp256k1_context;
 
 /** Opaque data structure that holds a parsed and valid public key.
  *
