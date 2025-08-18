@@ -21,9 +21,9 @@ CScheduler::~CScheduler()
 
 
 #if BOOST_VERSION < 105000
-static boost::system_time toPosixTime(const boost::chrono::system_clock::time_point& t)
+static boost::system_time toPosixTime(const std::chrono::system_clock::time_point& t)
 {
-    return boost::posix_time::from_time_t(boost::chrono::system_clock::to_time_t(t));
+    return boost::posix_time::from_time_t(std::chrono::system_clock::to_time_t(t));
 }
 #endif
 
@@ -55,7 +55,7 @@ void CScheduler::serviceQueue()
             // Some boost versions have a conflicting overload of wait_until that returns void.
             // Explicitly use a template here to avoid hitting that overload.
             while (!shouldStop() && !taskQueue.empty()) {
-                boost::chrono::system_clock::time_point timeToWaitFor = taskQueue.begin()->first;
+                std::chrono::system_clock::time_point timeToWaitFor = taskQueue.begin()->first;
                 if (newTaskScheduled.wait_until<>(lock, timeToWaitFor) == boost::cv_status::timeout)
                     break; // Exit loop after timeout, it means we reached the time of the event
             }
@@ -95,7 +95,7 @@ void CScheduler::stop(bool drain)
     newTaskScheduled.notify_all();
 }
 
-void CScheduler::schedule(CScheduler::Function f, boost::chrono::system_clock::time_point t)
+void CScheduler::schedule(CScheduler::Function f, std::chrono::system_clock::time_point t)
 {
     {
         boost::unique_lock<boost::mutex> lock(newTaskMutex);
@@ -106,7 +106,7 @@ void CScheduler::schedule(CScheduler::Function f, boost::chrono::system_clock::t
 
 void CScheduler::scheduleFromNow(CScheduler::Function f, int64_t deltaSeconds)
 {
-    schedule(f, boost::chrono::system_clock::now() + boost::chrono::seconds(deltaSeconds));
+    schedule(f, std::chrono::system_clock::now() + std::chrono::seconds(deltaSeconds));
 }
 
 static void Repeat(CScheduler* s, CScheduler::Function f, int64_t deltaSeconds)
@@ -120,8 +120,8 @@ void CScheduler::scheduleEvery(CScheduler::Function f, int64_t deltaSeconds)
     scheduleFromNow(boost::bind(&Repeat, this, f, deltaSeconds), deltaSeconds);
 }
 
-size_t CScheduler::getQueueInfo(boost::chrono::system_clock::time_point &first,
-                             boost::chrono::system_clock::time_point &last) const
+size_t CScheduler::getQueueInfo(std::chrono::system_clock::time_point &first,
+                             std::chrono::system_clock::time_point &last) const
 {
     boost::unique_lock<boost::mutex> lock(newTaskMutex);
     size_t result = taskQueue.size();
