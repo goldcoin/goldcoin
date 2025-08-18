@@ -23,11 +23,17 @@ BDB_INCLUDE_DIR:PATH=/usr/local/include
 //Path to a library.
 BDB_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libdb-5.3.so
 
+//No help, variable specified on the command line.
+BOOST_STATIC:UNINITIALIZED=ON
+
 //Build benchmarks
 BUILD_BENCH:BOOL=OFF
 
 //Build goldcoin-qt GUI with Qt 6.9
 BUILD_GUI:BOOL=ON
+
+//No help, variable specified on the command line.
+BUILD_SHARED_LIBS:UNINITIALIZED=OFF
 
 //Build test suite
 BUILD_TESTS:BOOL=OFF
@@ -35,21 +41,24 @@ BUILD_TESTS:BOOL=OFF
 //Enable wallet functionality
 BUILD_WALLET:BOOL=ON
 
-Boost_CHRONO_LIBRARY_RELEASE:STRING=/usr/lib/x86_64-linux-gnu/libboost_chrono.so.1.83.0
+Boost_CHRONO_LIBRARY_RELEASE:STRING=/usr/lib/x86_64-linux-gnu/libboost_chrono.a
 
 //The directory containing a CMake configuration file for Boost.
 Boost_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/Boost-1.83.0
 
-Boost_FILESYSTEM_LIBRARY_RELEASE:STRING=/usr/lib/x86_64-linux-gnu/libboost_filesystem.so.1.83.0
+Boost_FILESYSTEM_LIBRARY_RELEASE:STRING=/usr/lib/x86_64-linux-gnu/libboost_filesystem.a
 
 //Path to a file.
 Boost_INCLUDE_DIR:PATH=/usr/include
 
-Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE:STRING=/usr/lib/x86_64-linux-gnu/libboost_program_options.so.1.83.0
+Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE:STRING=/usr/lib/x86_64-linux-gnu/libboost_program_options.a
 
-Boost_SYSTEM_LIBRARY_RELEASE:STRING=/usr/lib/x86_64-linux-gnu/libboost_system.so.1.83.0
+Boost_SYSTEM_LIBRARY_RELEASE:STRING=/usr/lib/x86_64-linux-gnu/libboost_system.a
 
-Boost_THREAD_LIBRARY_RELEASE:STRING=/usr/lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
+Boost_THREAD_LIBRARY_RELEASE:STRING=/usr/lib/x86_64-linux-gnu/libboost_thread.a
+
+//No help, variable specified on the command line.
+Boost_USE_STATIC_LIBS:UNINITIALIZED=ON
 
 //Path to a program.
 CMAKE_ADDR2LINE:FILEPATH=/usr/bin/addr2line
@@ -85,7 +94,7 @@ CMAKE_ASM_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
 
 //Choose the type of build, options are: None Debug Release RelWithDebInfo
 // MinSizeRel ...
-CMAKE_BUILD_TYPE:STRING=
+CMAKE_BUILD_TYPE:STRING=Release
 
 //Enable/Disable color output during build.
 CMAKE_COLOR_MAKEFILE:BOOL=ON

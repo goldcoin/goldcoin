@@ -1907,6 +1907,9 @@ CMakeFiles/bitcoin_server.dir/src/init.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/types/struct_sigstack.h \
  /usr/include/x86_64-linux-gnu/bits/sigthread.h \
  /usr/include/x86_64-linux-gnu/bits/signal_ext.h \
+ /usr/include/c++/11/filesystem /usr/include/c++/11/bits/fs_fwd.h \
+ /usr/include/c++/11/bits/fs_path.h /usr/include/c++/11/codecvt \
+ /usr/include/c++/11/bits/fs_dir.h /usr/include/c++/11/bits/fs_ops.h \
  /usr/include/boost/interprocess/sync/file_lock.hpp \
  /usr/include/boost/interprocess/detail/config_begin.hpp \
  /usr/include/boost/interprocess/detail/workaround.hpp \

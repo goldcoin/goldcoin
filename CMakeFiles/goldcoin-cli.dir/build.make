@@ -111,14 +111,14 @@ bin/goldcoin-cli: CMakeFiles/goldcoin-cli.dir/build.make
 bin/goldcoin-cli: lib/libbitcoin_util.a
 bin/goldcoin-cli: lib/libbitcoin_crypto.a
 bin/goldcoin-cli: lib/libunivalue.a
-bin/goldcoin-cli: /usr/lib/x86_64-linux-gnu/libboost_system.so.1.83.0
-bin/goldcoin-cli: /usr/lib/x86_64-linux-gnu/libboost_filesystem.so.1.83.0
-bin/goldcoin-cli: /usr/lib/x86_64-linux-gnu/libboost_program_options.so.1.83.0
-bin/goldcoin-cli: /usr/lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
-bin/goldcoin-cli: /usr/lib/x86_64-linux-gnu/libboost_chrono.so.1.83.0
+bin/goldcoin-cli: /usr/lib/x86_64-linux-gnu/libboost_system.a
+bin/goldcoin-cli: /usr/lib/x86_64-linux-gnu/libboost_filesystem.a
+bin/goldcoin-cli: /usr/lib/x86_64-linux-gnu/libboost_program_options.a
+bin/goldcoin-cli: /usr/lib/x86_64-linux-gnu/libboost_thread.a
+bin/goldcoin-cli: /usr/lib/x86_64-linux-gnu/libboost_chrono.a
 bin/goldcoin-cli: /usr/lib/x86_64-linux-gnu/libssl.so
 bin/goldcoin-cli: /usr/lib/x86_64-linux-gnu/libcrypto.so
-bin/goldcoin-cli: /usr/lib/x86_64-linux-gnu/libboost_atomic.so.1.83.0
+bin/goldcoin-cli: /usr/lib/x86_64-linux-gnu/libboost_atomic.a
 bin/goldcoin-cli: CMakeFiles/goldcoin-cli.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable bin/goldcoin-cli"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/goldcoin-cli.dir/link.txt --verbose=$(VERBOSE)

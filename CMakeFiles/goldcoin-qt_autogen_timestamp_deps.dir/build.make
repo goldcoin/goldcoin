@@ -68,11 +68,12 @@ include CMakeFiles/goldcoin-qt_autogen_timestamp_deps.dir/progress.make
 
 CMakeFiles/goldcoin-qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libssl.so
 CMakeFiles/goldcoin-qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libcrypto.so
-CMakeFiles/goldcoin-qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libboost_program_options.so.1.83.0
-CMakeFiles/goldcoin-qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
-CMakeFiles/goldcoin-qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libboost_system.so.1.83.0
-CMakeFiles/goldcoin-qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libboost_filesystem.so.1.83.0
-CMakeFiles/goldcoin-qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libboost_chrono.so.1.83.0
+CMakeFiles/goldcoin-qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libboost_chrono.a
+CMakeFiles/goldcoin-qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libboost_program_options.a
+CMakeFiles/goldcoin-qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libboost_thread.a
+CMakeFiles/goldcoin-qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libboost_system.a
+CMakeFiles/goldcoin-qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libboost_filesystem.a
+CMakeFiles/goldcoin-qt_autogen_timestamp_deps: /usr/lib/qt6/libexec/moc
 CMakeFiles/goldcoin-qt_autogen_timestamp_deps: lib/libleveldb.a
 CMakeFiles/goldcoin-qt_autogen_timestamp_deps: lib/libmemenv.a
 CMakeFiles/goldcoin-qt_autogen_timestamp_deps: lib/libsecp256k1.a
@@ -83,9 +84,8 @@ CMakeFiles/goldcoin-qt_autogen_timestamp_deps: lib/libbitcoin_util.a
 CMakeFiles/goldcoin-qt_autogen_timestamp_deps: lib/libbitcoin_common.a
 CMakeFiles/goldcoin-qt_autogen_timestamp_deps: lib/libbitcoin_server.a
 CMakeFiles/goldcoin-qt_autogen_timestamp_deps: lib/libbitcoin_wallet.a
-CMakeFiles/goldcoin-qt_autogen_timestamp_deps: /usr/lib/qt6/libexec/moc
-CMakeFiles/goldcoin-qt_autogen_timestamp_deps: /usr/lib/qt6/libexec/uic
 CMakeFiles/goldcoin-qt_autogen_timestamp_deps: lib/libbitcoin_qt.a
+CMakeFiles/goldcoin-qt_autogen_timestamp_deps: /usr/lib/qt6/libexec/uic
 
 goldcoin-qt_autogen_timestamp_deps: CMakeFiles/goldcoin-qt_autogen_timestamp_deps
 goldcoin-qt_autogen_timestamp_deps: CMakeFiles/goldcoin-qt_autogen_timestamp_deps.dir/build.make
