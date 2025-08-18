@@ -24,6 +24,7 @@
 #include <atomic>
 #include <exception>
 #include <map>
+#include <optional>
 #include <stdint.h>
 #include <string>
 #include <vector>

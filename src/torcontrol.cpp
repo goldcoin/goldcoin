@@ -10,6 +10,7 @@
 #include "util.h"
 #include "crypto/hmac_sha256.h"
 
+#include <functional>
 #include <vector>
 #include <deque>
 #include <set>
@@ -71,8 +72,8 @@ public:
 class TorControlConnection
 {
 public:
-    typedef boost::function<void(TorControlConnection&)> ConnectionCB;
-    typedef boost::function<void(TorControlConnection &,const TorControlReply &)> ReplyHandlerCB;
+    using ConnectionCB = std::function<void(TorControlConnection&)>;
+    using ReplyHandlerCB = std::function<void(TorControlConnection &,const TorControlReply &)>;
 
     /** Create a new TorControlConnection.
      */
