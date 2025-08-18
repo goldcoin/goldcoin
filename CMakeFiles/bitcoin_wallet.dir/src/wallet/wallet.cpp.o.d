@@ -247,7 +247,7 @@ CMakeFiles/bitcoin_wallet.dir/src/wallet/wallet.cpp.o: \
  /usr/include/c++/11/istream /usr/include/c++/11/bits/istream.tcc \
  /usr/include/c++/11/sstream /usr/include/c++/11/bits/sstream.tcc \
  /home/microguy/git/microguy/goldcoin/src/ui_interface.h \
- /usr/include/boost/signals2/last_value.hpp \
+ /usr/include/c++/11/atomic /usr/include/boost/signals2/last_value.hpp \
  /usr/include/boost/core/no_exceptions_support.hpp \
  /usr/include/boost/config.hpp /usr/include/boost/config/user.hpp \
  /usr/include/boost/config/detail/select_compiler_config.hpp \
@@ -520,7 +520,6 @@ CMakeFiles/bitcoin_wallet.dir/src/wallet/wallet.cpp.o: \
  /usr/include/boost/smart_ptr/detail/sp_counted_base_std_atomic.hpp \
  /usr/include/boost/smart_ptr/detail/sp_typeinfo_.hpp \
  /usr/include/boost/smart_ptr/detail/sp_noexcept.hpp \
- /usr/include/c++/11/atomic \
  /usr/include/boost/smart_ptr/detail/sp_counted_impl.hpp \
  /usr/include/boost/core/checked_delete.hpp \
  /usr/include/boost/smart_ptr/detail/sp_disable_deprecated.hpp \
