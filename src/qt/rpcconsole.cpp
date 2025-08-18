@@ -1125,7 +1125,7 @@ void RPCConsole::banSelectedNode(int bantime)
 	// Find possible nodes, ban it and clear the selected node
 	const CNodeCombinedStats *stats = clientModel->getPeerTableModel()->getNodeStats(detailNodeRow);
 	if(stats) {
-	    g_connman->Ban(stats->nodeStats.addr, BanReasonManuallyAdded, bantime);
+	    g_connman->Ban(stats->nodeStats.addr, BanReason::ManuallyAdded, bantime);
 	}
     }
     clearSelectedNode();

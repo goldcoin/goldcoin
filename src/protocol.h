@@ -30,7 +30,7 @@
 class CMessageHeader
 {
 public:
-    enum {
+    enum : unsigned int {
         MESSAGE_START_SIZE = 4,
         COMMAND_SIZE = 12,
         MESSAGE_SIZE_SIZE = 4,
@@ -40,7 +40,7 @@ public:
         CHECKSUM_OFFSET = MESSAGE_SIZE_OFFSET + MESSAGE_SIZE_SIZE,
         HEADER_SIZE = MESSAGE_START_SIZE + COMMAND_SIZE + MESSAGE_SIZE_SIZE + CHECKSUM_SIZE
     };
-    typedef unsigned char MessageStartChars[MESSAGE_START_SIZE];
+    using MessageStartChars = unsigned char[MESSAGE_START_SIZE];
 
     CMessageHeader(const MessageStartChars& pchMessageStartIn);
     CMessageHeader(const MessageStartChars& pchMessageStartIn, const char* pszCommand, unsigned int nMessageSizeIn);

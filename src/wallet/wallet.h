@@ -46,31 +46,31 @@ extern bool fSendFreeTransactions;
 
 static constexpr unsigned int DEFAULT_KEYPOOL_SIZE = 100;
 //! -paytxfee default
-static const CAmount DEFAULT_TRANSACTION_FEE = 0;
+static constexpr CAmount DEFAULT_TRANSACTION_FEE = 0;
 //! -fallbackfee default
-static const CAmount DEFAULT_FALLBACK_FEE = 100000;
+static constexpr CAmount DEFAULT_FALLBACK_FEE = 100000;
 //! -mintxfee default
-static const CAmount DEFAULT_TRANSACTION_MINFEE = 100000;
+static constexpr CAmount DEFAULT_TRANSACTION_MINFEE = 100000;
 //! minimum recommended increment for BIP 125 replacement txs
-static const CAmount WALLET_INCREMENTAL_RELAY_FEE = 5000;
+static constexpr CAmount WALLET_INCREMENTAL_RELAY_FEE = 5000;
 //! target minimum change amount
-static const CAmount MIN_CHANGE = CENT;
+static constexpr CAmount MIN_CHANGE = CENT;
 //! final minimum change amount after paying for fees
-static const CAmount MIN_FINAL_CHANGE = MIN_CHANGE/2;
+static constexpr CAmount MIN_FINAL_CHANGE = MIN_CHANGE/2;
 //! Default for -spendzeroconfchange
-static const bool DEFAULT_SPEND_ZEROCONF_CHANGE = true;
+static constexpr bool DEFAULT_SPEND_ZEROCONF_CHANGE = true;
 //! Default for -sendfreetransactions
-static const bool DEFAULT_SEND_FREE_TRANSACTIONS = false;
+static constexpr bool DEFAULT_SEND_FREE_TRANSACTIONS = false;
 //! Default for -walletrejectlongchains
-static const bool DEFAULT_WALLET_REJECT_LONG_CHAINS = false;
+static constexpr bool DEFAULT_WALLET_REJECT_LONG_CHAINS = false;
 //! -txconfirmtarget default
 static constexpr unsigned int DEFAULT_TX_CONFIRM_TARGET = 6;
 //! Largest (in bytes) free transaction we're willing to create
 static constexpr unsigned int MAX_FREE_TRANSACTION_CREATE_SIZE = 1000;
-static const bool DEFAULT_WALLETBROADCAST = true;
-static const bool DEFAULT_DISABLE_WALLET = false;
+static constexpr bool DEFAULT_WALLETBROADCAST = true;
+static constexpr bool DEFAULT_DISABLE_WALLET = false;
 //! if set, all keys will be derived by using BIP32
-static const bool DEFAULT_USE_HD_WALLET = true;
+static constexpr bool DEFAULT_USE_HD_WALLET = true;
 
 extern const char * DEFAULT_WALLET_DAT;
 

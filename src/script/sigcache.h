@@ -16,9 +16,9 @@
 // DoS prevention: limit cache size to 32MB (over 1000000 entries on 64-bit
 // systems). Due to how we count cache size, actual memory usage is slightly
 // more (~32.25 MB)
-static const unsigned int DEFAULT_MAX_SIG_CACHE_SIZE = 32;
+static constexpr unsigned int DEFAULT_MAX_SIG_CACHE_SIZE = 32;
 // Maximum sig cache size allowed
-static const int64_t MAX_MAX_SIG_CACHE_SIZE = 16384;
+static constexpr int64_t MAX_MAX_SIG_CACHE_SIZE = 16384;
 
 class CPubKey;
 
