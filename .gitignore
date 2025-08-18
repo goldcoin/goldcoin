@@ -121,3 +121,6 @@ contrib/devtools/split-debug.sh
 
 # Private/sensitive project documentation
 CLAUDE.md
+# Claude AI settings
+.claude/
+CLAUDE.md
