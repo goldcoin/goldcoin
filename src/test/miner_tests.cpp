@@ -371,28 +371,38 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
 
     // subsidy changing
     int nHeight = chainActive.Height();
+    // Vector to manage ownership of temporary blocks
+    std::vector<std::unique_ptr<CBlockIndex>> tempBlocks;
+    std::vector<std::unique_ptr<uint256>> tempHashes;
+    
     // Create an actual 209999-long block chain (without valid blocks).
     while (chainActive.Tip()->nHeight < 839999) {
         CBlockIndex* prev = chainActive.Tip();
-        CBlockIndex* next = new CBlockIndex();
-        next->phashBlock = new uint256(GetRandHash());
+        auto next = std::make_unique<CBlockIndex>();
+        auto hash = std::make_unique<uint256>(GetRandHash());
+        next->phashBlock = hash.get();
         pcoinsTip->SetBestBlock(next->GetBlockHash());
         next->pprev = prev;
         next->nHeight = prev->nHeight + 1;
         next->BuildSkip();
-        chainActive.SetTip(next);
+        chainActive.SetTip(next.get());
+        tempBlocks.push_back(std::move(next));
+        tempHashes.push_back(std::move(hash));
     }
     BOOST_CHECK(pblocktemplate = BlockAssembler(chainparams).CreateNewBlock(scriptPubKey));
     // Extend to a 210000-long block chain.
     while (chainActive.Tip()->nHeight < 840000) {
         CBlockIndex* prev = chainActive.Tip();
-        CBlockIndex* next = new CBlockIndex();
-        next->phashBlock = new uint256(GetRandHash());
+        auto next = std::make_unique<CBlockIndex>();
+        auto hash = std::make_unique<uint256>(GetRandHash());
+        next->phashBlock = hash.get();
         pcoinsTip->SetBestBlock(next->GetBlockHash());
         next->pprev = prev;
         next->nHeight = prev->nHeight + 1;
         next->BuildSkip();
-        chainActive.SetTip(next);
+        chainActive.SetTip(next.get());
+        tempBlocks.push_back(std::move(next));
+        tempHashes.push_back(std::move(hash));
     }
     BOOST_CHECK(pblocktemplate = BlockAssembler(chainparams).CreateNewBlock(scriptPubKey));
     // Delete the dummy blocks again.
@@ -400,9 +410,11 @@ BOOST_AUTO_TEST_CASE(CreateNewBlock_validity)
         CBlockIndex* del = chainActive.Tip();
         chainActive.SetTip(del->pprev);
         pcoinsTip->SetBestBlock(del->pprev->GetBlockHash());
-        delete del->phashBlock;
-        delete del;
+        // No need for manual delete - unique_ptr handles it when vectors go out of scope
     }
+    // Clear the vectors to release memory
+    tempBlocks.clear();
+    tempHashes.clear();
 
     // non-final txs in mempool
     SetMockTime(chainActive.Tip()->GetMedianTimePast()+1);
