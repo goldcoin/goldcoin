@@ -938,6 +938,8 @@ public:
             &address, const std::string &label, bool isMine,
             const std::string &purpose,
             ChangeType status)> NotifyAddressBookChanged;
+    // Modern alternative: std::function-based callback
+    std::vector<std::function<void(CWallet*, const CTxDestination&, const std::string&, bool, const std::string&, ChangeType)>> NotifyAddressBookChangedCallbacks;
 
     /** 
      * Wallet transaction added, removed or updated.
@@ -945,12 +947,18 @@ public:
      */
     boost::signals2::signal<void (CWallet *wallet, const uint256 &hashTx,
             ChangeType status)> NotifyTransactionChanged;
+    // Modern alternative: std::function-based callback
+    std::vector<std::function<void(CWallet*, const uint256&, ChangeType)>> NotifyTransactionChangedCallbacks;
 
     /** Show progress e.g. for rescan */
     boost::signals2::signal<void (const std::string &title, int nProgress)> ShowProgress;
+    // Modern alternative: std::function-based callback
+    std::vector<std::function<void(const std::string&, int)>> WalletShowProgressCallbacks;
 
     /** Watch-only address added */
     boost::signals2::signal<void (bool fHaveWatchOnly)> NotifyWatchonlyChanged;
+    // Modern alternative: std::function-based callback
+    std::vector<std::function<void(bool)>> NotifyWatchonlyChangedCallbacks;
 
     /** Inquire whether this wallet broadcasts transactions. */
     bool GetBroadcastTransactions() const { return fBroadcastTransactions; }
@@ -993,6 +1001,52 @@ public:
     
     /* Set the current HD master key (will reset the chain child index counters) */
     bool SetHDMasterKey(const CPubKey& key);
+    
+    // Modern wallet signal callback management methods
+    void AddNotifyAddressBookChangedCallback(std::function<void(CWallet*, const CTxDestination&, const std::string&, bool, const std::string&, ChangeType)> callback) {
+        NotifyAddressBookChangedCallbacks.push_back(callback);
+    }
+    
+    void AddNotifyTransactionChangedCallback(std::function<void(CWallet*, const uint256&, ChangeType)> callback) {
+        NotifyTransactionChangedCallbacks.push_back(callback);
+    }
+    
+    void AddWalletShowProgressCallback(std::function<void(const std::string&, int)> callback) {
+        WalletShowProgressCallbacks.push_back(callback);
+    }
+    
+    void AddNotifyWatchonlyChangedCallback(std::function<void(bool)> callback) {
+        NotifyWatchonlyChangedCallbacks.push_back(callback);
+    }
+    
+    // Modern trigger methods for wallet signals
+    void TriggerNotifyAddressBookChanged(CWallet* wallet, const CTxDestination& address, const std::string& label, bool isMine, const std::string& purpose, ChangeType status) {
+        NotifyAddressBookChanged(wallet, address, label, isMine, purpose, status);
+        for (auto& callback : NotifyAddressBookChangedCallbacks) {
+            callback(wallet, address, label, isMine, purpose, status);
+        }
+    }
+    
+    void TriggerNotifyTransactionChanged(CWallet* wallet, const uint256& hashTx, ChangeType status) {
+        NotifyTransactionChanged(wallet, hashTx, status);
+        for (auto& callback : NotifyTransactionChangedCallbacks) {
+            callback(wallet, hashTx, status);
+        }
+    }
+    
+    void TriggerWalletShowProgress(const std::string& title, int nProgress) {
+        ShowProgress(title, nProgress);
+        for (auto& callback : WalletShowProgressCallbacks) {
+            callback(title, nProgress);
+        }
+    }
+    
+    void TriggerNotifyWatchonlyChanged(bool fHaveWatchOnly) {
+        NotifyWatchonlyChanged(fHaveWatchOnly);
+        for (auto& callback : NotifyWatchonlyChangedCallbacks) {
+            callback(fHaveWatchOnly);
+        }
+    }
 };
 
 /** A key allocated from the key pool. */

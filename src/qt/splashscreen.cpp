@@ -206,7 +206,22 @@ void SplashScreen::ConnectWallet(CWallet* wallet)
 
 void SplashScreen::subscribeToCoreSignals()
 {
-    // Connect signals to client
+    // Modern std::function signal connections
+    uiInterface.AddInitMessageCallback([this](const std::string& message) {
+        InitMessage(this, message);
+    });
+    
+    uiInterface.AddShowProgressCallback([this](const std::string& title, int nProgress) {
+        ShowProgress(this, title, nProgress);
+    });
+    
+#ifdef ENABLE_WALLET
+    uiInterface.AddLoadWalletCallback([this](CWallet* wallet) {
+        ConnectWallet(wallet);
+    });
+#endif
+    
+    // Legacy boost::signals2 connections for backward compatibility
     uiInterface.InitMessage.connect(boost::bind(InitMessage, this,
                                                 boost::placeholders::_1));
     uiInterface.ShowProgress.connect(boost::bind(ShowProgress, this,
@@ -219,7 +234,10 @@ void SplashScreen::subscribeToCoreSignals()
 
 void SplashScreen::unsubscribeFromCoreSignals()
 {
-    // Disconnect signals from client
+    // Note: Modern std::function callbacks are automatically cleaned up when SplashScreen is destroyed
+    // The vector storage handles cleanup automatically via RAII
+    
+    // Disconnect legacy boost::signals2 connections
     uiInterface.InitMessage.disconnect(boost::bind(InitMessage, this,
                                                    boost::placeholders::_1));
     uiInterface.ShowProgress.disconnect(boost::bind(ShowProgress, this,

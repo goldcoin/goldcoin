@@ -701,7 +701,12 @@ int main(int argc, char *argv[])
     // Load GUI settings from QSettings
     app.createOptionsModel(IsArgSet("-resetguisettings"));
 
-    // Subscribe to global signals from core
+    // Subscribe to global signals from core using modern std::function callbacks
+    uiInterface.AddInitMessageCallback([](const std::string& message) {
+        InitMessage(message);
+    });
+    
+    // Legacy boost::signals2 connection for backward compatibility
     uiInterface.InitMessage.connect(InitMessage);
 
     if (GetBoolArg("-splash", DEFAULT_SPLASHSCREEN) && !GetBoolArg("-min", false))
