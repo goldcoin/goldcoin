@@ -57,7 +57,11 @@ void CScheduler::serviceQueue()
             // Explicitly use a template here to avoid hitting that overload.
             while (!shouldStop() && !taskQueue.empty()) {
                 std::chrono::system_clock::time_point timeToWaitFor = taskQueue.begin()->first;
-                if (newTaskScheduled.wait_until<>(lock, timeToWaitFor) == boost::cv_status::timeout)
+                // Convert std::chrono to boost::chrono for compatibility
+                auto duration_since_epoch = timeToWaitFor.time_since_epoch();
+                auto boost_duration = boost::chrono::microseconds(std::chrono::duration_cast<std::chrono::microseconds>(duration_since_epoch).count());
+                boost::chrono::system_clock::time_point boost_time = boost::chrono::system_clock::time_point(boost_duration);
+                if (newTaskScheduled.wait_until<>(lock, boost_time) == boost::cv_status::timeout)
                     break; // Exit loop after timeout, it means we reached the time of the event
             }
 #endif

@@ -101,11 +101,11 @@ bin/goldcoind: lib/libleveldb.a
 bin/goldcoind: lib/libmemenv.a
 bin/goldcoind: lib/libsecp256k1.a
 bin/goldcoind: lib/libunivalue.a
-bin/goldcoind: /usr/lib/x86_64-linux-gnu/libboost_system.so.1.83.0
-bin/goldcoind: /usr/lib/x86_64-linux-gnu/libboost_filesystem.so.1.83.0
-bin/goldcoind: /usr/lib/x86_64-linux-gnu/libboost_program_options.so.1.83.0
-bin/goldcoind: /usr/lib/x86_64-linux-gnu/libboost_thread.so.1.83.0
-bin/goldcoind: /usr/lib/x86_64-linux-gnu/libboost_chrono.so.1.83.0
+bin/goldcoind: /usr/lib/x86_64-linux-gnu/libboost_system.a
+bin/goldcoind: /usr/lib/x86_64-linux-gnu/libboost_filesystem.a
+bin/goldcoind: /usr/lib/x86_64-linux-gnu/libboost_program_options.a
+bin/goldcoind: /usr/lib/x86_64-linux-gnu/libboost_thread.a
+bin/goldcoind: /usr/lib/x86_64-linux-gnu/libboost_chrono.a
 bin/goldcoind: /usr/lib/x86_64-linux-gnu/libssl.so
 bin/goldcoind: /usr/lib/x86_64-linux-gnu/libcrypto.so
 bin/goldcoind: lib/libbitcoin_wallet.a
@@ -113,7 +113,7 @@ bin/goldcoind: /usr/lib/x86_64-linux-gnu/libdb_cxx-5.3.so
 bin/goldcoind: /usr/lib/x86_64-linux-gnu/libdb-5.3.so
 bin/goldcoind: lib/libbitcoin_crypto.a
 bin/goldcoind: lib/libleveldb.a
-bin/goldcoind: /usr/lib/x86_64-linux-gnu/libboost_atomic.so.1.83.0
+bin/goldcoind: /usr/lib/x86_64-linux-gnu/libboost_atomic.a
 bin/goldcoind: /usr/lib/x86_64-linux-gnu/libdb_cxx-5.3.so
 bin/goldcoind: /usr/lib/x86_64-linux-gnu/libdb-5.3.so
 bin/goldcoind: CMakeFiles/goldcoind.dir/link.txt

@@ -14279,6 +14279,10 @@ CMakeFiles/bitcoin_server.dir/src/init.cpp.o: src/init.cpp \
   /usr/include/c++/11/bits/exception.h \
   /usr/include/c++/11/bits/exception_defines.h \
   /usr/include/c++/11/bits/exception_ptr.h \
+  /usr/include/c++/11/bits/fs_dir.h \
+  /usr/include/c++/11/bits/fs_fwd.h \
+  /usr/include/c++/11/bits/fs_ops.h \
+  /usr/include/c++/11/bits/fs_path.h \
   /usr/include/c++/11/bits/functexcept.h \
   /usr/include/c++/11/bits/functional_hash.h \
   /usr/include/c++/11/bits/hash_bytes.h \
@@ -14369,6 +14373,7 @@ CMakeFiles/bitcoin_server.dir/src/init.cpp.o: src/init.cpp \
   /usr/include/c++/11/climits \
   /usr/include/c++/11/clocale \
   /usr/include/c++/11/cmath \
+  /usr/include/c++/11/codecvt \
   /usr/include/c++/11/compare \
   /usr/include/c++/11/complex \
   /usr/include/c++/11/concepts \
@@ -14395,6 +14400,7 @@ CMakeFiles/bitcoin_server.dir/src/init.cpp.o: src/init.cpp \
   /usr/include/c++/11/ext/numeric_traits.h \
   /usr/include/c++/11/ext/string_conversions.h \
   /usr/include/c++/11/ext/type_traits.h \
+  /usr/include/c++/11/filesystem \
   /usr/include/c++/11/functional \
   /usr/include/c++/11/initializer_list \
   /usr/include/c++/11/iomanip \
@@ -53166,6 +53172,16 @@ src/validationinterface.cpp:
 
 /usr/include/boost/asio/detail/work_dispatcher.hpp:
 
+/usr/include/boost/asio/detail/winsock_init.hpp:
+
+/usr/include/boost/asio/detail/wait_op.hpp:
+
+/usr/include/boost/asio/detail/wait_handler.hpp:
+
+/usr/include/boost/asio/detail/variadic_templates.hpp:
+
+/usr/include/boost/asio/detail/type_traits.hpp:
+
 /usr/include/c++/11/cstdlib:
 
 /usr/include/x86_64-linux-gnu/bits/signum-generic.h:
@@ -53493,6 +53509,8 @@ src/merkleblock.h:
 /usr/include/boost/type.hpp:
 
 /usr/include/boost/unordered/detail/type_traits.hpp:
+
+/usr/include/c++/11/filesystem:
 
 /usr/include/boost/thread/recursive_mutex.hpp:
 
@@ -55128,6 +55146,8 @@ src/serialize.h:
 
 /usr/include/boost/bind/bind.hpp:
 
+/usr/include/c++/11/bits/fs_ops.h:
+
 /usr/include/boost/date_time/time.hpp:
 
 /usr/include/boost/type_traits/has_trivial_constructor.hpp:
@@ -55159,10 +55179,6 @@ src/dbwrapper.h:
 /usr/include/boost/type_traits/conditional.hpp:
 
 /usr/include/boost/variant/detail/std_hash.hpp:
-
-/usr/include/x86_64-linux-gnu/bits/syscall.h:
-
-src/config/bitcoin-config.h:
 
 /usr/include/boost/mpl/set/aux_/iterator.hpp:
 
@@ -55496,8 +55512,6 @@ src/core_io.h:
 
 /usr/include/boost/asio/detail/impl/posix_serial_port_service.ipp:
 
-/usr/include/boost/asio/detail/winsock_init.hpp:
-
 /usr/include/boost/signals2/detail/unique_lock.hpp:
 
 /usr/include/boost/mpl/front_inserter.hpp:
@@ -55539,8 +55553,6 @@ src/core_io.h:
 /usr/include/boost/math/constants/calculate_constants.hpp:
 
 /usr/include/boost/mpl/integral_c_tag.hpp:
-
-/usr/include/boost/asio/detail/wait_op.hpp:
 
 /usr/include/boost/mpl/iter_fold_if.hpp:
 
@@ -55605,8 +55617,6 @@ src/indirectmap.h:
 /usr/include/x86_64-linux-gnu/bits/xopen_lim.h:
 
 /usr/include/boost/mpl/list/aux_/pop_front.hpp:
-
-/usr/include/boost/asio/detail/variadic_templates.hpp:
 
 /usr/include/c++/11/bits/predefined_ops.h:
 
@@ -55847,6 +55857,8 @@ src/miner.h:
 /usr/include/boost/mpl/bind.hpp:
 
 /usr/include/boost/optional/optional.hpp:
+
+/usr/include/c++/11/bits/fs_dir.h:
 
 /usr/include/boost/predef/architecture.h:
 
@@ -57846,6 +57858,16 @@ src/base58.h:
 
 /usr/include/boost/type_traits/is_fundamental.hpp:
 
+/usr/include/c++/11/bits/fs_fwd.h:
+
+/usr/include/x86_64-linux-gnu/bits/syscall.h:
+
+src/config/bitcoin-config.h:
+
+/usr/include/c++/11/bits/fs_path.h:
+
+/usr/include/c++/11/codecvt:
+
 /usr/include/linux/futex.h:
 
 /usr/include/boost/preprocessor/debug/error.hpp:
@@ -58032,8 +58054,6 @@ src/warnings.h:
 
 /usr/include/boost/asio/detail/impl/buffer_sequence_adapter.ipp:
 
-/usr/include/boost/asio/detail/wait_handler.hpp:
-
 /usr/include/boost/asio/traits/query_member.hpp:
 
 /usr/include/boost/asio/detail/impl/descriptor_ops.ipp:
@@ -58149,5 +58169,3 @@ src/consensus/merkle.h:
 /usr/include/boost/asio/detail/timer_queue_base.hpp:
 
 /usr/include/boost/asio/detail/timer_queue_ptime.hpp:
-
-/usr/include/boost/asio/detail/type_traits.hpp:

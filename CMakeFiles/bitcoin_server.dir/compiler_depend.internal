@@ -14290,6 +14290,10 @@ CMakeFiles/bitcoin_server.dir/src/init.cpp.o
  /usr/include/c++/11/bits/exception.h
  /usr/include/c++/11/bits/exception_defines.h
  /usr/include/c++/11/bits/exception_ptr.h
+ /usr/include/c++/11/bits/fs_dir.h
+ /usr/include/c++/11/bits/fs_fwd.h
+ /usr/include/c++/11/bits/fs_ops.h
+ /usr/include/c++/11/bits/fs_path.h
  /usr/include/c++/11/bits/functexcept.h
  /usr/include/c++/11/bits/functional_hash.h
  /usr/include/c++/11/bits/hash_bytes.h
@@ -14380,6 +14384,7 @@ CMakeFiles/bitcoin_server.dir/src/init.cpp.o
  /usr/include/c++/11/climits
  /usr/include/c++/11/clocale
  /usr/include/c++/11/cmath
+ /usr/include/c++/11/codecvt
  /usr/include/c++/11/compare
  /usr/include/c++/11/complex
  /usr/include/c++/11/concepts
@@ -14406,6 +14411,7 @@ CMakeFiles/bitcoin_server.dir/src/init.cpp.o
  /usr/include/c++/11/ext/numeric_traits.h
  /usr/include/c++/11/ext/string_conversions.h
  /usr/include/c++/11/ext/type_traits.h
+ /usr/include/c++/11/filesystem
  /usr/include/c++/11/functional
  /usr/include/c++/11/initializer_list
  /usr/include/c++/11/iomanip
