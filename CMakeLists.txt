@@ -10,8 +10,8 @@ option(BUILD_BENCH "Build benchmarks" OFF)
 option(WITH_ZMQ "Enable ZMQ notifications" OFF)
 option(WITH_MINIUPNPC "Enable UPnP support" OFF)
 
-# ===== C++ STANDARD (C++20 for Qt 6.9) =====
-set(CMAKE_CXX_STANDARD 20)
+# ===== C++ STANDARD (C++23 - The Future is Now!) =====
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
