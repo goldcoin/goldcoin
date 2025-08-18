@@ -172,7 +172,6 @@ CMakeFiles/bitcoin_server.dir/src/addrdb.cpp.o
  /usr/include/boost/date_time/time_system_split.hpp
  /usr/include/boost/date_time/wrapping_int.hpp
  /usr/include/boost/date_time/year_month_day.hpp
- /usr/include/boost/detail/bitmask.hpp
  /usr/include/boost/detail/call_traits.hpp
  /usr/include/boost/detail/indirect_traits.hpp
  /usr/include/boost/detail/reference_content.hpp
@@ -181,16 +180,10 @@ CMakeFiles/bitcoin_server.dir/src/addrdb.cpp.o
  /usr/include/boost/detail/workaround.hpp
  /usr/include/boost/enable_shared_from_this.hpp
  /usr/include/boost/exception/exception.hpp
- /usr/include/boost/filesystem.hpp
  /usr/include/boost/filesystem/config.hpp
- /usr/include/boost/filesystem/convenience.hpp
  /usr/include/boost/filesystem/detail/footer.hpp
  /usr/include/boost/filesystem/detail/header.hpp
  /usr/include/boost/filesystem/detail/path_traits.hpp
- /usr/include/boost/filesystem/directory.hpp
- /usr/include/boost/filesystem/exception.hpp
- /usr/include/boost/filesystem/file_status.hpp
- /usr/include/boost/filesystem/operations.hpp
  /usr/include/boost/filesystem/path.hpp
  /usr/include/boost/function.hpp
  /usr/include/boost/function/detail/epilogue.hpp
@@ -777,8 +770,6 @@ CMakeFiles/bitcoin_server.dir/src/addrdb.cpp.o
  /usr/include/boost/signals2/variadic_slot.hpp
  /usr/include/boost/smart_ptr/allocate_shared_array.hpp
  /usr/include/boost/smart_ptr/bad_weak_ptr.hpp
- /usr/include/boost/smart_ptr/detail/atomic_count.hpp
- /usr/include/boost/smart_ptr/detail/atomic_count_std_atomic.hpp
  /usr/include/boost/smart_ptr/detail/local_counted_base.hpp
  /usr/include/boost/smart_ptr/detail/local_sp_deleter.hpp
  /usr/include/boost/smart_ptr/detail/operator_bool.hpp
@@ -800,8 +791,6 @@ CMakeFiles/bitcoin_server.dir/src/addrdb.cpp.o
  /usr/include/boost/smart_ptr/detail/spinlock_std_atomic.hpp
  /usr/include/boost/smart_ptr/detail/yield_k.hpp
  /usr/include/boost/smart_ptr/enable_shared_from_this.hpp
- /usr/include/boost/smart_ptr/intrusive_ptr.hpp
- /usr/include/boost/smart_ptr/intrusive_ref_counter.hpp
  /usr/include/boost/smart_ptr/make_shared.hpp
  /usr/include/boost/smart_ptr/make_shared_array.hpp
  /usr/include/boost/smart_ptr/make_shared_object.hpp
@@ -1019,6 +1008,10 @@ CMakeFiles/bitcoin_server.dir/src/addrdb.cpp.o
  /usr/include/c++/11/bits/exception.h
  /usr/include/c++/11/bits/exception_defines.h
  /usr/include/c++/11/bits/exception_ptr.h
+ /usr/include/c++/11/bits/fs_dir.h
+ /usr/include/c++/11/bits/fs_fwd.h
+ /usr/include/c++/11/bits/fs_ops.h
+ /usr/include/c++/11/bits/fs_path.h
  /usr/include/c++/11/bits/functexcept.h
  /usr/include/c++/11/bits/functional_hash.h
  /usr/include/c++/11/bits/hash_bytes.h
@@ -1048,6 +1041,7 @@ CMakeFiles/bitcoin_server.dir/src/addrdb.cpp.o
  /usr/include/c++/11/bits/postypes.h
  /usr/include/c++/11/bits/predefined_ops.h
  /usr/include/c++/11/bits/ptr_traits.h
+ /usr/include/c++/11/bits/quoted_string.h
  /usr/include/c++/11/bits/range_access.h
  /usr/include/c++/11/bits/ranges_algo.h
  /usr/include/c++/11/bits/ranges_algobase.h
@@ -1104,6 +1098,7 @@ CMakeFiles/bitcoin_server.dir/src/addrdb.cpp.o
  /usr/include/c++/11/climits
  /usr/include/c++/11/clocale
  /usr/include/c++/11/cmath
+ /usr/include/c++/11/codecvt
  /usr/include/c++/11/compare
  /usr/include/c++/11/concepts
  /usr/include/c++/11/cstdarg
@@ -1127,8 +1122,10 @@ CMakeFiles/bitcoin_server.dir/src/addrdb.cpp.o
  /usr/include/c++/11/ext/numeric_traits.h
  /usr/include/c++/11/ext/string_conversions.h
  /usr/include/c++/11/ext/type_traits.h
+ /usr/include/c++/11/filesystem
  /usr/include/c++/11/functional
  /usr/include/c++/11/initializer_list
+ /usr/include/c++/11/iomanip
  /usr/include/c++/11/ios
  /usr/include/c++/11/iosfwd
  /usr/include/c++/11/iostream
@@ -1536,11 +1533,6 @@ CMakeFiles/bitcoin_server.dir/src/addrman.cpp.o
  /usr/include/boost/detail/workaround.hpp
  /usr/include/boost/enable_shared_from_this.hpp
  /usr/include/boost/exception/exception.hpp
- /usr/include/boost/filesystem/config.hpp
- /usr/include/boost/filesystem/detail/footer.hpp
- /usr/include/boost/filesystem/detail/header.hpp
- /usr/include/boost/filesystem/detail/path_traits.hpp
- /usr/include/boost/filesystem/path.hpp
  /usr/include/boost/function.hpp
  /usr/include/boost/function/detail/epilogue.hpp
  /usr/include/boost/function/detail/function_iterate.hpp
@@ -1556,11 +1548,6 @@ CMakeFiles/bitcoin_server.dir/src/addrman.cpp.o
  /usr/include/boost/integer/common_factor_ct.hpp
  /usr/include/boost/integer_fwd.hpp
  /usr/include/boost/integer_traits.hpp
- /usr/include/boost/io/detail/buffer_fill.hpp
- /usr/include/boost/io/detail/ostream_guard.hpp
- /usr/include/boost/io/ios_state.hpp
- /usr/include/boost/io/quoted.hpp
- /usr/include/boost/io_fwd.hpp
  /usr/include/boost/is_placeholder.hpp
  /usr/include/boost/iterator/detail/config_def.hpp
  /usr/include/boost/iterator/detail/config_undef.hpp
@@ -1568,7 +1555,6 @@ CMakeFiles/bitcoin_server.dir/src/addrman.cpp.o
  /usr/include/boost/iterator/detail/facade_iterator_category.hpp
  /usr/include/boost/iterator/function_output_iterator.hpp
  /usr/include/boost/iterator/interoperable.hpp
- /usr/include/boost/iterator/is_iterator.hpp
  /usr/include/boost/iterator/iterator_adaptor.hpp
  /usr/include/boost/iterator/iterator_categories.hpp
  /usr/include/boost/iterator/iterator_facade.hpp
@@ -2293,7 +2279,6 @@ CMakeFiles/bitcoin_server.dir/src/addrman.cpp.o
  /usr/include/boost/type_traits/is_unsigned.hpp
  /usr/include/boost/type_traits/is_void.hpp
  /usr/include/boost/type_traits/is_volatile.hpp
- /usr/include/boost/type_traits/negation.hpp
  /usr/include/boost/type_traits/remove_bounds.hpp
  /usr/include/boost/type_traits/remove_const.hpp
  /usr/include/boost/type_traits/remove_cv.hpp
@@ -2364,6 +2349,10 @@ CMakeFiles/bitcoin_server.dir/src/addrman.cpp.o
  /usr/include/c++/11/bits/exception.h
  /usr/include/c++/11/bits/exception_defines.h
  /usr/include/c++/11/bits/exception_ptr.h
+ /usr/include/c++/11/bits/fs_dir.h
+ /usr/include/c++/11/bits/fs_fwd.h
+ /usr/include/c++/11/bits/fs_ops.h
+ /usr/include/c++/11/bits/fs_path.h
  /usr/include/c++/11/bits/functexcept.h
  /usr/include/c++/11/bits/functional_hash.h
  /usr/include/c++/11/bits/hash_bytes.h
@@ -2393,6 +2382,7 @@ CMakeFiles/bitcoin_server.dir/src/addrman.cpp.o
  /usr/include/c++/11/bits/postypes.h
  /usr/include/c++/11/bits/predefined_ops.h
  /usr/include/c++/11/bits/ptr_traits.h
+ /usr/include/c++/11/bits/quoted_string.h
  /usr/include/c++/11/bits/range_access.h
  /usr/include/c++/11/bits/ranges_algo.h
  /usr/include/c++/11/bits/ranges_algobase.h
@@ -2449,6 +2439,7 @@ CMakeFiles/bitcoin_server.dir/src/addrman.cpp.o
  /usr/include/c++/11/climits
  /usr/include/c++/11/clocale
  /usr/include/c++/11/cmath
+ /usr/include/c++/11/codecvt
  /usr/include/c++/11/compare
  /usr/include/c++/11/concepts
  /usr/include/c++/11/cstdarg
@@ -2472,8 +2463,10 @@ CMakeFiles/bitcoin_server.dir/src/addrman.cpp.o
  /usr/include/c++/11/ext/numeric_traits.h
  /usr/include/c++/11/ext/string_conversions.h
  /usr/include/c++/11/ext/type_traits.h
+ /usr/include/c++/11/filesystem
  /usr/include/c++/11/functional
  /usr/include/c++/11/initializer_list
+ /usr/include/c++/11/iomanip
  /usr/include/c++/11/ios
  /usr/include/c++/11/iosfwd
  /usr/include/c++/11/iostream

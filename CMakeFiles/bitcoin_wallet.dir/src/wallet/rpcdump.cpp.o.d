@@ -772,99 +772,21 @@ CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o: \
  /usr/include/c++/11/bits/sstream.tcc \
  /home/microguy/git/microguy/goldcoin/src/rpc/server.h \
  /home/microguy/git/microguy/goldcoin/src/rpc/protocol.h \
- /usr/include/boost/filesystem.hpp \
- /usr/include/boost/filesystem/config.hpp \
- /usr/include/boost/system/api_config.hpp \
- /usr/include/boost/config/auto_link.hpp \
- /usr/include/boost/filesystem/path.hpp \
- /usr/include/boost/filesystem/detail/path_traits.hpp \
- /usr/include/c++/11/locale \
+ /usr/include/c++/11/filesystem /usr/include/c++/11/bits/fs_fwd.h \
+ /usr/include/c++/11/bits/fs_path.h /usr/include/c++/11/locale \
  /usr/include/c++/11/bits/locale_facets_nonio.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h \
  /usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h \
  /usr/include/libintl.h /usr/include/c++/11/bits/codecvt.h \
  /usr/include/c++/11/bits/locale_facets_nonio.tcc \
- /usr/include/c++/11/bits/locale_conv.h \
- /usr/include/boost/system/error_category.hpp \
- /usr/include/boost/system/detail/error_category.hpp \
- /usr/include/boost/system/detail/config.hpp \
- /usr/include/boost/system/detail/requires_cxx11.hpp \
- /usr/include/boost/system/detail/error_category_impl.hpp \
- /usr/include/boost/system/detail/error_condition.hpp \
- /usr/include/boost/system/detail/generic_category.hpp \
- /usr/include/boost/system/detail/generic_category_message.hpp \
- /usr/include/boost/system/detail/enable_if.hpp \
- /usr/include/boost/system/detail/is_same.hpp \
- /usr/include/boost/system/detail/errc.hpp \
- /usr/include/boost/system/is_error_condition_enum.hpp \
- /usr/include/boost/system/detail/cerrno.hpp \
- /usr/include/boost/system/detail/append_int.hpp \
- /usr/include/boost/system/detail/snprintf.hpp \
- /usr/include/c++/11/cstdarg \
- /usr/include/boost/system/detail/error_code.hpp \
- /usr/include/boost/system/is_error_code_enum.hpp \
- /usr/include/boost/system/detail/system_category.hpp \
- /usr/include/boost/system/detail/system_category_impl.hpp \
- /usr/include/boost/system/detail/system_category_message.hpp \
- /usr/include/boost/system/detail/interop_category.hpp \
- /usr/include/boost/system/detail/std_category.hpp \
- /usr/include/boost/system/detail/std_category_impl.hpp \
- /usr/include/boost/system/detail/mutex.hpp \
- /usr/include/boost/iterator/is_iterator.hpp \
- /usr/include/boost/type_traits/negation.hpp \
- /usr/include/boost/type_traits/conjunction.hpp \
- /usr/include/boost/filesystem/detail/header.hpp \
- /usr/include/boost/config/abi_prefix.hpp \
- /usr/include/boost/filesystem/detail/footer.hpp \
- /usr/include/boost/config/abi_suffix.hpp \
- /usr/include/boost/iterator/iterator_facade.hpp \
- /usr/include/boost/iterator/interoperable.hpp \
- /usr/include/boost/iterator/detail/config_def.hpp \
- /usr/include/boost/iterator/detail/config_undef.hpp \
- /usr/include/boost/iterator/iterator_traits.hpp \
- /usr/include/boost/iterator/iterator_categories.hpp \
- /usr/include/boost/iterator/detail/facade_iterator_category.hpp \
- /usr/include/boost/core/use_default.hpp \
- /usr/include/boost/detail/indirect_traits.hpp \
- /usr/include/boost/type_traits/remove_pointer.hpp \
- /usr/include/boost/detail/select_type.hpp \
- /usr/include/boost/iterator/detail/enable_if.hpp \
- /usr/include/boost/type_traits/remove_const.hpp \
- /usr/include/boost/io/quoted.hpp \
- /usr/include/boost/io/detail/buffer_fill.hpp \
- /usr/include/boost/io/detail/ostream_guard.hpp \
- /usr/include/boost/io/ios_state.hpp /usr/include/boost/io_fwd.hpp \
- /usr/include/boost/type_traits/disjunction.hpp \
- /usr/include/boost/filesystem/exception.hpp \
- /usr/include/boost/system/error_code.hpp \
- /usr/include/boost/system/error_condition.hpp \
- /usr/include/boost/system/errc.hpp \
- /usr/include/boost/system/generic_category.hpp \
- /usr/include/boost/system/system_category.hpp \
- /usr/include/boost/system/detail/throws.hpp \
- /usr/include/boost/system/system_error.hpp \
- /usr/include/boost/smart_ptr/intrusive_ptr.hpp \
- /usr/include/boost/smart_ptr/detail/requires_cxx11.hpp \
- /usr/include/boost/smart_ptr/detail/sp_convertible.hpp \
- /usr/include/boost/smart_ptr/detail/sp_nullptr_t.hpp \
- /usr/include/boost/smart_ptr/detail/sp_noexcept.hpp \
- /usr/include/boost/config/no_tr1/functional.hpp \
- /usr/include/boost/smart_ptr/detail/operator_bool.hpp \
- /usr/include/boost/smart_ptr/intrusive_ref_counter.hpp \
- /usr/include/boost/smart_ptr/detail/atomic_count.hpp \
- /usr/include/boost/smart_ptr/detail/sp_has_gcc_intrinsics.hpp \
- /usr/include/boost/smart_ptr/detail/sp_has_sync_intrinsics.hpp \
- /usr/include/boost/smart_ptr/detail/atomic_count_std_atomic.hpp \
- /usr/include/boost/filesystem/directory.hpp \
- /usr/include/boost/filesystem/file_status.hpp \
- /usr/include/boost/detail/bitmask.hpp \
- /usr/include/boost/core/scoped_enum.hpp \
- /usr/include/boost/filesystem/operations.hpp \
- /usr/include/boost/filesystem/convenience.hpp \
+ /usr/include/c++/11/bits/locale_conv.h /usr/include/c++/11/iomanip \
+ /usr/include/c++/11/bits/quoted_string.h /usr/include/c++/11/codecvt \
+ /usr/include/c++/11/bits/fs_dir.h /usr/include/c++/11/bits/fs_ops.h \
  /home/microguy/git/microguy/goldcoin/src/univalue/include/univalue.h \
  /usr/include/boost/function.hpp \
  /usr/include/boost/function/detail/prologue.hpp \
  /usr/include/boost/function/detail/requires_cxx11.hpp \
+ /usr/include/boost/config/no_tr1/functional.hpp \
  /usr/include/boost/function/function_base.hpp \
  /usr/include/boost/function/function_fwd.hpp \
  /usr/include/boost/function_equal.hpp \
@@ -906,12 +828,25 @@ CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o: \
  /usr/include/boost/range/range_fwd.hpp \
  /usr/include/boost/range/mutable_iterator.hpp \
  /usr/include/boost/range/detail/extract_optional_type.hpp \
+ /usr/include/boost/iterator/iterator_traits.hpp \
  /usr/include/boost/range/detail/msvc_has_iterator_workaround.hpp \
  /usr/include/boost/range/const_iterator.hpp \
+ /usr/include/boost/type_traits/remove_const.hpp \
  /usr/include/boost/range/begin.hpp /usr/include/boost/range/rend.hpp \
  /usr/include/boost/range/reverse_iterator.hpp \
  /usr/include/boost/iterator/reverse_iterator.hpp \
  /usr/include/boost/iterator/iterator_adaptor.hpp \
+ /usr/include/boost/core/use_default.hpp \
+ /usr/include/boost/iterator/iterator_categories.hpp \
+ /usr/include/boost/iterator/detail/config_def.hpp \
+ /usr/include/boost/iterator/detail/config_undef.hpp \
+ /usr/include/boost/iterator/iterator_facade.hpp \
+ /usr/include/boost/iterator/interoperable.hpp \
+ /usr/include/boost/iterator/detail/facade_iterator_category.hpp \
+ /usr/include/boost/detail/indirect_traits.hpp \
+ /usr/include/boost/type_traits/remove_pointer.hpp \
+ /usr/include/boost/detail/select_type.hpp \
+ /usr/include/boost/iterator/detail/enable_if.hpp \
  /usr/include/boost/range/rbegin.hpp \
  /usr/include/boost/utility/addressof.hpp \
  /usr/include/boost/foreach_fwd.hpp /usr/include/boost/unordered_set.hpp \
@@ -964,6 +899,7 @@ CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o: \
  /usr/include/boost/type_traits/is_signed.hpp \
  /usr/include/boost/type_traits/is_unsigned.hpp \
  /usr/include/boost/type_traits/make_unsigned.hpp \
+ /usr/include/boost/type_traits/conjunction.hpp \
  /usr/include/c++/11/complex /usr/include/c++/11/cmath \
  /usr/include/math.h /usr/include/x86_64-linux-gnu/bits/math-vector.h \
  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
@@ -1179,6 +1115,7 @@ CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o: \
  /usr/include/boost/thread/detail/platform_time.hpp \
  /usr/include/boost/thread/detail/config.hpp \
  /usr/include/boost/thread/detail/thread_safety.hpp \
+ /usr/include/boost/config/auto_link.hpp \
  /usr/include/boost/thread/thread_time.hpp \
  /usr/include/boost/date_time/time_clock.hpp \
  /usr/include/boost/date_time/c_time.hpp \
@@ -1186,13 +1123,19 @@ CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o: \
  /usr/include/boost/date_time/locale_config.hpp \
  /usr/include/boost/shared_ptr.hpp \
  /usr/include/boost/smart_ptr/shared_ptr.hpp \
+ /usr/include/boost/smart_ptr/detail/requires_cxx11.hpp \
  /usr/include/boost/smart_ptr/detail/shared_count.hpp \
  /usr/include/boost/smart_ptr/bad_weak_ptr.hpp \
  /usr/include/boost/smart_ptr/detail/sp_counted_base.hpp \
+ /usr/include/boost/smart_ptr/detail/sp_has_gcc_intrinsics.hpp \
+ /usr/include/boost/smart_ptr/detail/sp_has_sync_intrinsics.hpp \
  /usr/include/boost/smart_ptr/detail/sp_counted_base_std_atomic.hpp \
  /usr/include/boost/smart_ptr/detail/sp_typeinfo_.hpp \
+ /usr/include/boost/smart_ptr/detail/sp_noexcept.hpp \
  /usr/include/boost/smart_ptr/detail/sp_counted_impl.hpp \
  /usr/include/boost/smart_ptr/detail/sp_disable_deprecated.hpp \
+ /usr/include/boost/smart_ptr/detail/sp_convertible.hpp \
+ /usr/include/boost/smart_ptr/detail/sp_nullptr_t.hpp \
  /usr/include/boost/smart_ptr/detail/spinlock_pool.hpp \
  /usr/include/boost/smart_ptr/detail/spinlock.hpp \
  /usr/include/boost/smart_ptr/detail/spinlock_std_atomic.hpp \
@@ -1201,6 +1144,7 @@ CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o: \
  /usr/include/boost/core/detail/sp_thread_pause.hpp \
  /usr/include/boost/core/detail/sp_thread_yield.hpp \
  /usr/include/boost/core/detail/sp_thread_sleep.hpp \
+ /usr/include/boost/smart_ptr/detail/operator_bool.hpp \
  /usr/include/boost/smart_ptr/detail/local_sp_deleter.hpp \
  /usr/include/boost/smart_ptr/detail/local_counted_base.hpp \
  /usr/include/boost/date_time/microsec_time_clock.hpp \
@@ -1273,6 +1217,8 @@ CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o: \
  /usr/include/boost/date_time/posix_time/time_period.hpp \
  /usr/include/boost/date_time/time_iterator.hpp \
  /usr/include/boost/date_time/dst_rules.hpp \
+ /usr/include/boost/config/abi_prefix.hpp \
+ /usr/include/boost/config/abi_suffix.hpp \
  /usr/include/boost/date_time/posix_time/conversion.hpp \
  /usr/include/boost/date_time/filetime_functions.hpp \
  /usr/include/boost/date_time/gregorian/conversion.hpp \
@@ -1299,6 +1245,38 @@ CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o: \
  /usr/include/boost/chrono/system_clocks.hpp \
  /usr/include/boost/chrono/time_point.hpp \
  /usr/include/boost/chrono/detail/system.hpp \
+ /usr/include/boost/system/error_code.hpp \
+ /usr/include/boost/system/detail/error_code.hpp \
+ /usr/include/boost/system/is_error_code_enum.hpp \
+ /usr/include/boost/system/detail/error_category.hpp \
+ /usr/include/boost/system/detail/config.hpp \
+ /usr/include/boost/system/detail/requires_cxx11.hpp \
+ /usr/include/boost/system/detail/error_condition.hpp \
+ /usr/include/boost/system/detail/generic_category.hpp \
+ /usr/include/boost/system/detail/generic_category_message.hpp \
+ /usr/include/boost/system/detail/enable_if.hpp \
+ /usr/include/boost/system/detail/is_same.hpp \
+ /usr/include/boost/system/detail/errc.hpp \
+ /usr/include/boost/system/is_error_condition_enum.hpp \
+ /usr/include/boost/system/detail/cerrno.hpp \
+ /usr/include/boost/system/detail/append_int.hpp \
+ /usr/include/boost/system/detail/snprintf.hpp \
+ /usr/include/c++/11/cstdarg \
+ /usr/include/boost/system/detail/system_category.hpp \
+ /usr/include/boost/system/detail/system_category_impl.hpp \
+ /usr/include/boost/system/detail/system_category_message.hpp \
+ /usr/include/boost/system/api_config.hpp \
+ /usr/include/boost/system/detail/interop_category.hpp \
+ /usr/include/boost/system/detail/std_category.hpp \
+ /usr/include/boost/system/error_category.hpp \
+ /usr/include/boost/system/detail/error_category_impl.hpp \
+ /usr/include/boost/system/detail/std_category_impl.hpp \
+ /usr/include/boost/system/detail/mutex.hpp \
+ /usr/include/boost/system/error_condition.hpp \
+ /usr/include/boost/system/errc.hpp \
+ /usr/include/boost/system/generic_category.hpp \
+ /usr/include/boost/system/system_category.hpp \
+ /usr/include/boost/system/detail/throws.hpp \
  /usr/include/boost/chrono/clock_string.hpp \
  /usr/include/boost/chrono/ceil.hpp \
  /usr/include/boost/thread/pthread/pthread_mutex_scoped_lock.hpp \
@@ -1306,6 +1284,7 @@ CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o: \
  /usr/include/boost/thread/interruption.hpp \
  /usr/include/boost/thread/pthread/thread_data.hpp \
  /usr/include/boost/thread/exceptions.hpp \
+ /usr/include/boost/system/system_error.hpp \
  /usr/include/boost/thread/lock_guard.hpp \
  /usr/include/boost/thread/detail/delete.hpp \
  /usr/include/boost/thread/detail/move.hpp \
@@ -1319,6 +1298,7 @@ CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o: \
  /usr/include/boost/thread/xtime.hpp \
  /usr/include/boost/thread/pthread/condition_variable_fwd.hpp \
  /usr/include/boost/thread/cv_status.hpp \
+ /usr/include/boost/core/scoped_enum.hpp \
  /usr/include/boost/enable_shared_from_this.hpp \
  /usr/include/boost/smart_ptr/enable_shared_from_this.hpp \
  /usr/include/boost/smart_ptr/weak_ptr.hpp \
@@ -1328,6 +1308,18 @@ CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o: \
  /usr/include/boost/thread/recursive_mutex.hpp \
  /usr/include/boost/thread/pthread/recursive_mutex.hpp \
  /home/microguy/git/microguy/goldcoin/src/versionbits.h \
+ /usr/include/boost/filesystem/path.hpp \
+ /usr/include/boost/filesystem/config.hpp \
+ /usr/include/boost/filesystem/detail/path_traits.hpp \
+ /usr/include/boost/iterator/is_iterator.hpp \
+ /usr/include/boost/type_traits/negation.hpp \
+ /usr/include/boost/filesystem/detail/header.hpp \
+ /usr/include/boost/filesystem/detail/footer.hpp \
+ /usr/include/boost/io/quoted.hpp \
+ /usr/include/boost/io/detail/buffer_fill.hpp \
+ /usr/include/boost/io/detail/ostream_guard.hpp \
+ /usr/include/boost/io/ios_state.hpp /usr/include/boost/io_fwd.hpp \
+ /usr/include/boost/type_traits/disjunction.hpp \
  /usr/include/boost/date_time/posix_time/posix_time.hpp \
  /usr/include/boost/date_time/posix_time/time_formatters.hpp \
  /usr/include/boost/date_time/gregorian/gregorian.hpp \
@@ -1335,7 +1327,6 @@ CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o: \
  /usr/include/boost/date_time/date_formatting.hpp \
  /usr/include/boost/date_time/iso_format.hpp \
  /usr/include/boost/date_time/parse_format_base.hpp \
- /usr/include/c++/11/iomanip /usr/include/c++/11/bits/quoted_string.h \
  /usr/include/boost/date_time/date_format_simple.hpp \
  /usr/include/boost/date_time/gregorian/gregorian_io.hpp \
  /usr/include/boost/date_time/date_facet.hpp \
