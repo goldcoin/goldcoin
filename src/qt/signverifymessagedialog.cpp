@@ -203,14 +203,10 @@ void SignVerifyMessageDialog::on_copySignatureButton_SM_clicked()
 
 void SignVerifyMessageDialog::on_clearButton_SM_clicked()
 {
-    // C++20: Clear all sign message fields
-    const std::array<QLineEdit*, 3> fields = {
-        ui->addressIn_SM, ui->messageIn_SM, ui->signatureOut_SM
-    };
-    
-    for (auto* field : fields) {
-        field->clear();
-    }
+    // Clear sign message fields
+    ui->addressIn_SM->clear();
+    ui->messageIn_SM->clear();
+    ui->signatureOut_SM->clear();
     
     ui->statusLabel_SM->clear();
     ui->addressIn_SM->setFocus();

@@ -18,6 +18,8 @@
 #include <openssl/x509.h>
 #include <openssl/x509_vfy.h>
 
+#include <memory>
+
 #include <QFileOpenEvent>
 #include <QTemporaryFile>
 
@@ -67,7 +69,7 @@ void PaymentServerTests::paymentServerTests()
 {
     SelectParams(CBaseChainParams::MAIN);
     OptionsModel optionsModel;
-    PaymentServer* server = new PaymentServer(nullptr, false);
+    std::unique_ptr<PaymentServer> server(new PaymentServer(nullptr, false));
     X509_STORE* caStore = X509_STORE_new();
     X509_STORE_add_cert(caStore, parse_b64der_cert(caCert1_BASE64));
     PaymentServer::LoadRootCAs(caStore);
@@ -83,31 +85,31 @@ void PaymentServerTests::paymentServerTests()
     // This payment request validates directly against the
     // caCert1 certificate authority:
     data = DecodeBase64(paymentrequest1_cert1_BASE64);
-    r = handleRequest(server, data);
+    r = handleRequest(server.get(), data);
     r.paymentRequest.getMerchant(caStore, merchant);
     QCOMPARE(merchant, QString("testmerchant.org"));
 
     // Signed, but expired, merchant cert in the request:
     data = DecodeBase64(paymentrequest2_cert1_BASE64);
-    r = handleRequest(server, data);
+    r = handleRequest(server.get(), data);
     r.paymentRequest.getMerchant(caStore, merchant);
     QCOMPARE(merchant, QString(""));
 
     // 10-long certificate chain, all intermediates valid:
     data = DecodeBase64(paymentrequest3_cert1_BASE64);
-    r = handleRequest(server, data);
+    r = handleRequest(server.get(), data);
     r.paymentRequest.getMerchant(caStore, merchant);
     QCOMPARE(merchant, QString("testmerchant8.org"));
 
     // Long certificate chain, with an expired certificate in the middle:
     data = DecodeBase64(paymentrequest4_cert1_BASE64);
-    r = handleRequest(server, data);
+    r = handleRequest(server.get(), data);
     r.paymentRequest.getMerchant(caStore, merchant);
     QCOMPARE(merchant, QString(""));
 
     // Validly signed, but by a CA not in our root CA list:
     data = DecodeBase64(paymentrequest5_cert1_BASE64);
-    r = handleRequest(server, data);
+    r = handleRequest(server.get(), data);
     r.paymentRequest.getMerchant(caStore, merchant);
     QCOMPARE(merchant, QString(""));
 
@@ -115,7 +117,7 @@ void PaymentServerTests::paymentServerTests()
     caStore = X509_STORE_new();
     PaymentServer::LoadRootCAs(caStore);
     data = DecodeBase64(paymentrequest1_cert1_BASE64);
-    r = handleRequest(server, data);
+    r = handleRequest(server.get(), data);
     r.paymentRequest.getMerchant(caStore, merchant);
     QCOMPARE(merchant, QString(""));
 
@@ -204,7 +206,7 @@ void PaymentServerTests::paymentServerTests()
             QCOMPARE(PaymentServer::verifyAmount(sendingTo.second), false);
     }
 
-    delete server;
+    // unique_ptr automatically deletes
 }
 
 void RecipientCatcher::getRecipient(SendCoinsRecipient r)

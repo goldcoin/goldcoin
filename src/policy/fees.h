@@ -170,28 +170,28 @@ public:
 
 
 /** Track confirm delays up to 25 blocks, can't estimate beyond that */
-static const unsigned int MAX_BLOCK_CONFIRMS = 25;
+static constexpr unsigned int MAX_BLOCK_CONFIRMS = 25;
 
 /** Decay of .998 is a half-life of 346 blocks or about 2.4 days */
-static const double DEFAULT_DECAY = .998;
+static constexpr double DEFAULT_DECAY = .998;
 
 /** Require greater than 95% of X feerate transactions to be confirmed within Y blocks for X to be big enough */
-static const double MIN_SUCCESS_PCT = .95;
+static constexpr double MIN_SUCCESS_PCT = .95;
 
 /** Require an avg of 1 tx in the combined feerate bucket per block to have stat significance */
-static const double SUFFICIENT_FEETXS = 1;
+static constexpr double SUFFICIENT_FEETXS = 1;
 
 // Minimum and Maximum values for tracking feerates
 static constexpr double MIN_FEERATE = 10;
-static const double MAX_FEERATE = 1e7;
-static const double INF_FEERATE = MAX_MONEY;
-static const double INF_PRIORITY = 1e9 * MAX_MONEY;
+static constexpr double MAX_FEERATE = 1e7;
+static constexpr double INF_FEERATE = MAX_MONEY;
+static constexpr double INF_PRIORITY = 1e9 * MAX_MONEY;
 
 // We have to lump transactions into buckets based on feerate, but we want to be able
 // to give accurate estimates over a large range of potential feerates
 // Therefore it makes sense to exponentially space the buckets
 /** Spacing of FeeRate buckets */
-static const double FEE_SPACING = 1.1;
+static constexpr double FEE_SPACING = 1.1;
 
 /**
  *  We want to be able to estimate feerates that are needed on tx's to be included in
