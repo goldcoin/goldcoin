@@ -15,7 +15,7 @@
 #include "ecmult_static_context.h"
 #endif
 static void secp256k1_ecmult_gen_context_init(secp256k1_ecmult_gen_context *ctx) {
-    ctx->prec = nullptr;
+    ctx->prec = NULL;
 }
 
 static void secp256k1_ecmult_gen_context_build(secp256k1_ecmult_gen_context *ctx, const secp256k1_callback* cb) {
@@ -26,7 +26,7 @@ static void secp256k1_ecmult_gen_context_build(secp256k1_ecmult_gen_context *ctx
     int i, j;
 #endif
 
-    if (ctx->prec != nullptr) {
+    if (ctx->prec != NULL) {
         return;
     }
 #ifndef USE_ECMULT_STATIC_PRECOMPUTATION
@@ -49,7 +49,7 @@ static void secp256k1_ecmult_gen_context_build(secp256k1_ecmult_gen_context *ctx
         VERIFY_CHECK(r);
         secp256k1_gej_set_ge(&nums_gej, &nums_ge);
         /* Add G to make the bits in x uniformly distributed. */
-        secp256k1_gej_add_ge_var(&nums_gej, &nums_gej, &secp256k1_ge_const_g, nullptr);
+        secp256k1_gej_add_ge_var(&nums_gej, &nums_gej, &secp256k1_ge_const_g, NULL);
     }
 
     /* compute prec. */
@@ -63,18 +63,18 @@ static void secp256k1_ecmult_gen_context_build(secp256k1_ecmult_gen_context *ctx
             /* Set precj[j*16 .. j*16+15] to (numsbase, numsbase + gbase, ..., numsbase + 15*gbase). */
             precj[j*16] = numsbase;
             for (i = 1; i < 16; i++) {
-                secp256k1_gej_add_var(&precj[j*16 + i], &precj[j*16 + i - 1], &gbase, nullptr);
+                secp256k1_gej_add_var(&precj[j*16 + i], &precj[j*16 + i - 1], &gbase, NULL);
             }
             /* Multiply gbase by 16. */
             for (i = 0; i < 4; i++) {
-                secp256k1_gej_double_var(&gbase, &gbase, nullptr);
+                secp256k1_gej_double_var(&gbase, &gbase, NULL);
             }
             /* Multiply numbase by 2. */
-            secp256k1_gej_double_var(&numsbase, &numsbase, nullptr);
+            secp256k1_gej_double_var(&numsbase, &numsbase, NULL);
             if (j == 62) {
                 /* In the last iteration, numsbase is (1 - 2^j) * nums instead. */
                 secp256k1_gej_neg(&numsbase, &numsbase);
-                secp256k1_gej_add_var(&numsbase, &numsbase, &nums_gej, nullptr);
+                secp256k1_gej_add_var(&numsbase, &numsbase, &nums_gej, NULL);
             }
         }
         secp256k1_ge_set_all_gej_var(prec, precj, 1024, cb);
@@ -88,17 +88,17 @@ static void secp256k1_ecmult_gen_context_build(secp256k1_ecmult_gen_context *ctx
     (void)cb;
     ctx->prec = (secp256k1_ge_storage (*)[64][16])secp256k1_ecmult_static_context;
 #endif
-    secp256k1_ecmult_gen_blind(ctx, nullptr);
+    secp256k1_ecmult_gen_blind(ctx, NULL);
 }
 
 static int secp256k1_ecmult_gen_context_is_built(const secp256k1_ecmult_gen_context* ctx) {
-    return ctx->prec != nullptr;
+    return ctx->prec != NULL;
 }
 
 static void secp256k1_ecmult_gen_context_clone(secp256k1_ecmult_gen_context *dst,
                                                const secp256k1_ecmult_gen_context *src, const secp256k1_callback* cb) {
-    if (src->prec == nullptr) {
-        dst->prec = nullptr;
+    if (src->prec == NULL) {
+        dst->prec = NULL;
     } else {
 #ifndef USE_ECMULT_STATIC_PRECOMPUTATION
         dst->prec = (secp256k1_ge_storage (*)[64][16])checked_malloc(cb, sizeof(*dst->prec));
@@ -118,7 +118,7 @@ static void secp256k1_ecmult_gen_context_clear(secp256k1_ecmult_gen_context *ctx
 #endif
     secp256k1_scalar_clear(&ctx->blind);
     secp256k1_gej_clear(&ctx->initial);
-    ctx->prec = nullptr;
+    ctx->prec = NULL;
 }
 
 static void secp256k1_ecmult_gen(const secp256k1_ecmult_gen_context *ctx, secp256k1_gej *r, const secp256k1_scalar *gn) {
@@ -164,8 +164,8 @@ static void secp256k1_ecmult_gen_blind(secp256k1_ecmult_gen_context *ctx, const 
     secp256k1_rfc6979_hmac_sha256_t rng;
     int retry;
     unsigned char keydata[64] = {0};
-    if (seed32 == nullptr) {
-        /* When seed is nullptr, reset the initial point and blinding value. */
+    if (seed32 == NULL) {
+        /* When seed is NULL, reset the initial point and blinding value. */
         secp256k1_gej_set_ge(&ctx->initial, &secp256k1_ge_const_g);
         secp256k1_gej_neg(&ctx->initial, &ctx->initial);
         secp256k1_scalar_set_int(&ctx->blind, 1);
@@ -177,7 +177,7 @@ static void secp256k1_ecmult_gen_blind(secp256k1_ecmult_gen_context *ctx, const 
      *   asking the caller for blinding values directly and expecting them to retry on failure.
      */
     memcpy(keydata, nonce32, 32);
-    if (seed32 != nullptr) {
+    if (seed32 != NULL) {
         memcpy(keydata + 32, seed32, 32);
     }
     secp256k1_rfc6979_hmac_sha256_initialize(&rng, keydata, seed32 ? 64 : 32);
