@@ -460,7 +460,7 @@ bool StartHTTPServer()
     threadHTTP = std::thread(std::move(task), eventBase, eventHTTP);
 
     for (int i = 0; i < rpcThreads; i++) {
-        std::thread rpc_worker(HTTPWorkQueueRun, workQueue);
+        std::thread rpc_worker(HTTPWorkQueueRun, workQueue.get());
         rpc_worker.detach();
     }
     return true;
