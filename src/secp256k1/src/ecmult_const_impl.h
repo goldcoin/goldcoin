@@ -181,7 +181,7 @@ static void secp256k1_ecmult_const(secp256k1_gej *r, const secp256k1_ge *a, cons
         int n;
         int j;
         for (j = 0; j < WINDOW_A - 1; ++j) {
-            secp256k1_gej_double_nonzero(r, r, NULL);
+            secp256k1_gej_double_nonzero(r, r, nullptr);
         }
 
         n = wnaf_1[i];
@@ -208,7 +208,7 @@ static void secp256k1_ecmult_const(secp256k1_gej *r, const secp256k1_ge *a, cons
         secp256k1_ge_storage a2_stor;
         secp256k1_gej tmpj;
         secp256k1_gej_set_ge(&tmpj, &correction);
-        secp256k1_gej_double_var(&tmpj, &tmpj, NULL);
+        secp256k1_gej_double_var(&tmpj, &tmpj, nullptr);
         secp256k1_ge_set_gej(&correction, &tmpj);
         secp256k1_ge_to_storage(&correction_1_stor, a);
 #ifdef USE_ENDOMORPHISM

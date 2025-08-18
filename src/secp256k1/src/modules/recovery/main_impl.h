@@ -18,8 +18,8 @@ static void secp256k1_ecdsa_recoverable_signature_load(const secp256k1_context* 
         memcpy(r, &sig->data[0], 32);
         memcpy(s, &sig->data[32], 32);
     } else {
-        secp256k1_scalar_set_b32(r, &sig->data[0], NULL);
-        secp256k1_scalar_set_b32(s, &sig->data[32], NULL);
+        secp256k1_scalar_set_b32(r, &sig->data[0], nullptr);
+        secp256k1_scalar_set_b32(s, &sig->data[32], nullptr);
     }
     *recid = sig->data[64];
 }
@@ -41,8 +41,8 @@ int secp256k1_ecdsa_recoverable_signature_parse_compact(const secp256k1_context*
     int overflow = 0;
 
     (void)ctx;
-    ARG_CHECK(sig != NULL);
-    ARG_CHECK(input64 != NULL);
+    ARG_CHECK(sig != nullptr);
+    ARG_CHECK(input64 != nullptr);
     ARG_CHECK(recid >= 0 && recid <= 3);
 
     secp256k1_scalar_set_b32(&r, &input64[0], &overflow);
@@ -61,9 +61,9 @@ int secp256k1_ecdsa_recoverable_signature_serialize_compact(const secp256k1_cont
     secp256k1_scalar r, s;
 
     (void)ctx;
-    ARG_CHECK(output64 != NULL);
-    ARG_CHECK(sig != NULL);
-    ARG_CHECK(recid != NULL);
+    ARG_CHECK(output64 != nullptr);
+    ARG_CHECK(sig != nullptr);
+    ARG_CHECK(recid != nullptr);
 
     secp256k1_ecdsa_recoverable_signature_load(ctx, &r, &s, recid, sig);
     secp256k1_scalar_get_b32(&output64[0], &r);
@@ -76,8 +76,8 @@ int secp256k1_ecdsa_recoverable_signature_convert(const secp256k1_context* ctx, 
     int recid;
 
     (void)ctx;
-    ARG_CHECK(sig != NULL);
-    ARG_CHECK(sigin != NULL);
+    ARG_CHECK(sig != nullptr);
+    ARG_CHECK(sigin != nullptr);
 
     secp256k1_ecdsa_recoverable_signature_load(ctx, &r, &s, &recid, sigin);
     secp256k1_ecdsa_signature_save(sig, &r, &s);
@@ -126,12 +126,12 @@ int secp256k1_ecdsa_sign_recoverable(const secp256k1_context* ctx, secp256k1_ecd
     int recid;
     int ret = 0;
     int overflow = 0;
-    VERIFY_CHECK(ctx != NULL);
+    VERIFY_CHECK(ctx != nullptr);
     ARG_CHECK(secp256k1_ecmult_gen_context_is_built(&ctx->ecmult_gen_ctx));
-    ARG_CHECK(msg32 != NULL);
-    ARG_CHECK(signature != NULL);
-    ARG_CHECK(seckey != NULL);
-    if (noncefp == NULL) {
+    ARG_CHECK(msg32 != nullptr);
+    ARG_CHECK(signature != nullptr);
+    ARG_CHECK(seckey != nullptr);
+    if (noncefp == nullptr) {
         noncefp = secp256k1_nonce_function_default;
     }
 
@@ -140,9 +140,9 @@ int secp256k1_ecdsa_sign_recoverable(const secp256k1_context* ctx, secp256k1_ecd
     if (!overflow && !secp256k1_scalar_is_zero(&sec)) {
         unsigned char nonce32[32];
         unsigned int count = 0;
-        secp256k1_scalar_set_b32(&msg, msg32, NULL);
+        secp256k1_scalar_set_b32(&msg, msg32, nullptr);
         while (1) {
-            ret = noncefp(nonce32, msg32, seckey, NULL, (void*)noncedata, count);
+            ret = noncefp(nonce32, msg32, seckey, nullptr, (void*)noncedata, count);
             if (!ret) {
                 break;
             }
@@ -172,15 +172,15 @@ int secp256k1_ecdsa_recover(const secp256k1_context* ctx, secp256k1_pubkey *pubk
     secp256k1_scalar r, s;
     secp256k1_scalar m;
     int recid;
-    VERIFY_CHECK(ctx != NULL);
+    VERIFY_CHECK(ctx != nullptr);
     ARG_CHECK(secp256k1_ecmult_context_is_built(&ctx->ecmult_ctx));
-    ARG_CHECK(msg32 != NULL);
-    ARG_CHECK(signature != NULL);
-    ARG_CHECK(pubkey != NULL);
+    ARG_CHECK(msg32 != nullptr);
+    ARG_CHECK(signature != nullptr);
+    ARG_CHECK(pubkey != nullptr);
 
     secp256k1_ecdsa_recoverable_signature_load(ctx, &r, &s, &recid, signature);
     ARG_CHECK(recid >= 0 && recid < 4);
-    secp256k1_scalar_set_b32(&m, msg32, NULL);
+    secp256k1_scalar_set_b32(&m, msg32, nullptr);
     if (secp256k1_ecdsa_sig_recover(&ctx->ecmult_ctx, &r, &s, &q, &m, recid)) {
         secp256k1_pubkey_save(pubkey, &q);
         return 1;
