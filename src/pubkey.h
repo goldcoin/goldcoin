@@ -36,7 +36,7 @@ public:
     CKeyID(const uint160& in) : uint160(in) {}
 };
 
-typedef uint256 ChainCode;
+using ChainCode = uint256;
 
 /** An encapsulated public key. */
 class CPubKey

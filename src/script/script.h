@@ -373,7 +373,7 @@ private:
     int64_t m_value;
 };
 
-typedef prevector<28, unsigned char> CScriptBase;
+using CScriptBase = prevector<28, unsigned char>;
 
 /** Serialized script, used inside transaction inputs and outputs */
 class CScript : public CScriptBase
