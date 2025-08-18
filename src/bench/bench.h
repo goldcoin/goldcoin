@@ -5,6 +5,7 @@
 #ifndef BITCOIN_BENCH_BENCH_H
 #define BITCOIN_BENCH_BENCH_H
 
+#include <functional>
 #include <map>
 #include <string>
 #include <limits> // For std::numeric_limits (required for GCC 13+)
@@ -60,11 +61,11 @@ namespace benchmark {
         bool KeepRunning();
     };
 
-    typedef boost::function<void(State&)> BenchFunction;
+    using BenchFunction = std::function<void(State&)>;
 
     class BenchRunner
     {
-        typedef std::map<std::string, BenchFunction> BenchmarkMap;
+        using BenchmarkMap = std::map<std::string, BenchFunction>;
         static BenchmarkMap &benchmarks();
 
     public:
