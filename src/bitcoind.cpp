@@ -24,7 +24,7 @@
 
 #include <filesystem>
 #include <boost/algorithm/string/predicate.hpp>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <boost/thread.hpp>
 
 #include <stdio.h>
