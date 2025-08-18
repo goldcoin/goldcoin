@@ -1,0 +1,167 @@
+---
+# Goldcoin Enterprise .clang-tidy Configuration
+# Part of Operation Phoenix++ 🔥
+# Created by LCC & SCC Tag Team
+
+Checks: '
+  -*,
+  bugprone-*,
+  cert-*,
+  clang-analyzer-*,
+  cppcoreguidelines-*,
+  google-*,
+  hicpp-*,
+  llvm-*,
+  misc-*,
+  modernize-*,
+  performance-*,
+  readability-*,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-implicit-widening-of-multiplication-result,
+  -cert-err58-cpp,
+  -cert-err60-cpp,
+  -clang-analyzer-cplusplus.NewDelete,
+  -clang-analyzer-cplusplus.NewDeleteLeaks,
+  -cppcoreguidelines-avoid-c-arrays,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-macro-usage,
+  -cppcoreguidelines-no-malloc,
+  -cppcoreguidelines-non-private-member-variables-in-classes,
+  -cppcoreguidelines-owning-memory,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -cppcoreguidelines-pro-bounds-constant-array-index,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-pro-type-const-cast,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
+  -cppcoreguidelines-pro-type-union-access,
+  -cppcoreguidelines-special-member-functions,
+  -google-build-using-namespace,
+  -google-explicit-constructor,
+  -google-readability-braces-around-statements,
+  -google-readability-casting,
+  -google-readability-todo,
+  -google-runtime-int,
+  -google-runtime-references,
+  -hicpp-braces-around-statements,
+  -hicpp-explicit-conversions,
+  -hicpp-no-array-decay,
+  -hicpp-signed-bitwise,
+  -hicpp-special-member-functions,
+  -hicpp-uppercase-literal-suffix,
+  -llvm-header-guard,
+  -llvm-include-order,
+  -misc-no-recursion,
+  -misc-non-private-member-variables-in-classes,
+  -modernize-avoid-c-arrays,
+  -modernize-use-trailing-return-type,
+  -readability-braces-around-statements,
+  -readability-convert-member-functions-to-static,
+  -readability-else-after-return,
+  -readability-implicit-bool-conversion,
+  -readability-isolate-declaration,
+  -readability-magic-numbers,
+  -readability-uppercase-literal-suffix,
+'
+
+WarningsAsErrors: ''
+
+HeaderFilterRegex: '.*'
+
+AnalyzeTemporaryDtors: false
+
+FormatStyle: file
+
+CheckOptions:
+  # Modernize options for C++20
+  - key: modernize-use-nullptr.NullMacros
+    value: 'NULL'
+  - key: modernize-use-auto.MinTypeNameLength
+    value: '5'
+  - key: modernize-use-override.IgnoreDestructors
+    value: '1'
+  - key: modernize-use-using.IgnoreMacros
+    value: '0'
+  - key: modernize-use-default-member-init.UseAssignment
+    value: '0'
+  
+  # Performance options
+  - key: performance-for-range-copy.AllowedTypes
+    value: '::std::pair;::std::tuple'
+  - key: performance-inefficient-string-concatenation.StrictMode
+    value: '1'
+  - key: performance-move-const-arg.CheckTriviallyCopyableMove
+    value: '1'
+  - key: performance-unnecessary-value-param.AllowedTypes
+    value: ''
+  
+  # Readability options
+  - key: readability-identifier-naming.ClassCase
+    value: CamelCase
+  - key: readability-identifier-naming.StructCase
+    value: CamelCase
+  - key: readability-identifier-naming.FunctionCase
+    value: CamelCase
+  - key: readability-identifier-naming.VariableCase
+    value: camelBack
+  - key: readability-identifier-naming.ParameterCase
+    value: camelBack
+  - key: readability-identifier-naming.MemberCase
+    value: camelBack
+  - key: readability-identifier-naming.PrivateMemberPrefix
+    value: 'm_'
+  - key: readability-identifier-naming.ProtectedMemberPrefix
+    value: 'm_'
+  - key: readability-identifier-naming.PublicMemberCase
+    value: camelBack
+  - key: readability-identifier-naming.ConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.ConstexprVariableCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.GlobalConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.StaticConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.EnumCase
+    value: CamelCase
+  - key: readability-identifier-naming.EnumConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.NamespaceCase
+    value: lower_case
+  - key: readability-identifier-naming.InlineNamespaceCase
+    value: lower_case
+  
+  # Google style options
+  - key: google-readability-namespace-comments.ShortNamespaceLines
+    value: '10'
+  - key: google-readability-namespace-comments.SpacesBeforeComments
+    value: '2'
+  
+  # CERT options
+  - key: cert-dcl59-cpp.HeaderFileExtensions
+    value: 'h,hpp,hxx'
+  - key: cert-oop57-cpp.MemSetNames
+    value: 'memset,memcpy,memmove,strcpy,strncpy'
+  
+  # Bugprone options
+  - key: bugprone-argument-comment.StrictMode
+    value: '0'
+  - key: bugprone-assert-side-effect.AssertMacros
+    value: 'assert,BOOST_ASSERT'
+  - key: bugprone-sizeof-expression.WarnOnSizeOfConstant
+    value: '1'
+  - key: bugprone-string-constructor.WarnOnLargeLength
+    value: '1'
+  
+  # Misc options
+  - key: misc-throw-by-value-catch-by-reference.CheckThrowTemporaries
+    value: '1'
+  
+  # HICPP options
+  - key: hicpp-multiway-paths-covered.WarnOnMissingElse
+    value: '0'
+  
+  # C++ Core Guidelines
+  - key: cppcoreguidelines-init-variables.IncludeStyle
+    value: 'llvm'
+
+...
