@@ -38,9 +38,9 @@ extern "C" {
  *
  *  Returns: 1 if the private key was valid.
  *  Args: ctx:        pointer to a context object, initialized for signing (cannot
- *                    be NULL)
+ *                    be nullptr)
  *  Out: privkey:     pointer to an array for storing the private key in BER.
- *                    Should have space for 279 bytes, and cannot be NULL.
+ *                    Should have space for 279 bytes, and cannot be nullptr.
  *       privkeylen:  Pointer to an int where the length of the private key in
  *                    privkey will be stored.
  *  In:  seckey:      pointer to a 32-byte secret key to export.
@@ -64,10 +64,10 @@ SECP256K1_WARN_UNUSED_RESULT int ec_privkey_export_der(
 
 /** Import a private key in DER format.
  * Returns: 1 if a private key was extracted.
- * Args: ctx:        pointer to a context object (cannot be NULL).
+ * Args: ctx:        pointer to a context object (cannot be nullptr).
  * Out:  seckey:     pointer to a 32-byte array for storing the private key.
- *                   (cannot be NULL).
- * In:   privkey:    pointer to a private key in DER format (cannot be NULL).
+ *                   (cannot be nullptr).
+ * In:   privkey:    pointer to a private key in DER format (cannot be nullptr).
  *       privkeylen: length of the DER private key pointed to be privkey.
  *
  * This function will accept more than just strict DER, and even allow some BER

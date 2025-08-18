@@ -46,10 +46,10 @@ public:
     virtual bool HaveWatchOnly() const =0;
 };
 
-typedef std::map<CKeyID, CKey> KeyMap;
-typedef std::map<CKeyID, CPubKey> WatchKeyMap;
-typedef std::map<CScriptID, CScript > ScriptMap;
-typedef std::set<CScript> WatchOnlySet;
+using KeyMap = std::map<CKeyID, CKey>;
+using WatchKeyMap = std::map<CKeyID, CPubKey>;
+using ScriptMap = std::map<CScriptID, CScript >;
+using WatchOnlySet = std::set<CScript>;
 
 /** Basic key store, that keeps keys in an address->secret map */
 class CBasicKeyStore : public CKeyStore
@@ -108,7 +108,7 @@ public:
     virtual bool HaveWatchOnly() const;
 };
 
-typedef std::vector<unsigned char, secure_allocator<unsigned char> > CKeyingMaterial;
-typedef std::map<CKeyID, std::pair<CPubKey, std::vector<unsigned char> > > CryptedKeyMap;
+using CKeyingMaterial = std::vector<unsigned char, secure_allocator<unsigned char> >;
+using CryptedKeyMap = std::map<CKeyID, std::pair<CPubKey, std::vector<unsigned char> > >;
 
 #endif // BITCOIN_KEYSTORE_H

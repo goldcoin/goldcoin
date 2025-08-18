@@ -304,7 +304,7 @@ bool SendSyncCheckpoint(uint256 hashCheckpoint)
     if (!key.Sign(Hash(checkpoint.vchMsg.begin(), checkpoint.vchMsg.end()), checkpoint.vchSig))
         return error("SendSyncCheckpoint: Unable to sign checkpoint, check private key?");
 
-    if(!checkpoint.ProcessSyncCheckpoint(NULL))
+    if(!checkpoint.ProcessSyncCheckpoint(nullptr))
         return error("WARNING: SendSyncCheckpoint: Failed to process checkpoint.\n");
 
     // Relay checkpoint
