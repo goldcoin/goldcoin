@@ -56,7 +56,7 @@
 #include <sstream>
 #include <filesystem>
 #include <boost/bind/bind.hpp>
-#include <boost/filesystem.hpp>
+// #include <boost/filesystem.hpp> // REMOVED - using std::filesystem
 #include <boost/function.hpp>
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/thread.hpp>
@@ -1406,14 +1406,14 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
     std::filesystem::path blocksDir = GetDataDir() / "blocks";
     if (!std::filesystem::exists(blocksDir))
     {
-        boost::filesystem::create_directories(blocksDir);
+        std::filesystem::create_directories(blocksDir);
         bool linked = false;
         for (unsigned int i = 1; i < 10000; i++) {
             std::filesystem::path source = GetDataDir() / strprintf("blk%04u.dat", i);
             if (!std::filesystem::exists(source)) break;
             std::filesystem::path dest = blocksDir / strprintf("blk%05u.dat", i-1);
             try {
-                boost::filesystem::create_hard_link(source, dest);
+                std::filesystem::create_hard_link(source, dest);
                 LogPrintf("Hardlinked %s -> %s\n", source.string(), dest.string());
                 linked = true;
             } catch (const std::filesystem::filesystem_error& e) {
