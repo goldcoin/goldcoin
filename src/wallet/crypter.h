@@ -140,12 +140,12 @@ public:
     {
     }
 
-    bool IsCrypted() const
+    [[nodiscard]] bool IsCrypted() const
     {
         return fUseCrypto;
     }
 
-    bool IsLocked() const
+    [[nodiscard]] bool IsLocked() const
     {
         if (!IsCrypted())
             return false;

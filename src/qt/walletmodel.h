@@ -60,7 +60,7 @@ public:
 
     bool fSubtractFeeFromAmount; // memory only
 
-    static const int CURRENT_VERSION = 1;
+    static constexpr int CURRENT_VERSION = 1;
     int nVersion;
 
     ADD_SERIALIZE_METHODS;

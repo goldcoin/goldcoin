@@ -291,7 +291,7 @@ namespace GUIUtil
      *
      * QPixmap* QLabel::pixmap() is deprecated since Qt 5.15.
      */
-    bool HasPixmap(const QLabel* label);
+    [[nodiscard]] bool HasPixmap(const QLabel* label);
     QImage GetImage(const QLabel* label);
     
 } // namespace GUIUtil

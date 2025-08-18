@@ -20,7 +20,7 @@
 
 #include <univalue.h>
 
-static const unsigned int DEFAULT_RPC_SERIALIZE_VERSION = 0;
+static constexpr unsigned int DEFAULT_RPC_SERIALIZE_VERSION = 0;
 
 class CRPCCommand;
 
@@ -59,7 +59,7 @@ public:
 };
 
 /** Query whether RPC is running */
-bool IsRPCRunning();
+[[nodiscard]] bool IsRPCRunning();
 
 /**
  * Set the RPC warmup status.  When this is done, all RPC calls will error out

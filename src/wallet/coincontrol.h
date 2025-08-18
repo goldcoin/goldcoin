@@ -42,12 +42,12 @@ public:
         nConfirmTarget = 0;
     }
 
-    bool HasSelected() const
+    [[nodiscard]] bool HasSelected() const
     {
         return (setSelected.size() > 0);
     }
 
-    bool IsSelected(const COutPoint& output) const
+    [[nodiscard]] bool IsSelected(const COutPoint& output) const
     {
         return (setSelected.count(output) > 0);
     }

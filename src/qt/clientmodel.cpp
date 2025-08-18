@@ -28,7 +28,7 @@
 
 class CBlockIndex;
 
-static const int64_t nClientStartupTime = GetTime();
+static constexpr int64_t nClientStartupTime = GetTime();
 static int64_t nLastHeaderTipUpdateNotification = 0;
 static int64_t nLastBlockTipUpdateNotification = 0;
 

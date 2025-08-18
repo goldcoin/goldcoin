@@ -19,7 +19,7 @@ static const struct {
     {"test", QAPP_APP_NAME_TESTNET, 70, 30, QT_TRANSLATE_NOOP("SplashScreen", "[testnet]")},
     {"regtest", QAPP_APP_NAME_TESTNET, 160, 30, "[regtest]"}
 };
-static const unsigned network_styles_count = sizeof(network_styles)/sizeof(*network_styles);
+static constexpr unsigned network_styles_count = sizeof(network_styles)/sizeof(*network_styles);
 
 // titleAddText needs to be const char* for tr()
 NetworkStyle::NetworkStyle(const QString &_appName, const int iconColorHueShift, const int iconColorSaturationReduction, const char *_titleAddText):
