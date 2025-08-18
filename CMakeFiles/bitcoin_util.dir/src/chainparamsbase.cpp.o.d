@@ -266,9 +266,26 @@ CMakeFiles/bitcoin_util.dir/src/chainparamsbase.cpp.o: \
  /usr/include/c++/11/bits/std_mutex.h /usr/include/c++/11/map \
  /usr/include/c++/11/bits/stl_tree.h /usr/include/c++/11/bits/stl_map.h \
  /usr/include/c++/11/bits/stl_multimap.h /usr/include/c++/11/optional \
- /usr/include/boost/filesystem/path.hpp /usr/include/boost/assert.hpp \
- /usr/include/boost/filesystem/config.hpp /usr/include/boost/config.hpp \
- /usr/include/boost/config/user.hpp \
+ /usr/include/c++/11/filesystem /usr/include/c++/11/bits/fs_fwd.h \
+ /usr/include/c++/11/chrono /usr/include/c++/11/ratio \
+ /usr/include/c++/11/limits /usr/include/c++/11/ctime \
+ /usr/include/c++/11/bits/parse_numbers.h \
+ /usr/include/c++/11/bits/fs_path.h /usr/include/c++/11/locale \
+ /usr/include/c++/11/bits/locale_facets_nonio.h \
+ /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h \
+ /usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h \
+ /usr/include/libintl.h /usr/include/c++/11/bits/codecvt.h \
+ /usr/include/c++/11/bits/locale_facets_nonio.tcc \
+ /usr/include/c++/11/bits/locale_conv.h \
+ /usr/include/c++/11/bits/unique_ptr.h /usr/include/c++/11/iomanip \
+ /usr/include/c++/11/bits/quoted_string.h /usr/include/c++/11/codecvt \
+ /usr/include/c++/11/ext/concurrence.h \
+ /usr/include/c++/11/bits/shared_ptr.h \
+ /usr/include/c++/11/bits/shared_ptr_base.h \
+ /usr/include/c++/11/bits/allocated_ptr.h \
+ /usr/include/c++/11/bits/fs_dir.h /usr/include/c++/11/bits/fs_ops.h \
+ /usr/include/boost/signals2/signal.hpp /usr/include/boost/assert.hpp \
+ /usr/include/boost/config.hpp /usr/include/boost/config/user.hpp \
  /usr/include/boost/config/detail/select_compiler_config.hpp \
  /usr/include/boost/config/compiler/gcc.hpp /usr/include/c++/11/cstddef \
  /usr/include/boost/config/detail/select_stdlib_config.hpp \
@@ -280,98 +297,154 @@ CMakeFiles/bitcoin_util.dir/src/chainparamsbase.cpp.o: \
  /usr/include/boost/config/detail/suffix.hpp \
  /usr/include/boost/config/helper_macros.hpp \
  /usr/include/boost/config/detail/cxx_composite.hpp \
- /usr/include/boost/system/api_config.hpp \
- /usr/include/boost/detail/workaround.hpp \
+ /usr/include/boost/core/noncopyable.hpp /usr/include/boost/function.hpp \
+ /usr/include/boost/preprocessor/iterate.hpp \
+ /usr/include/boost/preprocessor/iteration/iterate.hpp \
+ /usr/include/boost/preprocessor/arithmetic/dec.hpp \
+ /usr/include/boost/preprocessor/config/config.hpp \
+ /usr/include/boost/preprocessor/config/limits.hpp \
+ /usr/include/boost/preprocessor/arithmetic/limits/dec_256.hpp \
+ /usr/include/boost/preprocessor/arithmetic/inc.hpp \
+ /usr/include/boost/preprocessor/arithmetic/limits/inc_256.hpp \
+ /usr/include/boost/preprocessor/array/elem.hpp \
+ /usr/include/boost/preprocessor/array/data.hpp \
+ /usr/include/boost/preprocessor/tuple/elem.hpp \
+ /usr/include/boost/preprocessor/cat.hpp \
+ /usr/include/boost/preprocessor/facilities/expand.hpp \
+ /usr/include/boost/preprocessor/facilities/overload.hpp \
+ /usr/include/boost/preprocessor/variadic/size.hpp \
+ /usr/include/boost/preprocessor/control/iif.hpp \
+ /usr/include/boost/preprocessor/facilities/check_empty.hpp \
+ /usr/include/boost/preprocessor/variadic/has_opt.hpp \
+ /usr/include/boost/preprocessor/variadic/detail/has_opt.hpp \
+ /usr/include/boost/preprocessor/facilities/is_empty_variadic.hpp \
+ /usr/include/boost/preprocessor/punctuation/is_begin_parens.hpp \
+ /usr/include/boost/preprocessor/punctuation/detail/is_begin_parens.hpp \
+ /usr/include/boost/preprocessor/facilities/detail/is_empty.hpp \
+ /usr/include/boost/preprocessor/variadic/limits/size_64.hpp \
+ /usr/include/boost/preprocessor/tuple/rem.hpp \
+ /usr/include/boost/preprocessor/tuple/detail/is_single_return.hpp \
+ /usr/include/boost/preprocessor/variadic/elem.hpp \
+ /usr/include/boost/preprocessor/variadic/limits/elem_64.hpp \
+ /usr/include/boost/preprocessor/array/size.hpp \
+ /usr/include/boost/preprocessor/slot/slot.hpp \
+ /usr/include/boost/preprocessor/slot/detail/def.hpp \
  /usr/include/boost/config/workaround.hpp \
- /usr/include/boost/config/auto_link.hpp \
- /usr/include/boost/filesystem/detail/path_traits.hpp \
+ /usr/include/boost/function/detail/prologue.hpp \
+ /usr/include/boost/function/detail/requires_cxx11.hpp \
+ /usr/include/boost/config/pragma_message.hpp \
+ /usr/include/boost/config/no_tr1/functional.hpp \
+ /usr/include/boost/throw_exception.hpp \
+ /usr/include/boost/exception/exception.hpp \
+ /usr/include/boost/assert/source_location.hpp \
+ /usr/include/boost/current_function.hpp /usr/include/boost/cstdint.hpp \
  /usr/include/c++/11/cstring /usr/include/string.h /usr/include/strings.h \
  /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
  /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
- /usr/include/c++/11/locale \
- /usr/include/c++/11/bits/locale_facets_nonio.h /usr/include/c++/11/ctime \
- /usr/include/x86_64-linux-gnu/c++/11/bits/time_members.h \
- /usr/include/x86_64-linux-gnu/c++/11/bits/messages_members.h \
- /usr/include/libintl.h /usr/include/c++/11/bits/codecvt.h \
- /usr/include/c++/11/bits/locale_facets_nonio.tcc \
- /usr/include/c++/11/bits/locale_conv.h \
- /usr/include/c++/11/bits/unique_ptr.h \
- /usr/include/boost/system/error_category.hpp \
- /usr/include/boost/system/detail/error_category.hpp \
- /usr/include/boost/system/detail/config.hpp \
- /usr/include/boost/system/detail/requires_cxx11.hpp \
- /usr/include/boost/config/pragma_message.hpp \
- /usr/include/boost/cstdint.hpp \
- /usr/include/boost/system/detail/error_category_impl.hpp \
- /usr/include/boost/system/detail/error_condition.hpp \
- /usr/include/boost/system/detail/generic_category.hpp \
- /usr/include/boost/system/detail/generic_category_message.hpp \
- /usr/include/boost/system/detail/enable_if.hpp \
- /usr/include/boost/system/detail/is_same.hpp \
- /usr/include/boost/system/detail/errc.hpp \
- /usr/include/boost/system/is_error_condition_enum.hpp \
- /usr/include/boost/system/detail/cerrno.hpp \
- /usr/include/boost/system/detail/append_int.hpp \
- /usr/include/boost/system/detail/snprintf.hpp \
- /usr/include/c++/11/cstdarg \
- /usr/include/boost/system/detail/error_code.hpp \
- /usr/include/boost/system/is_error_code_enum.hpp \
- /usr/include/boost/system/detail/system_category.hpp \
- /usr/include/boost/system/detail/system_category_impl.hpp \
- /usr/include/boost/system/detail/system_category_message.hpp \
- /usr/include/boost/system/detail/interop_category.hpp \
- /usr/include/boost/system/detail/std_category.hpp \
- /usr/include/boost/assert/source_location.hpp \
- /usr/include/boost/current_function.hpp \
  /usr/include/c++/11/source_location \
- /usr/include/boost/system/detail/std_category_impl.hpp \
- /usr/include/boost/system/detail/mutex.hpp /usr/include/c++/11/mutex \
- /usr/include/c++/11/chrono /usr/include/c++/11/ratio \
- /usr/include/c++/11/limits /usr/include/c++/11/bits/parse_numbers.h \
- /usr/include/c++/11/bits/unique_lock.h \
- /usr/include/boost/iterator/is_iterator.hpp \
- /usr/include/boost/type_traits/integral_constant.hpp \
- /usr/include/boost/type_traits/negation.hpp \
- /usr/include/boost/type_traits/conjunction.hpp \
- /usr/include/boost/type_traits/conditional.hpp \
- /usr/include/boost/type_traits/is_complete.hpp \
- /usr/include/boost/type_traits/declval.hpp \
- /usr/include/boost/type_traits/add_rvalue_reference.hpp \
+ /usr/include/boost/function/function_base.hpp \
+ /usr/include/boost/function/function_fwd.hpp \
+ /usr/include/boost/function_equal.hpp \
+ /usr/include/boost/core/typeinfo.hpp \
+ /usr/include/boost/core/demangle.hpp /usr/include/c++/11/cxxabi.h \
+ /usr/include/x86_64-linux-gnu/c++/11/bits/cxxabi_tweaks.h \
+ /usr/include/boost/core/ref.hpp /usr/include/boost/core/addressof.hpp \
+ /usr/include/boost/core/enable_if.hpp \
+ /usr/include/boost/type_traits/has_trivial_copy.hpp \
+ /usr/include/boost/type_traits/intrinsics.hpp \
+ /usr/include/boost/type_traits/detail/config.hpp \
+ /usr/include/boost/version.hpp /usr/include/boost/type_traits/is_pod.hpp \
  /usr/include/boost/type_traits/is_void.hpp \
+ /usr/include/boost/type_traits/integral_constant.hpp \
+ /usr/include/boost/detail/workaround.hpp \
+ /usr/include/boost/type_traits/is_scalar.hpp \
+ /usr/include/boost/type_traits/is_arithmetic.hpp \
+ /usr/include/boost/type_traits/is_integral.hpp \
+ /usr/include/boost/type_traits/is_floating_point.hpp \
+ /usr/include/boost/type_traits/is_enum.hpp \
+ /usr/include/boost/type_traits/is_pointer.hpp \
+ /usr/include/boost/type_traits/is_member_pointer.hpp \
+ /usr/include/boost/type_traits/is_member_function_pointer.hpp \
+ /usr/include/boost/type_traits/detail/is_member_function_pointer_cxx_11.hpp \
  /usr/include/boost/type_traits/is_reference.hpp \
  /usr/include/boost/type_traits/is_lvalue_reference.hpp \
  /usr/include/boost/type_traits/is_rvalue_reference.hpp \
+ /usr/include/boost/type_traits/is_copy_constructible.hpp \
+ /usr/include/boost/type_traits/is_constructible.hpp \
+ /usr/include/boost/type_traits/is_destructible.hpp \
+ /usr/include/boost/type_traits/is_complete.hpp \
+ /usr/include/boost/type_traits/declval.hpp \
+ /usr/include/boost/type_traits/add_rvalue_reference.hpp \
  /usr/include/boost/type_traits/remove_reference.hpp \
  /usr/include/boost/type_traits/is_function.hpp \
- /usr/include/boost/type_traits/detail/config.hpp \
- /usr/include/boost/version.hpp \
  /usr/include/boost/type_traits/detail/is_function_cxx_11.hpp \
  /usr/include/boost/type_traits/detail/yes_no_type.hpp \
- /usr/include/boost/type_traits/remove_cv.hpp /usr/include/c++/11/list \
- /usr/include/c++/11/bits/stl_list.h \
- /usr/include/c++/11/bits/allocated_ptr.h \
- /usr/include/c++/11/bits/list.tcc \
- /usr/include/boost/filesystem/detail/header.hpp \
- /usr/include/boost/config/abi_prefix.hpp \
- /usr/include/boost/filesystem/detail/footer.hpp \
- /usr/include/boost/config/abi_suffix.hpp \
- /usr/include/boost/iterator/iterator_facade.hpp \
- /usr/include/boost/iterator/interoperable.hpp \
- /usr/include/boost/mpl/bool.hpp /usr/include/boost/mpl/bool_fwd.hpp \
+ /usr/include/boost/static_assert.hpp \
+ /usr/include/boost/type_traits/is_default_constructible.hpp \
+ /usr/include/boost/type_traits/has_trivial_destructor.hpp \
+ /usr/include/boost/type_traits/is_const.hpp \
+ /usr/include/boost/type_traits/is_volatile.hpp \
+ /usr/include/boost/type_traits/composite_traits.hpp \
+ /usr/include/boost/type_traits/is_array.hpp \
+ /usr/include/boost/type_traits/is_union.hpp \
+ /usr/include/boost/type_traits/conditional.hpp \
+ /usr/include/boost/type_traits/alignment_of.hpp \
+ /usr/include/boost/type_traits/enable_if.hpp /usr/include/c++/11/memory \
+ /usr/include/c++/11/bits/stl_raw_storage_iter.h \
+ /usr/include/c++/11/bits/align.h /usr/include/c++/11/bit \
+ /usr/include/c++/11/bits/shared_ptr_atomic.h \
+ /usr/include/c++/11/backward/auto_ptr.h \
+ /usr/include/c++/11/bits/ranges_uninitialized.h \
+ /usr/include/c++/11/bits/uses_allocator_args.h \
+ /usr/include/c++/11/pstl/glue_memory_defs.h \
+ /usr/include/boost/mem_fn.hpp /usr/include/boost/bind/mem_fn.hpp \
+ /usr/include/boost/bind/detail/requires_cxx11.hpp \
+ /usr/include/boost/get_pointer.hpp \
+ /usr/include/boost/config/no_tr1/memory.hpp \
+ /usr/include/boost/bind/mem_fn_template.hpp \
+ /usr/include/boost/bind/mem_fn_cc.hpp \
+ /usr/include/boost/preprocessor/enum.hpp \
+ /usr/include/boost/preprocessor/repetition/enum.hpp \
+ /usr/include/boost/preprocessor/debug/error.hpp \
+ /usr/include/boost/preprocessor/detail/auto_rec.hpp \
+ /usr/include/boost/preprocessor/detail/limits/auto_rec_256.hpp \
+ /usr/include/boost/preprocessor/punctuation/comma_if.hpp \
+ /usr/include/boost/preprocessor/control/if.hpp \
+ /usr/include/boost/preprocessor/logical/bool.hpp \
+ /usr/include/boost/preprocessor/logical/limits/bool_256.hpp \
+ /usr/include/boost/preprocessor/facilities/empty.hpp \
+ /usr/include/boost/preprocessor/punctuation/comma.hpp \
+ /usr/include/boost/preprocessor/repetition/repeat.hpp \
+ /usr/include/boost/preprocessor/tuple/eat.hpp \
+ /usr/include/boost/preprocessor/repetition/limits/repeat_256.hpp \
+ /usr/include/boost/preprocessor/enum_params.hpp \
+ /usr/include/boost/preprocessor/repetition/enum_params.hpp \
+ /usr/include/boost/preprocessor/repeat.hpp \
+ /usr/include/boost/preprocessor/inc.hpp \
+ /usr/include/boost/preprocessor/iteration/detail/iter/forward1.hpp \
+ /usr/include/boost/preprocessor/iteration/detail/bounds/lower1.hpp \
+ /usr/include/boost/preprocessor/slot/detail/shared.hpp \
+ /usr/include/boost/preprocessor/iteration/detail/bounds/upper1.hpp \
+ /usr/include/boost/preprocessor/iteration/detail/iter/limits/forward1_256.hpp \
+ /usr/include/boost/function/detail/function_iterate.hpp \
+ /usr/include/boost/function/detail/maybe_include.hpp \
+ /usr/include/boost/function/function_template.hpp \
+ /usr/include/boost/core/no_exceptions_support.hpp \
+ /usr/include/boost/function/detail/epilogue.hpp \
+ /usr/include/boost/mpl/identity.hpp \
+ /usr/include/boost/mpl/aux_/na_spec.hpp \
+ /usr/include/boost/mpl/lambda_fwd.hpp \
+ /usr/include/boost/mpl/void_fwd.hpp \
  /usr/include/boost/mpl/aux_/adl_barrier.hpp \
  /usr/include/boost/mpl/aux_/config/adl.hpp \
  /usr/include/boost/mpl/aux_/config/msvc.hpp \
  /usr/include/boost/mpl/aux_/config/intel.hpp \
  /usr/include/boost/mpl/aux_/config/gcc.hpp \
  /usr/include/boost/mpl/aux_/config/workaround.hpp \
+ /usr/include/boost/mpl/aux_/na.hpp /usr/include/boost/mpl/bool.hpp \
+ /usr/include/boost/mpl/bool_fwd.hpp \
  /usr/include/boost/mpl/integral_c_tag.hpp \
  /usr/include/boost/mpl/aux_/config/static_constant.hpp \
- /usr/include/boost/mpl/or.hpp \
- /usr/include/boost/mpl/aux_/config/use_preprocessed.hpp \
- /usr/include/boost/mpl/aux_/nested_type_wknd.hpp \
- /usr/include/boost/mpl/aux_/na_spec.hpp \
- /usr/include/boost/mpl/lambda_fwd.hpp \
- /usr/include/boost/mpl/void_fwd.hpp /usr/include/boost/mpl/aux_/na.hpp \
  /usr/include/boost/mpl/aux_/na_fwd.hpp \
  /usr/include/boost/mpl/aux_/config/ctps.hpp \
  /usr/include/boost/mpl/aux_/config/lambda.hpp \
@@ -381,8 +454,6 @@ CMakeFiles/bitcoin_util.dir/src/chainparamsbase.cpp.o: \
  /usr/include/boost/mpl/aux_/config/nttp.hpp \
  /usr/include/boost/mpl/aux_/integral_wrapper.hpp \
  /usr/include/boost/mpl/aux_/static_cast.hpp \
- /usr/include/boost/preprocessor/cat.hpp \
- /usr/include/boost/preprocessor/config/config.hpp \
  /usr/include/boost/mpl/aux_/lambda_arity_param.hpp \
  /usr/include/boost/mpl/aux_/template_arity_fwd.hpp \
  /usr/include/boost/mpl/aux_/arity.hpp \
@@ -390,24 +461,6 @@ CMakeFiles/bitcoin_util.dir/src/chainparamsbase.cpp.o: \
  /usr/include/boost/mpl/aux_/preprocessor/params.hpp \
  /usr/include/boost/mpl/aux_/config/preprocessor.hpp \
  /usr/include/boost/preprocessor/comma_if.hpp \
- /usr/include/boost/preprocessor/punctuation/comma_if.hpp \
- /usr/include/boost/preprocessor/control/if.hpp \
- /usr/include/boost/preprocessor/control/iif.hpp \
- /usr/include/boost/preprocessor/logical/bool.hpp \
- /usr/include/boost/preprocessor/config/limits.hpp \
- /usr/include/boost/preprocessor/logical/limits/bool_256.hpp \
- /usr/include/boost/preprocessor/facilities/empty.hpp \
- /usr/include/boost/preprocessor/punctuation/comma.hpp \
- /usr/include/boost/preprocessor/repeat.hpp \
- /usr/include/boost/preprocessor/repetition/repeat.hpp \
- /usr/include/boost/preprocessor/debug/error.hpp \
- /usr/include/boost/preprocessor/detail/auto_rec.hpp \
- /usr/include/boost/preprocessor/detail/limits/auto_rec_256.hpp \
- /usr/include/boost/preprocessor/tuple/eat.hpp \
- /usr/include/boost/preprocessor/repetition/limits/repeat_256.hpp \
- /usr/include/boost/preprocessor/inc.hpp \
- /usr/include/boost/preprocessor/arithmetic/inc.hpp \
- /usr/include/boost/preprocessor/arithmetic/limits/inc_256.hpp \
  /usr/include/boost/mpl/aux_/preprocessor/enum.hpp \
  /usr/include/boost/mpl/aux_/preprocessor/def_params_tail.hpp \
  /usr/include/boost/mpl/limits/arity.hpp \
@@ -417,8 +470,6 @@ CMakeFiles/bitcoin_util.dir/src/chainparamsbase.cpp.o: \
  /usr/include/boost/preprocessor/facilities/identity.hpp \
  /usr/include/boost/preprocessor/empty.hpp \
  /usr/include/boost/preprocessor/arithmetic/add.hpp \
- /usr/include/boost/preprocessor/arithmetic/dec.hpp \
- /usr/include/boost/preprocessor/arithmetic/limits/dec_256.hpp \
  /usr/include/boost/preprocessor/control/while.hpp \
  /usr/include/boost/preprocessor/list/fold_left.hpp \
  /usr/include/boost/preprocessor/list/detail/fold_left.hpp \
@@ -437,22 +488,6 @@ CMakeFiles/bitcoin_util.dir/src/chainparamsbase.cpp.o: \
  /usr/include/boost/preprocessor/control/detail/limits/while_256.hpp \
  /usr/include/boost/preprocessor/control/limits/while_256.hpp \
  /usr/include/boost/preprocessor/logical/bitor.hpp \
- /usr/include/boost/preprocessor/tuple/elem.hpp \
- /usr/include/boost/preprocessor/facilities/expand.hpp \
- /usr/include/boost/preprocessor/facilities/overload.hpp \
- /usr/include/boost/preprocessor/variadic/size.hpp \
- /usr/include/boost/preprocessor/facilities/check_empty.hpp \
- /usr/include/boost/preprocessor/variadic/has_opt.hpp \
- /usr/include/boost/preprocessor/variadic/detail/has_opt.hpp \
- /usr/include/boost/preprocessor/facilities/is_empty_variadic.hpp \
- /usr/include/boost/preprocessor/punctuation/is_begin_parens.hpp \
- /usr/include/boost/preprocessor/punctuation/detail/is_begin_parens.hpp \
- /usr/include/boost/preprocessor/facilities/detail/is_empty.hpp \
- /usr/include/boost/preprocessor/variadic/limits/size_64.hpp \
- /usr/include/boost/preprocessor/tuple/rem.hpp \
- /usr/include/boost/preprocessor/tuple/detail/is_single_return.hpp \
- /usr/include/boost/preprocessor/variadic/elem.hpp \
- /usr/include/boost/preprocessor/variadic/limits/elem_64.hpp \
  /usr/include/boost/preprocessor/arithmetic/detail/is_maximum_number.hpp \
  /usr/include/boost/preprocessor/comparison/equal.hpp \
  /usr/include/boost/preprocessor/comparison/not_equal.hpp \
@@ -464,161 +499,6 @@ CMakeFiles/bitcoin_util.dir/src/chainparamsbase.cpp.o: \
  /usr/include/boost/mpl/aux_/config/eti.hpp \
  /usr/include/boost/mpl/aux_/config/overload_resolution.hpp \
  /usr/include/boost/mpl/aux_/lambda_support.hpp \
- /usr/include/boost/mpl/aux_/include_preprocessed.hpp \
- /usr/include/boost/mpl/aux_/config/compiler.hpp \
- /usr/include/boost/preprocessor/stringize.hpp \
- /usr/include/boost/mpl/aux_/preprocessed/gcc/or.hpp \
- /usr/include/boost/type_traits/is_convertible.hpp \
- /usr/include/boost/type_traits/intrinsics.hpp \
- /usr/include/boost/type_traits/is_array.hpp \
- /usr/include/boost/static_assert.hpp \
- /usr/include/boost/type_traits/is_arithmetic.hpp \
- /usr/include/boost/type_traits/is_integral.hpp \
- /usr/include/boost/type_traits/is_floating_point.hpp \
- /usr/include/boost/type_traits/is_abstract.hpp \
- /usr/include/boost/type_traits/add_lvalue_reference.hpp \
- /usr/include/boost/type_traits/add_reference.hpp \
- /usr/include/boost/iterator/detail/config_def.hpp \
- /usr/include/boost/iterator/detail/config_undef.hpp \
- /usr/include/boost/iterator/iterator_traits.hpp \
- /usr/include/boost/iterator/iterator_categories.hpp \
- /usr/include/boost/mpl/eval_if.hpp /usr/include/boost/mpl/if.hpp \
- /usr/include/boost/mpl/aux_/value_wknd.hpp \
- /usr/include/boost/mpl/aux_/config/integral.hpp \
- /usr/include/boost/mpl/identity.hpp \
- /usr/include/boost/mpl/placeholders.hpp /usr/include/boost/mpl/arg.hpp \
- /usr/include/boost/mpl/arg_fwd.hpp \
- /usr/include/boost/mpl/aux_/na_assert.hpp \
- /usr/include/boost/mpl/assert.hpp /usr/include/boost/mpl/not.hpp \
- /usr/include/boost/mpl/aux_/yes_no.hpp \
- /usr/include/boost/mpl/aux_/config/arrays.hpp \
- /usr/include/boost/mpl/aux_/config/gpu.hpp \
- /usr/include/boost/mpl/aux_/config/pp_counter.hpp \
- /usr/include/boost/mpl/aux_/arity_spec.hpp \
- /usr/include/boost/mpl/aux_/arg_typedef.hpp \
- /usr/include/boost/mpl/aux_/preprocessed/gcc/arg.hpp \
- /usr/include/boost/mpl/aux_/preprocessed/gcc/placeholders.hpp \
- /usr/include/boost/iterator/detail/facade_iterator_category.hpp \
- /usr/include/boost/core/use_default.hpp /usr/include/boost/mpl/and.hpp \
- /usr/include/boost/mpl/aux_/preprocessed/gcc/and.hpp \
- /usr/include/boost/type_traits/is_same.hpp \
- /usr/include/boost/type_traits/is_const.hpp \
- /usr/include/boost/detail/indirect_traits.hpp \
- /usr/include/boost/type_traits/is_pointer.hpp \
- /usr/include/boost/type_traits/is_class.hpp \
- /usr/include/boost/type_traits/is_volatile.hpp \
- /usr/include/boost/type_traits/is_member_function_pointer.hpp \
- /usr/include/boost/type_traits/detail/is_member_function_pointer_cxx_11.hpp \
- /usr/include/boost/type_traits/is_member_pointer.hpp \
- /usr/include/boost/type_traits/remove_pointer.hpp \
- /usr/include/boost/detail/select_type.hpp \
- /usr/include/boost/iterator/detail/enable_if.hpp \
- /usr/include/boost/core/addressof.hpp \
- /usr/include/boost/type_traits/add_const.hpp \
- /usr/include/boost/type_traits/add_pointer.hpp \
- /usr/include/boost/type_traits/remove_const.hpp \
- /usr/include/boost/type_traits/is_pod.hpp \
- /usr/include/boost/type_traits/is_scalar.hpp \
- /usr/include/boost/type_traits/is_enum.hpp \
- /usr/include/boost/mpl/always.hpp \
- /usr/include/boost/mpl/aux_/preprocessor/default_params.hpp \
- /usr/include/boost/mpl/apply.hpp /usr/include/boost/mpl/apply_fwd.hpp \
- /usr/include/boost/mpl/aux_/preprocessed/gcc/apply_fwd.hpp \
- /usr/include/boost/mpl/apply_wrap.hpp \
- /usr/include/boost/mpl/aux_/has_apply.hpp \
- /usr/include/boost/mpl/has_xxx.hpp \
- /usr/include/boost/mpl/aux_/type_wrapper.hpp \
- /usr/include/boost/mpl/aux_/config/has_xxx.hpp \
- /usr/include/boost/mpl/aux_/config/msvc_typename.hpp \
- /usr/include/boost/preprocessor/array/elem.hpp \
- /usr/include/boost/preprocessor/array/data.hpp \
- /usr/include/boost/preprocessor/array/size.hpp \
- /usr/include/boost/preprocessor/repetition/enum_params.hpp \
- /usr/include/boost/preprocessor/repetition/enum_trailing_params.hpp \
- /usr/include/boost/mpl/aux_/config/has_apply.hpp \
- /usr/include/boost/mpl/aux_/msvc_never_true.hpp \
- /usr/include/boost/mpl/aux_/preprocessed/gcc/apply_wrap.hpp \
- /usr/include/boost/mpl/lambda.hpp /usr/include/boost/mpl/bind.hpp \
- /usr/include/boost/mpl/bind_fwd.hpp \
- /usr/include/boost/mpl/aux_/config/bind.hpp \
- /usr/include/boost/mpl/aux_/preprocessed/gcc/bind_fwd.hpp \
- /usr/include/boost/mpl/next.hpp /usr/include/boost/mpl/next_prior.hpp \
- /usr/include/boost/mpl/aux_/common_name_wknd.hpp \
- /usr/include/boost/mpl/protect.hpp \
- /usr/include/boost/mpl/aux_/preprocessed/gcc/bind.hpp \
- /usr/include/boost/mpl/aux_/full_lambda.hpp \
- /usr/include/boost/mpl/quote.hpp /usr/include/boost/mpl/void.hpp \
- /usr/include/boost/mpl/aux_/has_type.hpp \
- /usr/include/boost/mpl/aux_/config/bcc.hpp \
- /usr/include/boost/mpl/aux_/preprocessed/gcc/quote.hpp \
- /usr/include/boost/mpl/aux_/template_arity.hpp \
- /usr/include/boost/mpl/aux_/preprocessed/gcc/template_arity.hpp \
- /usr/include/boost/mpl/aux_/preprocessed/gcc/full_lambda.hpp \
- /usr/include/boost/mpl/aux_/preprocessed/gcc/apply.hpp \
- /usr/include/boost/core/enable_if.hpp /usr/include/boost/io/quoted.hpp \
- /usr/include/boost/io/detail/buffer_fill.hpp \
- /usr/include/boost/io/detail/ostream_guard.hpp \
- /usr/include/boost/io/ios_state.hpp /usr/include/boost/io_fwd.hpp \
- /usr/include/boost/functional/hash_fwd.hpp \
- /usr/include/boost/container_hash/hash_fwd.hpp \
- /usr/include/boost/type_traits/disjunction.hpp \
- /usr/include/boost/signals2/signal.hpp \
- /usr/include/boost/core/noncopyable.hpp /usr/include/boost/function.hpp \
- /usr/include/boost/preprocessor/iterate.hpp \
- /usr/include/boost/preprocessor/iteration/iterate.hpp \
- /usr/include/boost/preprocessor/slot/slot.hpp \
- /usr/include/boost/preprocessor/slot/detail/def.hpp \
- /usr/include/boost/function/detail/prologue.hpp \
- /usr/include/boost/function/detail/requires_cxx11.hpp \
- /usr/include/boost/config/no_tr1/functional.hpp \
- /usr/include/boost/throw_exception.hpp \
- /usr/include/boost/exception/exception.hpp \
- /usr/include/boost/function/function_base.hpp \
- /usr/include/boost/function/function_fwd.hpp \
- /usr/include/boost/function_equal.hpp \
- /usr/include/boost/core/typeinfo.hpp \
- /usr/include/boost/core/demangle.hpp /usr/include/c++/11/cxxabi.h \
- /usr/include/x86_64-linux-gnu/c++/11/bits/cxxabi_tweaks.h \
- /usr/include/boost/core/ref.hpp \
- /usr/include/boost/type_traits/has_trivial_copy.hpp \
- /usr/include/boost/type_traits/is_copy_constructible.hpp \
- /usr/include/boost/type_traits/is_constructible.hpp \
- /usr/include/boost/type_traits/is_destructible.hpp \
- /usr/include/boost/type_traits/is_default_constructible.hpp \
- /usr/include/boost/type_traits/has_trivial_destructor.hpp \
- /usr/include/boost/type_traits/composite_traits.hpp \
- /usr/include/boost/type_traits/is_union.hpp \
- /usr/include/boost/type_traits/alignment_of.hpp \
- /usr/include/boost/type_traits/enable_if.hpp /usr/include/c++/11/memory \
- /usr/include/c++/11/bits/stl_raw_storage_iter.h \
- /usr/include/c++/11/bits/align.h /usr/include/c++/11/bit \
- /usr/include/c++/11/bits/shared_ptr.h \
- /usr/include/c++/11/bits/shared_ptr_base.h \
- /usr/include/c++/11/ext/concurrence.h \
- /usr/include/c++/11/bits/shared_ptr_atomic.h \
- /usr/include/c++/11/backward/auto_ptr.h \
- /usr/include/c++/11/bits/ranges_uninitialized.h \
- /usr/include/c++/11/bits/uses_allocator_args.h \
- /usr/include/c++/11/pstl/glue_memory_defs.h \
- /usr/include/boost/mem_fn.hpp /usr/include/boost/bind/mem_fn.hpp \
- /usr/include/boost/bind/detail/requires_cxx11.hpp \
- /usr/include/boost/get_pointer.hpp \
- /usr/include/boost/config/no_tr1/memory.hpp \
- /usr/include/boost/bind/mem_fn_template.hpp \
- /usr/include/boost/bind/mem_fn_cc.hpp \
- /usr/include/boost/preprocessor/enum.hpp \
- /usr/include/boost/preprocessor/repetition/enum.hpp \
- /usr/include/boost/preprocessor/enum_params.hpp \
- /usr/include/boost/preprocessor/iteration/detail/iter/forward1.hpp \
- /usr/include/boost/preprocessor/iteration/detail/bounds/lower1.hpp \
- /usr/include/boost/preprocessor/slot/detail/shared.hpp \
- /usr/include/boost/preprocessor/iteration/detail/bounds/upper1.hpp \
- /usr/include/boost/preprocessor/iteration/detail/iter/limits/forward1_256.hpp \
- /usr/include/boost/function/detail/function_iterate.hpp \
- /usr/include/boost/function/detail/maybe_include.hpp \
- /usr/include/boost/function/function_template.hpp \
- /usr/include/boost/core/no_exceptions_support.hpp \
- /usr/include/boost/function/detail/epilogue.hpp \
  /usr/include/boost/shared_ptr.hpp \
  /usr/include/boost/smart_ptr/shared_ptr.hpp \
  /usr/include/boost/smart_ptr/detail/requires_cxx11.hpp \
@@ -653,6 +533,83 @@ CMakeFiles/bitcoin_util.dir/src/chainparamsbase.cpp.o: \
  /usr/include/boost/core/swap.hpp \
  /usr/include/boost/iterator/reverse_iterator.hpp \
  /usr/include/boost/iterator/iterator_adaptor.hpp \
+ /usr/include/boost/core/use_default.hpp \
+ /usr/include/boost/iterator/iterator_categories.hpp \
+ /usr/include/boost/iterator/detail/config_def.hpp \
+ /usr/include/boost/mpl/eval_if.hpp /usr/include/boost/mpl/if.hpp \
+ /usr/include/boost/mpl/aux_/value_wknd.hpp \
+ /usr/include/boost/mpl/aux_/config/integral.hpp \
+ /usr/include/boost/mpl/placeholders.hpp /usr/include/boost/mpl/arg.hpp \
+ /usr/include/boost/mpl/arg_fwd.hpp \
+ /usr/include/boost/mpl/aux_/na_assert.hpp \
+ /usr/include/boost/mpl/assert.hpp /usr/include/boost/mpl/not.hpp \
+ /usr/include/boost/mpl/aux_/nested_type_wknd.hpp \
+ /usr/include/boost/mpl/aux_/yes_no.hpp \
+ /usr/include/boost/mpl/aux_/config/arrays.hpp \
+ /usr/include/boost/mpl/aux_/config/gpu.hpp \
+ /usr/include/boost/mpl/aux_/config/pp_counter.hpp \
+ /usr/include/boost/mpl/aux_/arity_spec.hpp \
+ /usr/include/boost/mpl/aux_/arg_typedef.hpp \
+ /usr/include/boost/mpl/aux_/config/use_preprocessed.hpp \
+ /usr/include/boost/mpl/aux_/include_preprocessed.hpp \
+ /usr/include/boost/mpl/aux_/config/compiler.hpp \
+ /usr/include/boost/preprocessor/stringize.hpp \
+ /usr/include/boost/mpl/aux_/preprocessed/gcc/arg.hpp \
+ /usr/include/boost/mpl/aux_/preprocessed/gcc/placeholders.hpp \
+ /usr/include/boost/type_traits/is_convertible.hpp \
+ /usr/include/boost/type_traits/is_abstract.hpp \
+ /usr/include/boost/type_traits/add_lvalue_reference.hpp \
+ /usr/include/boost/type_traits/add_reference.hpp \
+ /usr/include/boost/iterator/detail/config_undef.hpp \
+ /usr/include/boost/iterator/iterator_facade.hpp \
+ /usr/include/boost/iterator/interoperable.hpp \
+ /usr/include/boost/mpl/or.hpp \
+ /usr/include/boost/mpl/aux_/preprocessed/gcc/or.hpp \
+ /usr/include/boost/iterator/iterator_traits.hpp \
+ /usr/include/boost/iterator/detail/facade_iterator_category.hpp \
+ /usr/include/boost/mpl/and.hpp \
+ /usr/include/boost/mpl/aux_/preprocessed/gcc/and.hpp \
+ /usr/include/boost/type_traits/is_same.hpp \
+ /usr/include/boost/detail/indirect_traits.hpp \
+ /usr/include/boost/type_traits/is_class.hpp \
+ /usr/include/boost/type_traits/remove_cv.hpp \
+ /usr/include/boost/type_traits/remove_pointer.hpp \
+ /usr/include/boost/detail/select_type.hpp \
+ /usr/include/boost/iterator/detail/enable_if.hpp \
+ /usr/include/boost/type_traits/add_const.hpp \
+ /usr/include/boost/type_traits/add_pointer.hpp \
+ /usr/include/boost/type_traits/remove_const.hpp \
+ /usr/include/boost/mpl/always.hpp \
+ /usr/include/boost/mpl/aux_/preprocessor/default_params.hpp \
+ /usr/include/boost/mpl/apply.hpp /usr/include/boost/mpl/apply_fwd.hpp \
+ /usr/include/boost/mpl/aux_/preprocessed/gcc/apply_fwd.hpp \
+ /usr/include/boost/mpl/apply_wrap.hpp \
+ /usr/include/boost/mpl/aux_/has_apply.hpp \
+ /usr/include/boost/mpl/has_xxx.hpp \
+ /usr/include/boost/mpl/aux_/type_wrapper.hpp \
+ /usr/include/boost/mpl/aux_/config/has_xxx.hpp \
+ /usr/include/boost/mpl/aux_/config/msvc_typename.hpp \
+ /usr/include/boost/preprocessor/repetition/enum_trailing_params.hpp \
+ /usr/include/boost/mpl/aux_/config/has_apply.hpp \
+ /usr/include/boost/mpl/aux_/msvc_never_true.hpp \
+ /usr/include/boost/mpl/aux_/preprocessed/gcc/apply_wrap.hpp \
+ /usr/include/boost/mpl/lambda.hpp /usr/include/boost/mpl/bind.hpp \
+ /usr/include/boost/mpl/bind_fwd.hpp \
+ /usr/include/boost/mpl/aux_/config/bind.hpp \
+ /usr/include/boost/mpl/aux_/preprocessed/gcc/bind_fwd.hpp \
+ /usr/include/boost/mpl/next.hpp /usr/include/boost/mpl/next_prior.hpp \
+ /usr/include/boost/mpl/aux_/common_name_wknd.hpp \
+ /usr/include/boost/mpl/protect.hpp \
+ /usr/include/boost/mpl/aux_/preprocessed/gcc/bind.hpp \
+ /usr/include/boost/mpl/aux_/full_lambda.hpp \
+ /usr/include/boost/mpl/quote.hpp /usr/include/boost/mpl/void.hpp \
+ /usr/include/boost/mpl/aux_/has_type.hpp \
+ /usr/include/boost/mpl/aux_/config/bcc.hpp \
+ /usr/include/boost/mpl/aux_/preprocessed/gcc/quote.hpp \
+ /usr/include/boost/mpl/aux_/template_arity.hpp \
+ /usr/include/boost/mpl/aux_/preprocessed/gcc/template_arity.hpp \
+ /usr/include/boost/mpl/aux_/preprocessed/gcc/full_lambda.hpp \
+ /usr/include/boost/mpl/aux_/preprocessed/gcc/apply.hpp \
  /usr/include/boost/signals2/detail/scope_guard.hpp \
  /usr/include/boost/type_traits/aligned_storage.hpp \
  /usr/include/boost/type_traits/type_with_alignment.hpp \
@@ -760,6 +717,7 @@ CMakeFiles/bitcoin_util.dir/src/chainparamsbase.cpp.o: \
  /usr/include/boost/variant/variant.hpp /usr/include/boost/type_index.hpp \
  /usr/include/boost/type_index/stl_type_index.hpp \
  /usr/include/boost/type_index/type_index_facade.hpp \
+ /usr/include/boost/container_hash/hash_fwd.hpp \
  /usr/include/boost/variant/detail/backup_holder.hpp \
  /usr/include/boost/variant/detail/enable_recursive_fwd.hpp \
  /usr/include/boost/variant/detail/forced_return.hpp \
@@ -806,6 +764,7 @@ CMakeFiles/bitcoin_util.dir/src/chainparamsbase.cpp.o: \
  /usr/include/boost/variant/detail/cast_storage.hpp \
  /usr/include/boost/variant/detail/hash_variant.hpp \
  /usr/include/boost/variant/static_visitor.hpp \
+ /usr/include/boost/functional/hash_fwd.hpp \
  /usr/include/boost/variant/detail/std_hash.hpp \
  /usr/include/boost/blank.hpp \
  /usr/include/boost/detail/templated_streams.hpp \
@@ -875,6 +834,8 @@ CMakeFiles/bitcoin_util.dir/src/chainparamsbase.cpp.o: \
  /usr/include/boost/optional.hpp /usr/include/boost/optional/optional.hpp \
  /usr/include/boost/core/explicit_operator_bool.hpp \
  /usr/include/boost/optional/bad_optional_access.hpp \
+ /usr/include/boost/type_traits/conjunction.hpp \
+ /usr/include/boost/type_traits/disjunction.hpp \
  /usr/include/boost/type_traits/decay.hpp \
  /usr/include/boost/type_traits/remove_bounds.hpp \
  /usr/include/boost/type_traits/remove_extent.hpp \
@@ -892,6 +853,8 @@ CMakeFiles/bitcoin_util.dir/src/chainparamsbase.cpp.o: \
  /usr/include/boost/optional/detail/optional_reference_spec.hpp \
  /usr/include/boost/optional/detail/optional_relops.hpp \
  /usr/include/boost/optional/detail/optional_swap.hpp \
+ /usr/include/c++/11/list /usr/include/c++/11/bits/stl_list.h \
+ /usr/include/c++/11/bits/list.tcc \
  /usr/include/boost/signals2/detail/slot_call_iterator.hpp \
  /usr/include/boost/signals2/optional_last_value.hpp \
  /usr/include/boost/signals2/mutex.hpp \
@@ -918,10 +881,40 @@ CMakeFiles/bitcoin_util.dir/src/chainparamsbase.cpp.o: \
  /usr/include/boost/thread/detail/platform.hpp \
  /usr/include/boost/config/requires_threads.hpp \
  /usr/include/boost/thread/detail/thread_safety.hpp \
+ /usr/include/boost/config/auto_link.hpp \
  /usr/include/boost/system/system_error.hpp \
  /usr/include/boost/system/errc.hpp \
+ /usr/include/boost/system/detail/errc.hpp \
+ /usr/include/boost/system/is_error_condition_enum.hpp \
+ /usr/include/boost/system/detail/cerrno.hpp \
+ /usr/include/boost/system/detail/error_code.hpp \
+ /usr/include/boost/system/is_error_code_enum.hpp \
+ /usr/include/boost/system/detail/error_category.hpp \
+ /usr/include/boost/system/detail/config.hpp \
+ /usr/include/boost/system/detail/requires_cxx11.hpp \
+ /usr/include/boost/system/detail/error_condition.hpp \
+ /usr/include/boost/system/detail/generic_category.hpp \
+ /usr/include/boost/system/detail/generic_category_message.hpp \
+ /usr/include/boost/system/detail/enable_if.hpp \
+ /usr/include/boost/system/detail/is_same.hpp \
+ /usr/include/boost/system/detail/append_int.hpp \
+ /usr/include/boost/system/detail/snprintf.hpp \
+ /usr/include/c++/11/cstdarg \
+ /usr/include/boost/system/detail/system_category.hpp \
+ /usr/include/boost/system/detail/system_category_impl.hpp \
+ /usr/include/boost/system/detail/system_category_message.hpp \
+ /usr/include/boost/system/api_config.hpp \
+ /usr/include/boost/system/detail/interop_category.hpp \
+ /usr/include/boost/system/detail/std_category.hpp \
+ /usr/include/boost/system/detail/error_category_impl.hpp \
+ /usr/include/boost/system/detail/std_category_impl.hpp \
+ /usr/include/boost/system/detail/mutex.hpp /usr/include/c++/11/mutex \
+ /usr/include/c++/11/bits/unique_lock.h \
  /usr/include/boost/system/error_code.hpp \
+ /usr/include/boost/system/error_category.hpp \
  /usr/include/boost/system/error_condition.hpp \
  /usr/include/boost/system/generic_category.hpp \
  /usr/include/boost/system/system_category.hpp \
- /usr/include/boost/system/detail/throws.hpp
+ /usr/include/boost/system/detail/throws.hpp \
+ /usr/include/boost/config/abi_prefix.hpp \
+ /usr/include/boost/config/abi_suffix.hpp

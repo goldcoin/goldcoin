@@ -18,6 +18,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <filesystem>
 
 #include <boost/filesystem/path.hpp>
 
@@ -70,7 +71,7 @@ public:
     typedef std::pair<std::vector<unsigned char>, std::vector<unsigned char> > KeyValPair;
     bool Salvage(const std::string& strFile, bool fAggressive, std::vector<KeyValPair>& vResult);
 
-    bool Open(const boost::filesystem::path& path);
+    bool Open(const std::filesystem::path& path);
     void Close();
     void Flush(bool fShutdown);
     void CheckpointLSN(const std::string& strFile);

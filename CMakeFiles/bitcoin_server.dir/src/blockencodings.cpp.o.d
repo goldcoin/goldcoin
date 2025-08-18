@@ -1626,4 +1626,7 @@ CMakeFiles/bitcoin_server.dir/src/blockencodings.cpp.o: \
  /usr/include/boost/date_time/local_time_adjustor.hpp \
  /usr/include/boost/date_time/c_local_time_adjustor.hpp \
  /home/microguy/git/microguy/goldcoin/src/util.h \
- /home/microguy/git/microguy/goldcoin/src/utiltime.h
+ /home/microguy/git/microguy/goldcoin/src/utiltime.h \
+ /usr/include/c++/11/filesystem /usr/include/c++/11/bits/fs_fwd.h \
+ /usr/include/c++/11/bits/fs_path.h /usr/include/c++/11/codecvt \
+ /usr/include/c++/11/bits/fs_dir.h /usr/include/c++/11/bits/fs_ops.h

@@ -1438,6 +1438,9 @@ CMakeFiles/bitcoin_wallet.dir/src/wallet/walletdb.cpp.o: \
  /home/microguy/git/microguy/goldcoin/src/protocol.h \
  /home/microguy/git/microguy/goldcoin/src/util.h \
  /home/microguy/git/microguy/goldcoin/src/utiltime.h \
+ /usr/include/c++/11/filesystem /usr/include/c++/11/bits/fs_fwd.h \
+ /usr/include/c++/11/bits/fs_path.h /usr/include/c++/11/codecvt \
+ /usr/include/c++/11/bits/fs_dir.h /usr/include/c++/11/bits/fs_ops.h \
  /usr/include/boost/signals2/signal.hpp /usr/include/boost/function.hpp \
  /usr/include/boost/function/detail/prologue.hpp \
  /usr/include/boost/function/detail/requires_cxx11.hpp \
