@@ -151,7 +151,7 @@ static int secp256k1_num_jacobi(const secp256k1_num *a, const secp256k1_num *b) 
     secp256k1_num_sanity(b);
     VERIFY_CHECK(!b->neg && (b->limbs > 0) && (b->data[0] & 1));
 
-    mpz_inits(ga, gb, NULL);
+    mpz_inits(ga, gb, nullptr);
 
     mpz_import(gb, b->limbs, -1, sizeof(mp_limb_t), 0, 0, b->data);
     mpz_import(ga, a->limbs, -1, sizeof(mp_limb_t), 0, 0, a->data);
@@ -161,7 +161,7 @@ static int secp256k1_num_jacobi(const secp256k1_num *a, const secp256k1_num *b) 
 
     ret = mpz_jacobi(ga, gb);
 
-    mpz_clears(ga, gb, NULL);
+    mpz_clears(ga, gb, nullptr);
 
     return ret;
 }

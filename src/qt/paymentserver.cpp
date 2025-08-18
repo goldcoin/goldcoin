@@ -151,7 +151,7 @@ void PaymentServer::LoadRootCAs(X509_STORE* _store)
     const QDateTime currentTime = QDateTime::currentDateTime();
 
     for (const QSslCertificate& cert : certList) {
-        // Don't log NULL certificates
+        // Don't log nullptr certificates
         if (cert.isNull())
             continue;
 
@@ -281,7 +281,7 @@ bool PaymentServer::ipcSendCommandLine()
         if (!socket->waitForConnected(BITCOIN_IPC_CONNECT_TIMEOUT))
         {
             delete socket;
-            socket = NULL;
+            socket = nullptr;
             return false;
         }
 
@@ -297,7 +297,7 @@ bool PaymentServer::ipcSendCommandLine()
         socket->disconnectFromServer();
 
         delete socket;
-        socket = NULL;
+        socket = nullptr;
         fResult = true;
     }
 
@@ -371,7 +371,7 @@ void PaymentServer::initNetManager()
 {
     if (!optionsModel)
         return;
-    if (netManager != NULL)
+    if (netManager != nullptr)
         delete netManager;
 
     // netManager is used to fetch paymentrequests given in bitcoin: URIs

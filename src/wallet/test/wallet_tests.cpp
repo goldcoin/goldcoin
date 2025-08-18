@@ -33,7 +33,7 @@ using namespace std;
 
 std::vector<std::unique_ptr<CWalletTx>> wtxn;
 
-typedef set<pair<const CWalletTx*,unsigned int> > CoinSet;
+using CoinSet = set<pair<const CWalletTx*,unsigned int> >;
 
 BOOST_FIXTURE_TEST_SUITE(wallet_tests, WalletTestingSetup)
 
