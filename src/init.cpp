@@ -54,6 +54,7 @@
 #endif
 
 #include <sstream>
+#include <filesystem>
 #include <boost/bind/bind.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/function.hpp>
