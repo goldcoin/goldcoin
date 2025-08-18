@@ -1,7 +1,7 @@
 // Copyright (c) 2007-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2015 The Bitcoin Core developers
 // Copyright (c) 2011-2017 The Litecoin Core developers
-// Copyright (c) 2013-2025 The Goldcoin Core developers
+// Copyright (c) 2013-2018 The Goldcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -36,7 +36,7 @@
 
 using namespace std;
 
-CWallet* pwalletMain = nullptr;
+CWallet* pwalletMain = NULL;
 /** Transaction fee set by the user */
 CFeeRate payTxFee(DEFAULT_TRANSACTION_FEE);
 unsigned int nTxConfirmTarget = DEFAULT_TX_CONFIRM_TARGET;
@@ -84,7 +84,7 @@ const CWalletTx* CWallet::GetWalletTx(const uint256& hash) const
     LOCK(cs_wallet);
     std::map<uint256, CWalletTx>::const_iterator it = mapWallet.find(hash);
     if (it == mapWallet.end())
-        return nullptr;
+        return NULL;
     return &(it->second);
 }
 
@@ -506,7 +506,7 @@ void CWallet::SyncMetaData(pair<TxSpends::iterator, TxSpends::iterator> range)
     // So: find smallest nOrderPos:
 
     int nMinOrderPos = std::numeric_limits<int>::max();
-    const CWalletTx* copyFrom = nullptr;
+    const CWalletTx* copyFrom = NULL;
     for (TxSpends::iterator it = range.first; it != range.second; ++it)
     {
         const uint256& hash = it->second;
@@ -623,7 +623,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
             pwalletdbEncryption = new CWalletDB(strWalletFile);
             if (!pwalletdbEncryption->TxnBegin()) {
                 delete pwalletdbEncryption;
-                pwalletdbEncryption = nullptr;
+                pwalletdbEncryption = NULL;
                 return false;
             }
             pwalletdbEncryption->WriteMasterKey(nMasterKeyMaxID, kMasterKey);
@@ -653,7 +653,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
             }
 
             delete pwalletdbEncryption;
-            pwalletdbEncryption = nullptr;
+            pwalletdbEncryption = NULL;
         }
 
         Lock();
@@ -845,7 +845,7 @@ void CWallet::MarkDirty()
 {
     {
         LOCK(cs_wallet);
-        for (PAIRTYPE(const uint256, CWalletTx)& item : mapWallet)
+        for (PAIRTYPE(const uint256 : CWalletTx)& item, mapWallet)
             item.second.MarkDirty();
     }
 }
@@ -1612,7 +1612,7 @@ void CWallet::ReacceptWalletTransactions()
     std::map<int64_t, CWalletTx*> mapSorted;
 
     // Sort pending wallet transactions based on their initial wallet insertion order
-    for (PAIRTYPE(const uint256, CWalletTx)& item : mapWallet)
+    for (PAIRTYPE(const uint256 : CWalletTx)& item, mapWallet)
     {
         const uint256& wtxid = item.first;
         CWalletTx& wtx = item.second;
@@ -1626,7 +1626,7 @@ void CWallet::ReacceptWalletTransactions()
     }
 
     // Try to add wallet transactions to memory pool
-    for (PAIRTYPE(const int64_t, CWalletTx*)& item : mapSorted)
+    for (PAIRTYPE(const int64_t : CWalletTx*)& item, mapSorted)
     {
         CWalletTx& wtx = *(item.second);
 
@@ -1661,7 +1661,7 @@ bool CWalletTx::RelayWalletTransaction(CConnman* connman)
 set<uint256> CWalletTx::GetConflicts() const
 {
     set<uint256> result;
-    if (pwallet != nullptr)
+    if (pwallet != NULL)
     {
         uint256 myHash = GetHash();
         result = pwallet->GetConflicts(myHash);
@@ -1861,7 +1861,7 @@ bool CWalletTx::IsTrusted() const
     {
         // Transactions not sent by us: not trusted
         const CWalletTx* parent = pwallet->GetWalletTx(txin.prevout.hash);
-        if (parent == nullptr)
+        if (parent == NULL)
             return false;
         const CTxOut& parentOut = parent->tx->vout[txin.prevout.n];
         if (pwallet->IsMine(parentOut) != ISMINE_SPENDABLE)
@@ -1886,7 +1886,7 @@ std::vector<uint256> CWallet::ResendWalletTransactionsBefore(int64_t nTime, CCon
     LOCK(cs_wallet);
     // Sort them in chronological order
     multimap<unsigned int, CWalletTx*> mapSorted;
-    for (PAIRTYPE(const uint256, CWalletTx)& item : mapWallet)
+    for (PAIRTYPE(const uint256 : CWalletTx)& item, mapWallet)
     {
         CWalletTx& wtx = item.second;
         // Don't rebroadcast if newer than nTime:
@@ -1894,7 +1894,7 @@ std::vector<uint256> CWallet::ResendWalletTransactionsBefore(int64_t nTime, CCon
             continue;
         mapSorted.insert(make_pair(wtx.nTimeReceived, &wtx));
     }
-    for (PAIRTYPE(const unsigned int, CWalletTx*)& item : mapSorted)
+    for (PAIRTYPE(const unsigned int : CWalletTx*)& item, mapSorted)
     {
         CWalletTx& wtx = *item.second;
         if (wtx.RelayWalletTransaction(connman))
@@ -2156,7 +2156,7 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, const int nConfMin
     // List of values less than target
     pair<CAmount, pair<const CWalletTx*,unsigned int> > coinLowestLarger;
     coinLowestLarger.first = std::numeric_limits<CAmount>::max();
-    coinLowestLarger.second.first = nullptr;
+    coinLowestLarger.second.first = NULL;
     vector<pair<CAmount, pair<const CWalletTx*,unsigned int> > > vValue;
     CAmount nTotalLower = 0;
 
@@ -2209,7 +2209,7 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, const int nConfMin
 
     if (nTotalLower < nTargetValue)
     {
-        if (coinLowestLarger.second.first == nullptr)
+        if (coinLowestLarger.second.first == NULL)
             return false;
         setCoinsRet.insert(coinLowestLarger.second);
         nValueRet += coinLowestLarger.first;
@@ -2951,7 +2951,7 @@ bool CWallet::DelAddressBook(const CTxDestination& address)
         {
             // Delete destdata tuples associated with address
             std::string strAddress = CBitcoinAddress(address).ToString();
-            for (const PAIRTYPE(string, string) &item : mapAddressBook[address].destdata)
+            for (const PAIRTYPE(string : string) &item, mapAddressBook[address].destdata)
             {
                 CWalletDB(strWalletFile).EraseDestData(strAddress, item.first);
             }
@@ -3128,7 +3128,7 @@ std::map<CTxDestination, CAmount> CWallet::GetAddressBalances()
 
     {
         LOCK(cs_wallet);
-        for (PAIRTYPE(uint256, CWalletTx) walletEntry : mapWallet)
+        for (PAIRTYPE(uint256 : CWalletTx) walletEntry, mapWallet)
         {
             CWalletTx *pcoin = &walletEntry.second;
 
@@ -3168,7 +3168,7 @@ set< set<CTxDestination> > CWallet::GetAddressGroupings()
     set< set<CTxDestination> > groupings;
     set<CTxDestination> grouping;
 
-    for (PAIRTYPE(uint256, CWalletTx) walletEntry : mapWallet)
+    for (PAIRTYPE(uint256 : CWalletTx) walletEntry, mapWallet)
     {
         CWalletTx *pcoin = &walletEntry.second;
 
@@ -3290,7 +3290,7 @@ std::set<CTxDestination> CWallet::GetAccountAddresses(const std::string& strAcco
 {
     LOCK(cs_wallet);
     set<CTxDestination> result;
-    for (const PAIRTYPE(CTxDestination, CAddressBookData)& item : mapAddressBook)
+    for (const PAIRTYPE(CTxDestination : CAddressBookData)& item, mapAddressBook)
     {
         const CTxDestination& address = item.first;
         const string& strName = item.second.name;
@@ -3591,11 +3591,11 @@ CWallet* CWallet::CreateWalletFromFile(const std::string walletFile)
         DBErrors nZapWalletRet = tempWallet->ZapWalletTx(vWtx);
         if (nZapWalletRet != DB_LOAD_OK) {
             InitError(strprintf(_("Error loading %s: Wallet corrupted"), walletFile));
-            return nullptr;
+            return NULL;
         }
 
         delete tempWallet;
-        tempWallet = nullptr;
+        tempWallet = NULL;
     }
 
     uiInterface.InitMessage(_("Loading wallet..."));
@@ -3608,7 +3608,7 @@ CWallet* CWallet::CreateWalletFromFile(const std::string walletFile)
     {
         if (nLoadWalletRet == DB_CORRUPT) {
             InitError(strprintf(_("Error loading %s: Wallet corrupted"), walletFile));
-            return nullptr;
+            return NULL;
         }
         else if (nLoadWalletRet == DB_NONCRITICAL_ERROR)
         {
@@ -3618,16 +3618,16 @@ CWallet* CWallet::CreateWalletFromFile(const std::string walletFile)
         }
         else if (nLoadWalletRet == DB_TOO_NEW) {
             InitError(strprintf(_("Error loading %s: Wallet requires newer version of %s"), walletFile, _(PACKAGE_NAME)));
-            return nullptr;
+            return NULL;
         }
         else if (nLoadWalletRet == DB_NEED_REWRITE)
         {
             InitError(strprintf(_("Wallet needed to be rewritten: restart %s to complete"), _(PACKAGE_NAME)));
-            return nullptr;
+            return NULL;
         }
         else {
             InitError(strprintf(_("Error loading %s"), walletFile));
-            return nullptr;
+            return NULL;
         }
     }
 
@@ -3645,7 +3645,7 @@ CWallet* CWallet::CreateWalletFromFile(const std::string walletFile)
         if (nMaxVersion < walletInstance->GetVersion())
         {
             InitError(_("Cannot downgrade wallet"));
-            return nullptr;
+            return NULL;
         }
         walletInstance->SetMaxVersion(nMaxVersion);
     }
@@ -3664,7 +3664,7 @@ CWallet* CWallet::CreateWalletFromFile(const std::string walletFile)
             walletInstance->SetDefaultKey(newDefaultKey);
             if (!walletInstance->SetAddressBook(walletInstance->vchDefaultKey.GetID(), "", "receive")) {
                 InitError(_("Cannot write default address") += "\n");
-                return nullptr;
+                return NULL;
             }
         }
 
@@ -3674,11 +3674,11 @@ CWallet* CWallet::CreateWalletFromFile(const std::string walletFile)
         bool useHD = GetBoolArg("-usehd", DEFAULT_USE_HD_WALLET);
         if (walletInstance->IsHDEnabled() && !useHD) {
             InitError(strprintf(_("Error loading %s: You can't disable HD on a already existing HD wallet"), walletFile));
-            return nullptr;
+            return NULL;
         }
         if (!walletInstance->IsHDEnabled() && useHD) {
             InitError(strprintf(_("Error loading %s: You can't enable HD on a already existing non-HD wallet"), walletFile));
-            return nullptr;
+            return NULL;
         }
     }
 
@@ -3711,7 +3711,7 @@ CWallet* CWallet::CreateWalletFromFile(const std::string walletFile)
 
             if (pindexRescan != block) {
                 InitError(_("Prune: last wallet synchronisation goes beyond pruned data. You need to -reindex (download the whole blockchain again in case of pruned node)"));
-                return nullptr;
+                return NULL;
             }
         }
 
@@ -3763,7 +3763,7 @@ CWallet* CWallet::CreateWalletFromFile(const std::string walletFile)
 bool CWallet::InitLoadWallet()
 {
     if (GetBoolArg("-disablewallet", DEFAULT_DISABLE_WALLET)) {
-        pwalletMain = nullptr;
+        pwalletMain = NULL;
         LogPrintf("Wallet disabled!\n");
         return true;
     }
@@ -3976,5 +3976,5 @@ int CMerkleTx::GetBlocksToMaturity() const
 
 bool CMerkleTx::AcceptToMemoryPool(const CAmount& nAbsurdFee, CValidationState& state)
 {
-    return ::AcceptToMemoryPool(mempool, state, tx, true, nullptr, nullptr, false, nAbsurdFee);
+    return ::AcceptToMemoryPool(mempool, state, tx, true, NULL, NULL, false, nAbsurdFee);
 }
