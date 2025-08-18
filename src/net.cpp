@@ -2283,11 +2283,11 @@ bool CConnman::Start(CScheduler& scheduler, std::string& strNodeError, Options c
 
     if (semOutbound == nullptr) {
         // initialize semaphore
-        semOutbound = new CSemaphore(std::min((nMaxOutbound + nMaxFeeler), nMaxConnections));
+        semOutbound = std::make_unique<CSemaphore>(std::min((nMaxOutbound + nMaxFeeler), nMaxConnections));
     }
     if (semAddnode == nullptr) {
         // initialize semaphore
-        semAddnode = new CSemaphore(nMaxAddnode);
+        semAddnode = std::make_unique<CSemaphore>(nMaxAddnode);
     }
 
     //
@@ -2402,9 +2402,8 @@ void CConnman::Stop()
     vNodes.clear();
     vNodesDisconnected.clear();
     vhListenSocket.clear();
-    delete semOutbound;
+    // semOutbound and semAddnode are automatically cleaned up by unique_ptr
     semOutbound = nullptr;
-    delete semAddnode;
     semAddnode = nullptr;
 }
 
@@ -2696,7 +2695,7 @@ CNode::CNode(NodeId idIn, ServiceFlags nLocalServicesIn, int nMyStartingHeightIn
     nNextInvSend = 0;
     fRelayTxes = false;
     fSentAddr = false;
-    pfilter = new CBloomFilter();
+    pfilter = std::make_unique<CBloomFilter>();
     timeLastMempoolReq = 0;
     nLastBlockTime = 0;
     nLastTXTime = 0;
@@ -2726,8 +2725,7 @@ CNode::~CNode()
 {
     CloseSocket(hSocket);
 
-    if (pfilter)
-        delete pfilter;
+    // pfilter is automatically cleaned up by unique_ptr
 }
 
 void CNode::AskFor(const CInv& inv)
