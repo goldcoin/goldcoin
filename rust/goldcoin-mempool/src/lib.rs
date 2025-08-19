@@ -332,12 +332,13 @@ impl Mempool {
         for input in &tx.inputs {
             if let Some(conflicting_tx) = self.spent_outputs.get(&input.prev_output) {
                 // Check if this is an RBF replacement
-                if let Some(existing) = self.transactions.get(&conflicting_tx) {
+                let conflicting_txid = *conflicting_tx.value();
+                if let Some(existing) = self.transactions.get(&conflicting_txid) {
                     if !existing.rbf || fee <= existing.fee {
                         return Err(MempoolError::ConflictingTransaction);
                     }
                     // This is a valid RBF replacement
-                    self.remove_transaction(*conflicting_tx.key()).await;
+                    self.remove_transaction(conflicting_txid).await;
                     self.metrics.rbf_replacements.inc();
                 }
             }
