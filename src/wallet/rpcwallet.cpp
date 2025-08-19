@@ -23,6 +23,7 @@
 #include <stdint.h>
 
 #include <boost/assign/list_of.hpp>
+#include <variant>
 
 #include <univalue.h>
 
@@ -717,7 +718,7 @@ UniValue addmultisigaddress(const JSONRPCRequest& request)
     return CBitcoinAddress(innerID).ToString();
 }
 
-class Witnessifier : public boost::static_visitor<bool>
+class Witnessifier
 {
 public:
     CScriptID result;
@@ -2054,7 +2055,7 @@ UniValue listunspent(const JSONRPCRequest& request)
                 entry.push_back(Pair("account", pwalletMain->mapAddressBook[address].name));
 
             if (scriptPubKey.IsPayToScriptHash()) {
-                const CScriptID& hash = boost::get<CScriptID>(address);
+                const CScriptID& hash = std::get<CScriptID>(address);
                 CScript redeemScript;
                 if (pwalletMain->GetCScript(hash, redeemScript))
                     entry.push_back(Pair("redeemScript", HexStr(redeemScript.begin(), redeemScript.end())));

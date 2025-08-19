@@ -10,11 +10,17 @@ option(BUILD_BENCH "Build benchmarks" OFF)
 option(WITH_ZMQ "Enable ZMQ notifications" OFF)
 option(WITH_MINIUPNPC "Enable UPnP support" OFF)
 
-# ===== C++ STANDARD (C++23 - The Future is Now!) =====
+# ===== C++ STANDARD (C++23 with GCC 15.2 - No Boost!) =====
+# Force GCC 15.2 for full C++23 support
+set(CMAKE_C_COMPILER gcc-15)
+set(CMAKE_CXX_COMPILER g++-15)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+# C++23 specific flags
+add_compile_options(-std=c++23 -fconcepts -fcoroutines)
 
 # ===== BUILD TYPE =====
 if(NOT CMAKE_BUILD_TYPE)

@@ -14,6 +14,7 @@
 #include "utilstrencodings.h"
 
 #include <boost/foreach.hpp>
+#include <variant>
 
 using namespace std;
 
@@ -236,7 +237,7 @@ bool ExtractDestinations(const CScript& scriptPubKey, txnouttype& typeRet, vecto
 
 namespace
 {
-class CScriptVisitor : public boost::static_visitor<bool>
+class CScriptVisitor
 {
 private:
     CScript *script;
@@ -266,7 +267,7 @@ CScript GetScriptForDestination(const CTxDestination& dest)
 {
     CScript script;
 
-    boost::apply_visitor(CScriptVisitor(&script), dest);
+    std::visit(CScriptVisitor(&script), dest);
     return script;
 }
 

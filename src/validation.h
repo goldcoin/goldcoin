@@ -23,6 +23,7 @@
 
 #include <algorithm>
 #include <exception>
+#include <list>
 #include <map>
 #include <set>
 #include <stdint.h>
@@ -33,7 +34,7 @@
 #include <atomic>
 
 #include <boost/unordered_map.hpp>
-#include <boost/filesystem/path.hpp>
+#include "fs.h"  // Use our filesystem abstraction
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/local_time_adjustor.hpp>
 #include <boost/date_time/c_local_time_adjustor.hpp>
@@ -266,7 +267,7 @@ FILE* OpenBlockFile(const CDiskBlockPos &pos, bool fReadOnly = false);
 /** Open an undo file (rev?????.dat) */
 FILE* OpenUndoFile(const CDiskBlockPos &pos, bool fReadOnly = false);
 /** Translation to a filesystem path */
-boost::filesystem::path GetBlockPosFilename(const CDiskBlockPos &pos, const char *prefix);
+fs::path GetBlockPosFilename(const CDiskBlockPos &pos, const char *prefix);
 /** Import blocks from an external file */
 bool LoadExternalBlockFile(const CChainParams& chainparams, FILE* fileIn, CDiskBlockPos *dbp = nullptr);
 /** Initialize a new block tree database + block data on disk */

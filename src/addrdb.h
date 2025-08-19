@@ -10,10 +10,10 @@
 #define BITCOIN_ADDRDB_H
 
 #include "serialize.h"
+#include "fs.h"  // Use our filesystem abstraction
 
 #include <string>
 #include <map>
-#include <boost/filesystem/path.hpp>
 
 class CSubNet;
 class CAddrMan;
@@ -83,7 +83,7 @@ using banmap_t = std::map<CSubNet, CBanEntry>;
 class CAddrDB
 {
 private:
-    boost::filesystem::path pathAddr;
+    fs::path pathAddr;
 public:
     CAddrDB();
     bool Write(const CAddrMan& addr);
@@ -95,7 +95,7 @@ public:
 class CBanDB
 {
 private:
-    boost::filesystem::path pathBanlist;
+    fs::path pathBanlist;
 public:
     CBanDB();
     bool Write(const banmap_t& banSet);

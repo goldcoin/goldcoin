@@ -20,7 +20,7 @@
 #include <sys/stat.h>
 #endif
 
-#include <boost/filesystem.hpp>
+#include "fs.h"  // Use our filesystem abstraction
 #include <boost/thread.hpp>
 #include <boost/version.hpp>
 
@@ -481,7 +481,7 @@ void CDBEnv::Flush(bool fShutdown)
                 dbenv->log_archive(&listp, DB_ARCH_REMOVE);
                 Close();
                 if (!fMockDb)
-                    boost::filesystem::remove_all(boost::filesystem::path(strPath) / "database");
+                    fsbridge::RemoveAll(fs::path(strPath) / "database");
             }
         }
     }

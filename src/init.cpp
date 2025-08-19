@@ -54,9 +54,8 @@
 #endif
 
 #include <sstream>
-#include <filesystem>
+#include "fs.h"  // Use our filesystem abstraction
 #include <boost/bind/bind.hpp>
-// #include <boost/filesystem.hpp> // REMOVED - using std::filesystem
 #include <boost/function.hpp>
 #include <boost/interprocess/sync/file_lock.hpp>
 #include <boost/thread.hpp>
@@ -631,7 +630,7 @@ void ThreadImport(std::vector<std::filesystem::path> vImportFiles)
         int nFile = 0;
         while (true) {
             CDiskBlockPos pos(nFile, 0);
-            if (!std::filesystem::exists(GetBlockPosFilename(pos, "blk")))
+            if (!fsbridge::Exists(GetBlockPosFilename(pos, "blk")))
                 break; // No block files left to reindex
             FILE *file = OpenBlockFile(pos, true);
             if (!file)

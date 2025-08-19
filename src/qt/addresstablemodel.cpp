@@ -9,6 +9,7 @@
 #include "walletmodel.h"
 
 #include "base58.h"
+#include <variant>
 #include "wallet/wallet.h"
 
 
@@ -260,7 +261,7 @@ bool AddressTableModel::setData(const QModelIndex &index, const QVariant &value,
         } else if(index.column() == Address) {
             CTxDestination newAddress = CBitcoinAddress(value.toString().toStdString()).Get();
             // Refuse to set invalid address, set error status and return false
-            if(boost::get<CNoDestination>(&newAddress))
+            if(std::holds_alternative<CNoDestination>(newAddress))
             {
                 editStatus = INVALID_ADDRESS;
                 return false;

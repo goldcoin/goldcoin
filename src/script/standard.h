@@ -13,7 +13,6 @@
 #include "uint256.h"
 
 #include <variant>
-#include <optional>
 #include <cstdint>
 
 static constexpr bool DEFAULT_ACCEPT_DATACARRIER = true;
