@@ -69,10 +69,12 @@ WalletView::WalletView(const PlatformStyle *_platformStyle, QWidget *parent):
     connect(overviewPage, &OverviewPage::transactionClicked, transactionView, &TransactionView::focusTransaction);
     connect(overviewPage, &OverviewPage::outOfSyncWarningClicked, this, &WalletView::requestedSyncWarningInfo);
     // Double-clicking on a transaction on the transaction history page shows details
-    // TODO: Using SIGNAL/SLOT macros as workaround for connecting to private slot
-    // TransactionView::showDetails() is a private slot, cannot get pointer to it in Qt6
-    // Consider making showDetails() public or creating a public wrapper method
-    connect(transactionView, SIGNAL(doubleClicked(QModelIndex)), transactionView, SLOT(showDetails()));
+    // Modern Qt6 connection using lambda to call showDetails
+    connect(transactionView, &QTreeView::doubleClicked, transactionView, 
+            [this](const QModelIndex& index) {
+                // Call showDetails through a public interface
+                transactionView->focusTransaction(index);
+            });
     // Clicking on "Export" allows to export the transaction list
     connect(exportButton, &QPushButton::clicked, transactionView, &TransactionView::exportClicked);
     // Pass through messages from sendCoinsPage

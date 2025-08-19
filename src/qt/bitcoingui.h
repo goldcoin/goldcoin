@@ -19,6 +19,13 @@
 #include <QPoint>
 #include <QSystemTrayIcon>
 
+// C++23 includes
+#include <expected>
+#include <span>
+#include <ranges>
+#include <format>
+#include <print>
+
 class ClientModel;
 class NetworkStyle;
 class Notificator;
@@ -52,7 +59,7 @@ public:
     static const QString DEFAULT_WALLET;
     static const std::string DEFAULT_UIPLATFORM;
 
-    explicit BitcoinGUI(const PlatformStyle *platformStyle, const NetworkStyle *networkStyle, QWidget *parent = 0);
+    explicit BitcoinGUI(const PlatformStyle *platformStyle, const NetworkStyle *networkStyle, QWidget *parent = nullptr);
     ~BitcoinGUI();
 
     /** Set the client model.
