@@ -1498,7 +1498,7 @@ void ThreadMapPort()
                 MilliSleep(20*60*1000); // Refresh every 20 minutes
             }
         }
-        catch (const boost::thread_interrupted&)
+        catch (const std::exception&)  // C++23: Use std exception
         {
             r = UPNP_DeletePortMapping(urls.controlURL, data.first.servicetype, port.c_str(), "TCP", 0);
             LogPrintf("UPNP_DeletePortMapping() returned: %d\n", r);
@@ -1516,7 +1516,7 @@ void ThreadMapPort()
 
 void MapPort(bool fUseUPnP)
 {
-    static boost::thread* upnp_thread = nullptr;
+    static std::thread* upnp_thread = nullptr;  // C++23 thread
 
     if (fUseUPnP)
     {
@@ -1525,7 +1525,7 @@ void MapPort(bool fUseUPnP)
             upnp_thread->join();
             delete upnp_thread;
         }
-        upnp_thread = new boost::thread(boost::bind(&TraceThread<void (*)()>, "upnp", &ThreadMapPort));
+        upnp_thread = new std::thread([]() { TraceThread("upnp", ThreadMapPort); });  // C++23 lambda
     }
     else if (upnp_thread) {
         upnp_thread->interrupt();
@@ -2126,7 +2126,7 @@ bool CConnman::BindListenPort(const CService &addrBind, std::string& strError, b
     return true;
 }
 
-void Discover(boost::thread_group& threadGroup)
+void Discover(std::vector<std::thread>& threadGroup)  // C++23 thread group
 {
     if (!fDiscover)
         return;
@@ -2321,7 +2321,7 @@ bool CConnman::Start(CScheduler& scheduler, std::string& strNodeError, Options c
     threadMessageHandler = std::thread(&TraceThread<std::function<void()> >, "msghand", std::function<void()>(std::bind(&CConnman::ThreadMessageHandler, this)));
 
     // Dump network addresses
-    scheduler.scheduleEvery(boost::bind(&CConnman::DumpData, this), DUMP_ADDRESSES_INTERVAL);
+    scheduler.scheduleEvery([this]() { DumpData(); }, DUMP_ADDRESSES_INTERVAL);  // C++23 lambda
 
     return true;
 }

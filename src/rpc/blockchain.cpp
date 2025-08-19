@@ -29,7 +29,7 @@
 #include <condition_variable>
 #include <mutex>
 
-#include <boost/thread/thread.hpp> // boost::thread::interrupt
+#include <thread>  // C++23 thread
 
 using namespace std;
 
@@ -800,7 +800,7 @@ UniValue getcheckpoint(const JSONRPCRequest& request)
     {
         pindexCheckpoint = mapBlockIndex[hashSyncCheckpoint];
         entry.push_back(Pair("height", pindexCheckpoint->nHeight));
-        entry.push_back(Pair("timestamp", (boost::int64_t) pindexCheckpoint->GetBlockTime()));
+        entry.push_back(Pair("timestamp", static_cast<int64_t>(pindexCheckpoint->GetBlockTime())));  // C++23 cast
     }
     if (IsArgSet("-checkpointkey"))
         entry.push_back(Pair("checkpointmaster", true));
@@ -834,7 +834,7 @@ UniValue sendcheckpoint(const JSONRPCRequest& request)
     {
         pindexCheckpoint = mapBlockIndex[hashSyncCheckpoint];
         entry.push_back(Pair("height", pindexCheckpoint->nHeight));
-        entry.push_back(Pair("timestamp", (boost::int64_t) pindexCheckpoint->GetBlockTime()));
+        entry.push_back(Pair("timestamp", static_cast<int64_t>(pindexCheckpoint->GetBlockTime())));  // C++23 cast
     }
     if (IsArgSet("-checkpointkey"))
         entry.push_back(Pair("checkpointmaster", true));
@@ -870,7 +870,8 @@ static bool GetUTXOStats(CCoinsView *view, CCoinsStats &stats)
     ss << stats.hashBlock;
     CAmount nTotalAmount = 0;
     while (pcursor->Valid()) {
-        boost::this_thread::interruption_point();
+        // C++23: Check shutdown flag instead of boost interruption
+        if (ShutdownRequested()) throw std::runtime_error("shutdown");
         uint256 key;
         CCoins coins;
         if (pcursor->GetKey(key) && pcursor->GetValue(coins)) {

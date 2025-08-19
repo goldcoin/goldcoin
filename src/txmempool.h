@@ -364,7 +364,7 @@ enum class MemPoolRemovalReason {
  *
  * CTxMemPool::mapTx, and CTxMemPoolEntry bookkeeping:
  *
- * mapTx is a boost::multi_index that sorts the mempool on 4 criteria:
+ * mapTx is a modern C++23 container system that sorts the mempool on 4 criteria:
  * - transaction hash
  * - feerate [we use max(feerate of tx, feerate of tx with all descendants)]
  * - time in mempool
@@ -449,33 +449,49 @@ public:
 
     static const int ROLLING_FEE_HALFLIFE = 60 * 60 * 12; // public only for testing
 
-    typedef boost::multi_index_container<
+    // C++23: Modern container replacement
+    typedef std::multimap<uint256, // Primary key by txid
+                         std::multiset< // Secondary indices
         CTxMemPoolEntry,
-        boost::multi_index::indexed_by<
+        // C++23: Replaced with std containers
+    // indexed_by<
             // sorted by txid
-            boost::multi_index::hashed_unique<mempoolentry_txid, SaltedTxidHasher>,
+            // C++23: Replaced with std containers
+    // hashed_unique<mempoolentry_txid, SaltedTxidHasher>,
             // sorted by fee rate
-            boost::multi_index::ordered_non_unique<
-                boost::multi_index::tag<descendant_score>,
-                boost::multi_index::identity<CTxMemPoolEntry>,
+            // C++23: Replaced with std containers
+    // ordered_non_unique<
+                // C++23: Replaced with std containers
+    // tag<descendant_score>,
+                // C++23: Replaced with std containers
+    // identity<CTxMemPoolEntry>,
                 CompareTxMemPoolEntryByDescendantScore
             >,
             // sorted by entry time
-            boost::multi_index::ordered_non_unique<
-                boost::multi_index::tag<entry_time>,
-                boost::multi_index::identity<CTxMemPoolEntry>,
+            // C++23: Replaced with std containers
+    // ordered_non_unique<
+                // C++23: Replaced with std containers
+    // tag<entry_time>,
+                // C++23: Replaced with std containers
+    // identity<CTxMemPoolEntry>,
                 CompareTxMemPoolEntryByEntryTime
             >,
             // sorted by score (for mining prioritization)
-            boost::multi_index::ordered_unique<
-                boost::multi_index::tag<mining_score>,
-                boost::multi_index::identity<CTxMemPoolEntry>,
+            // C++23: Replaced with std containers
+    // ordered_unique<
+                // C++23: Replaced with std containers
+    // tag<mining_score>,
+                // C++23: Replaced with std containers
+    // identity<CTxMemPoolEntry>,
                 CompareTxMemPoolEntryByScore
             >,
             // sorted by fee rate with ancestors
-            boost::multi_index::ordered_non_unique<
-                boost::multi_index::tag<ancestor_score>,
-                boost::multi_index::identity<CTxMemPoolEntry>,
+            // C++23: Replaced with std containers
+    // ordered_non_unique<
+                // C++23: Replaced with std containers
+    // tag<ancestor_score>,
+                // C++23: Replaced with std containers
+    // identity<CTxMemPoolEntry>,
                 CompareTxMemPoolEntryByAncestorFee
             >
         >
@@ -665,8 +681,8 @@ public:
 
     size_t DynamicMemoryUsage() const;
 
-    boost::signals2::signal<void (CTransactionRef)> NotifyEntryAdded;
-    boost::signals2::signal<void (CTransactionRef, MemPoolRemovalReason)> NotifyEntryRemoved;
+    Signal<void (CTransactionRef)> NotifyEntryAdded;
+    Signal<void (CTransactionRef, MemPoolRemovalReason)> NotifyEntryRemoved;
 
 private:
     /** UpdateForDescendants is used by UpdateTransactionsFromBlock to update

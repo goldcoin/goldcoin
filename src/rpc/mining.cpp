@@ -98,7 +98,7 @@ UniValue getnetworkhashps(const JSONRPCRequest& request)
     return GetNetworkHashPS(request.params.size() > 0 ? request.params[0].get_int() : 20, request.params.size() > 1 ? request.params[1].get_int() : -1);
 }
 
-UniValue generateBlocks(boost::shared_ptr<CReserveScript> coinbaseScript, int nGenerate, uint64_t nMaxTries, bool keepScript)
+UniValue generateBlocks(std::shared_ptr<CReserveScript> coinbaseScript, int nGenerate, uint64_t nMaxTries, bool keepScript)  // C++23 shared_ptr
 {
     static constexpr int nInnerLoopCount = 0x10000;
     int nHeightStart = 0;
@@ -170,7 +170,7 @@ UniValue generate(const JSONRPCRequest& request)
         nMaxTries = request.params[1].get_int();
     }
 
-    boost::shared_ptr<CReserveScript> coinbaseScript;
+    std::shared_ptr<CReserveScript> coinbaseScript;  // C++23 shared_ptr
     GetMainSignals().ScriptForMining(coinbaseScript);
 
     // If the keypool is exhausted, no script is returned at all.  Catch this.
@@ -211,7 +211,7 @@ UniValue generatetoaddress(const JSONRPCRequest& request)
     if (!address.IsValid())
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Error: Invalid address");
 
-    boost::shared_ptr<CReserveScript> coinbaseScript(new CReserveScript());
+    std::shared_ptr<CReserveScript> coinbaseScript = std::make_shared<CReserveScript>();  // C++23 make_shared
     coinbaseScript->reserveScript = GetScriptForDestination(address.Get());
 
     return generateBlocks(coinbaseScript, nGenerate, nMaxTries, false);
@@ -482,7 +482,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     {
         // Wait to respond until either the best block changes, OR a minute has passed and there are more transactions
         uint256 hashWatchedChain;
-        boost::system_time checktxtime;
+        std::chrono::system_clock::time_point checktxtime;  // C++23 time_point
         unsigned int nTransactionsUpdatedLastLP;
 
         if (lpval.isStr())
@@ -503,9 +503,9 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
         // Release the wallet and main lock while waiting
         LEAVE_CRITICAL_SECTION(cs_main);
         {
-            checktxtime = boost::get_system_time() + boost::posix_time::minutes(1);
+            checktxtime = std::chrono::system_clock::now() + std::chrono::minutes(1);  // C++23 chrono
 
-            boost::unique_lock<boost::mutex> lock(csBestBlock);
+            std::unique_lock<std::mutex> lock(csBestBlock);  // C++23 unique_lock
             while (chainActive.Tip()->GetBlockHash() == hashWatchedChain && IsRPCRunning())
             {
                 if (!cvBlockChange.timed_wait(lock, checktxtime))
@@ -513,7 +513,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
                     // Timeout: Check transactions for update
                     if (mempool.GetTransactionsUpdated() != nTransactionsUpdatedLastLP)
                         break;
-                    checktxtime += boost::posix_time::seconds(10);
+                    checktxtime += std::chrono::seconds(10);  // C++23 chrono
                 }
             }
         }
@@ -779,7 +779,7 @@ UniValue estimatefee(const JSONRPCRequest& request)
             + HelpExampleCli("estimatefee", "6")
             );
 
-    RPCTypeCheck(request.params, boost::assign::list_of(UniValue::VNUM));
+    RPCTypeCheck(request.params, {UniValue::VNUM});  // C++23 initializer list
 
     int nBlocks = request.params[0].get_int();
     if (nBlocks < 1)
@@ -810,7 +810,7 @@ UniValue estimatepriority(const JSONRPCRequest& request)
             + HelpExampleCli("estimatepriority", "6")
             );
 
-    RPCTypeCheck(request.params, boost::assign::list_of(UniValue::VNUM));
+    RPCTypeCheck(request.params, {UniValue::VNUM});  // C++23 initializer list
 
     int nBlocks = request.params[0].get_int();
     if (nBlocks < 1)
@@ -844,7 +844,7 @@ UniValue estimatesmartfee(const JSONRPCRequest& request)
             + HelpExampleCli("estimatesmartfee", "6")
             );
 
-    RPCTypeCheck(request.params, boost::assign::list_of(UniValue::VNUM));
+    RPCTypeCheck(request.params, {UniValue::VNUM});  // C++23 initializer list
 
     int nBlocks = request.params[0].get_int();
 
@@ -880,7 +880,7 @@ UniValue estimatesmartpriority(const JSONRPCRequest& request)
             + HelpExampleCli("estimatesmartpriority", "6")
             );
 
-    RPCTypeCheck(request.params, boost::assign::list_of(UniValue::VNUM));
+    RPCTypeCheck(request.params, {UniValue::VNUM});  // C++23 initializer list
 
     int nBlocks = request.params[0].get_int();
 

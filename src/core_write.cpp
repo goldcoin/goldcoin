@@ -54,14 +54,14 @@ std::string FormatScript(const CScript& script)
     return ret.substr(0, ret.size() - 1);
 }
 
-const std::map<unsigned char, std::string> mapSigHashTypes =
-    boost::assign::map_list_of
-    (static_cast<unsigned char>(SIGHASH_ALL), std::string("ALL"))
-    (static_cast<unsigned char>(SIGHASH_ALL|SIGHASH_ANYONECANPAY), std::string("ALL|ANYONECANPAY"))
-    (static_cast<unsigned char>(SIGHASH_NONE), std::string("NONE"))
-    (static_cast<unsigned char>(SIGHASH_NONE|SIGHASH_ANYONECANPAY), std::string("NONE|ANYONECANPAY"))
-    (static_cast<unsigned char>(SIGHASH_SINGLE), std::string("SINGLE"))
-    (static_cast<unsigned char>(SIGHASH_SINGLE|SIGHASH_ANYONECANPAY), std::string("SINGLE|ANYONECANPAY"))
+const std::map<unsigned char, std::string> mapSigHashTypes = {
+    {static_cast<unsigned char>(SIGHASH_ALL), "ALL"},
+    {static_cast<unsigned char>(SIGHASH_ALL|SIGHASH_ANYONECANPAY), "ALL|ANYONECANPAY"},
+    {static_cast<unsigned char>(SIGHASH_NONE), "NONE"},
+    {static_cast<unsigned char>(SIGHASH_NONE|SIGHASH_ANYONECANPAY), "NONE|ANYONECANPAY"},
+    {static_cast<unsigned char>(SIGHASH_SINGLE), "SINGLE"},
+    {static_cast<unsigned char>(SIGHASH_SINGLE|SIGHASH_ANYONECANPAY), "SINGLE|ANYONECANPAY"}
+};  // C++23 initializer list
     ;
 
 /**

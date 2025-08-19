@@ -25,8 +25,8 @@
 #include <fcntl.h>
 #endif
 
-#include <boost/algorithm/string/case_conv.hpp> // for to_lower()
-#include <boost/algorithm/string/predicate.hpp> // for startswith() and endswith()
+#include <algorithm>  // C++23 algorithms
+#include <cctype>     // for tolower
 
 #if !defined(HAVE_MSG_NOSIGNAL) && !defined(MSG_NOSIGNAL)
 #define MSG_NOSIGNAL 0
@@ -44,7 +44,7 @@ static const int SOCKS5_RECV_TIMEOUT = 20 * 1000;
 static std::atomic<bool> interruptSocks5Recv(false);
 
 enum Network ParseNetwork(std::string net) {
-    boost::to_lower(net);
+    std::transform(net.begin(), net.end(), net.begin(), ::tolower);  // C++23 transform
     if (net == "ipv4") return NET_IPV4;
     if (net == "ipv6") return NET_IPV6;
     if (net == "tor" || net == "onion")  return NET_TOR;
@@ -137,7 +137,7 @@ bool LookupHost(const char *pszName, std::vector<CNetAddr>& vIP, unsigned int nM
     std::string strHost(pszName);
     if (strHost.empty())
         return false;
-    if (boost::algorithm::starts_with(strHost, "[") && boost::algorithm::ends_with(strHost, "]"))
+    if (strHost.starts_with("[") && strHost.ends_with("]"))  // C++20 starts_with/ends_with
     {
         strHost = strHost.substr(1, strHost.size() - 2);
     }

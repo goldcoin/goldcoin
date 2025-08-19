@@ -576,7 +576,11 @@ static void MutateTxSign(CMutableTransaction& tx, const std::string& flagStr)
             if (!prevOut.isObject())
                 throw std::runtime_error("expected prevtxs internal object");
 
-            std::map<std::string,UniValue::VType> types = boost::assign::map_list_of("txid", UniValue::VSTR)("vout",UniValue::VNUM)("scriptPubKey",UniValue::VSTR);
+            std::map<std::string,UniValue::VType> types = {
+                {"txid", UniValue::VSTR},
+                {"vout", UniValue::VNUM},
+                {"scriptPubKey", UniValue::VSTR}
+            };  // C++23 initializer list
             if (!prevOut.checkObject(types))
                 throw std::runtime_error("prevtxs internal object typecheck fail");
 
@@ -813,7 +817,7 @@ static int CommandLineRawTx(int argc, char* argv[])
         OutputTx(tx);
     }
 
-    catch (const boost::thread_interrupted&) {
+    catch (const std::exception&) {  // C++23: Use std exception
         throw;
     }
     catch (const std::exception& e) {

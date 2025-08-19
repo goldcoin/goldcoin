@@ -32,7 +32,7 @@ enum ChangeType
 };
 
 /**
- * Modern signal management utilities for hybrid boost::signals2 + std::function architecture.
+ * Modern signal management utilities for C++23 Signal + std::function architecture.
  * Provides RAII callback management, connection tracking, and diagnostic capabilities.
  */
 namespace UISignalUtils {
@@ -161,59 +161,59 @@ public:
     };
 
     /** Show message box. */
-    boost::signals2::signal<bool (const std::string& message, const std::string& caption, unsigned int style), boost::signals2::last_value<bool> > ThreadSafeMessageBox;
+    Signal<bool (const std::string& message, const std::string& caption, unsigned int style) > ThreadSafeMessageBox;
     // Modern alternative: std::function-based callback (returns bool from last callback)
     std::vector<std::function<bool(const std::string&, const std::string&, unsigned int)>> ThreadSafeMessageBoxCallbacks;
 
     /** If possible, ask the user a question. If not, falls back to ThreadSafeMessageBox(noninteractive_message, caption, style) and returns false. */
-    boost::signals2::signal<bool (const std::string& message, const std::string& noninteractive_message, const std::string& caption, unsigned int style), boost::signals2::last_value<bool> > ThreadSafeQuestion;
+    Signal<bool (const std::string& message, const std::string& noninteractive_message, const std::string& caption, unsigned int style) > ThreadSafeQuestion;
     // Modern alternative: std::function-based callback (returns bool from last callback)
     std::vector<std::function<bool(const std::string&, const std::string&, const std::string&, unsigned int)>> ThreadSafeQuestionCallbacks;
 
     /** Progress message during initialization. */
-    boost::signals2::signal<void (const std::string &message)> InitMessage;
+    Signal<void (const std::string &message)> InitMessage;
     // Modern alternative: std::function-based callback
     std::vector<std::function<void(const std::string&)>> InitMessageCallbacks;
 
     /** Number of network connections changed. */
-    boost::signals2::signal<void (int newNumConnections)> NotifyNumConnectionsChanged;
+    Signal<void (int newNumConnections)> NotifyNumConnectionsChanged;
     // Modern alternative: std::function-based callback
     std::vector<std::function<void(int)>> NotifyNumConnectionsChangedCallbacks;
 
     /** Network activity state changed. */
-    boost::signals2::signal<void (bool networkActive)> NotifyNetworkActiveChanged;
+    Signal<void (bool networkActive)> NotifyNetworkActiveChanged;
     // Modern alternative: std::function-based callback
     std::vector<std::function<void(bool)>> NotifyNetworkActiveChangedCallbacks;
 
     /**
      * Status bar alerts changed.
      */
-    boost::signals2::signal<void ()> NotifyAlertChanged;
+    Signal<void ()> NotifyAlertChanged;
     // Modern alternative: std::function-based callback
     std::vector<std::function<void()>> NotifyAlertChangedCallbacks;
 
     /** A wallet has been loaded. */
-    boost::signals2::signal<void (CWallet* wallet)> LoadWallet;
+    Signal<void (CWallet* wallet)> LoadWallet;
     // Modern alternative: std::function-based callback
     std::vector<std::function<void(CWallet*)>> LoadWalletCallbacks;
 
     /** Show progress e.g. for verifychain */
-    boost::signals2::signal<void (const std::string &title, int nProgress)> ShowProgress;
+    Signal<void (const std::string &title, int nProgress)> ShowProgress;
     // Modern alternative: std::function-based callback
     std::vector<std::function<void(const std::string&, int)>> ShowProgressCallbacks;
 
     /** New block has been accepted */
-    boost::signals2::signal<void (bool, const CBlockIndex *)> NotifyBlockTip;
+    Signal<void (bool, const CBlockIndex *)> NotifyBlockTip;
     // Modern alternative: std::function-based callback
     std::vector<std::function<void(bool, const CBlockIndex*)>> NotifyBlockTipCallbacks;
 
     /** Best header has changed */
-    boost::signals2::signal<void (bool, const CBlockIndex *)> NotifyHeaderTip;
+    Signal<void (bool, const CBlockIndex *)> NotifyHeaderTip;
     // Modern alternative: std::function-based callback
     std::vector<std::function<void(bool, const CBlockIndex*)>> NotifyHeaderTipCallbacks;
 
     /** Banlist did change. */
-    boost::signals2::signal<void (void)> BannedListChanged;
+    Signal<void (void)> BannedListChanged;
     // Modern alternative: std::function-based callback
     std::vector<std::function<void()>> BannedListChangedCallbacks;
     

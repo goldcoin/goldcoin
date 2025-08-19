@@ -894,7 +894,7 @@ public:
         }
     }
 
-    void GetScriptForMining(boost::shared_ptr<CReserveScript> &script) override;
+    void GetScriptForMining(std::shared_ptr<CReserveScript> &script) override;  // C++23 shared_ptr
     void ResetRequestCount(const uint256 &hash) override
     {
         LOCK(cs_wallet);
@@ -934,7 +934,7 @@ public:
      * Address book entry changed.
      * @note called with lock cs_wallet held.
      */
-    boost::signals2::signal<void (CWallet *wallet, const CTxDestination
+    Signal<void (CWallet *wallet, const CTxDestination
             &address, const std::string &label, bool isMine,
             const std::string &purpose,
             ChangeType status)> NotifyAddressBookChanged;
@@ -945,18 +945,18 @@ public:
      * Wallet transaction added, removed or updated.
      * @note called with lock cs_wallet held.
      */
-    boost::signals2::signal<void (CWallet *wallet, const uint256 &hashTx,
+    Signal<void (CWallet *wallet, const uint256 &hashTx,
             ChangeType status)> NotifyTransactionChanged;
     // Modern alternative: std::function-based callback
     std::vector<std::function<void(CWallet*, const uint256&, ChangeType)>> NotifyTransactionChangedCallbacks;
 
     /** Show progress e.g. for rescan */
-    boost::signals2::signal<void (const std::string &title, int nProgress)> ShowProgress;
+    Signal<void (const std::string &title, int nProgress)> ShowProgress;
     // Modern alternative: std::function-based callback
     std::vector<std::function<void(const std::string&, int)>> WalletShowProgressCallbacks;
 
     /** Watch-only address added */
-    boost::signals2::signal<void (bool fHaveWatchOnly)> NotifyWatchonlyChanged;
+    Signal<void (bool fHaveWatchOnly)> NotifyWatchonlyChanged;
     // Modern alternative: std::function-based callback
     std::vector<std::function<void(bool)>> NotifyWatchonlyChangedCallbacks;
 

@@ -1562,7 +1562,7 @@ UniValue walletpassphrase(const JSONRPCRequest& request)
     int64_t nSleepTime = request.params[1].get_int64();
     LOCK(cs_nWalletUnlockTime);
     nWalletUnlockTime = GetTime() + nSleepTime;
-    RPCRunLater("lockwallet", boost::bind(LockWallet, pwalletMain), nSleepTime);
+    RPCRunLater("lockwallet", [](){ LockWallet(pwalletMain); }, nSleepTime);  // C++23 lambda
 
     return NullUniValue;
 }
@@ -1755,9 +1755,9 @@ UniValue lockunspent(const JSONRPCRequest& request)
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
     if (request.params.size() == 1)
-        RPCTypeCheck(request.params, boost::assign::list_of(UniValue::VBOOL));
+        RPCTypeCheck(request.params, {UniValue::VBOOL});  // C++23 initializer list
     else
-        RPCTypeCheck(request.params, boost::assign::list_of(UniValue::VBOOL)(UniValue::VARR));
+        RPCTypeCheck(request.params, {UniValue::VBOOL, UniValue::VARR});  // C++23 initializer list
 
     bool fUnlock = request.params[0].get_bool();
 
@@ -2126,7 +2126,7 @@ UniValue fundrawtransaction(const JSONRPCRequest& request)
                             + HelpExampleCli("sendrawtransaction", "\"signedtransactionhex\"")
                             );
 
-    RPCTypeCheck(request.params, boost::assign::list_of(UniValue::VSTR));
+    RPCTypeCheck(request.params, {UniValue::VSTR});  // C++23 initializer list
 
     CTxDestination changeAddress = CNoDestination();
     int changePosition = -1;
@@ -2144,7 +2144,7 @@ UniValue fundrawtransaction(const JSONRPCRequest& request)
         includeWatching = request.params[1].get_bool();
       }
       else {
-        RPCTypeCheck(request.params, boost::assign::list_of(UniValue::VSTR)(UniValue::VOBJ));
+        RPCTypeCheck(request.params, {UniValue::VSTR, UniValue::VOBJ});  // C++23 initializer list
 
         UniValue options = request.params[1];
 

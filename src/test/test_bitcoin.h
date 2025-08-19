@@ -31,8 +31,8 @@ struct BasicTestingSetup {
 class CConnman;
 struct TestingSetup: public BasicTestingSetup {
     CCoinsViewDB *pcoinsdbview;
-    boost::filesystem::path pathTemp;
-    boost::thread_group threadGroup;
+    fs::path pathTemp;  // C++23 filesystem
+    std::vector<std::thread> threadGroup;  // C++23 thread group
     CConnman* connman;
 
     TestingSetup(const std::string& chainName = CBaseChainParams::MAIN);

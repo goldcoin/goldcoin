@@ -30,8 +30,7 @@
 #include <vector>
 
 #include <filesystem>
-#include <boost/signals2/signal.hpp>
-#include <boost/thread/exceptions.hpp>
+#include "validationinterface.h"  // C++23: For our custom Signal class
 
 static const bool DEFAULT_LOGTIMEMICROS = false;
 static const bool DEFAULT_LOGIPS        = false;
@@ -42,7 +41,7 @@ class CTranslationInterface
 {
 public:
     /** Translate a message to the native language of the user. */
-    boost::signals2::signal<std::string (const char* psz)> Translate;
+    Signal<std::string(const char* psz)> Translate;  // C++23: Custom signal
 };
 
 extern const std::map<std::string, std::vector<std::string> >& mapMultiArgs;
@@ -223,7 +222,7 @@ template <typename Callable> void TraceThread(const char* name,  Callable func)
         func();
         LogPrintf("%s thread exit\n", name);
     }
-    catch (const boost::thread_interrupted&)
+    catch (const std::exception&)  // C++23: Use std exception
     {
         LogPrintf("%s thread interrupt\n", name);
         throw;

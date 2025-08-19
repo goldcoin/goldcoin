@@ -12,10 +12,9 @@
 
 #include "utiltime.h"
 
-#include <chrono>
-#include <thread>
+#include <chrono>  // C++23 chrono
+#include <thread>  // C++23 thread
 #include <ctime>
-#include <boost/thread.hpp>
 
 using namespace std;
 
@@ -37,18 +36,22 @@ void SetMockTime(int64_t nMockTimeIn)
 
 int64_t GetTimeMillis()
 {
-    int64_t now = (boost::posix_time::microsec_clock::universal_time() -
-                   boost::posix_time::ptime(boost::gregorian::date(1970,1,1))).total_milliseconds();
-    assert(now > 0);
-    return now;
+    // C++23: Replace boost::posix_time with std::chrono
+    auto now = std::chrono::system_clock::now();
+    auto duration = now.time_since_epoch();
+    int64_t millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+    assert(millis > 0);
+    return millis;
 }
 
 int64_t GetTimeMicros()
 {
-    int64_t now = (boost::posix_time::microsec_clock::universal_time() -
-                   boost::posix_time::ptime(boost::gregorian::date(1970,1,1))).total_microseconds();
-    assert(now > 0);
-    return now;
+    // C++23: Replace boost::posix_time with std::chrono
+    auto now = std::chrono::system_clock::now();
+    auto duration = now.time_since_epoch();
+    int64_t micros = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+    assert(micros > 0);
+    return micros;
 }
 
 int64_t GetSystemTimeInSeconds()
@@ -66,20 +69,8 @@ int64_t GetLogTimeMicros()
 
 void MilliSleep(int64_t n)
 {
-
-/**
- * Boost's sleep_for was uninterruptible when backed by nanosleep from 1.50
- * until fixed in 1.52. Use the deprecated sleep method for the broken case.
- * See: https://svn.boost.org/trac/boost/ticket/7238
- */
-#if defined(HAVE_WORKING_BOOST_SLEEP_FOR)
+    // C++23: Always use std::this_thread::sleep_for
     std::this_thread::sleep_for(std::chrono::milliseconds(n));
-#elif defined(HAVE_WORKING_BOOST_SLEEP)
-    boost::this_thread::sleep(boost::posix_time::milliseconds(n));
-#else
-//should never get here
-#error missing boost sleep implementation
-#endif
 }
 
 std::string DateTimeStrFormat(const char* pszFormat, int64_t nTime)

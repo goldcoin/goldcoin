@@ -339,7 +339,7 @@ int CommandLineRPC(int argc, char *argv[])
             }
         } while (fWait);
     }
-    catch (const boost::thread_interrupted&) {
+    catch (const std::exception&) {  // C++23: Use std exception
         throw;
     }
     catch (const std::exception& e) {

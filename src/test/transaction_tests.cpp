@@ -37,19 +37,20 @@ typedef std::vector<unsigned char> valtype;
 // In script_tests.cpp
 extern UniValue read_json(const std::string& jsondata);
 
-static std::map<std::string, unsigned int> mapFlagNames = boost::assign::map_list_of
-    (std::string("NONE"), (unsigned int)SCRIPT_VERIFY_NONE)
-    (std::string("P2SH"), (unsigned int)SCRIPT_VERIFY_P2SH)
-    (std::string("STRICTENC"), (unsigned int)SCRIPT_VERIFY_STRICTENC)
-    (std::string("DERSIG"), (unsigned int)SCRIPT_VERIFY_DERSIG)
-    (std::string("LOW_S"), (unsigned int)SCRIPT_VERIFY_LOW_S)
-    (std::string("SIGPUSHONLY"), (unsigned int)SCRIPT_VERIFY_SIGPUSHONLY)
-    (std::string("MINIMALDATA"), (unsigned int)SCRIPT_VERIFY_MINIMALDATA)
-    (std::string("NULLDUMMY"), (unsigned int)SCRIPT_VERIFY_NULLDUMMY)
-    (std::string("DISCOURAGE_UPGRADABLE_NOPS"), (unsigned int)SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS)
-    (std::string("CLEANSTACK"), (unsigned int)SCRIPT_VERIFY_CLEANSTACK)
-    (std::string("NULLFAIL"), (unsigned int)SCRIPT_VERIFY_NULLFAIL)
-    (std::string("CHECKLOCKTIMEVERIFY"), (unsigned int)SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY)
+static std::map<std::string, unsigned int> mapFlagNames = {
+    {"NONE", SCRIPT_VERIFY_NONE},
+    {"P2SH", SCRIPT_VERIFY_P2SH},
+    {"STRICTENC", SCRIPT_VERIFY_STRICTENC},
+    {"DERSIG", SCRIPT_VERIFY_DERSIG},
+    {"LOW_S", SCRIPT_VERIFY_LOW_S},
+    {"SIGPUSHONLY", SCRIPT_VERIFY_SIGPUSHONLY},
+    {"MINIMALDATA", SCRIPT_VERIFY_MINIMALDATA},
+    {"NULLDUMMY", SCRIPT_VERIFY_NULLDUMMY},
+    {"DISCOURAGE_UPGRADABLE_NOPS", SCRIPT_VERIFY_DISCOURAGE_UPGRADABLE_NOPS},
+    {"CLEANSTACK", SCRIPT_VERIFY_CLEANSTACK},
+    {"NULLFAIL", SCRIPT_VERIFY_NULLFAIL},
+    {"CHECKLOCKTIMEVERIFY", SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY}
+};  // C++23 initializer list
     (std::string("CHECKSEQUENCEVERIFY"), (unsigned int)SCRIPT_VERIFY_CHECKSEQUENCEVERIFY);
 
 unsigned int ParseScriptFlags(std::string strFlags)

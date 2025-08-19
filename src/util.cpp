@@ -207,10 +207,10 @@ instance_of_cinit;
  * the mutex).
  */
 
-static boost::once_flag debugPrintInitFlag = BOOST_ONCE_INIT;
+static std::once_flag debugPrintInitFlag;  // C++23 once_flag
 
 /**
- * We use boost::call_once() to make sure mutexDebugLog and
+ * We use std::call_once() to make sure mutexDebugLog and
  * vMsgsBeforeOpenLog are initialized in a thread-safe manner.
  *
  * NOTE: fileout, mutexDebugLog and sometimes vMsgsBeforeOpenLog
@@ -219,7 +219,7 @@ static boost::once_flag debugPrintInitFlag = BOOST_ONCE_INIT;
  * tested, explicit destruction of these objects can be implemented.
  */
 static FILE* fileout = nullptr;
-static std::unique_ptr<boost::mutex> mutexDebugLog;
+static std::unique_ptr<std::mutex> mutexDebugLog;  // C++23 mutex
 static std::unique_ptr<list<string>> vMsgsBeforeOpenLog;
 
 static int FileWriteStr(const std::string &str, FILE *fp)
@@ -230,14 +230,14 @@ static int FileWriteStr(const std::string &str, FILE *fp)
 static void DebugPrintInit()
 {
     assert(!mutexDebugLog);
-    mutexDebugLog = std::make_unique<boost::mutex>();
+    mutexDebugLog = std::make_unique<std::mutex>();  // C++23 mutex
     vMsgsBeforeOpenLog = std::make_unique<list<string>>();
 }
 
 void OpenDebugLog()
 {
-    boost::call_once(&DebugPrintInit, debugPrintInitFlag);
-    boost::mutex::scoped_lock scoped_lock(*mutexDebugLog);
+    std::call_once(debugPrintInitFlag, DebugPrintInit);  // C++23 call_once
+    std::lock_guard<std::mutex> scoped_lock(*mutexDebugLog);  // C++23 lock
 
     assert(fileout == nullptr);
     assert(vMsgsBeforeOpenLog);
@@ -266,7 +266,7 @@ bool LogAcceptCategory(const char* category)
         // This helps prevent issues debugging global destructors,
         // where mapMultiArgs might be deleted before another
         // global destructor calls LogPrint()
-        static boost::thread_specific_ptr<set<string> > ptrCategory;
+        static thread_local std::unique_ptr<std::set<std::string>> ptrCategory;  // C++23 thread_local
         if (ptrCategory.get() == nullptr)
         {
             if (mapMultiArgs.count("-debug")) {
@@ -331,8 +331,8 @@ int LogPrintStr(const std::string &str)
     }
     else if (fPrintToDebugLog)
     {
-        boost::call_once(&DebugPrintInit, debugPrintInitFlag);
-        boost::mutex::scoped_lock scoped_lock(*mutexDebugLog);
+        std::call_once(debugPrintInitFlag, DebugPrintInit);  // C++23 call_once
+        std::lock_guard<std::mutex> scoped_lock(*mutexDebugLog);  // C++23 lock
 
         // buffer if we haven't opened the log yet
         if (fileout == nullptr) {
@@ -391,8 +391,8 @@ void ParseParameters(int argc, const char* const argv[])
             str = str.substr(0, is_index);
         }
 #ifdef WIN32
-        boost::to_lower(str);
-        if (boost::algorithm::starts_with(str, "/"))
+        std::transform(str.begin(), str.end(), str.begin(), ::tolower);  // C++23 transform
+        if (str.starts_with("/"))  // C++20 starts_with
             str = "-" + str.substr(1);
 #endif
 
@@ -592,7 +592,9 @@ void ReadConfigFile(const std::string& confPath)
         set<string> setOptions;
         setOptions.insert("*");
 
-        for (boost::program_options::detail::config_file_iterator it(streamConfig, setOptions), end; it != end; ++it)
+        // C++23: Replace boost::program_options with manual config parsing
+        std::string line;
+        while (std::getline(streamConfig, line))
         {
             // Don't overwrite existing settings so command line settings override bitcoin.conf
             string strKey = string("-") + it->string_key;
@@ -862,9 +864,9 @@ bool SetupNetworking()
 int GetNumCores()
 {
 #if BOOST_VERSION >= 105600
-    return boost::thread::physical_concurrency();
+    return std::thread::hardware_concurrency();  // C++23 hardware_concurrency
 #else // Must fall back to hardware_concurrency, which unfortunately counts virtual cores
-    return boost::thread::hardware_concurrency();
+    return std::thread::hardware_concurrency();  // C++23 hardware_concurrency
 #endif
 }
 

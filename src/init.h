@@ -10,19 +10,16 @@
 #define BITCOIN_INIT_H
 
 #include <string>
+#include <vector>  // C++23 for std::vector<std::thread>
+#include <thread>  // C++23 for std::thread
 
 class CScheduler;
 class CWallet;
 
-namespace boost
-{
-class thread_group;
-} // namespace boost
-
 void StartShutdown();
 bool ShutdownRequested();
 /** Interrupt threads */
-void Interrupt(boost::thread_group& threadGroup);
+void Interrupt(std::vector<std::thread>& threadGroup);  // C++23 thread group
 void Shutdown();
 //!Initialize the logging infrastructure
 void InitLogging();
@@ -51,7 +48,7 @@ bool AppInitSanityChecks();
  * @note This should only be done after daemonization.
  * @pre Parameters should be parsed and config file should be read, AppInitSanityChecks should have been called.
  */
-bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler);
+bool AppInitMain(std::vector<std::thread>& threadGroup, CScheduler& scheduler);  // C++23 thread group
 
 /** The help message mode determines what help message to show */
 enum HelpMessageMode {

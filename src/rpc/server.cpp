@@ -41,30 +41,31 @@ static std::map<std::string, std::unique_ptr<RPCTimerBase> > deadlineTimers;
 
 static struct CRPCSignals
 {
-    boost::signals2::signal<void ()> Started;
-    boost::signals2::signal<void ()> Stopped;
-    boost::signals2::signal<void (const CRPCCommand&)> PreCommand;
-    boost::signals2::signal<void (const CRPCCommand&)> PostCommand;
+    // C++23: Replace boost::signals2 with our custom Signal class
+    Signal<void()> Started;
+    Signal<void()> Stopped;
+    Signal<void(const CRPCCommand&)> PreCommand;
+    Signal<void(const CRPCCommand&)> PostCommand;
 } g_rpcSignals;
 
-void RPCServer::OnStarted(boost::function<void ()> slot)
+void RPCServer::OnStarted(std::function<void()> slot)  // C++23 function
 {
     g_rpcSignals.Started.connect(slot);
 }
 
-void RPCServer::OnStopped(boost::function<void ()> slot)
+void RPCServer::OnStopped(std::function<void()> slot)  // C++23 function
 {
     g_rpcSignals.Stopped.connect(slot);
 }
 
-void RPCServer::OnPreCommand(boost::function<void (const CRPCCommand&)> slot)
+void RPCServer::OnPreCommand(std::function<void(const CRPCCommand&)> slot)  // C++23 function
 {
-    g_rpcSignals.PreCommand.connect(boost::bind(slot, boost::placeholders::_1));
+    g_rpcSignals.PreCommand.connect([slot](const CRPCCommand& cmd) { slot(cmd); });  // C++23 lambda
 }
 
-void RPCServer::OnPostCommand(boost::function<void (const CRPCCommand&)> slot)
+void RPCServer::OnPostCommand(std::function<void(const CRPCCommand&)> slot)  // C++23 function
 {
-    g_rpcSignals.PostCommand.connect(boost::bind(slot, boost::placeholders::_1));
+    g_rpcSignals.PostCommand.connect([slot](const CRPCCommand& cmd) { slot(cmd); });  // C++23 lambda
 }
 
 void RPCTypeCheck(const UniValue& params,
@@ -222,7 +223,7 @@ std::string CRPCTable::help(const std::string& strCommand) const
                         strRet += "\n";
                     category = pcmd->category;
                     string firstLetter = category.substr(0,1);
-                    boost::to_upper(firstLetter);
+                    firstLetter = static_cast<char>(::toupper(firstLetter));  // C++23 toupper
                     strRet += "== " + firstLetter + category.substr(1) + " ==\n";
                 }
             }
@@ -507,8 +508,7 @@ std::vector<std::string> CRPCTable::listCommands() const
 
     std::transform( mapCommands.begin(), mapCommands.end(),
                    std::back_inserter(commandList),
-                   boost::bind(&commandMap::value_type::first,
-                               boost::placeholders::_1) );
+                   [](const commandMap::value_type& pair) { return pair.first; } );  // C++23 lambda
     return commandList;
 }
 
@@ -540,7 +540,7 @@ void RPCUnsetTimerInterface(RPCTimerInterface *iface)
         timerInterface = nullptr;
 }
 
-void RPCRunLater(const std::string& name, boost::function<void(void)> func, int64_t nSeconds)
+void RPCRunLater(const std::string& name, std::function<void(void)> func, int64_t nSeconds)  // C++23 function
 {
     if (!timerInterface)
         throw JSONRPCError(RPC_INTERNAL_ERROR, "No timer handler registered for RPC");

@@ -162,7 +162,7 @@ struct BlockHasher
 extern CScript COINBASE_FLAGS;
 extern CCriticalSection cs_main;
 extern CTxMemPool mempool;
-using BlockMap = boost::unordered_map<uint256, CBlockIndex*, BlockHasher>;
+using BlockMap = std::unordered_map<uint256, CBlockIndex*, BlockHasher>;  // C++23 unordered_map
 extern BlockMap mapBlockIndex;
 extern uint64_t nLastBlockTx;
 extern uint64_t nLastBlockSize;

@@ -46,8 +46,9 @@
 #include <sstream>
 #include <memory>
 
-#include <boost/algorithm/string/join.hpp>
 #include "fs.h"  // Use our filesystem abstraction
+#include <algorithm>   // C++23 algorithms
+#include <sstream>     // for string join replacement
 #include <fstream>
 #include <boost/math/distributions/poisson.hpp>
 #include <boost/thread.hpp>
@@ -191,9 +192,9 @@ private:
 
 public:
     MemPoolConflictRemovalTracker(CTxMemPool &_pool) : pool(_pool) {
-        pool.NotifyEntryRemoved.connect(boost::bind(&MemPoolConflictRemovalTracker::NotifyEntryRemoved,
-                                                    this, boost::placeholders::_1,
-                                                    boost::placeholders::_2));
+        pool.NotifyEntryRemoved.connect([this](CTransactionRef txn, MemPoolRemovalReason reason) {
+            NotifyEntryRemoved(txn, reason);
+        });
     }
 
     void NotifyEntryRemoved(CTransactionRef txRemoved, MemPoolRemovalReason reason) {
@@ -203,9 +204,7 @@ public:
     }
 
     ~MemPoolConflictRemovalTracker() {
-        pool.NotifyEntryRemoved.disconnect(boost::bind(&MemPoolConflictRemovalTracker::NotifyEntryRemoved,
-                                                       this, boost::placeholders::_1,
-                                                       boost::placeholders::_2));
+        pool.NotifyEntryRemoved.disconnect_all_slots();
         for (const auto& tx : conflictedTxs) {
             GetMainSignals().SyncTransaction(*tx, nullptr, CMainSignals::SYNC_TRANSACTION_NOT_IN_BLOCK);
         }
@@ -1246,7 +1245,8 @@ static void AlertNotify(const std::string& strMessage)
         pos += safeStatus.length();
     }
 
-    boost::thread t(runCommand, strCmd); // thread runs free
+    std::thread t([strCmd]() { runCommand(strCmd); }); // C++23 thread
+    t.detach(); // thread runs free
 }
 
 void CheckForkWarningConditions()
@@ -2200,7 +2200,13 @@ void static UpdateTip(CBlockIndex *pindexNew, const CChainParams& chainParams) {
       DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chainActive.Tip()->GetBlockTime()),
       GuessVerificationProgress(chainParams.TxData(), chainActive.Tip()), pcoinsTip->DynamicMemoryUsage() * (1.0 / (1<<20)), pcoinsTip->GetCacheSize());
     if (!warningMessages.empty())
-        LogPrintf(" warning='%s'", boost::algorithm::join(warningMessages, ", "));
+        // C++23 string join replacement
+        std::string warningStr;
+        for (size_t i = 0; i < warningMessages.size(); ++i) {
+            if (i > 0) warningStr += ", ";
+            warningStr += warningMessages[i];
+        }
+        LogPrintf(" warning='%s'", warningStr);
     LogPrintf("\n");
 
     if (pindexBestHeader->pprev)
@@ -2517,7 +2523,8 @@ bool ActivateBestChain(CValidationState &state, const CChainParams& chainparams,
     CBlockIndex *pindexMostWork = nullptr;
     CBlockIndex *pindexNewTip = nullptr;
     do {
-        boost::this_thread::interruption_point();
+        // C++23: Check shutdown flag instead of boost interruption
+        if (ShutdownRequested()) throw std::runtime_error("shutdown");
         if (ShutdownRequested())
             break;
 
@@ -2901,7 +2908,8 @@ CBlockIndex * GetPreviousBlock(const CBlock& block, int64_t numBlocksBefore) {
 }
 
 bool waitingOnBlock = false;
-boost::asio::io_service ioService;
+// C++23: Remove boost::asio - replaced with simpler threading
+// std::condition_variable for synchronization
 CCriticalSection cs_blockqueue;
 QueuedBlockData * queuedBlock = nullptr;
 
@@ -2930,7 +2938,11 @@ void QueuedBlockHandler(QueuedBlockData * data)
     LogPrintf("QueuedBlockHandler: %d, %s\n", GetAdjustedTime(), data->block->GetHash().ToString());
 
     ioService.reset();
-    boost::asio::deadline_timer timer(ioService, boost::posix_time::seconds(data->block->GetBlockTime() - (GetAdjustedTime() + 45)));
+    // C++23: Replace boost timer with std::chrono
+    auto delay = std::chrono::seconds(data->block->GetBlockTime() - (GetAdjustedTime() + 45));
+    if (delay > std::chrono::seconds(0)) {
+        std::this_thread::sleep_for(delay);
+    }
     timer.wait();
 
 
@@ -3308,7 +3320,8 @@ bool CheckBlock51Percent(CNode * pfrom, const CBlock& block, CValidationState& s
                         data->block = copyBlock;
                         data->pfrom = pfrom;
                         queuedBlock = data;
-                        boost::thread thread(QueuedBlockHandler, data);
+                        std::thread thread([data]() { QueuedBlockHandler(data); }); // C++23 thread
+                        thread.detach();
                         thread.detach();
 
                         LogPrintf("Local has found possible valid block... queueing (%d s) until timestamp is valid at %d: %s\n", block.GetBlockTime() - (GetAdjustedTime() + 45), block.GetBlockTime() - 45, block.GetHash().ToString());
@@ -3635,7 +3648,8 @@ bool static LoadBlockIndexDB(const CChainParams& chainparams)
     if (!pblocktree->LoadBlockIndexGuts(InsertBlockIndex))
         return false;
 
-    boost::this_thread::interruption_point();
+    // C++23: Check shutdown flag instead of interruption
+    if (ShutdownRequested()) throw std::runtime_error("shutdown");
 
     // Calculate nChainWork
     std::vector<std::pair<int, CBlockIndex*> > vSortedByHeight;
@@ -3779,7 +3793,8 @@ bool CVerifyDB::VerifyDB(const CChainParams& chainparams, CCoinsView *coinsview,
     LogPrintf("[0%%]...");
     for (CBlockIndex* pindex = chainActive.Tip(); pindex && pindex->pprev; pindex = pindex->pprev)
     {
-        boost::this_thread::interruption_point();
+        // C++23: Check shutdown flag instead of boost interruption
+        if (ShutdownRequested()) throw std::runtime_error("shutdown");
         int percentageDone = std::max(1, std::min(99, (int)(((double)(chainActive.Height() - pindex->nHeight)) / (double)nCheckDepth * (nCheckLevel >= 4 ? 50 : 100))));
         if (reportDone < percentageDone/10) {
             // report every 10% step
@@ -3833,7 +3848,8 @@ bool CVerifyDB::VerifyDB(const CChainParams& chainparams, CCoinsView *coinsview,
     if (nCheckLevel >= 4) {
         CBlockIndex *pindex = pindexState;
         while (pindex != chainActive.Tip()) {
-            boost::this_thread::interruption_point();
+            // C++23: Check shutdown flag instead of boost interruption
+        if (ShutdownRequested()) throw std::runtime_error("shutdown");
             uiInterface.ShowProgress(_("Verifying blocks..."), std::max(1, std::min(99, 100 - (int)(((double)(chainActive.Height() - pindex->nHeight)) / (double)nCheckDepth * 50))));
             pindex = chainActive.Next(pindex);
             CBlock block;
@@ -4015,7 +4031,8 @@ bool LoadExternalBlockFile(const CChainParams& chainparams, FILE* fileIn, CDiskB
         CBufferedFile blkdat(fileIn, 2*MAX_BLOCK_SERIALIZED_SIZE, MAX_BLOCK_SERIALIZED_SIZE+8, SER_DISK, CLIENT_VERSION);
         uint64_t nRewind = blkdat.GetPos();
         while (!blkdat.eof()) {
-            boost::this_thread::interruption_point();
+            // C++23: Check shutdown flag instead of boost interruption
+        if (ShutdownRequested()) throw std::runtime_error("shutdown");
 
             blkdat.SetPos(nRewind);
             nRewind++; // start one byte further next time, in case of failure

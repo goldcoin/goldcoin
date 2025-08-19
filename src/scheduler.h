@@ -13,9 +13,8 @@
 #include <functional>
 #include <chrono>
 #include <thread>
-#include <boost/function.hpp>
-#include <boost/chrono/chrono.hpp>
-#include <boost/thread.hpp>
+#include <condition_variable>  // C++23 condition_variable
+#include <mutex>               // C++23 mutex
 #include <map>
 
 //
@@ -26,11 +25,10 @@
 //
 // CScheduler* s = new CScheduler();
 // s->scheduleFromNow(doSomething, 11); // Assuming a: void doSomething() { }
-// s->scheduleFromNow(boost::bind(Class::func, this, argument), 3);
-// boost::thread* t = new boost::thread(boost::bind(CScheduler::serviceQueue, s));
+// s->scheduleFromNow([this, arg](){ Class::func(this, arg); }, 3);
+// std::thread* t = new std::thread([s]() { s->serviceQueue(); });
 //
 // ... then at program shutdown, clean up the thread running serviceQueue:
-// t->interrupt();
 // t->join();
 // delete t;
 // delete s; // Must be done after thread is interrupted/joined.
@@ -60,7 +58,7 @@ public:
     // To keep things as simple as possible, there is no unschedule.
 
     // Services the queue 'forever'. Should be run in a thread,
-    // and interrupted using boost::interrupt_thread
+    // and interrupted using stop()
     void serviceQueue();
 
     // Tell any threads running serviceQueue to stop as soon as they're
@@ -75,8 +73,8 @@ public:
 
 private:
     std::multimap<std::chrono::system_clock::time_point, Function> taskQueue;
-    boost::condition_variable newTaskScheduled;
-    mutable boost::mutex newTaskMutex;
+    std::condition_variable newTaskScheduled;  // C++23 condition_variable
+    mutable std::mutex newTaskMutex;           // C++23 mutex
     int nThreadsServicingQueue;
     bool stopRequested;
     bool stopWhenEmpty;

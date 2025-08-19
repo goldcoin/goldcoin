@@ -14,8 +14,8 @@
 
 #include <stdint.h>
 #include <memory>
-#include "boost/multi_index_container.hpp"
-#include "boost/multi_index/ordered_index.hpp"
+#include <set>     // C++23 set replacement for multi_index
+#include <map>     // C++23 map for secondary indexing
 
 class CBlockIndex;
 class CChainParams;
@@ -98,25 +98,15 @@ struct CompareTxIterByAncestorCount {
     }
 };
 
-typedef boost::multi_index_container<
-    CTxMemPoolModifiedEntry,
-    boost::multi_index::indexed_by<
-        boost::multi_index::ordered_unique<
-            modifiedentry_iter,
-            CompareCTxMemPoolIter
-        >,
-        // sorted by modified ancestor fee rate
-        boost::multi_index::ordered_non_unique<
-            // Reuse same tag from CTxMemPool's similar index
-            boost::multi_index::tag<ancestor_score>,
-            boost::multi_index::identity<CTxMemPoolModifiedEntry>,
-            CompareModifiedEntry
-        >
-    >
-> indexed_modified_transaction_set;
+// C++23: Replace boost::multi_index with std containers
+// Primary container ordered by iterator comparison
+using indexed_modified_transaction_set = std::set<CTxMemPoolModifiedEntry, CompareCTxMemPoolIter>;
+// Secondary index by ancestor score for fast lookups
+using ancestor_score_index = std::multiset<CTxMemPoolModifiedEntry, CompareModifiedEntry>;
 
-using modtxiter = indexed_modified_transaction_set::nth_index<0>::type::iterator;
-using modtxscoreiter = indexed_modified_transaction_set::index<ancestor_score>::type::iterator;
+// C++23: Simplified iterator types
+using modtxiter = indexed_modified_transaction_set::iterator;
+using modtxscoreiter = ancestor_score_index::iterator;
 
 struct update_for_parent_inclusion
 {
