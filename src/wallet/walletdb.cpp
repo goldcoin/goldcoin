@@ -22,7 +22,7 @@
 
 #include <boost/version.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/thread.hpp>
+#include <thread>
 
 using namespace std;
 
@@ -615,9 +615,7 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
         }
         pcursor->close();
     }
-    catch (const boost::thread_interrupted&) {
-        throw;
-    }
+    // Note: std::thread doesn't support interruption like boost::thread
     catch (...) {
         result = DB_CORRUPT;
     }
@@ -714,9 +712,7 @@ DBErrors CWalletDB::FindWalletTx(CWallet* pwallet, vector<uint256>& vTxHash, vec
         }
         pcursor->close();
     }
-    catch (const boost::thread_interrupted&) {
-        throw;
-    }
+    // Note: std::thread doesn't support interruption like boost::thread
     catch (...) {
         result = DB_CORRUPT;
     }
@@ -824,7 +820,7 @@ void ThreadFlushWalletDB()
 
                 if (nRefCount == 0)
                 {
-                    boost::this_thread::interruption_point();
+                    // Note: std::thread doesn't support interruption points like boost::thread
                     const std::string& strFile = pwalletMain->strWalletFile;
                     map<string, int>::iterator _mi = bitdb.mapFileUseCount.find(strFile);
                     if (_mi != bitdb.mapFileUseCount.end())

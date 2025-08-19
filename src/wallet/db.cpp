@@ -21,7 +21,7 @@
 #endif
 
 #include "fs.h"  // Use our filesystem abstraction
-#include <boost/thread.hpp>
+#include <thread>
 #include <boost/version.hpp>
 
 using namespace std;
@@ -82,7 +82,7 @@ bool CDBEnv::Open(const std::filesystem::path& pathIn)
     if (fDbEnvInit)
         return true;
 
-    boost::this_thread::interruption_point();
+    // Note: std::thread doesn't support interruption points like boost::thread
 
     strPath = pathIn.string();
     std::filesystem::path pathLogDir = pathIn / "database";
@@ -131,7 +131,7 @@ void CDBEnv::MakeMock()
     if (fDbEnvInit)
         throw runtime_error("CDBEnv::MakeMock: Already initialized");
 
-    boost::this_thread::interruption_point();
+    // Note: std::thread doesn't support interruption points like boost::thread
 
     LogPrint("db", "CDBEnv::MakeMock\n");
 
