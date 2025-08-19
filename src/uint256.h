@@ -22,7 +22,7 @@ template<unsigned int BITS>
 class base_blob
 {
 protected:
-    enum { WIDTH=BITS/8 };
+    static constexpr size_t WIDTH = BITS / 8;
     uint8_t data[WIDTH];
 public:
     base_blob()
@@ -32,9 +32,9 @@ public:
 
     explicit base_blob(const std::vector<unsigned char>& vch);
 
-    bool IsNull() const
+    [[nodiscard]] bool IsNull() const
     {
-        for (int i = 0; i < WIDTH; i++)
+        for (size_t i = 0; i < WIDTH; i++)
             if (data[i] != 0)
                 return false;
         return true;
@@ -45,9 +45,9 @@ public:
         memset(data, 0, sizeof(data));
     }
 
-    inline int Compare(const base_blob& other) const { return memcmp(data, other.data, sizeof(data)); }
+    [[nodiscard]] inline int Compare(const base_blob& other) const { return memcmp(data, other.data, sizeof(data)); }
 
-    friend inline bool operator==(const base_blob& a, const base_blob& b) { return a.Compare(b) == 0; }
+    [[nodiscard]] friend inline bool operator==(const base_blob& a, const base_blob& b) { return a.Compare(b) == 0; }
     friend inline bool operator!=(const base_blob& a, const base_blob& b) { return a.Compare(b) != 0; }
     friend inline bool operator<(const base_blob& a, const base_blob& b) { return a.Compare(b) < 0; }
 
