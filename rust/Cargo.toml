@@ -6,6 +6,9 @@ members = [
     "goldcoin-p2p",
     "goldcoin-mempool",
     "goldcoin-utxo",
+    "goldcoin-script",
+    "goldcoin-rpc",
+    "goldcoin-storage",
 ]
 resolver = "2"
 
