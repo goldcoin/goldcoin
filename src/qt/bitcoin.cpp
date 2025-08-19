@@ -32,6 +32,7 @@
 #include "../ui_interface.h"
 #include "util.h"
 #include "warnings.h"
+#include "fs.h"  // For filesystem operations
 
 #ifdef ENABLE_WALLET
 #include "wallet/wallet.h"
@@ -40,7 +41,8 @@
 #include <stdint.h>
 
 #include <boost/filesystem/operations.hpp>
-#include <boost/thread.hpp>
+#include <thread>
+#include <vector>
 
 #include <QApplication>
 #include <QDebug>
@@ -163,7 +165,7 @@ Q_SIGNALS:
     void runawayException(const QString &message);
 
 private:
-    boost::thread_group threadGroup;
+    std::vector<std::thread> threads;
     CScheduler scheduler;
 
     /// Pass fatal exception message to UI thread
@@ -576,7 +578,7 @@ int main(int argc, char *argv[])
 
     /// 6. Determine availability of data directory and parse bitcoin.conf
     /// - Do not call GetDataDir(true) before this step finishes
-    if (!boost::filesystem::is_directory(GetDataDir(false)))
+    if (!fsbridge::IsDirectory(GetDataDir(false)))
     {
         QMessageBox::critical(nullptr, QObject::tr(PACKAGE_NAME),
                               QObject::tr("Error: Specified data directory \"%1\" does not exist.").arg(QString::fromStdString(GetArg("-datadir", ""))));
@@ -649,7 +651,7 @@ int main(int argc, char *argv[])
         InitMessage(message);
     });
     
-    // Legacy boost::signals2 connection for backward compatibility
+    // Qt 6.9 signal connections - no boost needed
     uiInterface.InitMessage.connect(InitMessage);
 
     if (GetBoolArg("-splash", DEFAULT_SPLASHSCREEN) && !GetBoolArg("-min", false))
