@@ -341,6 +341,7 @@ impl P2PHandler {
         }
         
         // Store peer info
+        let user_agent_copy = version.user_agent.clone();
         let peer_info = PeerInfo {
             addr: peer,
             version: version.version,
@@ -356,7 +357,7 @@ impl P2PHandler {
         
         self.peers.insert(peer, Arc::new(RwLock::new(peer_info)));
         
-        info!("New peer connected: {} ({})", peer, version.user_agent);
+        info!("New peer connected: {} ({})", peer, user_agent_copy);
         
         // Send verack
         Ok(Some(MessageType::Verack))
@@ -394,13 +395,13 @@ impl P2PHandler {
             match item.inv_type {
                 InvType::Block => {
                     if !self.known_blocks.contains_key(&item.hash) {
-                        get_data.push(item);
+                        get_data.push(item.clone());
                         self.known_blocks.insert(item.hash, SystemTime::now());
                     }
                 }
                 InvType::Tx => {
                     if !self.known_txs.contains_key(&item.hash) {
-                        get_data.push(item);
+                        get_data.push(item.clone());
                         self.known_txs.insert(item.hash, SystemTime::now());
                     }
                 }

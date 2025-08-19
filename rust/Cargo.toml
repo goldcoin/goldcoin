@@ -5,6 +5,7 @@ members = [
     "goldcoin-ffi",
     "goldcoin-p2p",
     "goldcoin-mempool",
+    "goldcoin-utxo",
 ]
 resolver = "2"
 
