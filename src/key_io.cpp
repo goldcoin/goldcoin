@@ -9,8 +9,7 @@
 #include <script/script.h>
 #include <utilstrencodings.h>
 
-#include <boost/variant/apply_visitor.hpp>
-#include <boost/variant/static_visitor.hpp>
+#include <variant>
 
 #include <assert.h>
 #include <string.h>
@@ -18,7 +17,7 @@
 
 namespace
 {
-class DestinationEncoder : public boost::static_visitor<std::string>
+class DestinationEncoder
 {
 private:
     const CChainParams& m_params;
@@ -147,7 +146,7 @@ std::string EncodeExtKey(const CExtKey& key)
 
 std::string EncodeDestination(const CTxDestination& dest)
 {
-    return boost::apply_visitor(DestinationEncoder(Params()), dest);
+    return std::visit(DestinationEncoder(Params()), dest);
 }
 
 CTxDestination DecodeDestination(const std::string& str)

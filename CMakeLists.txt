@@ -12,8 +12,8 @@ option(WITH_MINIUPNPC "Enable UPnP support" OFF)
 
 # ===== C++ STANDARD (C++23 with GCC 15.2 - No Boost!) =====
 # Force GCC 15.2 for full C++23 support
-set(CMAKE_C_COMPILER gcc-15)
-set(CMAKE_CXX_COMPILER g++-15)
+set(CMAKE_C_COMPILER /usr/bin/gcc-15)
+set(CMAKE_CXX_COMPILER /usr/bin/g++-15)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -98,7 +98,9 @@ if(NOT USE_DEPENDS)
 endif()
 
 # Boost
-find_package(Boost 1.47 REQUIRED COMPONENTS system filesystem program_options thread chrono)
+# Boost completely removed - using C++23 standard library
+# All boost::thread replaced with std::thread
+# find_package(Boost 1.47 REQUIRED COMPONENTS thread)
 
 # Platform-specific dependencies
 if(NOT WIN32)
@@ -360,7 +362,7 @@ target_link_libraries(goldcoind
     memenv
     secp256k1
     univalue
-    ${Boost_LIBRARIES}
+    # No boost libraries - using C++23 std library
     OpenSSL::SSL
     OpenSSL::Crypto
     ${PLATFORM_LIBS}
@@ -392,7 +394,7 @@ target_link_libraries(goldcoin-cli
     bitcoin_util
     bitcoin_crypto
     univalue
-    ${Boost_LIBRARIES}
+    # No boost libraries - using C++23 std library
     OpenSSL::SSL
     OpenSSL::Crypto
     ${PLATFORM_LIBS}
@@ -407,7 +409,7 @@ target_link_libraries(goldcoin-tx
     bitcoin_crypto
     secp256k1
     univalue
-    ${Boost_LIBRARIES}
+    # No boost libraries - using C++23 std library
     OpenSSL::SSL
     OpenSSL::Crypto
 )
@@ -493,7 +495,7 @@ if(BUILD_GUI)
         memenv
         secp256k1
         univalue
-        ${Boost_LIBRARIES}
+        # No boost libraries - using C++23 std library
         OpenSSL::SSL
         OpenSSL::Crypto
     )
@@ -527,7 +529,7 @@ if(BUILD_GUI)
         memenv
         secp256k1
         univalue
-        ${Boost_LIBRARIES}
+        # No boost libraries - using C++23 std library
         OpenSSL::SSL
         OpenSSL::Crypto
     )
@@ -577,7 +579,7 @@ if(BUILD_TESTS)
         memenv
         secp256k1
         univalue
-        ${Boost_LIBRARIES}
+        # No boost libraries - using C++23 std library
         OpenSSL::SSL
         OpenSSL::Crypto
         ${PLATFORM_LIBS}

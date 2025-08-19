@@ -35,7 +35,7 @@
 #include <variant>
 
 #include "fs.h"  // Use our filesystem abstraction
-#include <boost/thread.hpp>
+#include <thread>
 
 using namespace std;
 
@@ -1005,7 +1005,8 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFlushOnClose)
             strCmd.replace(pos, from.length(), to);
             pos += to.length();
         }
-        boost::thread t(runCommand, strCmd); // thread runs free
+        std::thread t(runCommand, strCmd); // thread runs free
+        t.detach(); // thread runs free
     }
 
     return true;
@@ -3787,7 +3788,7 @@ bool CWallet::InitLoadWallet()
 
 std::atomic<bool> CWallet::fFlushThreadRunning(false);
 
-void CWallet::postInitProcess(boost::thread_group& threadGroup)
+void CWallet::postInitProcess(std::vector<std::thread>& threadGroup)
 {
     // Add wallet transactions that aren't already in a block to mempool
     // Do this here as mempool requires genesis block to be loaded
@@ -3795,7 +3796,7 @@ void CWallet::postInitProcess(boost::thread_group& threadGroup)
 
     // Run a thread to flush wallet periodically
     if (!CWallet::fFlushThreadRunning.exchange(true)) {
-        threadGroup.create_thread(ThreadFlushWalletDB);
+        threadGroup.emplace_back(ThreadFlushWalletDB);
     }
 }
 

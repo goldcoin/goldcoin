@@ -32,7 +32,7 @@
 #include <vector>
 
 #include <boost/shared_ptr.hpp>
-#include <boost/thread.hpp>
+#include <thread>
 
 extern CWallet* pwalletMain;
 
@@ -982,7 +982,7 @@ public:
      * Wallet post-init setup
      * Gives the wallet a chance to register repetitive tasks and complete post-init tasks
      */
-    void postInitProcess(boost::thread_group& threadGroup);
+    void postInitProcess(std::vector<std::thread>& threadGroup);
 
     /* Wallets parameter interaction */
     static bool ParameterInteraction();
