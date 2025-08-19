@@ -3,6 +3,12 @@ members = [
     "goldcoin-network",
     "goldcoin-consensus",
     "goldcoin-ffi",
+    "goldcoin-p2p",
+    "goldcoin-mempool",
+    "goldcoin-utxo",
+    "goldcoin-script",
+    "goldcoin-rpc",
+    "goldcoin-storage",
 ]
 resolver = "2"
 

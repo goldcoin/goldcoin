@@ -1,0 +1,42 @@
+[package]
+name = "goldcoin-rpc"
+version = "0.17.0"
+edition = "2021"
+authors = ["The Goldcoin Core developers"]
+license = "MIT"
+
+[dependencies]
+# Web framework
+axum = { version = "0.7", features = ["json", "ws", "macros"] }
+tower = { version = "0.5", features = ["full"] }
+tower-http = { version = "0.6", features = ["cors", "trace", "compression-gzip"] }
+hyper = { version = "1.5", features = ["full"] }
+
+# Async runtime
+tokio = { version = "1.40", features = ["full"] }
+async-trait = "0.1"
+
+# JSON-RPC
+jsonrpsee = { version = "0.24", features = ["server", "macros"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Authentication
+jsonwebtoken = "9.3"
+argon2 = "0.5"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = "0.3"
+
+# Error handling
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Utilities
+base64 = "0.22"
+hex = "0.4"
+uuid = { version = "1.11", features = ["v4", "serde"] }
+
+[dev-dependencies]
+reqwest = { version = "0.12", features = ["json"] }
