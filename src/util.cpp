@@ -12,6 +12,7 @@
 #include "util.h"
 
 #include "chainparamsbase.h"
+#include "fs.h"  // Our new filesystem header - NO MORE BOOST!
 #include "random.h"
 #include "serialize.h"
 #include "sync.h"
@@ -504,7 +505,7 @@ void PrintExceptionContinue(const std::exception* pex, const char* pszThread)
 
 std::filesystem::path GetDefaultDataDir()
 {
-    namespace fs = boost::filesystem;
+    // Using std::filesystem directly - no boost!
     // Windows < Vista: C:\Documents and Settings\Username\Application Data\Goldcoin
     // Windows >= Vista: C:\Users\Username\AppData\Roaming\Goldcoin
     // Mac: ~/Library/Application Support/Goldcoin
@@ -535,7 +536,7 @@ static CCriticalSection csPathCached;
 
 const std::filesystem::path &GetDataDir(bool fNetSpecific)
 {
-    namespace fs = boost::filesystem;
+    // Using fs from fs.h header (std::filesystem)
 
     LOCK(csPathCached);
 
@@ -547,8 +548,8 @@ const std::filesystem::path &GetDataDir(bool fNetSpecific)
         return path;
 
     if (IsArgSet("-datadir")) {
-        path = fs::system_complete(GetArg("-datadir", ""));
-        if (!fs::is_directory(path)) {
+        path = fs::absolute(GetArg("-datadir", ""));
+        if (!fsbridge::IsDirectory(path)) {
             path = "";
             return path;
         }
@@ -558,7 +559,7 @@ const std::filesystem::path &GetDataDir(bool fNetSpecific)
     if (fNetSpecific)
         path /= BaseParams().DataDir();
 
-    fs::create_directories(path);
+    fsbridge::CreateDirectories(path);
 
     return path;
 }
@@ -574,7 +575,7 @@ void ClearDatadirCache()
 std::filesystem::path GetConfigFile(const std::string& confPath)
 {
     std::filesystem::path pathConfigFile(confPath);
-    if (!pathConfigFile.is_complete())
+    if (!pathConfigFile.is_absolute())
         pathConfigFile = GetDataDir(false) / pathConfigFile;
 
     return pathConfigFile;
@@ -582,7 +583,7 @@ std::filesystem::path GetConfigFile(const std::string& confPath)
 
 void ReadConfigFile(const std::string& confPath)
 {
-    std::filesystem::ifstream streamConfig(GetConfigFile(confPath));
+    std::ifstream streamConfig(GetConfigFile(confPath));
      if (!streamConfig.good())
         return; // No goldcoin.conf file is OK
 	
@@ -610,7 +611,7 @@ void ReadConfigFile(const std::string& confPath)
 std::filesystem::path GetPidFile()
 {
     std::filesystem::path pathPidFile(GetArg("-pid", BITCOIN_PID_FILENAME));
-    if (!pathPidFile.is_complete()) pathPidFile = GetDataDir() / pathPidFile;
+    if (!pathPidFile.is_absolute()) pathPidFile = GetDataDir() / pathPidFile;
     return pathPidFile;
 }
 
@@ -780,7 +781,7 @@ void ShrinkDebugFile()
 #ifdef WIN32
 std::filesystem::path GetSpecialFolderPath(int nFolder, bool fCreate)
 {
-    namespace fs = boost::filesystem;
+    // Using fs from fs.h header (std::filesystem)
 
     char pszPath[MAX_PATH] = "";
 
@@ -842,8 +843,8 @@ void SetupEnvironment()
     // in multithreading environments, it is set explicitly by the main thread.
     // A dummy locale is used to extract the internal default locale, used by
     // std::filesystem::path, which is then used to explicitly imbue the path.
-    std::locale loc = std::filesystem::path::imbue(std::locale::classic());
-    std::filesystem::path::imbue(loc);
+    // Path locale handling removed - not needed with std::filesystem in C++23
+    // Modern std::filesystem handles locale properly internally
 }
 
 bool SetupNetworking()

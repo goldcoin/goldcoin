@@ -47,7 +47,7 @@
 #include <memory>
 
 #include <boost/algorithm/string/join.hpp>
-#include <filesystem>
+#include "fs.h"  // Use our filesystem abstraction
 #include <fstream>
 #include <boost/math/distributions/poisson.hpp>
 #include <boost/thread.hpp>
@@ -3480,8 +3480,8 @@ void UnlinkPrunedFiles(const std::set<int>& setFilesToPrune)
 {
     for (std::set<int>::iterator it = setFilesToPrune.begin(); it != setFilesToPrune.end(); ++it) {
         CDiskBlockPos pos(*it, 0);
-        std::filesystem::remove(GetBlockPosFilename(pos, "blk"));
-        std::filesystem::remove(GetBlockPosFilename(pos, "rev"));
+        fsbridge::Remove(GetBlockPosFilename(pos, "blk"));
+        fsbridge::Remove(GetBlockPosFilename(pos, "rev"));
         LogPrintf("Prune: %s deleted blk/rev (%05u)\n", __func__, *it);
     }
 }
@@ -3578,7 +3578,7 @@ FILE* OpenDiskFile(const CDiskBlockPos &pos, const char *prefix, bool fReadOnly)
 {
     if (pos.IsNull())
         return nullptr;
-    std::filesystem::path path = GetBlockPosFilename(pos, prefix);
+    fs::path path = GetBlockPosFilename(pos, prefix);
     std::filesystem::create_directories(path.parent_path());
     FILE* file = fopen(path.string().c_str(), "rb+");
     if (!file && !fReadOnly)
@@ -3605,7 +3605,7 @@ FILE* OpenUndoFile(const CDiskBlockPos &pos, bool fReadOnly) {
     return OpenDiskFile(pos, "rev", fReadOnly);
 }
 
-std::filesystem::path GetBlockPosFilename(const CDiskBlockPos &pos, const char *prefix)
+fs::path GetBlockPosFilename(const CDiskBlockPos &pos, const char *prefix)
 {
     return GetDataDir() / "blocks" / strprintf("%s%05u.dat", prefix, pos.nFile);
 }

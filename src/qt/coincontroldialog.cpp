@@ -20,7 +20,8 @@
 #include "validation.h" // For mempool
 #include "wallet/wallet.h"
 
-#include <boost/assign/list_of.hpp> // for 'map_list_of()'
+#include <boost/assign/list_of.hpp>
+#include <variant> // for 'map_list_of()'
 
 #include <QApplication>
 #include <QCheckBox>
@@ -460,7 +461,7 @@ void CoinControlDialog::updateLabels(WalletModel *model, QDialog* dialog)
         if(ExtractDestination(out.tx->tx->vout[out.i].scriptPubKey, address))
         {
             CPubKey pubkey;
-            CKeyID *keyid = boost::get<CKeyID>(&address);
+            CKeyID *keyid = std::get_if<CKeyID>(&address);
             if (keyid && model->getPubKey(*keyid, pubkey))
             {
                 nBytesInputs += (pubkey.IsCompressed() ? 148 : 180);

@@ -11,8 +11,8 @@
 #include <map>
 #include <stdint.h>
 #include <string>
-#include <filesystem>
 
+#include "fs.h"  // Use our filesystem abstraction
 #include <univalue.h>
 
 //! HTTP status codes
@@ -84,7 +84,7 @@ std::string JSONRPCReply(const UniValue& result, const UniValue& error, const Un
 UniValue JSONRPCError(int code, const std::string& message);
 
 /** Get name of RPC authentication cookie file */
-std::filesystem::path GetAuthCookieFile();
+fs::path GetAuthCookieFile();
 /** Generate a new RPC authentication cookie and write it to disk */
 bool GenerateAuthCookie(std::string *cookie_out);
 /** Read the RPC authentication cookie from disk */
