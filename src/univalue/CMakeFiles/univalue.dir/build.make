@@ -73,43 +73,43 @@ src/univalue/CMakeFiles/univalue.dir/lib/univalue.cpp.o: src/univalue/CMakeFiles
 src/univalue/CMakeFiles/univalue.dir/lib/univalue.cpp.o: src/univalue/lib/univalue.cpp
 src/univalue/CMakeFiles/univalue.dir/lib/univalue.cpp.o: src/univalue/CMakeFiles/univalue.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/univalue/CMakeFiles/univalue.dir/lib/univalue.cpp.o"
-	cd /home/microguy/git/microguy/goldcoin/src/univalue && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/univalue/CMakeFiles/univalue.dir/lib/univalue.cpp.o -MF CMakeFiles/univalue.dir/lib/univalue.cpp.o.d -o CMakeFiles/univalue.dir/lib/univalue.cpp.o -c /home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue.cpp
+	cd /home/microguy/git/microguy/goldcoin/src/univalue && /usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/univalue/CMakeFiles/univalue.dir/lib/univalue.cpp.o -MF CMakeFiles/univalue.dir/lib/univalue.cpp.o.d -o CMakeFiles/univalue.dir/lib/univalue.cpp.o -c /home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue.cpp
 
 src/univalue/CMakeFiles/univalue.dir/lib/univalue.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/univalue.dir/lib/univalue.cpp.i"
-	cd /home/microguy/git/microguy/goldcoin/src/univalue && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue.cpp > CMakeFiles/univalue.dir/lib/univalue.cpp.i
+	cd /home/microguy/git/microguy/goldcoin/src/univalue && /usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue.cpp > CMakeFiles/univalue.dir/lib/univalue.cpp.i
 
 src/univalue/CMakeFiles/univalue.dir/lib/univalue.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/univalue.dir/lib/univalue.cpp.s"
-	cd /home/microguy/git/microguy/goldcoin/src/univalue && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue.cpp -o CMakeFiles/univalue.dir/lib/univalue.cpp.s
+	cd /home/microguy/git/microguy/goldcoin/src/univalue && /usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue.cpp -o CMakeFiles/univalue.dir/lib/univalue.cpp.s
 
 src/univalue/CMakeFiles/univalue.dir/lib/univalue_read.cpp.o: src/univalue/CMakeFiles/univalue.dir/flags.make
 src/univalue/CMakeFiles/univalue.dir/lib/univalue_read.cpp.o: src/univalue/lib/univalue_read.cpp
 src/univalue/CMakeFiles/univalue.dir/lib/univalue_read.cpp.o: src/univalue/CMakeFiles/univalue.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object src/univalue/CMakeFiles/univalue.dir/lib/univalue_read.cpp.o"
-	cd /home/microguy/git/microguy/goldcoin/src/univalue && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/univalue/CMakeFiles/univalue.dir/lib/univalue_read.cpp.o -MF CMakeFiles/univalue.dir/lib/univalue_read.cpp.o.d -o CMakeFiles/univalue.dir/lib/univalue_read.cpp.o -c /home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue_read.cpp
+	cd /home/microguy/git/microguy/goldcoin/src/univalue && /usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/univalue/CMakeFiles/univalue.dir/lib/univalue_read.cpp.o -MF CMakeFiles/univalue.dir/lib/univalue_read.cpp.o.d -o CMakeFiles/univalue.dir/lib/univalue_read.cpp.o -c /home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue_read.cpp
 
 src/univalue/CMakeFiles/univalue.dir/lib/univalue_read.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/univalue.dir/lib/univalue_read.cpp.i"
-	cd /home/microguy/git/microguy/goldcoin/src/univalue && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue_read.cpp > CMakeFiles/univalue.dir/lib/univalue_read.cpp.i
+	cd /home/microguy/git/microguy/goldcoin/src/univalue && /usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue_read.cpp > CMakeFiles/univalue.dir/lib/univalue_read.cpp.i
 
 src/univalue/CMakeFiles/univalue.dir/lib/univalue_read.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/univalue.dir/lib/univalue_read.cpp.s"
-	cd /home/microguy/git/microguy/goldcoin/src/univalue && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue_read.cpp -o CMakeFiles/univalue.dir/lib/univalue_read.cpp.s
+	cd /home/microguy/git/microguy/goldcoin/src/univalue && /usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue_read.cpp -o CMakeFiles/univalue.dir/lib/univalue_read.cpp.s
 
 src/univalue/CMakeFiles/univalue.dir/lib/univalue_write.cpp.o: src/univalue/CMakeFiles/univalue.dir/flags.make
 src/univalue/CMakeFiles/univalue.dir/lib/univalue_write.cpp.o: src/univalue/lib/univalue_write.cpp
 src/univalue/CMakeFiles/univalue.dir/lib/univalue_write.cpp.o: src/univalue/CMakeFiles/univalue.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object src/univalue/CMakeFiles/univalue.dir/lib/univalue_write.cpp.o"
-	cd /home/microguy/git/microguy/goldcoin/src/univalue && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/univalue/CMakeFiles/univalue.dir/lib/univalue_write.cpp.o -MF CMakeFiles/univalue.dir/lib/univalue_write.cpp.o.d -o CMakeFiles/univalue.dir/lib/univalue_write.cpp.o -c /home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue_write.cpp
+	cd /home/microguy/git/microguy/goldcoin/src/univalue && /usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/univalue/CMakeFiles/univalue.dir/lib/univalue_write.cpp.o -MF CMakeFiles/univalue.dir/lib/univalue_write.cpp.o.d -o CMakeFiles/univalue.dir/lib/univalue_write.cpp.o -c /home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue_write.cpp
 
 src/univalue/CMakeFiles/univalue.dir/lib/univalue_write.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/univalue.dir/lib/univalue_write.cpp.i"
-	cd /home/microguy/git/microguy/goldcoin/src/univalue && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue_write.cpp > CMakeFiles/univalue.dir/lib/univalue_write.cpp.i
+	cd /home/microguy/git/microguy/goldcoin/src/univalue && /usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue_write.cpp > CMakeFiles/univalue.dir/lib/univalue_write.cpp.i
 
 src/univalue/CMakeFiles/univalue.dir/lib/univalue_write.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/univalue.dir/lib/univalue_write.cpp.s"
-	cd /home/microguy/git/microguy/goldcoin/src/univalue && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue_write.cpp -o CMakeFiles/univalue.dir/lib/univalue_write.cpp.s
+	cd /home/microguy/git/microguy/goldcoin/src/univalue && /usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue_write.cpp -o CMakeFiles/univalue.dir/lib/univalue_write.cpp.s
 
 # Object files for target univalue
 univalue_OBJECTS = \

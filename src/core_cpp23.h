@@ -21,6 +21,12 @@
 #include <chrono>
 #include <variant>
 #include <coroutine>
+#include <thread>
+#include <vector>
+#include <functional>
+#include <mutex>
+#include <condition_variable>
+#include <atomic>
 
 namespace goldcoin::core {
 
@@ -230,6 +236,165 @@ private:
     }
 };
 
+// Modern thread management (replaces boost::thread_group)
+class ThreadGroup {
+private:
+    std::vector<std::thread> threads;
+    std::atomic<bool> interrupted{false};
+    
+public:
+    ThreadGroup() = default;
+    
+    // Non-copyable, movable
+    ThreadGroup(const ThreadGroup&) = delete;
+    ThreadGroup& operator=(const ThreadGroup&) = delete;
+    ThreadGroup(ThreadGroup&&) = default;
+    ThreadGroup& operator=(ThreadGroup&&) = default;
+    
+    // Create and add a thread
+    template<typename Function, typename... Args>
+    void create_thread(Function&& func, Args&&... args) {
+        threads.emplace_back(std::forward<Function>(func), std::forward<Args>(args)...);
+    }
+    
+    // Add an existing thread
+    void add_thread(std::thread&& thread) {
+        threads.push_back(std::move(thread));
+    }
+    
+    // Interrupt all threads (sets flag, actual interruption is implementation-specific)
+    void interrupt_all() {
+        interrupted = true;
+    }
+    
+    // Check if interrupted
+    [[nodiscard]] bool is_interrupted() const {
+        return interrupted;
+    }
+    
+    // Join all threads
+    void join_all() {
+        for (auto& thread : threads) {
+            if (thread.joinable()) {
+                thread.join();
+            }
+        }
+        threads.clear();
+    }
+    
+    // Get size
+    [[nodiscard]] size_t size() const {
+        return threads.size();
+    }
+    
+    // Check if empty
+    [[nodiscard]] bool empty() const {
+        return threads.empty();
+    }
+    
+    // Destructor joins all threads
+    ~ThreadGroup() {
+        interrupt_all();
+        join_all();
+    }
+};
+
+// Modern signal replacement (replaces boost::signals2)
+template<typename Signature>
+class Signal;
+
+template<typename Return, typename... Args>
+class Signal<Return(Args...)> {
+private:
+    std::vector<std::function<Return(Args...)>> slots;
+    mutable std::mutex slots_mutex;
+    
+public:
+    using slot_type = std::function<Return(Args...)>;
+    using connection_id = size_t;
+    
+    // Connect a slot and return connection ID
+    connection_id connect(slot_type slot) {
+        std::lock_guard<std::mutex> lock(slots_mutex);
+        slots.push_back(std::move(slot));
+        return slots.size() - 1;
+    }
+    
+    // Disconnect all slots
+    void disconnect_all() {
+        std::lock_guard<std::mutex> lock(slots_mutex);
+        slots.clear();
+    }
+    
+    // Emit signal to all connected slots
+    void operator()(Args... args) const {
+        std::lock_guard<std::mutex> lock(slots_mutex);
+        for (const auto& slot : slots) {
+            if (slot) {
+                slot(args...);
+            }
+        }
+    }
+    
+    // Check if any slots are connected
+    [[nodiscard]] bool empty() const {
+        std::lock_guard<std::mutex> lock(slots_mutex);
+        return slots.empty();
+    }
+    
+    // Get number of connected slots
+    [[nodiscard]] size_t size() const {
+        std::lock_guard<std::mutex> lock(slots_mutex);
+        return slots.size();
+    }
+};
+
+// Thread-safe utilities
+template<typename T>
+class ThreadSafe {
+private:
+    mutable std::mutex mutex_;
+    T data_;
+    
+public:
+    template<typename... Args>
+    explicit ThreadSafe(Args&&... args) : data_(std::forward<Args>(args)...) {}
+    
+    // Execute function with locked access
+    template<typename Function>
+    auto with_lock(Function&& func) const -> decltype(func(data_)) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        return func(data_);
+    }
+    
+    // Execute function with locked access (non-const)
+    template<typename Function>
+    auto with_lock(Function&& func) -> decltype(func(data_)) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        return func(data_);
+    }
+    
+    // Copy assignment
+    ThreadSafe& operator=(const T& value) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        data_ = value;
+        return *this;
+    }
+    
+    // Move assignment
+    ThreadSafe& operator=(T&& value) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        data_ = std::move(value);
+        return *this;
+    }
+    
+    // Get copy of value
+    [[nodiscard]] T get() const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        return data_;
+    }
+};
+
 // C++23 deducing this for method chaining
 class ChainBuilder {
 public:
@@ -253,6 +418,12 @@ public:
 };
 
 } // namespace goldcoin::core
+
+// Legacy compatibility aliases for boost replacements
+using thread_group = goldcoin::core::ThreadGroup;
+
+template<typename Signature>
+using signal = goldcoin::core::Signal<Signature>;
 
 // Convenience aliases
 namespace gc = goldcoin::core;

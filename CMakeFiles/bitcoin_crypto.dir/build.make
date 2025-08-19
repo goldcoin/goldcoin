@@ -73,141 +73,141 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/aes.cpp.o: CMakeFiles/bitcoin_crypto.di
 CMakeFiles/bitcoin_crypto.dir/src/crypto/aes.cpp.o: src/crypto/aes.cpp
 CMakeFiles/bitcoin_crypto.dir/src/crypto/aes.cpp.o: CMakeFiles/bitcoin_crypto.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/bitcoin_crypto.dir/src/crypto/aes.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_crypto.dir/src/crypto/aes.cpp.o -MF CMakeFiles/bitcoin_crypto.dir/src/crypto/aes.cpp.o.d -o CMakeFiles/bitcoin_crypto.dir/src/crypto/aes.cpp.o -c /home/microguy/git/microguy/goldcoin/src/crypto/aes.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_crypto.dir/src/crypto/aes.cpp.o -MF CMakeFiles/bitcoin_crypto.dir/src/crypto/aes.cpp.o.d -o CMakeFiles/bitcoin_crypto.dir/src/crypto/aes.cpp.o -c /home/microguy/git/microguy/goldcoin/src/crypto/aes.cpp
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/aes.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_crypto.dir/src/crypto/aes.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/crypto/aes.cpp > CMakeFiles/bitcoin_crypto.dir/src/crypto/aes.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/crypto/aes.cpp > CMakeFiles/bitcoin_crypto.dir/src/crypto/aes.cpp.i
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/aes.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_crypto.dir/src/crypto/aes.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/crypto/aes.cpp -o CMakeFiles/bitcoin_crypto.dir/src/crypto/aes.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/crypto/aes.cpp -o CMakeFiles/bitcoin_crypto.dir/src/crypto/aes.cpp.s
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.o: CMakeFiles/bitcoin_crypto.dir/flags.make
 CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.o: src/crypto/hmac_sha256.cpp
 CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.o: CMakeFiles/bitcoin_crypto.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.o -MF CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.o.d -o CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.o -c /home/microguy/git/microguy/goldcoin/src/crypto/hmac_sha256.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.o -MF CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.o.d -o CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.o -c /home/microguy/git/microguy/goldcoin/src/crypto/hmac_sha256.cpp
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/crypto/hmac_sha256.cpp > CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/crypto/hmac_sha256.cpp > CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.i
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/crypto/hmac_sha256.cpp -o CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/crypto/hmac_sha256.cpp -o CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.s
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha512.cpp.o: CMakeFiles/bitcoin_crypto.dir/flags.make
 CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha512.cpp.o: src/crypto/hmac_sha512.cpp
 CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha512.cpp.o: CMakeFiles/bitcoin_crypto.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha512.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha512.cpp.o -MF CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha512.cpp.o.d -o CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha512.cpp.o -c /home/microguy/git/microguy/goldcoin/src/crypto/hmac_sha512.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha512.cpp.o -MF CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha512.cpp.o.d -o CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha512.cpp.o -c /home/microguy/git/microguy/goldcoin/src/crypto/hmac_sha512.cpp
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha512.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha512.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/crypto/hmac_sha512.cpp > CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha512.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/crypto/hmac_sha512.cpp > CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha512.cpp.i
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha512.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha512.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/crypto/hmac_sha512.cpp -o CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha512.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/crypto/hmac_sha512.cpp -o CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha512.cpp.s
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.o: CMakeFiles/bitcoin_crypto.dir/flags.make
 CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.o: src/crypto/ripemd160.cpp
 CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.o: CMakeFiles/bitcoin_crypto.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.o -MF CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.o.d -o CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.o -c /home/microguy/git/microguy/goldcoin/src/crypto/ripemd160.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.o -MF CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.o.d -o CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.o -c /home/microguy/git/microguy/goldcoin/src/crypto/ripemd160.cpp
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/crypto/ripemd160.cpp > CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/crypto/ripemd160.cpp > CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.i
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/crypto/ripemd160.cpp -o CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/crypto/ripemd160.cpp -o CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.s
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.o: CMakeFiles/bitcoin_crypto.dir/flags.make
 CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.o: src/crypto/scrypt-sse2.cpp
 CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.o: CMakeFiles/bitcoin_crypto.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.o -MF CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.o.d -o CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.o -c /home/microguy/git/microguy/goldcoin/src/crypto/scrypt-sse2.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.o -MF CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.o.d -o CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.o -c /home/microguy/git/microguy/goldcoin/src/crypto/scrypt-sse2.cpp
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/crypto/scrypt-sse2.cpp > CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/crypto/scrypt-sse2.cpp > CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.i
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/crypto/scrypt-sse2.cpp -o CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/crypto/scrypt-sse2.cpp -o CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.s
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.o: CMakeFiles/bitcoin_crypto.dir/flags.make
 CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.o: src/crypto/scrypt.cpp
 CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.o: CMakeFiles/bitcoin_crypto.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.o -MF CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.o.d -o CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.o -c /home/microguy/git/microguy/goldcoin/src/crypto/scrypt.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.o -MF CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.o.d -o CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.o -c /home/microguy/git/microguy/goldcoin/src/crypto/scrypt.cpp
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/crypto/scrypt.cpp > CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/crypto/scrypt.cpp > CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.i
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/crypto/scrypt.cpp -o CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/crypto/scrypt.cpp -o CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.s
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.o: CMakeFiles/bitcoin_crypto.dir/flags.make
 CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.o: src/crypto/sha1.cpp
 CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.o: CMakeFiles/bitcoin_crypto.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.o -MF CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.o.d -o CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.o -c /home/microguy/git/microguy/goldcoin/src/crypto/sha1.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.o -MF CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.o.d -o CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.o -c /home/microguy/git/microguy/goldcoin/src/crypto/sha1.cpp
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/crypto/sha1.cpp > CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/crypto/sha1.cpp > CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.i
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/crypto/sha1.cpp -o CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/crypto/sha1.cpp -o CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.s
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.o: CMakeFiles/bitcoin_crypto.dir/flags.make
 CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.o: src/crypto/sha256.cpp
 CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.o: CMakeFiles/bitcoin_crypto.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.o -MF CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.o.d -o CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.o -c /home/microguy/git/microguy/goldcoin/src/crypto/sha256.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.o -MF CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.o.d -o CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.o -c /home/microguy/git/microguy/goldcoin/src/crypto/sha256.cpp
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/crypto/sha256.cpp > CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/crypto/sha256.cpp > CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.i
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/crypto/sha256.cpp -o CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/crypto/sha256.cpp -o CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.s
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.o: CMakeFiles/bitcoin_crypto.dir/flags.make
 CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.o: src/crypto/sha512.cpp
 CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.o: CMakeFiles/bitcoin_crypto.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.o -MF CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.o.d -o CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.o -c /home/microguy/git/microguy/goldcoin/src/crypto/sha512.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.o -MF CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.o.d -o CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.o -c /home/microguy/git/microguy/goldcoin/src/crypto/sha512.cpp
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/crypto/sha512.cpp > CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/crypto/sha512.cpp > CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.i
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/crypto/sha512.cpp -o CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/crypto/sha512.cpp -o CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.s
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/ctaes/ctaes.c.o: CMakeFiles/bitcoin_crypto.dir/flags.make
 CMakeFiles/bitcoin_crypto.dir/src/crypto/ctaes/ctaes.c.o: src/crypto/ctaes/ctaes.c
 CMakeFiles/bitcoin_crypto.dir/src/crypto/ctaes/ctaes.c.o: CMakeFiles/bitcoin_crypto.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object CMakeFiles/bitcoin_crypto.dir/src/crypto/ctaes/ctaes.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/bitcoin_crypto.dir/src/crypto/ctaes/ctaes.c.o -MF CMakeFiles/bitcoin_crypto.dir/src/crypto/ctaes/ctaes.c.o.d -o CMakeFiles/bitcoin_crypto.dir/src/crypto/ctaes/ctaes.c.o -c /home/microguy/git/microguy/goldcoin/src/crypto/ctaes/ctaes.c
+	/usr/bin/gcc-15 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/bitcoin_crypto.dir/src/crypto/ctaes/ctaes.c.o -MF CMakeFiles/bitcoin_crypto.dir/src/crypto/ctaes/ctaes.c.o.d -o CMakeFiles/bitcoin_crypto.dir/src/crypto/ctaes/ctaes.c.o -c /home/microguy/git/microguy/goldcoin/src/crypto/ctaes/ctaes.c
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/ctaes/ctaes.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/bitcoin_crypto.dir/src/crypto/ctaes/ctaes.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/crypto/ctaes/ctaes.c > CMakeFiles/bitcoin_crypto.dir/src/crypto/ctaes/ctaes.c.i
+	/usr/bin/gcc-15 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/crypto/ctaes/ctaes.c > CMakeFiles/bitcoin_crypto.dir/src/crypto/ctaes/ctaes.c.i
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/ctaes/ctaes.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/bitcoin_crypto.dir/src/crypto/ctaes/ctaes.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/crypto/ctaes/ctaes.c -o CMakeFiles/bitcoin_crypto.dir/src/crypto/ctaes/ctaes.c.s
+	/usr/bin/gcc-15 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/crypto/ctaes/ctaes.c -o CMakeFiles/bitcoin_crypto.dir/src/crypto/ctaes/ctaes.c.s
 
 # Object files for target bitcoin_crypto
 bitcoin_crypto_OBJECTS = \

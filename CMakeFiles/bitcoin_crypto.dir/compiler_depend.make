@@ -10,10 +10,6 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/aes.cpp.o: src/crypto/aes.cpp \
   src/crypto/ctaes/ctaes.h \
   /usr/include/alloca.h \
   /usr/include/assert.h \
-  /usr/include/c++/11/bits/std_abs.h \
-  /usr/include/c++/11/cstdlib \
-  /usr/include/c++/11/pstl/pstl_config.h \
-  /usr/include/c++/11/stdlib.h \
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
@@ -65,16 +61,20 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/aes.cpp.o: src/crypto/aes.cpp \
   /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
   /usr/include/x86_64-linux-gnu/bits/wchar.h \
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs.h \
   /usr/include/x86_64-linux-gnu/sys/cdefs.h \
   /usr/include/x86_64-linux-gnu/sys/select.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h
+  /usr/local/gcc-15/include/c++/15.2.1/bits/std_abs.h \
+  /usr/local/gcc-15/include/c++/15.2.1/cstdlib \
+  /usr/local/gcc-15/include/c++/15.2.1/pstl/pstl_config.h \
+  /usr/local/gcc-15/include/c++/15.2.1/stdlib.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++config.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/cpu_defines.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/os_defines.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/ctaes/ctaes.c.o: src/crypto/ctaes/ctaes.c \
   src/crypto/ctaes/ctaes.h \
@@ -129,17 +129,13 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/ctaes/ctaes.c.o: src/crypto/ctaes/ctaes
   /usr/include/x86_64-linux-gnu/sys/cdefs.h \
   /usr/include/x86_64-linux-gnu/sys/select.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
-  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.o: src/crypto/hmac_sha256.cpp \
   src/crypto/hmac_sha256.h \
   src/crypto/sha256.h \
   /usr/include/alloca.h \
-  /usr/include/c++/11/bits/std_abs.h \
-  /usr/include/c++/11/cstdlib \
-  /usr/include/c++/11/pstl/pstl_config.h \
-  /usr/include/c++/11/stdlib.h \
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
@@ -191,25 +187,25 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.o: src/crypto/hmac_sha2
   /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
   /usr/include/x86_64-linux-gnu/bits/wchar.h \
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs.h \
   /usr/include/x86_64-linux-gnu/sys/cdefs.h \
   /usr/include/x86_64-linux-gnu/sys/select.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h
+  /usr/local/gcc-15/include/c++/15.2.1/bits/std_abs.h \
+  /usr/local/gcc-15/include/c++/15.2.1/cstdlib \
+  /usr/local/gcc-15/include/c++/15.2.1/pstl/pstl_config.h \
+  /usr/local/gcc-15/include/c++/15.2.1/stdlib.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++config.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/cpu_defines.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/os_defines.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha512.cpp.o: src/crypto/hmac_sha512.cpp \
   src/crypto/hmac_sha512.h \
   src/crypto/sha512.h \
   /usr/include/alloca.h \
-  /usr/include/c++/11/bits/std_abs.h \
-  /usr/include/c++/11/cstdlib \
-  /usr/include/c++/11/pstl/pstl_config.h \
-  /usr/include/c++/11/stdlib.h \
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
@@ -261,16 +257,20 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha512.cpp.o: src/crypto/hmac_sha5
   /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
   /usr/include/x86_64-linux-gnu/bits/wchar.h \
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs.h \
   /usr/include/x86_64-linux-gnu/sys/cdefs.h \
   /usr/include/x86_64-linux-gnu/sys/select.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h
+  /usr/local/gcc-15/include/c++/15.2.1/bits/std_abs.h \
+  /usr/local/gcc-15/include/c++/15.2.1/cstdlib \
+  /usr/local/gcc-15/include/c++/15.2.1/pstl/pstl_config.h \
+  /usr/local/gcc-15/include/c++/15.2.1/stdlib.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++config.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/cpu_defines.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/os_defines.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.o: src/crypto/ripemd160.cpp \
   src/compat/endian.h \
@@ -278,10 +278,6 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.o: src/crypto/ripemd160.c
   src/crypto/common.h \
   src/crypto/ripemd160.h \
   /usr/include/alloca.h \
-  /usr/include/c++/11/bits/std_abs.h \
-  /usr/include/c++/11/cstdlib \
-  /usr/include/c++/11/pstl/pstl_config.h \
-  /usr/include/c++/11/stdlib.h \
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
@@ -333,24 +329,24 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.o: src/crypto/ripemd160.c
   /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
   /usr/include/x86_64-linux-gnu/bits/wchar.h \
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs.h \
   /usr/include/x86_64-linux-gnu/sys/cdefs.h \
   /usr/include/x86_64-linux-gnu/sys/select.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h
+  /usr/local/gcc-15/include/c++/15.2.1/bits/std_abs.h \
+  /usr/local/gcc-15/include/c++/15.2.1/cstdlib \
+  /usr/local/gcc-15/include/c++/15.2.1/pstl/pstl_config.h \
+  /usr/local/gcc-15/include/c++/15.2.1/stdlib.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++config.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/cpu_defines.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/os_defines.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.o: src/crypto/scrypt-sse2.cpp \
   src/crypto/scrypt.h \
   /usr/include/alloca.h \
-  /usr/include/c++/11/bits/std_abs.h \
-  /usr/include/c++/11/cstdlib \
-  /usr/include/c++/11/pstl/pstl_config.h \
-  /usr/include/c++/11/stdlib.h \
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
@@ -406,9 +402,6 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.o: src/crypto/scrypt-ss
   /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
   /usr/include/x86_64-linux-gnu/bits/wchar.h \
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs.h \
   /usr/include/x86_64-linux-gnu/openssl/configuration.h \
@@ -416,22 +409,25 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.o: src/crypto/scrypt-ss
   /usr/include/x86_64-linux-gnu/sys/cdefs.h \
   /usr/include/x86_64-linux-gnu/sys/select.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/emmintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/mm_malloc.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/mmintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/xmmintrin.h
+  /usr/local/gcc-15/include/c++/15.2.1/bits/std_abs.h \
+  /usr/local/gcc-15/include/c++/15.2.1/cstdlib \
+  /usr/local/gcc-15/include/c++/15.2.1/pstl/pstl_config.h \
+  /usr/local/gcc-15/include/c++/15.2.1/stdlib.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++config.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/cpu_defines.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/os_defines.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/emmintrin.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/mm_malloc.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/mmintrin.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/xmmintrin.h
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.o: src/crypto/scrypt.cpp \
   src/crypto/hmac_sha256.h \
   src/crypto/scrypt.h \
   src/crypto/sha256.h \
   /usr/include/alloca.h \
-  /usr/include/c++/11/bits/std_abs.h \
-  /usr/include/c++/11/cstdlib \
-  /usr/include/c++/11/pstl/pstl_config.h \
-  /usr/include/c++/11/stdlib.h \
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
@@ -487,9 +483,6 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.o: src/crypto/scrypt.cpp \
   /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
   /usr/include/x86_64-linux-gnu/bits/wchar.h \
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs.h \
   /usr/include/x86_64-linux-gnu/openssl/configuration.h \
@@ -497,8 +490,15 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.o: src/crypto/scrypt.cpp \
   /usr/include/x86_64-linux-gnu/sys/cdefs.h \
   /usr/include/x86_64-linux-gnu/sys/select.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h
+  /usr/local/gcc-15/include/c++/15.2.1/bits/std_abs.h \
+  /usr/local/gcc-15/include/c++/15.2.1/cstdlib \
+  /usr/local/gcc-15/include/c++/15.2.1/pstl/pstl_config.h \
+  /usr/local/gcc-15/include/c++/15.2.1/stdlib.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++config.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/cpu_defines.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/os_defines.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.o: src/crypto/sha1.cpp \
   src/compat/endian.h \
@@ -506,10 +506,6 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.o: src/crypto/sha1.cpp \
   src/crypto/common.h \
   src/crypto/sha1.h \
   /usr/include/alloca.h \
-  /usr/include/c++/11/bits/std_abs.h \
-  /usr/include/c++/11/cstdlib \
-  /usr/include/c++/11/pstl/pstl_config.h \
-  /usr/include/c++/11/stdlib.h \
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
@@ -561,16 +557,20 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.o: src/crypto/sha1.cpp \
   /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
   /usr/include/x86_64-linux-gnu/bits/wchar.h \
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs.h \
   /usr/include/x86_64-linux-gnu/sys/cdefs.h \
   /usr/include/x86_64-linux-gnu/sys/select.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h
+  /usr/local/gcc-15/include/c++/15.2.1/bits/std_abs.h \
+  /usr/local/gcc-15/include/c++/15.2.1/cstdlib \
+  /usr/local/gcc-15/include/c++/15.2.1/pstl/pstl_config.h \
+  /usr/local/gcc-15/include/c++/15.2.1/stdlib.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++config.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/cpu_defines.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/os_defines.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.o: src/crypto/sha256.cpp \
   src/compat/endian.h \
@@ -578,10 +578,6 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.o: src/crypto/sha256.cpp \
   src/crypto/common.h \
   src/crypto/sha256.h \
   /usr/include/alloca.h \
-  /usr/include/c++/11/bits/std_abs.h \
-  /usr/include/c++/11/cstdlib \
-  /usr/include/c++/11/pstl/pstl_config.h \
-  /usr/include/c++/11/stdlib.h \
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
@@ -633,16 +629,20 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.o: src/crypto/sha256.cpp \
   /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
   /usr/include/x86_64-linux-gnu/bits/wchar.h \
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs.h \
   /usr/include/x86_64-linux-gnu/sys/cdefs.h \
   /usr/include/x86_64-linux-gnu/sys/select.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h
+  /usr/local/gcc-15/include/c++/15.2.1/bits/std_abs.h \
+  /usr/local/gcc-15/include/c++/15.2.1/cstdlib \
+  /usr/local/gcc-15/include/c++/15.2.1/pstl/pstl_config.h \
+  /usr/local/gcc-15/include/c++/15.2.1/stdlib.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++config.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/cpu_defines.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/os_defines.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.o: src/crypto/sha512.cpp \
   src/compat/endian.h \
@@ -650,10 +650,6 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.o: src/crypto/sha512.cpp \
   src/crypto/common.h \
   src/crypto/sha512.h \
   /usr/include/alloca.h \
-  /usr/include/c++/11/bits/std_abs.h \
-  /usr/include/c++/11/cstdlib \
-  /usr/include/c++/11/pstl/pstl_config.h \
-  /usr/include/c++/11/stdlib.h \
   /usr/include/endian.h \
   /usr/include/features-time64.h \
   /usr/include/features.h \
@@ -705,31 +701,27 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.o: src/crypto/sha512.cpp \
   /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
   /usr/include/x86_64-linux-gnu/bits/wchar.h \
   /usr/include/x86_64-linux-gnu/bits/wordsize.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h \
-  /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
   /usr/include/x86_64-linux-gnu/gnu/stubs.h \
   /usr/include/x86_64-linux-gnu/sys/cdefs.h \
   /usr/include/x86_64-linux-gnu/sys/select.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h \
-  /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h
+  /usr/local/gcc-15/include/c++/15.2.1/bits/std_abs.h \
+  /usr/local/gcc-15/include/c++/15.2.1/cstdlib \
+  /usr/local/gcc-15/include/c++/15.2.1/pstl/pstl_config.h \
+  /usr/local/gcc-15/include/c++/15.2.1/stdlib.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++config.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/cpu_defines.h \
+  /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/os_defines.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h \
+  /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h
 
 
 src/crypto/sha512.cpp:
 
 src/crypto/sha1.cpp:
 
-src/crypto/scrypt.cpp:
-
-/usr/lib/gcc/x86_64-linux-gnu/11/include/xmmintrin.h:
-
-src/crypto/sha1.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/11/include/mmintrin.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/11/include/mm_malloc.h:
+/usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/mm_malloc.h:
 
 /usr/include/x86_64-linux-gnu/openssl/opensslconf.h:
 
@@ -743,13 +735,27 @@ src/crypto/ripemd160.h:
 
 src/crypto/ripemd160.cpp:
 
+src/crypto/sha512.h:
+
 src/crypto/hmac_sha512.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h:
+/usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/11/include/emmintrin.h:
+src/crypto/sha1.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h:
+/usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/cpu_defines.h:
+
+/usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++config.h:
+
+/usr/local/gcc-15/include/c++/15.2.1/stdlib.h:
+
+src/crypto/scrypt.cpp:
+
+/usr/local/gcc-15/include/c++/15.2.1/pstl/pstl_config.h:
+
+/usr/local/gcc-15/include/c++/15.2.1/cstdlib:
+
+/usr/local/gcc-15/include/c++/15.2.1/bits/std_abs.h:
 
 /usr/include/x86_64-linux-gnu/sys/types.h:
 
@@ -759,25 +765,7 @@ src/crypto/hmac_sha256.h:
 
 /usr/include/x86_64-linux-gnu/gnu/stubs.h:
 
-src/crypto/sha512.h:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h:
-
-/usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h:
-
 /usr/include/x86_64-linux-gnu/bits/wordsize.h:
-
-/usr/include/x86_64-linux-gnu/bits/wchar.h:
-
-/usr/include/x86_64-linux-gnu/bits/waitstatus.h:
-
-/usr/include/x86_64-linux-gnu/bits/waitflags.h:
-
-src/crypto/hmac_sha512.cpp:
-
-/usr/include/x86_64-linux-gnu/bits/uintn-identity.h:
 
 /usr/include/x86_64-linux-gnu/bits/floatn-common.h:
 
@@ -789,47 +777,65 @@ src/crypto/sha256.cpp:
 
 /usr/include/x86_64-linux-gnu/bits/types/locale_t.h:
 
-/usr/include/features.h:
+src/crypto/aes.cpp:
+
+/usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h:
+
+/usr/include/x86_64-linux-gnu/bits/select.h:
 
 /usr/include/x86_64-linux-gnu/bits/endianness.h:
 
 /usr/include/x86_64-linux-gnu/bits/typesizes.h:
 
-src/crypto/aes.cpp:
+/usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
 
-/usr/include/openssl/macros.h:
-
-/usr/include/stdint.h:
-
-/usr/include/x86_64-linux-gnu/bits/timesize.h:
-
-/usr/include/features-time64.h:
-
-/usr/include/x86_64-linux-gnu/openssl/configuration.h:
-
-/usr/include/openssl/e_os2.h:
-
-src/config/bitcoin-config.h:
-
-/usr/include/alloca.h:
+/usr/include/features.h:
 
 /usr/include/x86_64-linux-gnu/bits/floatn.h:
 
 src/crypto/ctaes/ctaes.h:
 
-/usr/include/c++/11/stdlib.h:
-
 src/crypto/hmac_sha256.cpp:
 
 src/crypto/aes.h:
-
-/usr/include/c++/11/pstl/pstl_config.h:
 
 /usr/include/x86_64-linux-gnu/bits/byteswap.h:
 
 /usr/include/x86_64-linux-gnu/bits/long-double.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/endian.h:
+
+/usr/include/string.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdint-uintn.h:
+
+src/crypto/hmac_sha512.cpp:
+
+/usr/include/x86_64-linux-gnu/bits/uintn-identity.h:
+
+/usr/include/x86_64-linux-gnu/bits/wchar.h:
+
+/usr/include/x86_64-linux-gnu/bits/select-decl.h:
+
+src/crypto/common.h:
+
+/usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/xmmintrin.h:
+
+/usr/include/x86_64-linux-gnu/bits/waitstatus.h:
+
+src/crypto/ctaes/ctaes.c:
+
+/usr/include/alloca.h:
+
+/usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/emmintrin.h:
+
+/usr/include/x86_64-linux-gnu/openssl/configuration.h:
+
+/usr/include/openssl/e_os2.h:
+
+src/config/bitcoin-config.h:
 
 /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
 
@@ -843,25 +849,19 @@ src/crypto/aes.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h:
 
-/usr/include/x86_64-linux-gnu/bits/endian.h:
+/usr/include/openssl/macros.h:
 
-/usr/include/string.h:
+/usr/include/stdint.h:
 
-/usr/include/x86_64-linux-gnu/bits/stdint-uintn.h:
+/usr/include/x86_64-linux-gnu/bits/timesize.h:
 
-src/crypto/ctaes/ctaes.c:
-
-/usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
-
-src/crypto/common.h:
-
-/usr/include/x86_64-linux-gnu/bits/select-decl.h:
-
-/usr/include/x86_64-linux-gnu/bits/select.h:
+/usr/include/features-time64.h:
 
 /usr/include/x86_64-linux-gnu/bits/select2.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
+
+/usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/os_defines.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdint-least.h:
 
@@ -870,8 +870,6 @@ src/crypto/common.h:
 /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdlib-float.h:
-
-/usr/include/c++/11/cstdlib:
 
 /usr/include/x86_64-linux-gnu/bits/struct_mutex.h:
 
@@ -885,8 +883,6 @@ src/compat/endian.h:
 
 /usr/include/x86_64-linux-gnu/bits/stdlib.h:
 
-/usr/include/c++/11/bits/std_abs.h:
-
 /usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h:
 
 /usr/include/x86_64-linux-gnu/bits/string_fortified.h:
@@ -894,6 +890,8 @@ src/compat/endian.h:
 /usr/include/x86_64-linux-gnu/bits/strings_fortified.h:
 
 /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h:
+
+/usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/mmintrin.h:
 
 /usr/include/x86_64-linux-gnu/bits/thread-shared-types.h:
 
@@ -905,16 +903,14 @@ src/crypto/sha256.h:
 
 /usr/include/x86_64-linux-gnu/bits/types.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h:
-
 /usr/include/x86_64-linux-gnu/bits/types/clock_t.h:
 
 /usr/include/x86_64-linux-gnu/sys/cdefs.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h:
-
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/time_t.h:
+
+/usr/include/x86_64-linux-gnu/bits/waitflags.h:

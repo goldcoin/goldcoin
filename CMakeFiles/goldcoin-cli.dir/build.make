@@ -73,29 +73,29 @@ CMakeFiles/goldcoin-cli.dir/src/bitcoin-cli.cpp.o: CMakeFiles/goldcoin-cli.dir/f
 CMakeFiles/goldcoin-cli.dir/src/bitcoin-cli.cpp.o: src/bitcoin-cli.cpp
 CMakeFiles/goldcoin-cli.dir/src/bitcoin-cli.cpp.o: CMakeFiles/goldcoin-cli.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/goldcoin-cli.dir/src/bitcoin-cli.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/goldcoin-cli.dir/src/bitcoin-cli.cpp.o -MF CMakeFiles/goldcoin-cli.dir/src/bitcoin-cli.cpp.o.d -o CMakeFiles/goldcoin-cli.dir/src/bitcoin-cli.cpp.o -c /home/microguy/git/microguy/goldcoin/src/bitcoin-cli.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/goldcoin-cli.dir/src/bitcoin-cli.cpp.o -MF CMakeFiles/goldcoin-cli.dir/src/bitcoin-cli.cpp.o.d -o CMakeFiles/goldcoin-cli.dir/src/bitcoin-cli.cpp.o -c /home/microguy/git/microguy/goldcoin/src/bitcoin-cli.cpp
 
 CMakeFiles/goldcoin-cli.dir/src/bitcoin-cli.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/goldcoin-cli.dir/src/bitcoin-cli.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/bitcoin-cli.cpp > CMakeFiles/goldcoin-cli.dir/src/bitcoin-cli.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/bitcoin-cli.cpp > CMakeFiles/goldcoin-cli.dir/src/bitcoin-cli.cpp.i
 
 CMakeFiles/goldcoin-cli.dir/src/bitcoin-cli.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/goldcoin-cli.dir/src/bitcoin-cli.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/bitcoin-cli.cpp -o CMakeFiles/goldcoin-cli.dir/src/bitcoin-cli.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/bitcoin-cli.cpp -o CMakeFiles/goldcoin-cli.dir/src/bitcoin-cli.cpp.s
 
 CMakeFiles/goldcoin-cli.dir/src/rpc/client.cpp.o: CMakeFiles/goldcoin-cli.dir/flags.make
 CMakeFiles/goldcoin-cli.dir/src/rpc/client.cpp.o: src/rpc/client.cpp
 CMakeFiles/goldcoin-cli.dir/src/rpc/client.cpp.o: CMakeFiles/goldcoin-cli.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/goldcoin-cli.dir/src/rpc/client.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/goldcoin-cli.dir/src/rpc/client.cpp.o -MF CMakeFiles/goldcoin-cli.dir/src/rpc/client.cpp.o.d -o CMakeFiles/goldcoin-cli.dir/src/rpc/client.cpp.o -c /home/microguy/git/microguy/goldcoin/src/rpc/client.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/goldcoin-cli.dir/src/rpc/client.cpp.o -MF CMakeFiles/goldcoin-cli.dir/src/rpc/client.cpp.o.d -o CMakeFiles/goldcoin-cli.dir/src/rpc/client.cpp.o -c /home/microguy/git/microguy/goldcoin/src/rpc/client.cpp
 
 CMakeFiles/goldcoin-cli.dir/src/rpc/client.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/goldcoin-cli.dir/src/rpc/client.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/rpc/client.cpp > CMakeFiles/goldcoin-cli.dir/src/rpc/client.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/rpc/client.cpp > CMakeFiles/goldcoin-cli.dir/src/rpc/client.cpp.i
 
 CMakeFiles/goldcoin-cli.dir/src/rpc/client.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/goldcoin-cli.dir/src/rpc/client.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/rpc/client.cpp -o CMakeFiles/goldcoin-cli.dir/src/rpc/client.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/rpc/client.cpp -o CMakeFiles/goldcoin-cli.dir/src/rpc/client.cpp.s
 
 # Object files for target goldcoin-cli
 goldcoin__cli_OBJECTS = \
@@ -111,14 +111,8 @@ bin/goldcoin-cli: CMakeFiles/goldcoin-cli.dir/build.make
 bin/goldcoin-cli: lib/libbitcoin_util.a
 bin/goldcoin-cli: lib/libbitcoin_crypto.a
 bin/goldcoin-cli: lib/libunivalue.a
-bin/goldcoin-cli: /usr/lib/x86_64-linux-gnu/libboost_system.a
-bin/goldcoin-cli: /usr/lib/x86_64-linux-gnu/libboost_filesystem.a
-bin/goldcoin-cli: /usr/lib/x86_64-linux-gnu/libboost_program_options.a
-bin/goldcoin-cli: /usr/lib/x86_64-linux-gnu/libboost_thread.a
-bin/goldcoin-cli: /usr/lib/x86_64-linux-gnu/libboost_chrono.a
 bin/goldcoin-cli: /usr/lib/x86_64-linux-gnu/libssl.so
 bin/goldcoin-cli: /usr/lib/x86_64-linux-gnu/libcrypto.so
-bin/goldcoin-cli: /usr/lib/x86_64-linux-gnu/libboost_atomic.a
 bin/goldcoin-cli: CMakeFiles/goldcoin-cli.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable bin/goldcoin-cli"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/goldcoin-cli.dir/link.txt --verbose=$(VERBOSE)

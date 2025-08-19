@@ -73,239 +73,239 @@ CMakeFiles/bitcoin_common.dir/src/amount.cpp.o: CMakeFiles/bitcoin_common.dir/fl
 CMakeFiles/bitcoin_common.dir/src/amount.cpp.o: src/amount.cpp
 CMakeFiles/bitcoin_common.dir/src/amount.cpp.o: CMakeFiles/bitcoin_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/bitcoin_common.dir/src/amount.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/amount.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/amount.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/amount.cpp.o -c /home/microguy/git/microguy/goldcoin/src/amount.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/amount.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/amount.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/amount.cpp.o -c /home/microguy/git/microguy/goldcoin/src/amount.cpp
 
 CMakeFiles/bitcoin_common.dir/src/amount.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_common.dir/src/amount.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/amount.cpp > CMakeFiles/bitcoin_common.dir/src/amount.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/amount.cpp > CMakeFiles/bitcoin_common.dir/src/amount.cpp.i
 
 CMakeFiles/bitcoin_common.dir/src/amount.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_common.dir/src/amount.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/amount.cpp -o CMakeFiles/bitcoin_common.dir/src/amount.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/amount.cpp -o CMakeFiles/bitcoin_common.dir/src/amount.cpp.s
 
 CMakeFiles/bitcoin_common.dir/src/base58.cpp.o: CMakeFiles/bitcoin_common.dir/flags.make
 CMakeFiles/bitcoin_common.dir/src/base58.cpp.o: src/base58.cpp
 CMakeFiles/bitcoin_common.dir/src/base58.cpp.o: CMakeFiles/bitcoin_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/bitcoin_common.dir/src/base58.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/base58.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/base58.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/base58.cpp.o -c /home/microguy/git/microguy/goldcoin/src/base58.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/base58.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/base58.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/base58.cpp.o -c /home/microguy/git/microguy/goldcoin/src/base58.cpp
 
 CMakeFiles/bitcoin_common.dir/src/base58.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_common.dir/src/base58.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/base58.cpp > CMakeFiles/bitcoin_common.dir/src/base58.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/base58.cpp > CMakeFiles/bitcoin_common.dir/src/base58.cpp.i
 
 CMakeFiles/bitcoin_common.dir/src/base58.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_common.dir/src/base58.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/base58.cpp -o CMakeFiles/bitcoin_common.dir/src/base58.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/base58.cpp -o CMakeFiles/bitcoin_common.dir/src/base58.cpp.s
 
 CMakeFiles/bitcoin_common.dir/src/chainparams.cpp.o: CMakeFiles/bitcoin_common.dir/flags.make
 CMakeFiles/bitcoin_common.dir/src/chainparams.cpp.o: src/chainparams.cpp
 CMakeFiles/bitcoin_common.dir/src/chainparams.cpp.o: CMakeFiles/bitcoin_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/bitcoin_common.dir/src/chainparams.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/chainparams.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/chainparams.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/chainparams.cpp.o -c /home/microguy/git/microguy/goldcoin/src/chainparams.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/chainparams.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/chainparams.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/chainparams.cpp.o -c /home/microguy/git/microguy/goldcoin/src/chainparams.cpp
 
 CMakeFiles/bitcoin_common.dir/src/chainparams.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_common.dir/src/chainparams.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/chainparams.cpp > CMakeFiles/bitcoin_common.dir/src/chainparams.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/chainparams.cpp > CMakeFiles/bitcoin_common.dir/src/chainparams.cpp.i
 
 CMakeFiles/bitcoin_common.dir/src/chainparams.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_common.dir/src/chainparams.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/chainparams.cpp -o CMakeFiles/bitcoin_common.dir/src/chainparams.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/chainparams.cpp -o CMakeFiles/bitcoin_common.dir/src/chainparams.cpp.s
 
 CMakeFiles/bitcoin_common.dir/src/coins.cpp.o: CMakeFiles/bitcoin_common.dir/flags.make
 CMakeFiles/bitcoin_common.dir/src/coins.cpp.o: src/coins.cpp
 CMakeFiles/bitcoin_common.dir/src/coins.cpp.o: CMakeFiles/bitcoin_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/bitcoin_common.dir/src/coins.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/coins.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/coins.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/coins.cpp.o -c /home/microguy/git/microguy/goldcoin/src/coins.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/coins.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/coins.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/coins.cpp.o -c /home/microguy/git/microguy/goldcoin/src/coins.cpp
 
 CMakeFiles/bitcoin_common.dir/src/coins.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_common.dir/src/coins.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/coins.cpp > CMakeFiles/bitcoin_common.dir/src/coins.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/coins.cpp > CMakeFiles/bitcoin_common.dir/src/coins.cpp.i
 
 CMakeFiles/bitcoin_common.dir/src/coins.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_common.dir/src/coins.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/coins.cpp -o CMakeFiles/bitcoin_common.dir/src/coins.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/coins.cpp -o CMakeFiles/bitcoin_common.dir/src/coins.cpp.s
 
 CMakeFiles/bitcoin_common.dir/src/compressor.cpp.o: CMakeFiles/bitcoin_common.dir/flags.make
 CMakeFiles/bitcoin_common.dir/src/compressor.cpp.o: src/compressor.cpp
 CMakeFiles/bitcoin_common.dir/src/compressor.cpp.o: CMakeFiles/bitcoin_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/bitcoin_common.dir/src/compressor.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/compressor.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/compressor.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/compressor.cpp.o -c /home/microguy/git/microguy/goldcoin/src/compressor.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/compressor.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/compressor.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/compressor.cpp.o -c /home/microguy/git/microguy/goldcoin/src/compressor.cpp
 
 CMakeFiles/bitcoin_common.dir/src/compressor.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_common.dir/src/compressor.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/compressor.cpp > CMakeFiles/bitcoin_common.dir/src/compressor.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/compressor.cpp > CMakeFiles/bitcoin_common.dir/src/compressor.cpp.i
 
 CMakeFiles/bitcoin_common.dir/src/compressor.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_common.dir/src/compressor.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/compressor.cpp -o CMakeFiles/bitcoin_common.dir/src/compressor.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/compressor.cpp -o CMakeFiles/bitcoin_common.dir/src/compressor.cpp.s
 
 CMakeFiles/bitcoin_common.dir/src/core_read.cpp.o: CMakeFiles/bitcoin_common.dir/flags.make
 CMakeFiles/bitcoin_common.dir/src/core_read.cpp.o: src/core_read.cpp
 CMakeFiles/bitcoin_common.dir/src/core_read.cpp.o: CMakeFiles/bitcoin_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/bitcoin_common.dir/src/core_read.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/core_read.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/core_read.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/core_read.cpp.o -c /home/microguy/git/microguy/goldcoin/src/core_read.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/core_read.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/core_read.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/core_read.cpp.o -c /home/microguy/git/microguy/goldcoin/src/core_read.cpp
 
 CMakeFiles/bitcoin_common.dir/src/core_read.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_common.dir/src/core_read.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/core_read.cpp > CMakeFiles/bitcoin_common.dir/src/core_read.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/core_read.cpp > CMakeFiles/bitcoin_common.dir/src/core_read.cpp.i
 
 CMakeFiles/bitcoin_common.dir/src/core_read.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_common.dir/src/core_read.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/core_read.cpp -o CMakeFiles/bitcoin_common.dir/src/core_read.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/core_read.cpp -o CMakeFiles/bitcoin_common.dir/src/core_read.cpp.s
 
 CMakeFiles/bitcoin_common.dir/src/core_write.cpp.o: CMakeFiles/bitcoin_common.dir/flags.make
 CMakeFiles/bitcoin_common.dir/src/core_write.cpp.o: src/core_write.cpp
 CMakeFiles/bitcoin_common.dir/src/core_write.cpp.o: CMakeFiles/bitcoin_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/bitcoin_common.dir/src/core_write.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/core_write.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/core_write.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/core_write.cpp.o -c /home/microguy/git/microguy/goldcoin/src/core_write.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/core_write.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/core_write.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/core_write.cpp.o -c /home/microguy/git/microguy/goldcoin/src/core_write.cpp
 
 CMakeFiles/bitcoin_common.dir/src/core_write.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_common.dir/src/core_write.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/core_write.cpp > CMakeFiles/bitcoin_common.dir/src/core_write.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/core_write.cpp > CMakeFiles/bitcoin_common.dir/src/core_write.cpp.i
 
 CMakeFiles/bitcoin_common.dir/src/core_write.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_common.dir/src/core_write.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/core_write.cpp -o CMakeFiles/bitcoin_common.dir/src/core_write.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/core_write.cpp -o CMakeFiles/bitcoin_common.dir/src/core_write.cpp.s
 
 CMakeFiles/bitcoin_common.dir/src/key.cpp.o: CMakeFiles/bitcoin_common.dir/flags.make
 CMakeFiles/bitcoin_common.dir/src/key.cpp.o: src/key.cpp
 CMakeFiles/bitcoin_common.dir/src/key.cpp.o: CMakeFiles/bitcoin_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/bitcoin_common.dir/src/key.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/key.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/key.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/key.cpp.o -c /home/microguy/git/microguy/goldcoin/src/key.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/key.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/key.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/key.cpp.o -c /home/microguy/git/microguy/goldcoin/src/key.cpp
 
 CMakeFiles/bitcoin_common.dir/src/key.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_common.dir/src/key.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/key.cpp > CMakeFiles/bitcoin_common.dir/src/key.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/key.cpp > CMakeFiles/bitcoin_common.dir/src/key.cpp.i
 
 CMakeFiles/bitcoin_common.dir/src/key.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_common.dir/src/key.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/key.cpp -o CMakeFiles/bitcoin_common.dir/src/key.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/key.cpp -o CMakeFiles/bitcoin_common.dir/src/key.cpp.s
 
 CMakeFiles/bitcoin_common.dir/src/key_io.cpp.o: CMakeFiles/bitcoin_common.dir/flags.make
 CMakeFiles/bitcoin_common.dir/src/key_io.cpp.o: src/key_io.cpp
 CMakeFiles/bitcoin_common.dir/src/key_io.cpp.o: CMakeFiles/bitcoin_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/bitcoin_common.dir/src/key_io.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/key_io.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/key_io.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/key_io.cpp.o -c /home/microguy/git/microguy/goldcoin/src/key_io.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/key_io.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/key_io.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/key_io.cpp.o -c /home/microguy/git/microguy/goldcoin/src/key_io.cpp
 
 CMakeFiles/bitcoin_common.dir/src/key_io.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_common.dir/src/key_io.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/key_io.cpp > CMakeFiles/bitcoin_common.dir/src/key_io.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/key_io.cpp > CMakeFiles/bitcoin_common.dir/src/key_io.cpp.i
 
 CMakeFiles/bitcoin_common.dir/src/key_io.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_common.dir/src/key_io.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/key_io.cpp -o CMakeFiles/bitcoin_common.dir/src/key_io.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/key_io.cpp -o CMakeFiles/bitcoin_common.dir/src/key_io.cpp.s
 
 CMakeFiles/bitcoin_common.dir/src/keystore.cpp.o: CMakeFiles/bitcoin_common.dir/flags.make
 CMakeFiles/bitcoin_common.dir/src/keystore.cpp.o: src/keystore.cpp
 CMakeFiles/bitcoin_common.dir/src/keystore.cpp.o: CMakeFiles/bitcoin_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/bitcoin_common.dir/src/keystore.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/keystore.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/keystore.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/keystore.cpp.o -c /home/microguy/git/microguy/goldcoin/src/keystore.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/keystore.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/keystore.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/keystore.cpp.o -c /home/microguy/git/microguy/goldcoin/src/keystore.cpp
 
 CMakeFiles/bitcoin_common.dir/src/keystore.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_common.dir/src/keystore.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/keystore.cpp > CMakeFiles/bitcoin_common.dir/src/keystore.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/keystore.cpp > CMakeFiles/bitcoin_common.dir/src/keystore.cpp.i
 
 CMakeFiles/bitcoin_common.dir/src/keystore.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_common.dir/src/keystore.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/keystore.cpp -o CMakeFiles/bitcoin_common.dir/src/keystore.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/keystore.cpp -o CMakeFiles/bitcoin_common.dir/src/keystore.cpp.s
 
 CMakeFiles/bitcoin_common.dir/src/netaddress.cpp.o: CMakeFiles/bitcoin_common.dir/flags.make
 CMakeFiles/bitcoin_common.dir/src/netaddress.cpp.o: src/netaddress.cpp
 CMakeFiles/bitcoin_common.dir/src/netaddress.cpp.o: CMakeFiles/bitcoin_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/bitcoin_common.dir/src/netaddress.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/netaddress.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/netaddress.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/netaddress.cpp.o -c /home/microguy/git/microguy/goldcoin/src/netaddress.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/netaddress.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/netaddress.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/netaddress.cpp.o -c /home/microguy/git/microguy/goldcoin/src/netaddress.cpp
 
 CMakeFiles/bitcoin_common.dir/src/netaddress.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_common.dir/src/netaddress.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/netaddress.cpp > CMakeFiles/bitcoin_common.dir/src/netaddress.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/netaddress.cpp > CMakeFiles/bitcoin_common.dir/src/netaddress.cpp.i
 
 CMakeFiles/bitcoin_common.dir/src/netaddress.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_common.dir/src/netaddress.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/netaddress.cpp -o CMakeFiles/bitcoin_common.dir/src/netaddress.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/netaddress.cpp -o CMakeFiles/bitcoin_common.dir/src/netaddress.cpp.s
 
 CMakeFiles/bitcoin_common.dir/src/netbase.cpp.o: CMakeFiles/bitcoin_common.dir/flags.make
 CMakeFiles/bitcoin_common.dir/src/netbase.cpp.o: src/netbase.cpp
 CMakeFiles/bitcoin_common.dir/src/netbase.cpp.o: CMakeFiles/bitcoin_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/bitcoin_common.dir/src/netbase.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/netbase.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/netbase.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/netbase.cpp.o -c /home/microguy/git/microguy/goldcoin/src/netbase.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/netbase.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/netbase.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/netbase.cpp.o -c /home/microguy/git/microguy/goldcoin/src/netbase.cpp
 
 CMakeFiles/bitcoin_common.dir/src/netbase.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_common.dir/src/netbase.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/netbase.cpp > CMakeFiles/bitcoin_common.dir/src/netbase.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/netbase.cpp > CMakeFiles/bitcoin_common.dir/src/netbase.cpp.i
 
 CMakeFiles/bitcoin_common.dir/src/netbase.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_common.dir/src/netbase.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/netbase.cpp -o CMakeFiles/bitcoin_common.dir/src/netbase.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/netbase.cpp -o CMakeFiles/bitcoin_common.dir/src/netbase.cpp.s
 
 CMakeFiles/bitcoin_common.dir/src/protocol.cpp.o: CMakeFiles/bitcoin_common.dir/flags.make
 CMakeFiles/bitcoin_common.dir/src/protocol.cpp.o: src/protocol.cpp
 CMakeFiles/bitcoin_common.dir/src/protocol.cpp.o: CMakeFiles/bitcoin_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/bitcoin_common.dir/src/protocol.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/protocol.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/protocol.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/protocol.cpp.o -c /home/microguy/git/microguy/goldcoin/src/protocol.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/protocol.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/protocol.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/protocol.cpp.o -c /home/microguy/git/microguy/goldcoin/src/protocol.cpp
 
 CMakeFiles/bitcoin_common.dir/src/protocol.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_common.dir/src/protocol.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/protocol.cpp > CMakeFiles/bitcoin_common.dir/src/protocol.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/protocol.cpp > CMakeFiles/bitcoin_common.dir/src/protocol.cpp.i
 
 CMakeFiles/bitcoin_common.dir/src/protocol.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_common.dir/src/protocol.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/protocol.cpp -o CMakeFiles/bitcoin_common.dir/src/protocol.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/protocol.cpp -o CMakeFiles/bitcoin_common.dir/src/protocol.cpp.s
 
 CMakeFiles/bitcoin_common.dir/src/scheduler.cpp.o: CMakeFiles/bitcoin_common.dir/flags.make
 CMakeFiles/bitcoin_common.dir/src/scheduler.cpp.o: src/scheduler.cpp
 CMakeFiles/bitcoin_common.dir/src/scheduler.cpp.o: CMakeFiles/bitcoin_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/bitcoin_common.dir/src/scheduler.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/scheduler.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/scheduler.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/scheduler.cpp.o -c /home/microguy/git/microguy/goldcoin/src/scheduler.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/scheduler.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/scheduler.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/scheduler.cpp.o -c /home/microguy/git/microguy/goldcoin/src/scheduler.cpp
 
 CMakeFiles/bitcoin_common.dir/src/scheduler.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_common.dir/src/scheduler.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/scheduler.cpp > CMakeFiles/bitcoin_common.dir/src/scheduler.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/scheduler.cpp > CMakeFiles/bitcoin_common.dir/src/scheduler.cpp.i
 
 CMakeFiles/bitcoin_common.dir/src/scheduler.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_common.dir/src/scheduler.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/scheduler.cpp -o CMakeFiles/bitcoin_common.dir/src/scheduler.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/scheduler.cpp -o CMakeFiles/bitcoin_common.dir/src/scheduler.cpp.s
 
 CMakeFiles/bitcoin_common.dir/src/script/sign.cpp.o: CMakeFiles/bitcoin_common.dir/flags.make
 CMakeFiles/bitcoin_common.dir/src/script/sign.cpp.o: src/script/sign.cpp
 CMakeFiles/bitcoin_common.dir/src/script/sign.cpp.o: CMakeFiles/bitcoin_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/bitcoin_common.dir/src/script/sign.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/script/sign.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/script/sign.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/script/sign.cpp.o -c /home/microguy/git/microguy/goldcoin/src/script/sign.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/script/sign.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/script/sign.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/script/sign.cpp.o -c /home/microguy/git/microguy/goldcoin/src/script/sign.cpp
 
 CMakeFiles/bitcoin_common.dir/src/script/sign.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_common.dir/src/script/sign.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/script/sign.cpp > CMakeFiles/bitcoin_common.dir/src/script/sign.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/script/sign.cpp > CMakeFiles/bitcoin_common.dir/src/script/sign.cpp.i
 
 CMakeFiles/bitcoin_common.dir/src/script/sign.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_common.dir/src/script/sign.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/script/sign.cpp -o CMakeFiles/bitcoin_common.dir/src/script/sign.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/script/sign.cpp -o CMakeFiles/bitcoin_common.dir/src/script/sign.cpp.s
 
 CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.o: CMakeFiles/bitcoin_common.dir/flags.make
 CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.o: src/script/standard.cpp
 CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.o: CMakeFiles/bitcoin_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.o -c /home/microguy/git/microguy/goldcoin/src/script/standard.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.o -c /home/microguy/git/microguy/goldcoin/src/script/standard.cpp
 
 CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/script/standard.cpp > CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/script/standard.cpp > CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.i
 
 CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/script/standard.cpp -o CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/script/standard.cpp -o CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.s
 
 CMakeFiles/bitcoin_common.dir/src/warnings.cpp.o: CMakeFiles/bitcoin_common.dir/flags.make
 CMakeFiles/bitcoin_common.dir/src/warnings.cpp.o: src/warnings.cpp
 CMakeFiles/bitcoin_common.dir/src/warnings.cpp.o: CMakeFiles/bitcoin_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/bitcoin_common.dir/src/warnings.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/warnings.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/warnings.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/warnings.cpp.o -c /home/microguy/git/microguy/goldcoin/src/warnings.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_common.dir/src/warnings.cpp.o -MF CMakeFiles/bitcoin_common.dir/src/warnings.cpp.o.d -o CMakeFiles/bitcoin_common.dir/src/warnings.cpp.o -c /home/microguy/git/microguy/goldcoin/src/warnings.cpp
 
 CMakeFiles/bitcoin_common.dir/src/warnings.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_common.dir/src/warnings.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/warnings.cpp > CMakeFiles/bitcoin_common.dir/src/warnings.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/warnings.cpp > CMakeFiles/bitcoin_common.dir/src/warnings.cpp.i
 
 CMakeFiles/bitcoin_common.dir/src/warnings.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_common.dir/src/warnings.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/warnings.cpp -o CMakeFiles/bitcoin_common.dir/src/warnings.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/warnings.cpp -o CMakeFiles/bitcoin_common.dir/src/warnings.cpp.s
 
 # Object files for target bitcoin_common
 bitcoin_common_OBJECTS = \

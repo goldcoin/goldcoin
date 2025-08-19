@@ -66,27 +66,22 @@ include CMakeFiles/bitcoin_qt_autogen_timestamp_deps.dir/compiler_depend.make
 # Include the progress variables for this target.
 include CMakeFiles/bitcoin_qt_autogen_timestamp_deps.dir/progress.make
 
-CMakeFiles/bitcoin_qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libssl.so
 CMakeFiles/bitcoin_qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libcrypto.so
-CMakeFiles/bitcoin_qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libboost_chrono.a
-CMakeFiles/bitcoin_qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libboost_program_options.a
-CMakeFiles/bitcoin_qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libboost_thread.a
-CMakeFiles/bitcoin_qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libboost_system.a
-CMakeFiles/bitcoin_qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libboost_filesystem.a
-CMakeFiles/bitcoin_qt_autogen_timestamp_deps: /usr/lib/qt6/libexec/moc
+CMakeFiles/bitcoin_qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libssl.so
 CMakeFiles/bitcoin_qt_autogen_timestamp_deps: lib/libleveldb.a
+CMakeFiles/bitcoin_qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libQt6Gui.so.6.4.2
 CMakeFiles/bitcoin_qt_autogen_timestamp_deps: lib/libmemenv.a
+CMakeFiles/bitcoin_qt_autogen_timestamp_deps: /usr/lib/qt6/libexec/moc
+CMakeFiles/bitcoin_qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libQt6Core.so.6.4.2
 CMakeFiles/bitcoin_qt_autogen_timestamp_deps: lib/libsecp256k1.a
-CMakeFiles/bitcoin_qt_autogen_timestamp_deps: lib/libbitcoin_consensus.a
 CMakeFiles/bitcoin_qt_autogen_timestamp_deps: lib/libunivalue.a
 CMakeFiles/bitcoin_qt_autogen_timestamp_deps: lib/libbitcoin_crypto.a
+CMakeFiles/bitcoin_qt_autogen_timestamp_deps: lib/libbitcoin_consensus.a
 CMakeFiles/bitcoin_qt_autogen_timestamp_deps: lib/libbitcoin_util.a
 CMakeFiles/bitcoin_qt_autogen_timestamp_deps: lib/libbitcoin_common.a
 CMakeFiles/bitcoin_qt_autogen_timestamp_deps: lib/libbitcoin_server.a
 CMakeFiles/bitcoin_qt_autogen_timestamp_deps: lib/libbitcoin_wallet.a
-CMakeFiles/bitcoin_qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libQt6Core.so.6.4.2
 CMakeFiles/bitcoin_qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libQt6Widgets.so.6.4.2
-CMakeFiles/bitcoin_qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libQt6Gui.so.6.4.2
 CMakeFiles/bitcoin_qt_autogen_timestamp_deps: /usr/lib/qt6/libexec/uic
 CMakeFiles/bitcoin_qt_autogen_timestamp_deps: /usr/lib/x86_64-linux-gnu/libQt6Network.so.6.4.2
 

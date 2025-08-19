@@ -73,15 +73,15 @@ src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o: src/leveldb/CMakeF
 src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o: src/leveldb/helpers/memenv/memenv.cc
 src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o: src/leveldb/CMakeFiles/memenv.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o"
-	cd /home/microguy/git/microguy/goldcoin/src/leveldb && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o -MF CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o.d -o CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o -c /home/microguy/git/microguy/goldcoin/src/leveldb/helpers/memenv/memenv.cc
+	cd /home/microguy/git/microguy/goldcoin/src/leveldb && /usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o -MF CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o.d -o CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o -c /home/microguy/git/microguy/goldcoin/src/leveldb/helpers/memenv/memenv.cc
 
 src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.i"
-	cd /home/microguy/git/microguy/goldcoin/src/leveldb && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/leveldb/helpers/memenv/memenv.cc > CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.i
+	cd /home/microguy/git/microguy/goldcoin/src/leveldb && /usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/leveldb/helpers/memenv/memenv.cc > CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.i
 
 src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.s"
-	cd /home/microguy/git/microguy/goldcoin/src/leveldb && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/leveldb/helpers/memenv/memenv.cc -o CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.s
+	cd /home/microguy/git/microguy/goldcoin/src/leveldb && /usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/leveldb/helpers/memenv/memenv.cc -o CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.s
 
 # Object files for target memenv
 memenv_OBJECTS = \

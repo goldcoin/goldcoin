@@ -23,9 +23,9 @@
 #include "utilstrencodings.h"
 
 #include <filesystem>
-#include <algorithm>   // C++23 algorithm replacements
-#include <thread>      // C++23 thread
-#include <vector>      // C++23 for thread group
+#include <algorithm>
+#include <string>
+#include "core_cpp23.h"
 
 #include <stdio.h>
 
@@ -45,7 +45,7 @@
  * Use the buttons <code>Namespaces</code>, <code>Classes</code> or <code>Files</code> at the top of the page to start navigating the code.
  */
 
-void WaitForShutdown(std::vector<std::thread>* threadGroup)  // C++23 thread group
+void WaitForShutdown(thread_group* threadGroup)
 {
     bool fShutdown = ShutdownRequested();
     // Tell the main threads to shutdown.
@@ -57,12 +57,7 @@ void WaitForShutdown(std::vector<std::thread>* threadGroup)  // C++23 thread gro
     if (threadGroup)
     {
         Interrupt(*threadGroup);
-        // C++23: Join all threads manually
-        for (auto& thread : *threadGroup) {
-            if (thread.joinable()) {
-                thread.join();
-            }
-        }
+        threadGroup->join_all();
     }
 }
 
@@ -72,7 +67,7 @@ void WaitForShutdown(std::vector<std::thread>* threadGroup)  // C++23 thread gro
 //
 bool AppInit(int argc, char* argv[])
 {
-    std::vector<std::thread> threadGroup;  // C++23 thread group
+    boost::thread_group threadGroup;
     CScheduler scheduler;
 
     bool fRet = false;
@@ -129,10 +124,7 @@ bool AppInit(int argc, char* argv[])
         // Command-line RPC
         bool fCommandLine = false;
         for (int i = 1; i < argc; i++)
-            // C++23: Use std algorithms instead of boost
-            std::string arg(argv[i]);
-            std::transform(arg.begin(), arg.end(), arg.begin(), ::tolower);
-            if (!IsSwitchChar(argv[i][0]) && !arg.starts_with("goldcoin:"))  // C++20 starts_with
+            if (!IsSwitchChar(argv[i][0]) && !boost::algorithm::istarts_with(argv[i], "goldcoin:"))
                 fCommandLine = true;
 
         if (fCommandLine)
