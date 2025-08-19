@@ -56,11 +56,12 @@ bool WalletFrame::addWallet(const QString& name, WalletModel *walletModel)
     mapWalletViews[name] = walletView;
 
     // Ensure a walletView is able to show the main window  
-    // TODO: Using SIGNAL/SLOT macros as workaround - BitcoinGUI::showNormalIfMinimized is private
-    // WalletView emits showNormalIfMinimized() with no parameters
-    // BitcoinGUI::showNormalIfMinimized(bool fToggleHidden = false) has optional bool parameter
-    // The old-style connection allows connecting to private slots and handles default parameters
-    connect(walletView, SIGNAL(showNormalIfMinimized()), gui, SLOT(showNormalIfMinimized()));
+    // Modern Qt6 connection using lambda to handle the optional parameter
+    connect(walletView, &WalletView::showNormalIfMinimized, gui, 
+            [gui]() {
+                // Call with default parameter value
+                gui->showNormalIfMinimized(false);
+            });
     connect(walletView, &WalletView::outOfSyncWarningClicked, this, &WalletFrame::outOfSyncWarningClicked);
     return true;
 }
@@ -88,9 +89,9 @@ bool WalletFrame::removeWallet(const QString &name)
 
 void WalletFrame::removeAllWallets()
 {
-    QMap<QString, WalletView*>::const_iterator i;
-    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        walletStack->removeWidget(i.value());
+    // Modern C++23 range-based loop
+    for (auto* walletView : mapWalletViews)
+        walletStack->removeWidget(walletView);
     mapWalletViews.clear();
 }
 
@@ -106,30 +107,30 @@ bool WalletFrame::handlePaymentRequest(const SendCoinsRecipient &recipient)
 void WalletFrame::showOutOfSyncWarning(bool fShow)
 {
     bOutOfSync = fShow;
-    QMap<QString, WalletView*>::const_iterator i;
-    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        i.value()->showOutOfSyncWarning(fShow);
+    // Modern C++23 range-based loop
+    for (auto* walletView : mapWalletViews)
+        walletView->showOutOfSyncWarning(fShow);
 }
 
 void WalletFrame::gotoOverviewPage()
 {
-    QMap<QString, WalletView*>::const_iterator i;
-    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        i.value()->gotoOverviewPage();
+    // Modern C++23 range-based loop
+    for (auto* walletView : mapWalletViews)
+        walletView->gotoOverviewPage();
 }
 
 void WalletFrame::gotoHistoryPage()
 {
-    QMap<QString, WalletView*>::const_iterator i;
-    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        i.value()->gotoHistoryPage();
+    // Modern C++23 range-based loop
+    for (auto* walletView : mapWalletViews)
+        walletView->gotoHistoryPage();
 }
 
 void WalletFrame::gotoReceiveCoinsPage()
 {
-    QMap<QString, WalletView*>::const_iterator i;
-    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
-        i.value()->gotoReceiveCoinsPage();
+    // Modern C++23 range-based loop
+    for (auto* walletView : mapWalletViews)
+        walletView->gotoReceiveCoinsPage();
 }
 
 void WalletFrame::gotoSendCoinsPage(QString addr)

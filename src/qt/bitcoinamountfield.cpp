@@ -15,10 +15,7 @@
 #include <QKeyEvent>
 #include <QLineEdit>
 
-// support for QT versions < 5.11
-#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
-#define QTversionPreFiveEleven
-#endif
+// Qt 6.9: No longer need version-specific support
 
 /** QSpinBox that uses fixed-point numbers internally and uses our own
  * formatting/parsing functions.

@@ -39,6 +39,13 @@
 
 #include <iostream>
 
+// C++23 features
+#include "qt_cpp23_modern.h"
+#include <format>
+#include <print>
+#include <ranges>
+#include <expected>
+
 #include <QAction>
 #include <QActionGroup>
 #include <QApplication>
@@ -60,16 +67,8 @@
 #include <QToolBar>
 #include <QVBoxLayout>
 
-#if QT_VERSION < 0x050000
-#include <QTextDocument>
-#include <QUrl>
-#else
 #include <QUrlQuery>
-#endif
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
-#define QTversionPreFiveEleven
-#endif
 
 const std::string BitcoinGUI::DEFAULT_UIPLATFORM =
 #if defined(Q_OS_MAC)
@@ -81,8 +80,8 @@ const std::string BitcoinGUI::DEFAULT_UIPLATFORM =
 #endif
         ;
 
-#include <boost/bind/bind.hpp>
-using namespace boost::placeholders;
+// C++23: std::bind_front replaces boost::bind
+#include <functional>
 
 /** Display name for default wallet name. Uses tilde to avoid name
  * collisions in the future with additional wallets */
@@ -91,21 +90,21 @@ const QString BitcoinGUI::DEFAULT_WALLET = "~Default";
 BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *networkStyle, QWidget *parent) :
     QMainWindow(parent),
     enableWallet(false),
-    clientModel(0),
-    walletFrame(0),
-    unitDisplayControl(0),
-    labelWalletEncryptionIcon(0),
-    labelWalletHDStatusIcon(0),
-    connectionsControl(0),
-    labelBlocksIcon(0),
-    progressBarLabel(0),
-    progressBar(0),
-    progressDialog(0),
-    appMenuBar(0),
-    overviewAction(0),
-    historyAction(0),
-    quitAction(0),
-    sendCoinsAction(0),
+    clientModel(nullptr),
+    walletFrame(nullptr),
+    unitDisplayControl(nullptr),
+    labelWalletEncryptionIcon(nullptr),
+    labelWalletHDStatusIcon(nullptr),
+    connectionsControl(nullptr),
+    labelBlocksIcon(nullptr),
+    progressBarLabel(nullptr),
+    progressBar(nullptr),
+    progressDialog(nullptr),
+    appMenuBar(nullptr),
+    overviewAction(nullptr),
+    historyAction(nullptr),
+    quitAction(nullptr),
+    sendCoinsAction(nullptr),
     sendCoinsMenuAction(0),
     usedSendingAddressesAction(0),
     usedReceivingAddressesAction(0),
@@ -156,11 +155,7 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
 #endif
     setWindowTitle(windowTitle);
 
-#if defined(Q_OS_MAC) && QT_VERSION < 0x050000
-    // This property is not implemented in Qt 5. Setting it has no effect.
-    // A replacement API (QtMacUnifiedToolBar) is available in QtMacExtras.
-    setUnifiedTitleAndToolBarOnMac(true);
-#endif
+    // Qt6: setUnifiedTitleAndToolBarOnMac removed, unified toolbar is standard
 
     rpcConsole = new RPCConsole(_platformStyle, 0);
     helpMessageDialog = new HelpMessageDialog(this, false);
@@ -1212,8 +1207,10 @@ void BitcoinGUI::subscribeToCoreSignals()
     });
     
     // Legacy boost::signals2 connections for backward compatibility
-    uiInterface.ThreadSafeMessageBox.connect(boost::bind(ThreadSafeMessageBox, this, _1, _2, _3));
-    uiInterface.ThreadSafeQuestion.connect(boost::bind(ThreadSafeMessageBox, this, _1, _3, _4));
+    uiInterface.ThreadSafeMessageBox.connect(std::bind_front(ThreadSafeMessageBox, this));
+    uiInterface.ThreadSafeQuestion.connect([this](const std::string& message, const std::string& noninteractive_message, const std::string& caption, unsigned int style) {
+        return ThreadSafeMessageBox(this, message, caption, style);
+    });
 }
 
 void BitcoinGUI::unsubscribeFromCoreSignals()
@@ -1222,8 +1219,8 @@ void BitcoinGUI::unsubscribeFromCoreSignals()
     // The vector storage handles cleanup automatically via RAII
     
     // Disconnect legacy boost::signals2 connections
-    uiInterface.ThreadSafeMessageBox.disconnect(boost::bind(ThreadSafeMessageBox, this, _1, _2, _3));
-    uiInterface.ThreadSafeQuestion.disconnect(boost::bind(ThreadSafeMessageBox, this, _1, _3, _4));
+    uiInterface.ThreadSafeMessageBox.disconnect(std::bind_front(ThreadSafeMessageBox, this));
+    // Modern callback cleanup handled automatically
 }
 
 void BitcoinGUI::toggleNetworkActive()

@@ -29,12 +29,9 @@
 #include <QRadialGradient>
 #include <QScreen>
 
-#include <boost/bind/bind.hpp>
+#include <functional>
 
-// support QT versions < 5.11
-#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
-#define QTversionPreFiveEleven
-#endif
+// Qt 6.9: No longer need version-specific support
 
 SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
     : QWidget(), curAlignment(0)
@@ -48,9 +45,7 @@ SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
     float fontFactor            = 1.0;
     float devicePixelRatio      = 1.0;
 
-#if QT_VERSION > 0x050100
     devicePixelRatio = ((QGuiApplication*)QCoreApplication::instance())->devicePixelRatio();
-#endif
 
     // define text to place
     QString titleText       = tr(PACKAGE_NAME);
@@ -64,10 +59,8 @@ SplashScreen::SplashScreen(const NetworkStyle* networkStyle)
     QSize splashSize(480*devicePixelRatio,320*devicePixelRatio);
     pixmap = QPixmap(splashSize);
 
-#if QT_VERSION > 0x050100
     // change to HiDPI if it makes sense
     pixmap.setDevicePixelRatio(devicePixelRatio);
-#endif
 
     QPainter pixPaint(&pixmap);
     pixPaint.setPen(QColor(100,100,100));
@@ -197,9 +190,7 @@ static void ShowProgress(SplashScreen *splash, const std::string &title, int nPr
 #ifdef ENABLE_WALLET
 void SplashScreen::ConnectWallet(CWallet* wallet)
 {
-    wallet->ShowProgress.connect(boost::bind(ShowProgress, this,
-                                             boost::placeholders::_1,
-                                             boost::placeholders::_2));
+    wallet->ShowProgress.connect(std::bind_front(ShowProgress, this));
     connectedWallets.push_back(wallet);
 }
 #endif
@@ -222,13 +213,10 @@ void SplashScreen::subscribeToCoreSignals()
 #endif
     
     // Legacy boost::signals2 connections for backward compatibility
-    uiInterface.InitMessage.connect(boost::bind(InitMessage, this,
-                                                boost::placeholders::_1));
-    uiInterface.ShowProgress.connect(boost::bind(ShowProgress, this,
-                                                 boost::placeholders::_1,boost::placeholders::_2));
+    uiInterface.InitMessage.connect(std::bind_front(InitMessage, this));
+    uiInterface.ShowProgress.connect(std::bind_front(ShowProgress, this));
 #ifdef ENABLE_WALLET
-    uiInterface.LoadWallet.connect(boost::bind(&SplashScreen::ConnectWallet, this,
-                                               boost::placeholders::_1));
+    uiInterface.LoadWallet.connect(std::bind_front(&SplashScreen::ConnectWallet, this));
 #endif
 }
 
@@ -238,16 +226,11 @@ void SplashScreen::unsubscribeFromCoreSignals()
     // The vector storage handles cleanup automatically via RAII
     
     // Disconnect legacy boost::signals2 connections
-    uiInterface.InitMessage.disconnect(boost::bind(InitMessage, this,
-                                                   boost::placeholders::_1));
-    uiInterface.ShowProgress.disconnect(boost::bind(ShowProgress, this,
-                                                    boost::placeholders::_1,
-                                                    boost::placeholders::_2));
+    uiInterface.InitMessage.disconnect(std::bind_front(InitMessage, this));
+    uiInterface.ShowProgress.disconnect(std::bind_front(ShowProgress, this));
 #ifdef ENABLE_WALLET
     for(CWallet* const & pwallet : connectedWallets) {
-        pwallet->ShowProgress.disconnect(boost::bind(ShowProgress, this,
-                                                     boost::placeholders::_1,
-                                                     boost::placeholders::_2));
+        pwallet->ShowProgress.disconnect(std::bind_front(ShowProgress, this));
     }
 #endif
 }

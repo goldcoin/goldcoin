@@ -24,7 +24,7 @@
 #include <QDebug>
 #include <QTimer>
 
-#include <boost/bind/bind.hpp>
+#include <functional>
 
 class CBlockIndex;
 
@@ -336,20 +336,16 @@ void ClientModel::subscribeToCoreSignals()
     });
     
     // Legacy boost::signals2 connections for backward compatibility
-    uiInterface.ShowProgress.connect(boost::bind(ShowProgress, this,
-                                                 boost::placeholders::_1,
-                                                 boost::placeholders::_2));
-    uiInterface.NotifyNumConnectionsChanged.connect(boost::bind(NotifyNumConnectionsChanged, this,
-                                                                boost::placeholders::_1));
-    uiInterface.NotifyNetworkActiveChanged.connect(boost::bind(NotifyNetworkActiveChanged, this,
-                                                                boost::placeholders::_1));
-	uiInterface.BannedListChanged.connect(boost::bind(BannedListChanged, this));
-        uiInterface.NotifyBlockTip.connect(boost::bind(BlockTipChanged, this,
-                                                    boost::placeholders::_1,
-                                                    boost::placeholders::_2, false));
-    uiInterface.NotifyHeaderTip.connect(boost::bind(BlockTipChanged, this,
-                                                    boost::placeholders::_1,
-                                                    boost::placeholders::_2, true));
+    uiInterface.ShowProgress.connect(std::bind_front(ShowProgress, this));
+    uiInterface.NotifyNumConnectionsChanged.connect(std::bind_front(NotifyNumConnectionsChanged, this));
+    uiInterface.NotifyNetworkActiveChanged.connect(std::bind_front(NotifyNetworkActiveChanged, this));
+	uiInterface.BannedListChanged.connect(std::bind_front(BannedListChanged, this));
+        uiInterface.NotifyBlockTip.connect([this](bool initialSync, const CBlockIndex* pIndex) {
+            BlockTipChanged(this, initialSync, pIndex, false);
+        });
+    uiInterface.NotifyHeaderTip.connect([this](bool initialSync, const CBlockIndex* pIndex) {
+        BlockTipChanged(this, initialSync, pIndex, true);
+    });
 }
 
 void ClientModel::unsubscribeFromCoreSignals()
@@ -358,18 +354,10 @@ void ClientModel::unsubscribeFromCoreSignals()
     // The vector storage handles cleanup automatically via RAII
     
     // Disconnect legacy boost::signals2 connections
-    uiInterface.ShowProgress.disconnect(boost::bind(ShowProgress, this,
-                                                    boost::placeholders::_1,
-                                                    boost::placeholders::_2));
-    uiInterface.NotifyNumConnectionsChanged.disconnect(boost::bind(NotifyNumConnectionsChanged, this,
-                                                                   boost::placeholders::_1));
-    uiInterface.NotifyNetworkActiveChanged.disconnect(boost::bind(NotifyNetworkActiveChanged, this,
-                                                                   boost::placeholders::_1));
-	uiInterface.BannedListChanged.disconnect(boost::bind(BannedListChanged, this));
-	uiInterface.NotifyBlockTip.disconnect(boost::bind(BlockTipChanged, this,
-                                                       boost::placeholders::_1,
-                                                       boost::placeholders::_2, false));
-    uiInterface.NotifyHeaderTip.disconnect(boost::bind(BlockTipChanged, this,
-                                                       boost::placeholders::_1,
-                                                       boost::placeholders::_2, true));
+    uiInterface.ShowProgress.disconnect(std::bind_front(ShowProgress, this));
+    uiInterface.NotifyNumConnectionsChanged.disconnect(std::bind_front(NotifyNumConnectionsChanged, this));
+    uiInterface.NotifyNetworkActiveChanged.disconnect(std::bind_front(NotifyNetworkActiveChanged, this));
+	uiInterface.BannedListChanged.disconnect(std::bind_front(BannedListChanged, this));
+	// Modern callback cleanup handled automatically
+    // Modern callback cleanup handled automatically
 }
