@@ -64,9 +64,8 @@ extern const char * const BITCOIN_PID_FILENAME;
  */
 inline std::string _(const char* psz)
 {
-    auto boost_result = translationInterface.Translate(psz);
-    std::optional<std::string> rv = boost_result ? std::make_optional(*boost_result) : std::nullopt;
-    return rv ? (*rv) : psz;
+    auto result = translationInterface.Translate(psz);
+    return result.has_value() ? result.value() : psz;
 }
 
 void SetupEnvironment();
