@@ -35,16 +35,16 @@ public:
         READWRITE(n);
     }
 
-    void SetNull() { hash.SetNull(); n = (uint32_t) -1; }
-    bool IsNull() const { return (hash.IsNull() && n == (uint32_t) -1); }
+    void SetNull() { hash.SetNull(); n = std::numeric_limits<uint32_t>::max(); }
+    [[nodiscard]] bool IsNull() const { return (hash.IsNull() && n == std::numeric_limits<uint32_t>::max()); }
 
-    friend bool operator<(const COutPoint& a, const COutPoint& b)
+    [[nodiscard]] friend bool operator<(const COutPoint& a, const COutPoint& b)
     {
         int cmp = a.hash.Compare(b.hash);
         return cmp < 0 || (cmp == 0 && a.n < b.n);
     }
 
-    friend bool operator==(const COutPoint& a, const COutPoint& b)
+    [[nodiscard]] friend bool operator==(const COutPoint& a, const COutPoint& b)
     {
         return (a.hash == b.hash && a.n == b.n);
     }
