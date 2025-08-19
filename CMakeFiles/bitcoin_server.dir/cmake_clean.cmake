@@ -51,6 +51,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/bitcoin_server.dir/src/rpc/rawtransaction.cpp.o.d"
   "CMakeFiles/bitcoin_server.dir/src/rpc/server.cpp.o"
   "CMakeFiles/bitcoin_server.dir/src/rpc/server.cpp.o.d"
+  "CMakeFiles/bitcoin_server.dir/src/rust_integration.cpp.o"
+  "CMakeFiles/bitcoin_server.dir/src/rust_integration.cpp.o.d"
   "CMakeFiles/bitcoin_server.dir/src/script/ismine.cpp.o"
   "CMakeFiles/bitcoin_server.dir/src/script/ismine.cpp.o.d"
   "CMakeFiles/bitcoin_server.dir/src/script/sigcache.cpp.o"

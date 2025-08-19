@@ -1,4 +1,4 @@
-set(CMAKE_ASM_COMPILER "/usr/bin/cc")
+set(CMAKE_ASM_COMPILER "/usr/bin/gcc-15")
 set(CMAKE_ASM_COMPILER_ARG1 "")
 set(CMAKE_AR "/usr/bin/ar")
 set(CMAKE_ASM_COMPILER_AR "/usr/bin/gcc-ar")

@@ -37,17 +37,12 @@
 #include <arpa/inet.h>
 #endif
 
-#include <boost/filesystem/path.hpp>
-#include <boost/foreach.hpp>
-#include <boost/signals2/signal.hpp>
+#include "fs.h"
+#include "core_cpp23.h"
 
 class CAddrMan;
 class CScheduler;
 class CNode;
-
-namespace boost {
-    class thread_group;
-} // namespace boost
 
 /** Time between pings automatically sent out for latency probing and keepalive (in seconds). */
 static const int PING_INTERVAL = 2 * 60;
@@ -410,7 +405,7 @@ private:
     std::thread threadMessageHandler;
 };
 extern std::unique_ptr<CConnman> g_connman;
-void Discover(std::vector<std::thread>& threadGroup);  // C++23 thread group
+void Discover(thread_group& threadGroup);
 void MapPort(bool fUseUPnP);
 unsigned short GetListenPort();
 bool BindListenPort(const CService &bindAddr, std::string& strError, bool fWhitelisted = false);
@@ -433,11 +428,10 @@ struct CombinerAll
 // Signals for message handling
 struct CNodeSignals
 {
-    // C++23: Replace boost::signals2 with our custom Signal class
-    Signal<bool(CNode*, CConnman&, std::atomic<bool>&)> ProcessMessages;
-    Signal<bool(CNode*, CConnman&, std::atomic<bool>&)> SendMessages;
-    Signal<void(CNode*, CConnman&)> InitializeNode;
-    Signal<void(NodeId, bool&)> FinalizeNode;
+    boost::signals2::signal<bool (CNode*, CConnman&, std::atomic<bool>&), CombinerAll> ProcessMessages;
+    boost::signals2::signal<bool (CNode*, CConnman&, std::atomic<bool>&), CombinerAll> SendMessages;
+    boost::signals2::signal<void (CNode*, CConnman&)> InitializeNode;
+    boost::signals2::signal<void (NodeId, bool&)> FinalizeNode;
 };
 
 

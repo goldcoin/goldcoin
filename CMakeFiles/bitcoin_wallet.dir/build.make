@@ -73,85 +73,85 @@ CMakeFiles/bitcoin_wallet.dir/src/wallet/crypter.cpp.o: CMakeFiles/bitcoin_walle
 CMakeFiles/bitcoin_wallet.dir/src/wallet/crypter.cpp.o: src/wallet/crypter.cpp
 CMakeFiles/bitcoin_wallet.dir/src/wallet/crypter.cpp.o: CMakeFiles/bitcoin_wallet.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/bitcoin_wallet.dir/src/wallet/crypter.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_wallet.dir/src/wallet/crypter.cpp.o -MF CMakeFiles/bitcoin_wallet.dir/src/wallet/crypter.cpp.o.d -o CMakeFiles/bitcoin_wallet.dir/src/wallet/crypter.cpp.o -c /home/microguy/git/microguy/goldcoin/src/wallet/crypter.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_wallet.dir/src/wallet/crypter.cpp.o -MF CMakeFiles/bitcoin_wallet.dir/src/wallet/crypter.cpp.o.d -o CMakeFiles/bitcoin_wallet.dir/src/wallet/crypter.cpp.o -c /home/microguy/git/microguy/goldcoin/src/wallet/crypter.cpp
 
 CMakeFiles/bitcoin_wallet.dir/src/wallet/crypter.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_wallet.dir/src/wallet/crypter.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/wallet/crypter.cpp > CMakeFiles/bitcoin_wallet.dir/src/wallet/crypter.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/wallet/crypter.cpp > CMakeFiles/bitcoin_wallet.dir/src/wallet/crypter.cpp.i
 
 CMakeFiles/bitcoin_wallet.dir/src/wallet/crypter.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_wallet.dir/src/wallet/crypter.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/wallet/crypter.cpp -o CMakeFiles/bitcoin_wallet.dir/src/wallet/crypter.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/wallet/crypter.cpp -o CMakeFiles/bitcoin_wallet.dir/src/wallet/crypter.cpp.s
 
 CMakeFiles/bitcoin_wallet.dir/src/wallet/db.cpp.o: CMakeFiles/bitcoin_wallet.dir/flags.make
 CMakeFiles/bitcoin_wallet.dir/src/wallet/db.cpp.o: src/wallet/db.cpp
 CMakeFiles/bitcoin_wallet.dir/src/wallet/db.cpp.o: CMakeFiles/bitcoin_wallet.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/bitcoin_wallet.dir/src/wallet/db.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_wallet.dir/src/wallet/db.cpp.o -MF CMakeFiles/bitcoin_wallet.dir/src/wallet/db.cpp.o.d -o CMakeFiles/bitcoin_wallet.dir/src/wallet/db.cpp.o -c /home/microguy/git/microguy/goldcoin/src/wallet/db.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_wallet.dir/src/wallet/db.cpp.o -MF CMakeFiles/bitcoin_wallet.dir/src/wallet/db.cpp.o.d -o CMakeFiles/bitcoin_wallet.dir/src/wallet/db.cpp.o -c /home/microguy/git/microguy/goldcoin/src/wallet/db.cpp
 
 CMakeFiles/bitcoin_wallet.dir/src/wallet/db.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_wallet.dir/src/wallet/db.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/wallet/db.cpp > CMakeFiles/bitcoin_wallet.dir/src/wallet/db.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/wallet/db.cpp > CMakeFiles/bitcoin_wallet.dir/src/wallet/db.cpp.i
 
 CMakeFiles/bitcoin_wallet.dir/src/wallet/db.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_wallet.dir/src/wallet/db.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/wallet/db.cpp -o CMakeFiles/bitcoin_wallet.dir/src/wallet/db.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/wallet/db.cpp -o CMakeFiles/bitcoin_wallet.dir/src/wallet/db.cpp.s
 
 CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o: CMakeFiles/bitcoin_wallet.dir/flags.make
 CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o: src/wallet/rpcdump.cpp
 CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o: CMakeFiles/bitcoin_wallet.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o -MF CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o.d -o CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o -c /home/microguy/git/microguy/goldcoin/src/wallet/rpcdump.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o -MF CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o.d -o CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o -c /home/microguy/git/microguy/goldcoin/src/wallet/rpcdump.cpp
 
 CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/wallet/rpcdump.cpp > CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/wallet/rpcdump.cpp > CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.i
 
 CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/wallet/rpcdump.cpp -o CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/wallet/rpcdump.cpp -o CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.s
 
 CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcwallet.cpp.o: CMakeFiles/bitcoin_wallet.dir/flags.make
 CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcwallet.cpp.o: src/wallet/rpcwallet.cpp
 CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcwallet.cpp.o: CMakeFiles/bitcoin_wallet.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcwallet.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcwallet.cpp.o -MF CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcwallet.cpp.o.d -o CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcwallet.cpp.o -c /home/microguy/git/microguy/goldcoin/src/wallet/rpcwallet.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcwallet.cpp.o -MF CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcwallet.cpp.o.d -o CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcwallet.cpp.o -c /home/microguy/git/microguy/goldcoin/src/wallet/rpcwallet.cpp
 
 CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcwallet.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcwallet.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/wallet/rpcwallet.cpp > CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcwallet.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/wallet/rpcwallet.cpp > CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcwallet.cpp.i
 
 CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcwallet.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcwallet.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/wallet/rpcwallet.cpp -o CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcwallet.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/wallet/rpcwallet.cpp -o CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcwallet.cpp.s
 
 CMakeFiles/bitcoin_wallet.dir/src/wallet/wallet.cpp.o: CMakeFiles/bitcoin_wallet.dir/flags.make
 CMakeFiles/bitcoin_wallet.dir/src/wallet/wallet.cpp.o: src/wallet/wallet.cpp
 CMakeFiles/bitcoin_wallet.dir/src/wallet/wallet.cpp.o: CMakeFiles/bitcoin_wallet.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/bitcoin_wallet.dir/src/wallet/wallet.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_wallet.dir/src/wallet/wallet.cpp.o -MF CMakeFiles/bitcoin_wallet.dir/src/wallet/wallet.cpp.o.d -o CMakeFiles/bitcoin_wallet.dir/src/wallet/wallet.cpp.o -c /home/microguy/git/microguy/goldcoin/src/wallet/wallet.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_wallet.dir/src/wallet/wallet.cpp.o -MF CMakeFiles/bitcoin_wallet.dir/src/wallet/wallet.cpp.o.d -o CMakeFiles/bitcoin_wallet.dir/src/wallet/wallet.cpp.o -c /home/microguy/git/microguy/goldcoin/src/wallet/wallet.cpp
 
 CMakeFiles/bitcoin_wallet.dir/src/wallet/wallet.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_wallet.dir/src/wallet/wallet.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/wallet/wallet.cpp > CMakeFiles/bitcoin_wallet.dir/src/wallet/wallet.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/wallet/wallet.cpp > CMakeFiles/bitcoin_wallet.dir/src/wallet/wallet.cpp.i
 
 CMakeFiles/bitcoin_wallet.dir/src/wallet/wallet.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_wallet.dir/src/wallet/wallet.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/wallet/wallet.cpp -o CMakeFiles/bitcoin_wallet.dir/src/wallet/wallet.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/wallet/wallet.cpp -o CMakeFiles/bitcoin_wallet.dir/src/wallet/wallet.cpp.s
 
 CMakeFiles/bitcoin_wallet.dir/src/wallet/walletdb.cpp.o: CMakeFiles/bitcoin_wallet.dir/flags.make
 CMakeFiles/bitcoin_wallet.dir/src/wallet/walletdb.cpp.o: src/wallet/walletdb.cpp
 CMakeFiles/bitcoin_wallet.dir/src/wallet/walletdb.cpp.o: CMakeFiles/bitcoin_wallet.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/bitcoin_wallet.dir/src/wallet/walletdb.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_wallet.dir/src/wallet/walletdb.cpp.o -MF CMakeFiles/bitcoin_wallet.dir/src/wallet/walletdb.cpp.o.d -o CMakeFiles/bitcoin_wallet.dir/src/wallet/walletdb.cpp.o -c /home/microguy/git/microguy/goldcoin/src/wallet/walletdb.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bitcoin_wallet.dir/src/wallet/walletdb.cpp.o -MF CMakeFiles/bitcoin_wallet.dir/src/wallet/walletdb.cpp.o.d -o CMakeFiles/bitcoin_wallet.dir/src/wallet/walletdb.cpp.o -c /home/microguy/git/microguy/goldcoin/src/wallet/walletdb.cpp
 
 CMakeFiles/bitcoin_wallet.dir/src/wallet/walletdb.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bitcoin_wallet.dir/src/wallet/walletdb.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/wallet/walletdb.cpp > CMakeFiles/bitcoin_wallet.dir/src/wallet/walletdb.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/wallet/walletdb.cpp > CMakeFiles/bitcoin_wallet.dir/src/wallet/walletdb.cpp.i
 
 CMakeFiles/bitcoin_wallet.dir/src/wallet/walletdb.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bitcoin_wallet.dir/src/wallet/walletdb.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/wallet/walletdb.cpp -o CMakeFiles/bitcoin_wallet.dir/src/wallet/walletdb.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/wallet/walletdb.cpp -o CMakeFiles/bitcoin_wallet.dir/src/wallet/walletdb.cpp.s
 
 # Object files for target bitcoin_wallet
 bitcoin_wallet_OBJECTS = \

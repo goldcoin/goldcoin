@@ -2,7 +2,7 @@ src/secp256k1/CMakeFiles/secp256k1.dir/src/secp256k1.c.o: \
  /home/microguy/git/microguy/goldcoin/src/secp256k1/src/secp256k1.c \
  /usr/include/stdc-predef.h \
  /home/microguy/git/microguy/goldcoin/src/secp256k1/include/secp256k1.h \
- /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h \
  /home/microguy/git/microguy/goldcoin/src/secp256k1/src/util.h \
  /home/microguy/git/microguy/goldcoin/src/secp256k1/src/libsecp256k1-config.h \
  /usr/include/stdlib.h \
@@ -48,11 +48,11 @@ src/secp256k1/CMakeFiles/secp256k1.dir/src/secp256k1.c.o: \
  /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
  /usr/include/x86_64-linux-gnu/bits/stdlib.h \
- /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h /usr/include/stdint.h \
- /usr/include/x86_64-linux-gnu/bits/wchar.h \
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h \
+ /usr/include/stdint.h /usr/include/x86_64-linux-gnu/bits/wchar.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-least.h /usr/include/stdio.h \
- /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h \
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdarg.h \
  /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/__fpos64_t.h \

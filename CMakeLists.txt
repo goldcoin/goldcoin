@@ -187,15 +187,12 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src/leveldb/helpers/memenv
     ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1/include
     ${CMAKE_CURRENT_SOURCE_DIR}/src/univalue/include
-    ${Boost_INCLUDE_DIRS}
 )
 
 # ===== GLOBAL COMPILE DEFINITIONS =====
 add_compile_definitions(
     HAVE_CONFIG_H
     __STDC_FORMAT_MACROS
-    BOOST_SP_USE_STD_ATOMIC
-    BOOST_AC_USE_STD_ATOMIC
 )
 
 # Remove NDEBUG even in Release builds (goldcoin requires assertions)
@@ -311,6 +308,7 @@ add_library(bitcoin_server STATIC
     src/rpc/net.cpp
     src/rpc/rawtransaction.cpp
     src/rpc/server.cpp
+    src/rust_integration.cpp
     src/script/sigcache.cpp
     src/script/ismine.cpp
     src/timedata.cpp
@@ -669,7 +667,7 @@ message(STATUS "  Benchmarks:     ${BUILD_BENCH}")
 message(STATUS "  ZMQ:            ${WITH_ZMQ}")
 message(STATUS "  Rust:           ${BUILD_RUST}")
 message(STATUS "")
-message(STATUS "  Boost:          ${Boost_VERSION}")
+message(STATUS "  C++23 std lib:  ENABLED (No Boost)")
 message(STATUS "  OpenSSL:        ${OPENSSL_VERSION}")
 if(BUILD_GUI)
     message(STATUS "  Qt:             ${Qt6_VERSION}")

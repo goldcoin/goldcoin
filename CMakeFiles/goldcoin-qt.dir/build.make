@@ -73,29 +73,29 @@ CMakeFiles/goldcoin-qt.dir/goldcoin-qt_autogen/mocs_compilation.cpp.o: CMakeFile
 CMakeFiles/goldcoin-qt.dir/goldcoin-qt_autogen/mocs_compilation.cpp.o: goldcoin-qt_autogen/mocs_compilation.cpp
 CMakeFiles/goldcoin-qt.dir/goldcoin-qt_autogen/mocs_compilation.cpp.o: CMakeFiles/goldcoin-qt.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/goldcoin-qt.dir/goldcoin-qt_autogen/mocs_compilation.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/goldcoin-qt.dir/goldcoin-qt_autogen/mocs_compilation.cpp.o -MF CMakeFiles/goldcoin-qt.dir/goldcoin-qt_autogen/mocs_compilation.cpp.o.d -o CMakeFiles/goldcoin-qt.dir/goldcoin-qt_autogen/mocs_compilation.cpp.o -c /home/microguy/git/microguy/goldcoin/goldcoin-qt_autogen/mocs_compilation.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/goldcoin-qt.dir/goldcoin-qt_autogen/mocs_compilation.cpp.o -MF CMakeFiles/goldcoin-qt.dir/goldcoin-qt_autogen/mocs_compilation.cpp.o.d -o CMakeFiles/goldcoin-qt.dir/goldcoin-qt_autogen/mocs_compilation.cpp.o -c /home/microguy/git/microguy/goldcoin/goldcoin-qt_autogen/mocs_compilation.cpp
 
 CMakeFiles/goldcoin-qt.dir/goldcoin-qt_autogen/mocs_compilation.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/goldcoin-qt.dir/goldcoin-qt_autogen/mocs_compilation.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/goldcoin-qt_autogen/mocs_compilation.cpp > CMakeFiles/goldcoin-qt.dir/goldcoin-qt_autogen/mocs_compilation.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/goldcoin-qt_autogen/mocs_compilation.cpp > CMakeFiles/goldcoin-qt.dir/goldcoin-qt_autogen/mocs_compilation.cpp.i
 
 CMakeFiles/goldcoin-qt.dir/goldcoin-qt_autogen/mocs_compilation.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/goldcoin-qt.dir/goldcoin-qt_autogen/mocs_compilation.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/goldcoin-qt_autogen/mocs_compilation.cpp -o CMakeFiles/goldcoin-qt.dir/goldcoin-qt_autogen/mocs_compilation.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/goldcoin-qt_autogen/mocs_compilation.cpp -o CMakeFiles/goldcoin-qt.dir/goldcoin-qt_autogen/mocs_compilation.cpp.s
 
 CMakeFiles/goldcoin-qt.dir/src/qt/bitcoin.cpp.o: CMakeFiles/goldcoin-qt.dir/flags.make
 CMakeFiles/goldcoin-qt.dir/src/qt/bitcoin.cpp.o: src/qt/bitcoin.cpp
 CMakeFiles/goldcoin-qt.dir/src/qt/bitcoin.cpp.o: CMakeFiles/goldcoin-qt.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/goldcoin-qt.dir/src/qt/bitcoin.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/goldcoin-qt.dir/src/qt/bitcoin.cpp.o -MF CMakeFiles/goldcoin-qt.dir/src/qt/bitcoin.cpp.o.d -o CMakeFiles/goldcoin-qt.dir/src/qt/bitcoin.cpp.o -c /home/microguy/git/microguy/goldcoin/src/qt/bitcoin.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/goldcoin-qt.dir/src/qt/bitcoin.cpp.o -MF CMakeFiles/goldcoin-qt.dir/src/qt/bitcoin.cpp.o.d -o CMakeFiles/goldcoin-qt.dir/src/qt/bitcoin.cpp.o -c /home/microguy/git/microguy/goldcoin/src/qt/bitcoin.cpp
 
 CMakeFiles/goldcoin-qt.dir/src/qt/bitcoin.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/goldcoin-qt.dir/src/qt/bitcoin.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/qt/bitcoin.cpp > CMakeFiles/goldcoin-qt.dir/src/qt/bitcoin.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/qt/bitcoin.cpp > CMakeFiles/goldcoin-qt.dir/src/qt/bitcoin.cpp.i
 
 CMakeFiles/goldcoin-qt.dir/src/qt/bitcoin.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/goldcoin-qt.dir/src/qt/bitcoin.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/qt/bitcoin.cpp -o CMakeFiles/goldcoin-qt.dir/src/qt/bitcoin.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/qt/bitcoin.cpp -o CMakeFiles/goldcoin-qt.dir/src/qt/bitcoin.cpp.s
 
 # Object files for target goldcoin-qt
 goldcoin__qt_OBJECTS = \
@@ -121,15 +121,9 @@ bin/goldcoin-qt: lib/libleveldb.a
 bin/goldcoin-qt: lib/libmemenv.a
 bin/goldcoin-qt: lib/libsecp256k1.a
 bin/goldcoin-qt: lib/libunivalue.a
-bin/goldcoin-qt: /usr/lib/x86_64-linux-gnu/libboost_system.a
-bin/goldcoin-qt: /usr/lib/x86_64-linux-gnu/libboost_filesystem.a
-bin/goldcoin-qt: /usr/lib/x86_64-linux-gnu/libboost_program_options.a
-bin/goldcoin-qt: /usr/lib/x86_64-linux-gnu/libboost_thread.a
-bin/goldcoin-qt: /usr/lib/x86_64-linux-gnu/libboost_chrono.a
 bin/goldcoin-qt: /usr/lib/x86_64-linux-gnu/libssl.so
 bin/goldcoin-qt: /usr/lib/x86_64-linux-gnu/libcrypto.so
 bin/goldcoin-qt: lib/libleveldb.a
-bin/goldcoin-qt: /usr/lib/x86_64-linux-gnu/libboost_atomic.a
 bin/goldcoin-qt: /usr/lib/x86_64-linux-gnu/libQt6Widgets.so.6.4.2
 bin/goldcoin-qt: /usr/lib/x86_64-linux-gnu/libQt6Gui.so.6.4.2
 bin/goldcoin-qt: /usr/lib/x86_64-linux-gnu/libGLX.so

@@ -11,10 +11,6 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/aes.cpp.o
  /home/microguy/git/microguy/goldcoin/src/crypto/ctaes/ctaes.h
  /usr/include/alloca.h
  /usr/include/assert.h
- /usr/include/c++/11/bits/std_abs.h
- /usr/include/c++/11/cstdlib
- /usr/include/c++/11/pstl/pstl_config.h
- /usr/include/c++/11/stdlib.h
  /usr/include/endian.h
  /usr/include/features-time64.h
  /usr/include/features.h
@@ -66,16 +62,20 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/aes.cpp.o
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h
  /usr/include/x86_64-linux-gnu/bits/wchar.h
  /usr/include/x86_64-linux-gnu/bits/wordsize.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h
  /usr/include/x86_64-linux-gnu/gnu/stubs.h
  /usr/include/x86_64-linux-gnu/sys/cdefs.h
  /usr/include/x86_64-linux-gnu/sys/select.h
  /usr/include/x86_64-linux-gnu/sys/types.h
- /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h
- /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h
+ /usr/local/gcc-15/include/c++/15.2.1/bits/std_abs.h
+ /usr/local/gcc-15/include/c++/15.2.1/cstdlib
+ /usr/local/gcc-15/include/c++/15.2.1/pstl/pstl_config.h
+ /usr/local/gcc-15/include/c++/15.2.1/stdlib.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++config.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/cpu_defines.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/os_defines.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/ctaes/ctaes.c.o
  /home/microguy/git/microguy/goldcoin/src/crypto/ctaes/ctaes.c
@@ -131,18 +131,14 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/ctaes/ctaes.c.o
  /usr/include/x86_64-linux-gnu/sys/cdefs.h
  /usr/include/x86_64-linux-gnu/sys/select.h
  /usr/include/x86_64-linux-gnu/sys/types.h
- /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h
- /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.o
  /home/microguy/git/microguy/goldcoin/src/crypto/hmac_sha256.cpp
  /home/microguy/git/microguy/goldcoin/src/crypto/hmac_sha256.h
  /home/microguy/git/microguy/goldcoin/src/crypto/sha256.h
  /usr/include/alloca.h
- /usr/include/c++/11/bits/std_abs.h
- /usr/include/c++/11/cstdlib
- /usr/include/c++/11/pstl/pstl_config.h
- /usr/include/c++/11/stdlib.h
  /usr/include/endian.h
  /usr/include/features-time64.h
  /usr/include/features.h
@@ -194,26 +190,26 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.o
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h
  /usr/include/x86_64-linux-gnu/bits/wchar.h
  /usr/include/x86_64-linux-gnu/bits/wordsize.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h
  /usr/include/x86_64-linux-gnu/gnu/stubs.h
  /usr/include/x86_64-linux-gnu/sys/cdefs.h
  /usr/include/x86_64-linux-gnu/sys/select.h
  /usr/include/x86_64-linux-gnu/sys/types.h
- /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h
- /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h
+ /usr/local/gcc-15/include/c++/15.2.1/bits/std_abs.h
+ /usr/local/gcc-15/include/c++/15.2.1/cstdlib
+ /usr/local/gcc-15/include/c++/15.2.1/pstl/pstl_config.h
+ /usr/local/gcc-15/include/c++/15.2.1/stdlib.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++config.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/cpu_defines.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/os_defines.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha512.cpp.o
  /home/microguy/git/microguy/goldcoin/src/crypto/hmac_sha512.cpp
  /home/microguy/git/microguy/goldcoin/src/crypto/hmac_sha512.h
  /home/microguy/git/microguy/goldcoin/src/crypto/sha512.h
  /usr/include/alloca.h
- /usr/include/c++/11/bits/std_abs.h
- /usr/include/c++/11/cstdlib
- /usr/include/c++/11/pstl/pstl_config.h
- /usr/include/c++/11/stdlib.h
  /usr/include/endian.h
  /usr/include/features-time64.h
  /usr/include/features.h
@@ -265,16 +261,20 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha512.cpp.o
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h
  /usr/include/x86_64-linux-gnu/bits/wchar.h
  /usr/include/x86_64-linux-gnu/bits/wordsize.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h
  /usr/include/x86_64-linux-gnu/gnu/stubs.h
  /usr/include/x86_64-linux-gnu/sys/cdefs.h
  /usr/include/x86_64-linux-gnu/sys/select.h
  /usr/include/x86_64-linux-gnu/sys/types.h
- /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h
- /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h
+ /usr/local/gcc-15/include/c++/15.2.1/bits/std_abs.h
+ /usr/local/gcc-15/include/c++/15.2.1/cstdlib
+ /usr/local/gcc-15/include/c++/15.2.1/pstl/pstl_config.h
+ /usr/local/gcc-15/include/c++/15.2.1/stdlib.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++config.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/cpu_defines.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/os_defines.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.o
  /home/microguy/git/microguy/goldcoin/src/crypto/ripemd160.cpp
@@ -283,10 +283,6 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.o
  /home/microguy/git/microguy/goldcoin/src/crypto/common.h
  /home/microguy/git/microguy/goldcoin/src/crypto/ripemd160.h
  /usr/include/alloca.h
- /usr/include/c++/11/bits/std_abs.h
- /usr/include/c++/11/cstdlib
- /usr/include/c++/11/pstl/pstl_config.h
- /usr/include/c++/11/stdlib.h
  /usr/include/endian.h
  /usr/include/features-time64.h
  /usr/include/features.h
@@ -338,25 +334,25 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/ripemd160.cpp.o
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h
  /usr/include/x86_64-linux-gnu/bits/wchar.h
  /usr/include/x86_64-linux-gnu/bits/wordsize.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h
  /usr/include/x86_64-linux-gnu/gnu/stubs.h
  /usr/include/x86_64-linux-gnu/sys/cdefs.h
  /usr/include/x86_64-linux-gnu/sys/select.h
  /usr/include/x86_64-linux-gnu/sys/types.h
- /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h
- /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h
+ /usr/local/gcc-15/include/c++/15.2.1/bits/std_abs.h
+ /usr/local/gcc-15/include/c++/15.2.1/cstdlib
+ /usr/local/gcc-15/include/c++/15.2.1/pstl/pstl_config.h
+ /usr/local/gcc-15/include/c++/15.2.1/stdlib.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++config.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/cpu_defines.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/os_defines.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.o
  /home/microguy/git/microguy/goldcoin/src/crypto/scrypt-sse2.cpp
  /home/microguy/git/microguy/goldcoin/src/crypto/scrypt.h
  /usr/include/alloca.h
- /usr/include/c++/11/bits/std_abs.h
- /usr/include/c++/11/cstdlib
- /usr/include/c++/11/pstl/pstl_config.h
- /usr/include/c++/11/stdlib.h
  /usr/include/endian.h
  /usr/include/features-time64.h
  /usr/include/features.h
@@ -412,9 +408,6 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.o
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h
  /usr/include/x86_64-linux-gnu/bits/wchar.h
  /usr/include/x86_64-linux-gnu/bits/wordsize.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h
  /usr/include/x86_64-linux-gnu/gnu/stubs.h
  /usr/include/x86_64-linux-gnu/openssl/configuration.h
@@ -422,12 +415,19 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt-sse2.cpp.o
  /usr/include/x86_64-linux-gnu/sys/cdefs.h
  /usr/include/x86_64-linux-gnu/sys/select.h
  /usr/include/x86_64-linux-gnu/sys/types.h
- /usr/lib/gcc/x86_64-linux-gnu/11/include/emmintrin.h
- /usr/lib/gcc/x86_64-linux-gnu/11/include/mm_malloc.h
- /usr/lib/gcc/x86_64-linux-gnu/11/include/mmintrin.h
- /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h
- /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h
- /usr/lib/gcc/x86_64-linux-gnu/11/include/xmmintrin.h
+ /usr/local/gcc-15/include/c++/15.2.1/bits/std_abs.h
+ /usr/local/gcc-15/include/c++/15.2.1/cstdlib
+ /usr/local/gcc-15/include/c++/15.2.1/pstl/pstl_config.h
+ /usr/local/gcc-15/include/c++/15.2.1/stdlib.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++config.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/cpu_defines.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/os_defines.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/emmintrin.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/mm_malloc.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/mmintrin.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/xmmintrin.h
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.o
  /home/microguy/git/microguy/goldcoin/src/crypto/scrypt.cpp
@@ -435,10 +435,6 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.o
  /home/microguy/git/microguy/goldcoin/src/crypto/scrypt.h
  /home/microguy/git/microguy/goldcoin/src/crypto/sha256.h
  /usr/include/alloca.h
- /usr/include/c++/11/bits/std_abs.h
- /usr/include/c++/11/cstdlib
- /usr/include/c++/11/pstl/pstl_config.h
- /usr/include/c++/11/stdlib.h
  /usr/include/endian.h
  /usr/include/features-time64.h
  /usr/include/features.h
@@ -494,9 +490,6 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.o
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h
  /usr/include/x86_64-linux-gnu/bits/wchar.h
  /usr/include/x86_64-linux-gnu/bits/wordsize.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h
  /usr/include/x86_64-linux-gnu/gnu/stubs.h
  /usr/include/x86_64-linux-gnu/openssl/configuration.h
@@ -504,8 +497,15 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/scrypt.cpp.o
  /usr/include/x86_64-linux-gnu/sys/cdefs.h
  /usr/include/x86_64-linux-gnu/sys/select.h
  /usr/include/x86_64-linux-gnu/sys/types.h
- /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h
- /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h
+ /usr/local/gcc-15/include/c++/15.2.1/bits/std_abs.h
+ /usr/local/gcc-15/include/c++/15.2.1/cstdlib
+ /usr/local/gcc-15/include/c++/15.2.1/pstl/pstl_config.h
+ /usr/local/gcc-15/include/c++/15.2.1/stdlib.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++config.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/cpu_defines.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/os_defines.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.o
  /home/microguy/git/microguy/goldcoin/src/crypto/sha1.cpp
@@ -514,10 +514,6 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.o
  /home/microguy/git/microguy/goldcoin/src/crypto/common.h
  /home/microguy/git/microguy/goldcoin/src/crypto/sha1.h
  /usr/include/alloca.h
- /usr/include/c++/11/bits/std_abs.h
- /usr/include/c++/11/cstdlib
- /usr/include/c++/11/pstl/pstl_config.h
- /usr/include/c++/11/stdlib.h
  /usr/include/endian.h
  /usr/include/features-time64.h
  /usr/include/features.h
@@ -569,16 +565,20 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/sha1.cpp.o
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h
  /usr/include/x86_64-linux-gnu/bits/wchar.h
  /usr/include/x86_64-linux-gnu/bits/wordsize.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h
  /usr/include/x86_64-linux-gnu/gnu/stubs.h
  /usr/include/x86_64-linux-gnu/sys/cdefs.h
  /usr/include/x86_64-linux-gnu/sys/select.h
  /usr/include/x86_64-linux-gnu/sys/types.h
- /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h
- /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h
+ /usr/local/gcc-15/include/c++/15.2.1/bits/std_abs.h
+ /usr/local/gcc-15/include/c++/15.2.1/cstdlib
+ /usr/local/gcc-15/include/c++/15.2.1/pstl/pstl_config.h
+ /usr/local/gcc-15/include/c++/15.2.1/stdlib.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++config.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/cpu_defines.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/os_defines.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.o
  /home/microguy/git/microguy/goldcoin/src/crypto/sha256.cpp
@@ -587,10 +587,6 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.o
  /home/microguy/git/microguy/goldcoin/src/crypto/common.h
  /home/microguy/git/microguy/goldcoin/src/crypto/sha256.h
  /usr/include/alloca.h
- /usr/include/c++/11/bits/std_abs.h
- /usr/include/c++/11/cstdlib
- /usr/include/c++/11/pstl/pstl_config.h
- /usr/include/c++/11/stdlib.h
  /usr/include/endian.h
  /usr/include/features-time64.h
  /usr/include/features.h
@@ -642,16 +638,20 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/sha256.cpp.o
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h
  /usr/include/x86_64-linux-gnu/bits/wchar.h
  /usr/include/x86_64-linux-gnu/bits/wordsize.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h
  /usr/include/x86_64-linux-gnu/gnu/stubs.h
  /usr/include/x86_64-linux-gnu/sys/cdefs.h
  /usr/include/x86_64-linux-gnu/sys/select.h
  /usr/include/x86_64-linux-gnu/sys/types.h
- /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h
- /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h
+ /usr/local/gcc-15/include/c++/15.2.1/bits/std_abs.h
+ /usr/local/gcc-15/include/c++/15.2.1/cstdlib
+ /usr/local/gcc-15/include/c++/15.2.1/pstl/pstl_config.h
+ /usr/local/gcc-15/include/c++/15.2.1/stdlib.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++config.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/cpu_defines.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/os_defines.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h
 
 CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.o
  /home/microguy/git/microguy/goldcoin/src/crypto/sha512.cpp
@@ -660,10 +660,6 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.o
  /home/microguy/git/microguy/goldcoin/src/crypto/common.h
  /home/microguy/git/microguy/goldcoin/src/crypto/sha512.h
  /usr/include/alloca.h
- /usr/include/c++/11/bits/std_abs.h
- /usr/include/c++/11/cstdlib
- /usr/include/c++/11/pstl/pstl_config.h
- /usr/include/c++/11/stdlib.h
  /usr/include/endian.h
  /usr/include/features-time64.h
  /usr/include/features.h
@@ -715,14 +711,18 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/sha512.cpp.o
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h
  /usr/include/x86_64-linux-gnu/bits/wchar.h
  /usr/include/x86_64-linux-gnu/bits/wordsize.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h
- /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h
  /usr/include/x86_64-linux-gnu/gnu/stubs.h
  /usr/include/x86_64-linux-gnu/sys/cdefs.h
  /usr/include/x86_64-linux-gnu/sys/select.h
  /usr/include/x86_64-linux-gnu/sys/types.h
- /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h
- /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h
+ /usr/local/gcc-15/include/c++/15.2.1/bits/std_abs.h
+ /usr/local/gcc-15/include/c++/15.2.1/cstdlib
+ /usr/local/gcc-15/include/c++/15.2.1/pstl/pstl_config.h
+ /usr/local/gcc-15/include/c++/15.2.1/stdlib.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++config.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/cpu_defines.h
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/os_defines.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h
 

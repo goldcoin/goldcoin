@@ -34,6 +34,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/microguy/git/microguy/goldcoin/src/rpc/net.cpp" "CMakeFiles/bitcoin_server.dir/src/rpc/net.cpp.o" "gcc" "CMakeFiles/bitcoin_server.dir/src/rpc/net.cpp.o.d"
   "/home/microguy/git/microguy/goldcoin/src/rpc/rawtransaction.cpp" "CMakeFiles/bitcoin_server.dir/src/rpc/rawtransaction.cpp.o" "gcc" "CMakeFiles/bitcoin_server.dir/src/rpc/rawtransaction.cpp.o.d"
   "/home/microguy/git/microguy/goldcoin/src/rpc/server.cpp" "CMakeFiles/bitcoin_server.dir/src/rpc/server.cpp.o" "gcc" "CMakeFiles/bitcoin_server.dir/src/rpc/server.cpp.o.d"
+  "/home/microguy/git/microguy/goldcoin/src/rust_integration.cpp" "CMakeFiles/bitcoin_server.dir/src/rust_integration.cpp.o" "gcc" "CMakeFiles/bitcoin_server.dir/src/rust_integration.cpp.o.d"
   "/home/microguy/git/microguy/goldcoin/src/script/ismine.cpp" "CMakeFiles/bitcoin_server.dir/src/script/ismine.cpp.o" "gcc" "CMakeFiles/bitcoin_server.dir/src/script/ismine.cpp.o.d"
   "/home/microguy/git/microguy/goldcoin/src/script/sigcache.cpp" "CMakeFiles/bitcoin_server.dir/src/script/sigcache.cpp.o" "gcc" "CMakeFiles/bitcoin_server.dir/src/script/sigcache.cpp.o.d"
   "/home/microguy/git/microguy/goldcoin/src/timedata.cpp" "CMakeFiles/bitcoin_server.dir/src/timedata.cpp.o" "gcc" "CMakeFiles/bitcoin_server.dir/src/timedata.cpp.o.d"

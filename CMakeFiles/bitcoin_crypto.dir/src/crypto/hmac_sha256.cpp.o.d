@@ -3,7 +3,8 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.o: \
  /usr/include/stdc-predef.h \
  /home/microguy/git/microguy/goldcoin/src/crypto/hmac_sha256.h \
  /home/microguy/git/microguy/goldcoin/src/crypto/sha256.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/stdint.h /usr/include/stdint.h \
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stdint.h \
+ /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/features-time64.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -19,12 +20,14 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-least.h \
- /usr/include/c++/11/stdlib.h /usr/include/c++/11/cstdlib \
- /usr/include/x86_64-linux-gnu/c++/11/bits/c++config.h \
- /usr/include/x86_64-linux-gnu/c++/11/bits/os_defines.h \
- /usr/include/x86_64-linux-gnu/c++/11/bits/cpu_defines.h \
- /usr/include/c++/11/pstl/pstl_config.h /usr/include/stdlib.h \
- /usr/lib/gcc/x86_64-linux-gnu/11/include/stddef.h \
+ /usr/local/gcc-15/include/c++/15.2.1/stdlib.h \
+ /usr/local/gcc-15/include/c++/15.2.1/cstdlib \
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/c++config.h \
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/os_defines.h \
+ /usr/local/gcc-15/include/c++/15.2.1/x86_64-pc-linux-gnu/bits/cpu_defines.h \
+ /usr/local/gcc-15/include/c++/15.2.1/pstl/pstl_config.h \
+ /usr/include/stdlib.h \
+ /usr/local/gcc-15/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include/stddef.h \
  /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
  /usr/include/x86_64-linux-gnu/bits/floatn.h \
@@ -57,7 +60,7 @@ CMakeFiles/bitcoin_crypto.dir/src/crypto/hmac_sha256.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
  /usr/include/x86_64-linux-gnu/bits/stdlib.h \
- /usr/include/c++/11/bits/std_abs.h /usr/include/string.h \
- /usr/include/strings.h \
+ /usr/local/gcc-15/include/c++/15.2.1/bits/std_abs.h \
+ /usr/include/string.h /usr/include/strings.h \
  /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
  /usr/include/x86_64-linux-gnu/bits/string_fortified.h

@@ -55,10 +55,11 @@
 
 #include <sstream>
 #include "fs.h"  // Use our filesystem abstraction
-#include <boost/bind/bind.hpp>
-#include <boost/function.hpp>
+#include "core_cpp23.h"
+#include <functional>
+#include <thread>
+// Note: boost::interprocess::file_lock still needed for cross-platform file locking
 #include <boost/interprocess/sync/file_lock.hpp>
-#include <boost/thread.hpp>
 #include <openssl/crypto.h>
 
 #if ENABLE_ZMQ
@@ -168,7 +169,7 @@ static CCoinsViewDB *pcoinsdbview = nullptr;
 static CCoinsViewErrorCatcher *pcoinscatcher = nullptr;
 static std::unique_ptr<ECCVerifyHandle> globalVerifyHandle;
 
-void Interrupt(std::vector<std::thread>& threadGroup)
+void Interrupt(thread_group& threadGroup)
 {
     InterruptHTTPServer();
     InterruptHTTPRPC();
@@ -294,7 +295,7 @@ bool static Bind(CConnman& connman, const CService &addr, unsigned int flags) {
 }
 void OnRPCStarted()
 {
-    uiInterface.NotifyBlockTip.connect(&RPCNotifyBlockChange);
+    uiInterface.AddNotifyBlockTipCallback(RPCNotifyBlockChange);
 }
 
 void OnRPCStopped()
@@ -543,20 +544,20 @@ static void BlockNotifyCallback(bool initialSync, const CBlockIndex *pBlockIndex
         strCmd.replace(pos, search.length(), replace);
         pos += replace.length();
     }
-    std::thread t([strCmd]() { runCommand(strCmd); }); // C++23 thread
-    t.detach(); // thread runs free
+    std::thread t(runCommand, strCmd); // thread runs free
+    t.detach(); // Let thread run independently
 }
 
 static bool fHaveGenesis = false;
-static std::mutex cs_GenesisWait;  // C++23 mutex
+static std::mutex cs_GenesisWait;
 static CConditionVariable condvar_GenesisWait;
-static int genesisWaitConnection;  // C++23: simplified connection handle
+static size_t genesisWaitCallbackIndex = 0; // Track our callback index
 
 static void BlockNotifyGenesisWait(bool, const CBlockIndex *pBlockIndex)
 {
     if (pBlockIndex != nullptr) {
         {
-            std::unique_lock<std::mutex> lock_GenesisWait(cs_GenesisWait); // C++23 lock
+            std::unique_lock<std::mutex> lock_GenesisWait(cs_GenesisWait);
             fHaveGenesis = true;
         }
         condvar_GenesisWait.notify_all();
@@ -704,7 +705,7 @@ bool InitSanityCheck(void)
     return true;
 }
 
-bool AppInitServers(std::vector<std::thread>& threadGroup)
+bool AppInitServers(thread_group& threadGroup)
 {
     RPCServer::OnStarted(&OnRPCStarted);
     RPCServer::OnStopped(&OnRPCStopped);
@@ -1147,16 +1148,14 @@ static bool LockDataDirectory(bool probeOnly)
     if (file) fclose(file);
 
     try {
-        // C++23: Replace boost::interprocess with simplified file locking
-        static fs::path lockPath = pathLockFile;
-        static std::ofstream lockFile(lockPath.c_str(), std::ios::out | std::ios::app);
-        if (!lockFile.good()) {
+        static boost::interprocess::file_lock lock(pathLockFile.string().c_str());
+        if (!lock.try_lock()) {
             return InitError(strprintf(_("Cannot obtain a lock on data directory %s. %s is probably already running."), strDataDir, _(PACKAGE_NAME)));
         }
         if (probeOnly) {
-            lockFile.close();
+            lock.unlock();
         }
-    } catch(const std::exception& e) {
+    } catch(const boost::interprocess::interprocess_exception& e) {
         return InitError(strprintf(_("Cannot obtain a lock on data directory %s. %s is probably already running.") + " %s.", strDataDir, _(PACKAGE_NAME), e.what()));
     }
     return true;
@@ -1178,7 +1177,7 @@ bool AppInitSanityChecks()
     return LockDataDirectory(true);
 }
 
-bool AppInitMain(std::vector<std::thread>& threadGroup, CScheduler& scheduler)
+bool AppInitMain(thread_group& threadGroup, CScheduler& scheduler)
 {
     const CChainParams& chainparams = Params();
     // ********************************************************* Step 4a: application initialization
@@ -1218,10 +1217,8 @@ bool AppInitMain(std::vector<std::thread>& threadGroup, CScheduler& scheduler)
     }
 
     // Start the lightweight task scheduler thread
-    // C++23: Lambda instead of boost::bind
-    threadGroup.emplace_back([&scheduler]() {
-        TraceThread("scheduler", [&scheduler]() { scheduler.serviceQueue(); });
-    });
+    auto serviceLoop = [&scheduler]() { scheduler.serviceQueue(); };
+    threadGroup.create_thread([serviceLoop]() { TraceThread("scheduler", serviceLoop); });
 
     /* Start the RPC server already.  It will be started in "warmup" mode
      * and not really process calls already (but it will signify connections
@@ -1230,7 +1227,7 @@ bool AppInitMain(std::vector<std::thread>& threadGroup, CScheduler& scheduler)
      */
     if (GetBoolArg("-server", false))
     {
-        uiInterface.InitMessage.connect(SetRPCWarmupStatus);
+        uiInterface.AddInitMessageCallback(SetRPCWarmupStatus);
         if (!AppInitServers(threadGroup))
             return InitError(_("Unable to start HTTP server. See debug log for details."));
     }
@@ -1619,13 +1616,13 @@ bool AppInitMain(std::vector<std::thread>& threadGroup, CScheduler& scheduler)
     // Either install a handler to notify us when genesis activates, or set fHaveGenesis directly.
     // No locking, as this happens before any background thread is started.
     if (chainActive.Tip() == nullptr) {
-        genesisWaitConnection = uiInterface.NotifyBlockTip.connect(BlockNotifyGenesisWait);
+        uiInterface.AddNotifyBlockTipCallback(BlockNotifyGenesisWait);
     } else {
         fHaveGenesis = true;
     }
 
     if (IsArgSet("-blocknotify"))
-        uiInterface.NotifyBlockTip.connect(BlockNotifyCallback);
+        uiInterface.AddNotifyBlockTipCallback(BlockNotifyCallback);
 
     std::vector<std::filesystem::path> vImportFiles;
     if (mapMultiArgs.count("-loadblock"))
@@ -1634,11 +1631,11 @@ bool AppInitMain(std::vector<std::thread>& threadGroup, CScheduler& scheduler)
             vImportFiles.push_back(strFile);
     }
 
-    threadGroup.emplace_back([vImportFiles]() { ThreadImport(vImportFiles); });
+    threadGroup.create_thread([vImportFiles]() { ThreadImport(vImportFiles); });
 
     // Wait for genesis block to be processed
     {
-        std::unique_lock<std::mutex> lock(cs_GenesisWait); // C++23 lock
+        std::unique_lock<std::mutex> lock(cs_GenesisWait);
         while (!fHaveGenesis) {
             condvar_GenesisWait.wait(lock);
         }

@@ -73,15 +73,15 @@ CMakeFiles/goldcoind.dir/src/bitcoind.cpp.o: CMakeFiles/goldcoind.dir/flags.make
 CMakeFiles/goldcoind.dir/src/bitcoind.cpp.o: src/bitcoind.cpp
 CMakeFiles/goldcoind.dir/src/bitcoind.cpp.o: CMakeFiles/goldcoind.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/goldcoind.dir/src/bitcoind.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/goldcoind.dir/src/bitcoind.cpp.o -MF CMakeFiles/goldcoind.dir/src/bitcoind.cpp.o.d -o CMakeFiles/goldcoind.dir/src/bitcoind.cpp.o -c /home/microguy/git/microguy/goldcoin/src/bitcoind.cpp
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/goldcoind.dir/src/bitcoind.cpp.o -MF CMakeFiles/goldcoind.dir/src/bitcoind.cpp.o.d -o CMakeFiles/goldcoind.dir/src/bitcoind.cpp.o -c /home/microguy/git/microguy/goldcoin/src/bitcoind.cpp
 
 CMakeFiles/goldcoind.dir/src/bitcoind.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/goldcoind.dir/src/bitcoind.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/bitcoind.cpp > CMakeFiles/goldcoind.dir/src/bitcoind.cpp.i
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/bitcoind.cpp > CMakeFiles/goldcoind.dir/src/bitcoind.cpp.i
 
 CMakeFiles/goldcoind.dir/src/bitcoind.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/goldcoind.dir/src/bitcoind.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/bitcoind.cpp -o CMakeFiles/goldcoind.dir/src/bitcoind.cpp.s
+	/usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/bitcoind.cpp -o CMakeFiles/goldcoind.dir/src/bitcoind.cpp.s
 
 # Object files for target goldcoind
 goldcoind_OBJECTS = \
@@ -101,11 +101,6 @@ bin/goldcoind: lib/libleveldb.a
 bin/goldcoind: lib/libmemenv.a
 bin/goldcoind: lib/libsecp256k1.a
 bin/goldcoind: lib/libunivalue.a
-bin/goldcoind: /usr/lib/x86_64-linux-gnu/libboost_system.a
-bin/goldcoind: /usr/lib/x86_64-linux-gnu/libboost_filesystem.a
-bin/goldcoind: /usr/lib/x86_64-linux-gnu/libboost_program_options.a
-bin/goldcoind: /usr/lib/x86_64-linux-gnu/libboost_thread.a
-bin/goldcoind: /usr/lib/x86_64-linux-gnu/libboost_chrono.a
 bin/goldcoind: /usr/lib/x86_64-linux-gnu/libssl.so
 bin/goldcoind: /usr/lib/x86_64-linux-gnu/libcrypto.so
 bin/goldcoind: lib/libbitcoin_wallet.a
@@ -113,7 +108,6 @@ bin/goldcoind: /usr/lib/x86_64-linux-gnu/libdb_cxx-5.3.so
 bin/goldcoind: /usr/lib/x86_64-linux-gnu/libdb-5.3.so
 bin/goldcoind: lib/libbitcoin_crypto.a
 bin/goldcoind: lib/libleveldb.a
-bin/goldcoind: /usr/lib/x86_64-linux-gnu/libboost_atomic.a
 bin/goldcoind: /usr/lib/x86_64-linux-gnu/libdb_cxx-5.3.so
 bin/goldcoind: /usr/lib/x86_64-linux-gnu/libdb-5.3.so
 bin/goldcoind: CMakeFiles/goldcoind.dir/link.txt
