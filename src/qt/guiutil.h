@@ -7,6 +7,7 @@
 #define BITCOIN_QT_GUIUTIL_H
 
 #include "amount.h"
+#include "fs.h"
 
 #include <QEvent>
 #include <QHeaderView>
@@ -189,11 +190,11 @@ namespace GUIUtil
     /** Restore window size and position */
     void restoreWindowGeometry(const QString& strSetting, const QSize &defaultSizeIn, QWidget *parent);
 
-    /* Convert QString to OS specific boost path through UTF-8 */
-    boost::filesystem::path qstringToBoostPath(const QString &path);
+    /* Convert QString to filesystem path through UTF-8 */
+    fs::path qstringToBoostPath(const QString &path);
 
-    /* Convert OS specific boost path to QString through UTF-8 */
-    QString boostPathToQString(const boost::filesystem::path &path);
+    /* Convert filesystem path to QString through UTF-8 */
+    QString boostPathToQString(const fs::path &path);
 
     /* Convert seconds into a QString with days, hours, mins, secs */
     QString formatDurationStr(int secs);
@@ -235,7 +236,7 @@ namespace GUIUtil
         void mouseReleaseEvent(QMouseEvent *event);
     };
 
-#if defined(Q_OS_MAC) && QT_VERSION >= 0x050000
+#if defined(Q_OS_MAC)
     // workaround for Qt OSX Bug:
     // https://bugreports.qt-project.org/browse/QTBUG-15631
     // QProgressBar uses around 10% CPU even when app is in background
@@ -280,11 +281,7 @@ namespace GUIUtil
     template <typename SeparatorType>
     QStringList SplitSkipEmptyParts(const QString& string, const SeparatorType& separator)
     {
-    #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
         return string.split(separator, Qt::SkipEmptyParts);
-    #else
-        return string.split(separator, QString::SkipEmptyParts);
-    #endif
     }
     
      /**
