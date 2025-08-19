@@ -10,7 +10,7 @@
 #include <QByteArray>
 #include <QString>
 
-#if QT_VERSION >= 0x050000
+// Qt 6.9 - always use nativeEvent
 #include <windef.h> // for HWND
 
 #include <QAbstractNativeEventFilter>

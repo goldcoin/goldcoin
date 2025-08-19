@@ -134,12 +134,7 @@ OverviewPage::OverviewPage(const PlatformStyle *platformStyle, QWidget *parent) 
     ui->listTransactions->setItemDelegate(txdelegate);
     ui->listTransactions->setIconSize(QSize(DECORATION_SIZE, DECORATION_SIZE));
     ui->listTransactions->setMinimumHeight(NUM_ITEMS * (DECORATION_SIZE + 2));
-#ifdef Q_OS_MAC
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    ui->listTransactions->setAttribute(Qt::WA_MacShowFocusRect, false);
-#endif
-    // Qt 6: WA_MacShowFocusRect is removed, focus rect behavior is handled differently
-#endif
+    // Qt 6.9: Focus rect is handled automatically on all platforms
 
     connect(ui->listTransactions, &QListView::clicked, this, &OverviewPage::handleTransactionClicked);
 

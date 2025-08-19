@@ -18,7 +18,7 @@
 #include <QDir>
 #include <QtGlobal>
 
-#include <boost/filesystem.hpp>
+#include "fs.h"
 
 static UniValue rpcNestedTest_rpc(const JSONRPCRequest& request)
 {
@@ -136,7 +136,7 @@ void RPCNestedTests::rpcNestedTests()
     RPCConsole::RPCExecuteCommandLine(result, "rpcNestedTest(   abc   ,   cba )");
     QVERIFY(result == "[\"abc\",\"cba\"]");
 
-#if QT_VERSION >= 0x050300
+// Qt 6.9 always supports QTest::ignoreMessage
     // do the QVERIFY_EXCEPTION_THROWN checks only with Qt5.3 and higher (QVERIFY_EXCEPTION_THROWN was introduced in Qt5.3)
     QVERIFY_EXCEPTION_THROWN(RPCConsole::RPCExecuteCommandLine(result, "getblockchaininfo() .\n"), std::runtime_error); //invalid syntax
     QVERIFY_EXCEPTION_THROWN(RPCConsole::RPCExecuteCommandLine(result, "getblockchaininfo() getblockchaininfo()"), std::runtime_error); //invalid syntax
@@ -153,5 +153,5 @@ void RPCNestedTests::rpcNestedTests()
     delete pcoinsdbview;
     delete pblocktree;
 
-    boost::filesystem::remove_all(boost::filesystem::path(path));
+    fsbridge::RemoveAll(fs::path(path));
 }
