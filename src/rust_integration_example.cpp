@@ -2,178 +2,256 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-//! Example of C++23/Rust Integration
-//! The Mount Shasta Trinity in Action!
+/**
+ * Example integration of Rust networking and consensus with C++23
+ * 
+ * This demonstrates the hybrid C++23/Rust architecture where:
+ * - Networking is handled by Rust with async/await and QUIC
+ * - Consensus validation is parallelized in Rust
+ * - C++23 provides the main application logic and GUI
+ */
 
 #include "rust_bridge.h"
-#include "util/expected.h"
-#include "util/flatmap.h"
-#include <print>
+#include <iostream>
 #include <format>
-#include <chrono>
+#include <print>
 #include <thread>
+#include <chrono>
+#include <expected>
 
-using namespace goldcoin;
+using namespace goldcoin::rust;
+using namespace std::chrono_literals;
 
-void demonstrate_rust_integration() {
-    std::println("🦀 Goldcoin C++23/Rust Integration Demo");
-    std::println("========================================");
+/// Example: Using Rust network manager from C++23
+void networkExample() {
+    std::println("🦀 Starting Rust Network Manager Example");
     
-    // Initialize Rust runtime
-    rust::initialize();
-    std::println("✅ Rust runtime initialized");
+    // Create network configuration
+    FFINetworkConfig config {
+        .listen_port = 51241,
+        .max_peers = 125,
+        .max_outbound = 8,
+        .protocol_version = 70018,
+        .user_agent = "/Goldcoin:0.17.0(C++23+Rust)/",
+        .relay = true,
+        .services = 1  // NODE_NETWORK
+    };
     
-    // Get version
-    auto version = rust::version();
-    std::println("📦 Rust version: {}", version);
-    
-    // Run benchmark
-    auto benchmark_result = rust::benchmark();
-    if (benchmark_result) {
-        std::println("⚡ Rust benchmark completed in {} μs", *benchmark_result);
-    } else {
-        std::println("❌ Benchmark failed: {}", benchmark_result.error());
-    }
-    
-    // Test network node
-    std::println("\n🌐 Testing Network Node...");
-    {
-        rust::NetworkNodeWrapper node(8333);
-        if (node.is_valid()) {
-            std::println("✅ Network node created on port 8333");
-            std::println("📊 Current peer count: {}", node.peer_count());
-        } else {
-            std::println("❌ Failed to create network node");
+    try {
+        // Create network manager (RAII - auto cleanup)
+        RustNetworkManager network(config);
+        
+        // Start the network
+        auto start_result = network.start();
+        if (!start_result) {
+            std::println(stderr, "❌ Failed to start network: {}", start_result.error());
+            return;
         }
-    } // RAII cleanup
-    
-    // Test consensus validator
-    std::println("\n🔒 Testing Consensus Validator...");
-    {
-        rust::ConsensusValidatorWrapper validator;
-        if (validator.is_valid()) {
-            std::println("✅ Consensus validator created");
+        
+        std::println("✅ Network started successfully!");
+        
+        // Monitor network for 10 seconds
+        for (int i = 0; i < 10; ++i) {
+            auto stats = network.getStats();
+            std::println("📊 Network Stats - Peers: {} | Sent: {} bytes | Recv: {} bytes",
+                        stats.peer_count, stats.bytes_sent, stats.bytes_recv);
             
-            // Mock block validation
-            struct MockBlock {
-                uint32_t version = 1;
-                uint8_t prev_hash[32] = {0};
-                uint8_t merkle_root[32] = {0};
-                uint32_t timestamp = 1234567890;
-                uint32_t bits = 0x1d00ffff;
-                uint32_t nonce = 0;
-            } block;
-            
-            bool valid = validator.validate_block(&block);
-            std::println("📋 Block validation result: {}", valid ? "VALID" : "INVALID");
-        } else {
-            std::println("❌ Failed to create validator");
+            std::this_thread::sleep_for(1s);
         }
+        
+        // Stop the network (also happens automatically in destructor)
+        auto stop_result = network.stop();
+        if (!stop_result) {
+            std::println(stderr, "⚠️ Warning: {}", stop_result.error());
+        }
+        
+    } catch (const std::exception& e) {
+        std::println(stderr, "❌ Exception: {}", e.what());
     }
-    
-    // Performance comparison
-    std::println("\n📊 Performance Comparison:");
-    std::println("==========================");
-    
-    // C++23 std::flat_map performance
-    {
-        auto start = std::chrono::high_resolution_clock::now();
-        
-        FlatMap<uint32_t, uint64_t> utxo_map;
-        for (uint32_t i = 0; i < 100000; ++i) {
-            utxo_map.insert(i, i * 2);
-        }
-        
-        uint64_t sum = 0;
-        for (const auto& [key, value] : utxo_map) {
-            sum += value;
-        }
-        
-        auto end = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-        
-        std::println("C++23 flat_map (100k ops): {} μs", duration.count());
-    }
-    
-    // Rust DashMap performance (simulated via FFI)
-    {
-        auto rust_perf = rust::benchmark();
-        if (rust_perf) {
-            std::println("Rust DashMap (1M ops):     {} μs", *rust_perf);
-            
-            // Calculate speedup
-            float speedup = 1000000.0f / 100000.0f; // Normalize for operation count
-            std::println("🚀 Rust parallel speedup:   ~{}x", speedup);
-        }
-    }
-    
-    // Network throughput comparison
-    std::println("\n📡 Network Throughput:");
-    std::println("======================");
-    std::println("TCP (old):     1,000 msg/s");
-    std::println("QUIC (Rust):  10,000 msg/s");
-    std::println("🚀 Improvement: 10x");
-    
-    // Block validation comparison
-    std::println("\n⚙️  Block Validation:");
-    std::println("=====================");
-    std::println("C++17 (sequential): 250ms");
-    std::println("C++23 (optimized):  150ms");
-    std::println("Rust (parallel):     50ms");
-    std::println("🚀 Total speedup:    5x");
-    
-    std::println("\n✨ Mount Shasta Trinity Success!");
-    std::println("================================");
-    std::println("MicroGuy + LCC + SCC = REVOLUTION!");
 }
 
-// Error handling with std::expected
-Expected<void> test_rust_error_handling() {
-    rust::initialize();
+/// Example: Using Rust consensus validation from C++23
+void consensusExample() {
+    std::println("\n🦀 Starting Rust Consensus Validation Example");
     
-    // Create network node
-    rust::NetworkNodeWrapper node(8333);
-    if (!node.is_valid()) {
-        return std::unexpected(ValidationError::NETWORK_ERROR);
+    try {
+        // Create chain state
+        RustChainState chain;
+        
+        // Create a test block header
+        FFIBlockHeader header {
+            .version = 1,
+            .prev_block = {0}, // Genesis parent
+            .merkle_root = {0},
+            .timestamp = static_cast<uint32_t>(std::time(nullptr)),
+            .bits = 0x207fffff,  // Easy difficulty for testing
+            .nonce = 12345
+        };
+        
+        // Create coinbase transaction
+        std::vector<uint8_t> coinbase_data = {
+            0x01, 0x00, 0x00, 0x00,  // version
+            0x01,                     // input count
+            // ... transaction data ...
+        };
+        
+        std::vector<FFITransaction> transactions;
+        transactions.push_back({
+            .version = 1,
+            .data = coinbase_data.data(),
+            .data_len = coinbase_data.size()
+        });
+        
+        // Validate the block
+        std::println("🔍 Validating block...");
+        auto validate_result = chain.validateBlock(header, transactions);
+        
+        if (!validate_result) {
+            std::println("⚠️ Block validation failed: {}", validate_result.error());
+        } else {
+            std::println("✅ Block validation passed!");
+        }
+        
+        // Connect the block to chain
+        std::println("🔗 Connecting block to chain...");
+        auto connect_result = chain.connectBlock(header, transactions, 1);
+        
+        if (!connect_result) {
+            std::println("❌ Failed to connect block: {}", connect_result.error());
+        } else {
+            std::println("✅ Block connected successfully!");
+            
+            // Get chain stats
+            auto stats = chain.getStats();
+            std::println("📊 Chain Stats:");
+            std::println("  Height: {}", stats.best_height);
+            std::println("  UTXO Count: {}", stats.utxo_count);
+            
+            // Get best block hash
+            auto hash = chain.getBestHash();
+            std::print("  Best Hash: ");
+            for (auto byte : hash) {
+                std::print("{:02x}", byte);
+            }
+            std::println("");
+        }
+        
+    } catch (const std::exception& e) {
+        std::println(stderr, "❌ Exception: {}", e.what());
+    }
+}
+
+/// Example: Performance comparison between C++ and Rust validation
+void performanceComparison() {
+    std::println("\n⚡ Performance Comparison: C++ vs Rust");
+    
+    // Create test data
+    const int num_blocks = 1000;
+    std::vector<FFIBlockHeader> headers;
+    headers.reserve(num_blocks);
+    
+    for (int i = 0; i < num_blocks; ++i) {
+        headers.push_back({
+            .version = 1,
+            .prev_block = {0},
+            .merkle_root = {0},
+            .timestamp = static_cast<uint32_t>(std::time(nullptr) + i),
+            .bits = 0x207fffff,
+            .nonce = static_cast<uint32_t>(i)
+        });
     }
     
-    // Create validator
-    rust::ConsensusValidatorWrapper validator;
-    if (!validator.is_valid()) {
-        return std::unexpected(ValidationError::CONSENSUS_ERROR);
+    // Benchmark Rust validation
+    RustChainState rust_chain;
+    auto rust_start = std::chrono::high_resolution_clock::now();
+    
+    for (const auto& header : headers) {
+        std::vector<FFITransaction> empty_txs;
+        auto result = rust_chain.validateBlock(header, empty_txs);
+        // Ignore result for benchmark
     }
     
-    std::println("✅ All Rust components initialized successfully");
-    return {};
+    auto rust_end = std::chrono::high_resolution_clock::now();
+    auto rust_duration = std::chrono::duration_cast<std::chrono::milliseconds>(rust_end - rust_start);
+    
+    std::println("🦀 Rust validation time: {}ms for {} blocks", 
+                rust_duration.count(), num_blocks);
+    std::println("   Average: {:.2f}ms per block", 
+                static_cast<double>(rust_duration.count()) / num_blocks);
+    
+    // Note: C++ validation would go here for comparison
+    std::println("📝 Note: C++ validation comparison requires linking with existing validation code");
+}
+
+/// Example: Using C++23 features with Rust integration
+void modernCppFeatures() {
+    std::println("\n✨ C++23 Features with Rust Integration");
+    
+    // Using std::expected for error handling (matches Rust's Result<T, E>)
+    auto createNetwork = []() -> std::expected<RustNetworkManager, std::string> {
+        FFINetworkConfig config {
+            .listen_port = 51241,
+            .max_peers = 125,
+            .max_outbound = 8,
+            .protocol_version = 70018,
+            .user_agent = "/Goldcoin:0.17.0/",
+            .relay = true,
+            .services = 1
+        };
+        
+        try {
+            return RustNetworkManager(config);
+        } catch (const std::exception& e) {
+            return std::unexpected(std::string(e.what()));
+        }
+    };
+    
+    // Chain operations using monadic style
+    auto result = createNetwork()
+        .and_then([](RustNetworkManager& net) { return net.start(); })
+        .transform([]() { 
+            std::println("✅ Network started via monadic chain!");
+            return true;
+        });
+    
+    if (!result) {
+        std::println(stderr, "❌ Monadic chain failed: {}", result.error());
+    }
+    
+    // Using std::flat_map (C++23) to store peer info (mirrors Rust's design)
+    std::flat_map<uint64_t, std::string> peer_map;
+    peer_map[1] = "127.0.0.1:51241";
+    peer_map[2] = "192.168.1.100:51241";
+    
+    std::println("📍 Peer map (C++23 flat_map):");
+    for (const auto& [id, addr] : peer_map) {
+        std::println("  Peer {}: {}", id, addr);
+    }
+    
+    // Using std::print with formatting (C++23)
+    std::println("🎯 This output uses C++23 std::println!");
+    std::println("   Formatting: {:>10} | {:<10} | {:^10}", "Right", "Left", "Center");
 }
 
 int main() {
-    std::println("🏔️ GOLDCOIN C++23/RUST HYBRID");
-    std::println("THE MOUNT SHASTA REVOLUTION!");
+    std::println("🚀 Goldcoin C++23/Rust Hybrid Architecture Demo");
+    std::println("================================================");
+    std::println("The world's first cryptocurrency with C++23 AND Rust!");
     std::println("");
     
-    // Run integration demo
-    demonstrate_rust_integration();
+    // Run examples
+    networkExample();
+    consensusExample();
+    performanceComparison();
+    modernCppFeatures();
     
-    // Test error handling
-    std::println("\n🛡️ Testing Error Handling:");
-    std::println("==========================");
-    
-    auto result = test_rust_error_handling();
-    if (result) {
-        std::println("✅ Error handling test passed");
-    } else {
-        std::println("❌ Error: {}", 
-            result.error() == ValidationError::NETWORK_ERROR ? "Network" : "Consensus");
-    }
-    
-    std::println("\n🎊 THE FUTURE IS NOW!");
-    std::println("===================");
-    std::println("• World's FIRST C++23 cryptocurrency ✅");
-    std::println("• World's FIRST C++23/Rust hybrid ✅");
-    std::println("• 30-50% performance gains PROVEN ✅");
-    std::println("• 10x network throughput via QUIC ✅");
-    std::println("• Memory safety via Rust ✅");
+    std::println("\n🏆 Demo Complete!");
+    std::println("Goldcoin is now powered by:");
+    std::println("  • C++23 for application logic and GUI");
+    std::println("  • Rust 1.89 for networking and consensus");
+    std::println("  • QUIC transport for modern P2P");
+    std::println("  • Tokio async runtime for performance");
+    std::println("  • Zero-cost FFI bridge between languages");
     
     return 0;
 }

@@ -1,0 +1,32 @@
+[package]
+name = "goldcoin-script"
+version = "0.17.0"
+edition = "2021"
+authors = ["The Goldcoin Core developers"]
+license = "MIT"
+
+[dependencies]
+# Crypto
+secp256k1 = { version = "0.29", features = ["global-context", "recovery"] }
+sha2 = "0.10"
+ripemd = "0.1"
+
+# Data structures
+bytes = "1.7"
+bitvec = "1.0"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+
+# Error handling
+thiserror = "1.0"
+
+# Logging
+tracing = "0.1"
+
+# Parallel execution
+rayon = "1.10"
+
+[dev-dependencies]
+hex = "0.4"
+criterion = "0.5"
