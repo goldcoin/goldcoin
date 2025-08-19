@@ -37,12 +37,12 @@ std::string static EncodeDumpTime(int64_t nTime) {
 }
 
 int64_t static DecodeDumpTime(const std::string &str) {
-    static const boost::posix_time::ptime epoch = boost::posix_time::from_time_t(0);
-    static const std::locale loc(std::locale::classic(),
-        new boost::posix_time::time_input_facet("%Y-%m-%dT%H:%M:%SZ"));
+    // C++23: Replace with std::chrono time parsing
+    static const auto epoch = std::chrono::system_clock::from_time_t(0);
     std::istringstream iss(str);
-    iss.imbue(loc);
-    boost::posix_time::ptime ptime(boost::date_time::not_a_date_time);
+    std::tm tm = {};
+    iss >> std::get_time(&tm, "%Y-%m-%dT%H:%M:%SZ");
+    auto time_point = std::chrono::system_clock::from_time_t(std::mktime(&tm));
     iss >> ptime;
     if (ptime.is_not_a_date_time())
         return 0;
@@ -1019,7 +1019,7 @@ UniValue importmulti(const JSONRPCRequest& mainRequest)
         return NullUniValue;
     }
 
-    RPCTypeCheck(mainRequest.params, boost::assign::list_of(UniValue::VARR)(UniValue::VOBJ));
+    RPCTypeCheck(mainRequest.params, {UniValue::VARR, UniValue::VOBJ});  // C++23 initializer list
 
     const UniValue& requests = mainRequest.params[0];
 

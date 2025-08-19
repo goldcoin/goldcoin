@@ -97,7 +97,7 @@ public:
 };
 
 // Visitor to check address payload
-class TestPayloadVisitor : public boost::static_visitor<bool>
+class TestPayloadVisitor  // C++23: Modern visitor pattern
 {
 private:
     std::vector<unsigned char> exp_payload;

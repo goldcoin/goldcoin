@@ -229,7 +229,7 @@ BOOST_AUTO_TEST_CASE(addrman_new_collisions)
     BOOST_CHECK(addrman.size() == 0);
 
     for (unsigned int i = 1; i < 18; i++) {
-        CService addr = ResolveService("250.1.1." + boost::to_string(i));
+        CService addr = ResolveService("250.1.1." + std::to_string(i));  // C++23 to_string
         addrman.Add(CAddress(addr, NODE_NONE), source);
 
         //Test 13: No collision in new table yet.
@@ -258,7 +258,7 @@ BOOST_AUTO_TEST_CASE(addrman_tried_collisions)
     BOOST_CHECK(addrman.size() == 0);
 
     for (unsigned int i = 1; i < 80; i++) {
-        CService addr = ResolveService("250.1.1." + boost::to_string(i));
+        CService addr = ResolveService("250.1.1." + std::to_string(i));  // C++23 to_string
         addrman.Add(CAddress(addr, NODE_NONE), source);
         addrman.Good(CAddress(addr, NODE_NONE));
 
@@ -407,7 +407,7 @@ BOOST_AUTO_TEST_CASE(addrman_getaddr)
         int octet1 = i % 256;
         int octet2 = (i / 256) % 256;
         int octet3 = (i / (256 * 2)) % 256;
-        std::string strAddr = boost::to_string(octet1) + "." + boost::to_string(octet2) + "." + boost::to_string(octet3) + ".23";
+        std::string strAddr = std::to_string(octet1) + "." + std::to_string(octet2) + "." + std::to_string(octet3) + ".23";  // C++23 to_string
         CAddress addr = CAddress(ResolveService(strAddr), NODE_NONE);
         
         // Ensure that for all addrs in addrman, isTerrible == false.
@@ -465,8 +465,8 @@ BOOST_AUTO_TEST_CASE(caddrinfo_get_tried_bucket)
     std::set<int> buckets;
     for (int i = 0; i < 255; i++) {
         CAddrInfo infoi = CAddrInfo(
-            CAddress(ResolveService("250.1.1." + boost::to_string(i)), NODE_NONE),
-            ResolveIP("250.1.1." + boost::to_string(i)));
+            CAddress(ResolveService("250.1.1." + std::to_string(i)), NODE_NONE),
+            ResolveIP("250.1.1." + std::to_string(i)));
         int bucket = infoi.GetTriedBucket(nKey1);
         buckets.insert(bucket);
     }
@@ -477,8 +477,8 @@ BOOST_AUTO_TEST_CASE(caddrinfo_get_tried_bucket)
     buckets.clear();
     for (int j = 0; j < 255; j++) {
         CAddrInfo infoj = CAddrInfo(
-            CAddress(ResolveService("250." + boost::to_string(j) + ".1.1"), NODE_NONE),
-            ResolveIP("250." + boost::to_string(j) + ".1.1"));
+            CAddress(ResolveService("250." + std::to_string(j) + ".1.1"), NODE_NONE),
+            ResolveIP("250." + std::to_string(j) + ".1.1"));
         int bucket = infoj.GetTriedBucket(nKey1);
         buckets.insert(bucket);
     }
@@ -518,8 +518,8 @@ BOOST_AUTO_TEST_CASE(caddrinfo_get_new_bucket)
     std::set<int> buckets;
     for (int i = 0; i < 255; i++) {
         CAddrInfo infoi = CAddrInfo(
-            CAddress(ResolveService("250.1.1." + boost::to_string(i)), NODE_NONE),
-            ResolveIP("250.1.1." + boost::to_string(i)));
+            CAddress(ResolveService("250.1.1." + std::to_string(i)), NODE_NONE),
+            ResolveIP("250.1.1." + std::to_string(i)));
         int bucket = infoi.GetNewBucket(nKey1);
         buckets.insert(bucket);
     }
@@ -531,7 +531,7 @@ BOOST_AUTO_TEST_CASE(caddrinfo_get_new_bucket)
     for (int j = 0; j < 4 * 255; j++) {
         CAddrInfo infoj = CAddrInfo(CAddress(
                                         ResolveService(
-                                            boost::to_string(250 + (j / 255)) + "." + boost::to_string(j % 256) + ".1.1"), NODE_NONE),
+                                            std::to_string(250 + (j / 255)) + "." + std::to_string(j % 256) + ".1.1"), NODE_NONE),
             ResolveIP("251.4.1.1"));
         int bucket = infoj.GetNewBucket(nKey1);
         buckets.insert(bucket);
@@ -544,7 +544,7 @@ BOOST_AUTO_TEST_CASE(caddrinfo_get_new_bucket)
     for (int p = 0; p < 255; p++) {
         CAddrInfo infoj = CAddrInfo(
             CAddress(ResolveService("250.1.1.1"), NODE_NONE),
-            ResolveIP("250." + boost::to_string(p) + ".1.1"));
+            ResolveIP("250." + std::to_string(p) + ".1.1"));
         int bucket = infoj.GetNewBucket(nKey1);
         buckets.insert(bucket);
     }

@@ -9,10 +9,8 @@
 #include <algorithm>
 #include <vector>
 
-#include <boost/foreach.hpp>
-#include <boost/thread/condition_variable.hpp>
-#include <boost/thread/locks.hpp>
-#include <boost/thread/mutex.hpp>
+#include <mutex>               // C++23 mutex
+#include <condition_variable>  // C++23 condition_variable
 
 template <typename T>
 class CCheckQueueControl;
@@ -32,13 +30,13 @@ class CCheckQueue
 {
 private:
     //! Mutex to protect the inner state
-    boost::mutex mutex;
+    std::mutex mutex;  // C++23 mutex
 
     //! Worker threads block on this when out of work
-    boost::condition_variable condWorker;
+    std::condition_variable condWorker;  // C++23 condition_variable
 
     //! Master thread blocks on this when out of work
-    boost::condition_variable condMaster;
+    std::condition_variable condMaster;  // C++23 condition_variable
 
     //! The queue of elements to be processed.
     //! As the order of booleans doesn't matter, it is used as a LIFO (stack)
@@ -69,14 +67,14 @@ private:
     /** Internal function that does bulk of the verification work. */
     bool Loop(bool fMaster = false)
     {
-        boost::condition_variable& cond = fMaster ? condMaster : condWorker;
+        std::condition_variable& cond = fMaster ? condMaster : condWorker;  // C++23
         std::vector<T> vChecks;
         vChecks.reserve(nBatchSize);
         unsigned int nNow = 0;
         bool fOk = true;
         do {
             {
-                boost::unique_lock<boost::mutex> lock(mutex);
+                std::unique_lock<std::mutex> lock(mutex);  // C++23 lock
                 // first do the clean-up of the previous loop run (allowing us to do it in the same critsect)
                 if (nNow) {
                     fAllOk &= fOk;
@@ -146,7 +144,7 @@ public:
     //! Add a batch of checks to the queue
     void Add(std::vector<T>& vChecks)
     {
-        boost::unique_lock<boost::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);  // C++23 lock
         for (T& check : vChecks) {
             queue.push_back(T());
             check.swap(queue.back());
@@ -164,7 +162,7 @@ public:
 
     bool IsIdle()
     {
-        boost::unique_lock<boost::mutex> lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);  // C++23 lock
         return (nTotal == nIdle && nTodo == 0 && fAllOk == true);
     }
 

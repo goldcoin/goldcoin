@@ -282,7 +282,7 @@ struct CCoinsCacheEntry
     CCoinsCacheEntry() : coins(), flags(0) {}
 };
 
-using CCoinsMap = boost::unordered_map<uint256, CCoinsCacheEntry, SaltedTxidHasher>;
+using CCoinsMap = std::unordered_map<uint256, CCoinsCacheEntry, SaltedTxidHasher>;  // C++23 unordered_map
 
 /** Cursor for iterating over CoinsView state */
 class CCoinsViewCursor

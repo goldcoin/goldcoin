@@ -196,7 +196,7 @@ public:
      * Wallet status (encrypted, locked) changed.
      * Note: Called without locks held.
      */
-    boost::signals2::signal<void (CCryptoKeyStore* wallet)> NotifyStatusChanged;
+    Signal<void(CCryptoKeyStore*)> NotifyStatusChanged;  // C++23 modern signal
     // Modern alternative: std::function-based callback
     std::vector<std::function<void(CCryptoKeyStore*)>> NotifyStatusChangedCallbacks;
     

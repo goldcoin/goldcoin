@@ -31,7 +31,7 @@ static void CCheckQueueSpeed(benchmark::State& state)
         void swap(FakeJobNoWork& x){};
     };
     CCheckQueue<FakeJobNoWork> queue {QUEUE_BATCH_SIZE};
-    boost::thread_group tg;
+    std::vector<std::thread> tg;  // C++23 thread group
     for (auto x = 0; x < std::max(MIN_CORES, GetNumCores()); ++x) {
        tg.create_thread([&]{queue.Thread();});
     }
@@ -78,7 +78,7 @@ static void CCheckQueueSpeedPrevectorJob(benchmark::State& state)
         void swap(PrevectorJob& x){p.swap(x.p);};
     };
     CCheckQueue<PrevectorJob> queue {QUEUE_BATCH_SIZE};
-    boost::thread_group tg;
+    std::vector<std::thread> tg;  // C++23 thread group
     for (auto x = 0; x < std::max(MIN_CORES, GetNumCores()); ++x) {
        tg.create_thread([&]{queue.Thread();});
     }

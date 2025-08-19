@@ -231,11 +231,11 @@ void test_cache_erase_parallel(size_t megabytes)
      * "future proofed".
      */
     std::vector<uint256> hashes_insert_copy = hashes;
-    boost::shared_mutex mtx;
+    std::shared_mutex mtx;  // C++23 shared mutex
 
     {
         /** Grab lock to make sure we release inserts */
-        boost::unique_lock<boost::shared_mutex> l(mtx);
+        std::unique_lock<std::shared_mutex> l(mtx);  // C++23 unique lock
         /** Insert the first half */
         for (uint32_t i = 0; i < (n_insert / 2); ++i)
             set.insert(hashes_insert_copy[i]);
@@ -249,7 +249,7 @@ void test_cache_erase_parallel(size_t megabytes)
         /** Each thread is emplaced with x copy-by-value
         */
         threads.emplace_back([&, x] {
-            boost::shared_lock<boost::shared_mutex> l(mtx);
+            std::shared_lock<std::shared_mutex> l(mtx);  // C++23 shared lock
             size_t ntodo = (n_insert/4)/3;
             size_t start = ntodo*x;
             size_t end = ntodo*(x+1);
@@ -262,7 +262,7 @@ void test_cache_erase_parallel(size_t megabytes)
     for (std::thread& t : threads)
         t.join();
     /** Grab lock to make sure we observe erases */
-    boost::unique_lock<boost::shared_mutex> l(mtx);
+    std::unique_lock<std::shared_mutex> l(mtx);  // C++23 unique lock
     /** Insert the second half */
     for (uint32_t i = (n_insert / 2); i < n_insert; ++i)
         set.insert(hashes_insert_copy[i]);

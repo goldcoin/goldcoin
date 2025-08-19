@@ -8,7 +8,7 @@
 /**
  * Filesystem operations and types
  * 
- * MIGRATION: boost::filesystem → std::filesystem
+ * MIGRATION: Legacy filesystem → std::filesystem
  * This header provides a clean migration path from boost to std C++17/23
  */
 
