@@ -54,59 +54,59 @@ struct ChainTxData;
 struct LockPoints;
 
 /** Default for DEFAULT_WHITELISTRELAY. */
-static const bool DEFAULT_WHITELISTRELAY = true;
+inline constexpr bool DEFAULT_WHITELISTRELAY = true;
 /** Default for DEFAULT_WHITELISTFORCERELAY. */
-static const bool DEFAULT_WHITELISTFORCERELAY = true;
+inline constexpr bool DEFAULT_WHITELISTFORCERELAY = true;
 /** Default for -minrelaytxfee, minimum relay fee for transactions */
-static const unsigned int DEFAULT_MIN_RELAY_TX_FEE = 100000;
+inline constexpr unsigned int DEFAULT_MIN_RELAY_TX_FEE = 100000;
 //! -maxtxfee default
-static const CAmount DEFAULT_TRANSACTION_MAXFEE = 0.1 * COIN;  // 100 times default fee
+inline constexpr CAmount DEFAULT_TRANSACTION_MAXFEE = 0.1 * COIN;  // 100 times default fee
 //! Discourage users to set fees higher than this amount (in satoshis) per kB
-static const CAmount HIGH_TX_FEE_PER_KB = 0.01 * COIN;
+inline constexpr CAmount HIGH_TX_FEE_PER_KB = 0.01 * COIN;
 //! -maxtxfee will warn if called with a higher fee than this amount (in satoshis)
-static const CAmount HIGH_MAX_TX_FEE = 100 * HIGH_TX_FEE_PER_KB;
+inline constexpr CAmount HIGH_MAX_TX_FEE = 100 * HIGH_TX_FEE_PER_KB;
 /** Default for -limitancestorcount, max number of in-mempool ancestors */
-static const unsigned int DEFAULT_ANCESTOR_LIMIT = 25;
+inline constexpr unsigned int DEFAULT_ANCESTOR_LIMIT = 25;
 /** Default for -limitancestorsize, maximum kilobytes of tx + all in-mempool ancestors */
-static const unsigned int DEFAULT_ANCESTOR_SIZE_LIMIT = 101;
+inline constexpr unsigned int DEFAULT_ANCESTOR_SIZE_LIMIT = 101;
 /** Default for -limitdescendantcount, max number of in-mempool descendants */
-static const unsigned int DEFAULT_DESCENDANT_LIMIT = 25;
+inline constexpr unsigned int DEFAULT_DESCENDANT_LIMIT = 25;
 /** Default for -limitdescendantsize, maximum kilobytes of in-mempool descendants */
-static const unsigned int DEFAULT_DESCENDANT_SIZE_LIMIT = 101;
+inline constexpr unsigned int DEFAULT_DESCENDANT_SIZE_LIMIT = 101;
 /** Default for -mempoolexpiry, expiration time for mempool transactions in hours */
-static const unsigned int DEFAULT_MEMPOOL_EXPIRY = 336;
+inline constexpr unsigned int DEFAULT_MEMPOOL_EXPIRY = 336;
 /** The maximum size of a blk?????.dat file (since 0.8) */
-static const unsigned int MAX_BLOCKFILE_SIZE = 0x8000000; // 128 MiB
+inline constexpr unsigned int MAX_BLOCKFILE_SIZE = 0x8000000; // 128 MiB
 /** The pre-allocation chunk size for blk?????.dat files (since 0.8) */
-static const unsigned int BLOCKFILE_CHUNK_SIZE = 0x1000000; // 16 MiB
+inline constexpr unsigned int BLOCKFILE_CHUNK_SIZE = 0x1000000; // 16 MiB
 /** The pre-allocation chunk size for rev?????.dat files (since 0.8) */
-static const unsigned int UNDOFILE_CHUNK_SIZE = 0x100000; // 1 MiB
+inline constexpr unsigned int UNDOFILE_CHUNK_SIZE = 0x100000; // 1 MiB
 
 /** Maximum number of script-checking threads allowed */
-static const int MAX_SCRIPTCHECK_THREADS = 16;
+inline constexpr int MAX_SCRIPTCHECK_THREADS = 16;
 /** -par default (number of script-checking threads, 0 = auto) */
-static const int DEFAULT_SCRIPTCHECK_THREADS = 0;
+inline constexpr int DEFAULT_SCRIPTCHECK_THREADS = 0;
 /** Number of blocks that can be requested at any given time from a single peer. */
-static const int MAX_BLOCKS_IN_TRANSIT_PER_PEER = 16;
+inline constexpr int MAX_BLOCKS_IN_TRANSIT_PER_PEER = 16;
 /** Timeout in seconds during which a peer must stall block download progress before being disconnected. */
-static const unsigned int BLOCK_STALLING_TIMEOUT = 2;
+inline constexpr unsigned int BLOCK_STALLING_TIMEOUT = 2;
 /** Number of headers sent in one getheaders result. We rely on the assumption that if a peer sends
  *  less than this number, we reached its tip. Changing this value is a protocol upgrade. */
-static const unsigned int MAX_HEADERS_RESULTS = 2000;
+inline constexpr unsigned int MAX_HEADERS_RESULTS = 2000;
 /** Maximum depth of blocks we're willing to serve as compact blocks to peers
  *  when requested. For older blocks, a regular BLOCK response will be sent. */
-static const int MAX_CMPCTBLOCK_DEPTH = 5;
+inline constexpr int MAX_CMPCTBLOCK_DEPTH = 5;
 /** Maximum depth of blocks we're willing to respond to GETBLOCKTXN requests for. */
-static const int MAX_BLOCKTXN_DEPTH = 10;
+inline constexpr int MAX_BLOCKTXN_DEPTH = 10;
 /** Size of the "block download window": how far ahead of our current height do we fetch?
  *  Larger windows tolerate larger download speed differences between peer, but increase the potential
  *  degree of disordering of blocks on disk (which make reindexing and in the future perhaps pruning
  *  harder). We'll probably want to make this a per-peer adaptive value at some point. */
-static const unsigned int BLOCK_DOWNLOAD_WINDOW = 1024;
+inline constexpr unsigned int BLOCK_DOWNLOAD_WINDOW = 1024;
 /** Time to wait (in seconds) between writing blocks/block index to disk. */
-static const unsigned int DATABASE_WRITE_INTERVAL = 60 * 60;
+inline constexpr unsigned int DATABASE_WRITE_INTERVAL = 60 * 60;
 /** Time to wait (in seconds) between flushing chainstate to disk. */
-static const unsigned int DATABASE_FLUSH_INTERVAL = 24 * 60 * 60;
+inline constexpr unsigned int DATABASE_FLUSH_INTERVAL = 24 * 60 * 60;
 /** Maximum length of reject messages. */
 static const unsigned int MAX_REJECT_MESSAGE_LENGTH = 111;
 /** Average delay between local address broadcasts in seconds. */

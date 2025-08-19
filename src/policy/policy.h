@@ -92,18 +92,18 @@ static constexpr unsigned int STANDARD_NOT_MANDATORY_VERIFY_FLAGS = STANDARD_SCR
 static constexpr unsigned int STANDARD_LOCKTIME_VERIFY_FLAGS = LOCKTIME_VERIFY_SEQUENCE |
                                                            LOCKTIME_MEDIAN_TIME_PAST;
 
-bool IsStandard(const CScript& scriptPubKey, txnouttype& whichType);
+[[nodiscard]] bool IsStandard(const CScript& scriptPubKey, txnouttype& whichType);
     /**
      * Check for standard transaction types
      * @return True if all outputs (scriptPubKeys) use only standard transaction forms
      */
-bool IsStandardTx(const CTransaction& tx, std::string& reason);
+[[nodiscard]] bool IsStandardTx(const CTransaction& tx, std::string& reason);
     /**
      * Check for standard transaction types
      * @param[in] mapInputs    Map of previous transactions that have outputs we're spending
      * @return True if all inputs (scriptSigs) use only standard transaction forms
      */
-bool AreInputsStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs);
+[[nodiscard]] bool AreInputsStandard(const CTransaction& tx, const CCoinsViewCache& mapInputs);
 
 extern CFeeRate incrementalRelayFee;
 extern CFeeRate dustRelayFee;
