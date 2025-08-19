@@ -130,14 +130,14 @@ public:
     TransactionTableModel *getTransactionTableModel();
     RecentRequestsTableModel *getRecentRequestsTableModel();
 
-    CAmount getBalance(const CCoinControl *coinControl = nullptr) const;
-    CAmount getUnconfirmedBalance() const;
-    CAmount getImmatureBalance() const;
-    bool haveWatchOnly() const;
-    CAmount getWatchBalance() const;
-    CAmount getWatchUnconfirmedBalance() const;
-    CAmount getWatchImmatureBalance() const;
-    EncryptionStatus getEncryptionStatus() const;
+    [[nodiscard]] CAmount getBalance(const CCoinControl *coinControl = nullptr) const;
+    [[nodiscard]] CAmount getUnconfirmedBalance() const;
+    [[nodiscard]] CAmount getImmatureBalance() const;
+    [[nodiscard]] bool haveWatchOnly() const;
+    [[nodiscard]] CAmount getWatchBalance() const;
+    [[nodiscard]] CAmount getWatchUnconfirmedBalance() const;
+    [[nodiscard]] CAmount getWatchImmatureBalance() const;
+    [[nodiscard]] EncryptionStatus getEncryptionStatus() const;
 
     // Check address for validity
     bool validateAddress(const QString &address);
