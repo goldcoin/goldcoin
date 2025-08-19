@@ -12,9 +12,9 @@
 #include "script/interpreter.h"
 #include "uint256.h"
 
-#include <boost/variant.hpp>
-
-#include <stdint.h>
+#include <variant>
+#include <optional>
+#include <cstdint>
 
 static constexpr bool DEFAULT_ACCEPT_DATACARRIER = true;
 
@@ -69,7 +69,7 @@ public:
  *  * CScriptID: TX_SCRIPTHASH destination
  *  A CTxDestination is the internal data type encoded in a CBitcoinAddress
  */
-using CTxDestination = boost::variant<CNoDestination, CKeyID, CScriptID>;
+using CTxDestination = std::variant<CNoDestination, CKeyID, CScriptID>;
 
 const char* GetTxnOutputType(txnouttype t);
 

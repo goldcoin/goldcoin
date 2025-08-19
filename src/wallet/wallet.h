@@ -961,7 +961,7 @@ public:
     std::vector<std::function<void(bool)>> NotifyWatchonlyChangedCallbacks;
 
     /** Inquire whether this wallet broadcasts transactions. */
-    bool GetBroadcastTransactions() const { return fBroadcastTransactions; }
+    [[nodiscard]] bool GetBroadcastTransactions() const { return fBroadcastTransactions; }
     /** Set whether this wallet broadcasts transactions. */
     void SetBroadcastTransactions(bool broadcast) { fBroadcastTransactions = broadcast; }
 
