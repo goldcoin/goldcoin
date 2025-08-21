@@ -16,6 +16,7 @@
 
 #include "cuckoocache.h"
 #include <shared_mutex>  // C++23 shared_mutex
+#include <mutex>  // for std::unique_lock
 
 namespace {
 

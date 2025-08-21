@@ -10,12 +10,12 @@
 
 #include "chainparams.h"
 #include "hash.h"
+#include "init.h"
 #include "pow.h"
 #include "uint256.h"
 
 #include <stdint.h>
 
-#include <boost/thread.hpp>
 
 static const char DB_COINS = 'c';
 static const char DB_BLOCK_FILES = 'f';

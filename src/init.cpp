@@ -54,12 +54,22 @@
 #endif
 
 #include <sstream>
+#include <cmath>
 #include "fs.h"  // Use our filesystem abstraction
 #include "core_cpp23.h"
 #include <functional>
 #include <thread>
-// Note: boost::interprocess::file_lock still needed for cross-platform file locking
-#include <boost/interprocess/sync/file_lock.hpp>
+#include "version_info.h"
+
+// Platform-specific includes for file locking
+#if defined(_WIN32) || defined(WIN32)
+#include <windows.h>
+#include <io.h>
+#else
+#include <sys/file.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#endif
 #include <openssl/crypto.h>
 
 #if ENABLE_ZMQ
@@ -169,13 +179,16 @@ static CCoinsViewDB *pcoinsdbview = nullptr;
 static CCoinsViewErrorCatcher *pcoinscatcher = nullptr;
 static std::unique_ptr<ECCVerifyHandle> globalVerifyHandle;
 
-void Interrupt(thread_group& threadGroup)
+void Interrupt(thread_group& threadGroup, CScheduler& scheduler)
 {
     InterruptHTTPServer();
     InterruptHTTPRPC();
     InterruptRPC();
     InterruptREST();
     InterruptTorControl();
+    StopScriptCheckQueue();
+    // Stop the scheduler to prevent new tasks and exit the serviceQueue loop
+    scheduler.stop();
     if (g_connman)
         g_connman->Interrupt();
     threadGroup.interrupt_all();
@@ -240,8 +253,11 @@ void Shutdown()
         pblocktree = nullptr;
     }
 #ifdef ENABLE_WALLET
-    if (pwalletMain)
+    if (pwalletMain) {
+        LogPrintf("Shutdown: Flushing wallet (final pass)...\n");
         pwalletMain->Flush(true);
+        LogPrintf("Shutdown: Wallet flush (final pass) complete\n");
+    }
 #endif
 
 #if ENABLE_ZMQ
@@ -261,8 +277,12 @@ void Shutdown()
 #endif
     UnregisterAllValidationInterfaces();
 #ifdef ENABLE_WALLET
-    delete pwalletMain;
-    pwalletMain = nullptr;
+    if (pwalletMain) {
+        LogPrintf("Shutdown: Deleting wallet...\n");
+        delete pwalletMain;
+        pwalletMain = nullptr;
+        LogPrintf("Shutdown: Wallet deleted\n");
+    }
 #endif
     globalVerifyHandle.reset();
     ECC_Stop();
@@ -435,7 +455,7 @@ std::string HelpMessage(HelpMessageMode mode)
         strUsage += HelpMessageOpt("-limitdescendantsize=<n>", strprintf("Do not accept transactions if any ancestor would have more than <n> kilobytes of in-mempool descendants (default: %u).", DEFAULT_DESCENDANT_SIZE_LIMIT));
         strUsage += HelpMessageOpt("-bip9params=deployment:start:end", "Use given start/end times for specified BIP9 deployment (regtest-only)");
     }
-    std::string debugCategories = "addrman, alert, bench, cmpctblock, coindb, db, http, libevent, lock, mempool, mempoolrej, net, proxy, prune, rand, reindex, rpc, selectcoins, tor, zmq"; // Don't translate these and qt below
+    std::string debugCategories = "addrman, alert, bench, cmpctblock, coindb, db, http, libevent, lock, mempool, mempoolrej, net, proxy, prune, rand, reindex, rpc, selectcoins, tor, validation, zmq"; // Don't translate these and qt below
     if (mode == HMM_BITCOIN_QT)
         debugCategories += ", qt";
     strUsage += HelpMessageOpt("-debug=<category>", strprintf(_("Output debugging information (default: %u, supplying <category> is optional)"), 0) + ". " +
@@ -623,6 +643,7 @@ void ThreadImport(std::vector<std::filesystem::path> vImportFiles)
 {
     const CChainParams& chainparams = Params();
     RenameThread("bitcoin-loadblk");
+    LogPrintf("import thread start\n");
 
     {
     CImportingNow imp;
@@ -687,6 +708,7 @@ void ThreadImport(std::vector<std::filesystem::path> vImportFiles)
     } // End scope of CImportingNow
     LoadMempool();
     fDumpMempoolLater = !fRequestShutdown;
+    LogPrintf("import thread exit\n");
 }
 
 /** Sanity checks
@@ -1147,17 +1169,45 @@ static bool LockDataDirectory(bool probeOnly)
     FILE* file = fopen(pathLockFile.string().c_str(), "a"); // empty lock file; created if it doesn't exist.
     if (file) fclose(file);
 
-    try {
-        static boost::interprocess::file_lock lock(pathLockFile.string().c_str());
-        if (!lock.try_lock()) {
+#if defined(_WIN32) || defined(WIN32)
+    // Windows file locking
+    static HANDLE hLockFile = INVALID_HANDLE_VALUE;
+    if (hLockFile == INVALID_HANDLE_VALUE) {
+        hLockFile = CreateFileA(pathLockFile.string().c_str(),
+                                GENERIC_READ | GENERIC_WRITE,
+                                0, // No sharing
+                                nullptr,
+                                OPEN_ALWAYS,
+                                FILE_ATTRIBUTE_NORMAL,
+                                nullptr);
+        if (hLockFile == INVALID_HANDLE_VALUE) {
             return InitError(strprintf(_("Cannot obtain a lock on data directory %s. %s is probably already running."), strDataDir, _(PACKAGE_NAME)));
         }
-        if (probeOnly) {
-            lock.unlock();
-        }
-    } catch(const boost::interprocess::interprocess_exception& e) {
-        return InitError(strprintf(_("Cannot obtain a lock on data directory %s. %s is probably already running.") + " %s.", strDataDir, _(PACKAGE_NAME), e.what()));
     }
+    if (probeOnly) {
+        CloseHandle(hLockFile);
+        hLockFile = INVALID_HANDLE_VALUE;
+    }
+#else
+    // Unix file locking
+    static int lockFd = -1;
+    if (lockFd == -1) {
+        lockFd = open(pathLockFile.string().c_str(), O_RDWR | O_CREAT, 0644);
+        if (lockFd == -1) {
+            return InitError(strprintf(_("Cannot create lock file %s. %s."), pathLockFile.string(), strerror(errno)));
+        }
+        if (flock(lockFd, LOCK_EX | LOCK_NB) != 0) {
+            close(lockFd);
+            lockFd = -1;
+            return InitError(strprintf(_("Cannot obtain a lock on data directory %s. %s is probably already running."), strDataDir, _(PACKAGE_NAME)));
+        }
+    }
+    if (probeOnly) {
+        flock(lockFd, LOCK_UN);
+        close(lockFd);
+        lockFd = -1;
+    }
+#endif
     return true;
 }
 
@@ -1683,7 +1733,7 @@ bool AppInitMain(thread_group& threadGroup, CScheduler& scheduler)
 
 #ifdef ENABLE_WALLET
     if (pwalletMain)
-        pwalletMain->postInitProcess(threadGroup);
+        pwalletMain->postInitProcess(threadGroup.get_threads());
 #endif
 
     return !fRequestShutdown;

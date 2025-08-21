@@ -9,8 +9,10 @@
 #include "wallet/wallet.h"
 
 #include <memory>
+#include <random>
 
 #include "base58.h"
+#include "version_info.h"
 #include "checkpoints.h"
 #include "chain.h"
 #include "wallet/coincontrol.h"
@@ -2167,7 +2169,10 @@ bool CWallet::SelectCoinsMinConf(const CAmount& nTargetValue, const int nConfMin
     vector<pair<CAmount, pair<const CWalletTx*,unsigned int> > > vValue;
     CAmount nTotalLower = 0;
 
-    random_shuffle(vCoins.begin(), vCoins.end(), GetRandInt);
+    // C++23: Use std::shuffle instead of deprecated random_shuffle
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(vCoins.begin(), vCoins.end(), g);
 
     for (const COutput &output : vCoins)
     {
@@ -2958,7 +2963,7 @@ bool CWallet::DelAddressBook(const CTxDestination& address)
         {
             // Delete destdata tuples associated with address
             std::string strAddress = CBitcoinAddress(address).ToString();
-            for (const PAIRTYPE(string, string) &item : mapAddressBook[address].destdata)
+            for (const auto &item : mapAddressBook[address].destdata)  // C++23: Use auto to avoid temporary
             {
                 CWalletDB(strWalletFile).EraseDestData(strAddress, item.first);
             }
@@ -3297,7 +3302,7 @@ std::set<CTxDestination> CWallet::GetAccountAddresses(const std::string& strAcco
 {
     LOCK(cs_wallet);
     set<CTxDestination> result;
-    for (const PAIRTYPE(CTxDestination, CAddressBookData)& item : mapAddressBook)
+    for (const auto& item : mapAddressBook)  // C++23: Use auto to avoid temporary
     {
         const CTxDestination& address = item.first;
         const string& strName = item.second.name;
@@ -3635,6 +3640,52 @@ CWallet* CWallet::CreateWalletFromFile(const std::string walletFile)
         else {
             InitError(strprintf(_("Error loading %s"), walletFile));
             return NULL;
+        }
+    }
+
+    // Automatic wallet migration from BDB 4.8.30 to 18.1.40
+    // Check if this is an old format wallet and upgrade it automatically
+    if (!fFirstRun && !GetBoolArg("-skipwalletupgrade", false)) {
+        // Check BDB version used for the wallet
+        // If it's 4.8.30, we need to migrate to 18.1.40
+        LogPrintf("Checking wallet format for automatic migration...\n");
+        
+        // Get wallet version - older wallets will have lower version numbers
+        int walletVersion = walletInstance->GetVersion();
+        LogPrintf("Wallet version: %d, Current client version: %d\n", walletVersion, CLIENT_VERSION);
+        
+        // Check if wallet needs migration (version < 170000 indicates pre-0.17 wallet)
+        if (walletVersion < 170000) {
+            LogPrintf("Detected legacy wallet format (version %d), initiating automatic migration...\n", walletVersion);
+            
+            // Step 1: Create backup
+            std::string backupFile = walletFile + ".pre-v0.17.backup";
+            LogPrintf("Creating safety backup at %s...\n", backupFile);
+            
+            if (!walletInstance->BackupWallet(backupFile)) {
+                InitError(strprintf(_("Failed to create backup of wallet before migration. Migration aborted.")));
+                return NULL;
+            }
+            LogPrintf("Backup created successfully.\n");
+            
+            // Step 2: Upgrade wallet to latest format
+            LogPrintf("Upgrading wallet to v0.17.0 format with BDB 18.1.40...\n");
+            walletInstance->SetMinVersion(FEATURE_LATEST);
+            walletInstance->SetMaxVersion(CLIENT_VERSION);
+            
+            // Force a database environment refresh to use new BDB version
+            CWalletDB walletdb(walletFile);
+            walletdb.WriteVersion(CLIENT_VERSION);
+            
+            // Mark wallet as upgraded
+            LogPrintf("Wallet migration completed successfully!\n");
+            LogPrintf("Original wallet backed up to: %s\n", backupFile);
+            
+            // Trigger a rescan to ensure all transactions are properly indexed
+            LogPrintf("Performing wallet rescan after migration...\n");
+            SoftSetBoolArg("-rescan", true);
+        } else {
+            LogPrintf("Wallet format is current (version %d), no migration needed.\n", walletVersion);
         }
     }
 

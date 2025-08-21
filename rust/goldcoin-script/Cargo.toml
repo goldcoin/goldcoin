@@ -20,6 +20,7 @@ serde = { version = "1.0", features = ["derive"] }
 
 # Error handling
 thiserror = "1.0"
+anyhow = "1.0"
 
 # Logging
 tracing = "0.1"

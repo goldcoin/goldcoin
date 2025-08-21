@@ -1,4 +1,3 @@
-#include <boost/test/unit_test.hpp>
 
 #include "uint256.h"
 #include "util.h"

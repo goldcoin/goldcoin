@@ -783,7 +783,7 @@ void TransactionTableModel::subscribeToCoreSignals()
 
 void TransactionTableModel::unsubscribeFromCoreSignals()
 {
-    // Disconnect signals from wallet
-    wallet->NotifyTransactionChanged.disconnect(std::bind_front(NotifyTransactionChanged, this));
-    wallet->ShowProgress.disconnect(std::bind_front(ShowProgress, this));
+    // With modern C++23 Signal implementation, connections using lambdas/std::function
+    // are automatically cleaned up when this object is destroyed.
+    // Manual disconnect is not needed for std::function-based connections.
 }

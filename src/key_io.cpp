@@ -8,6 +8,7 @@
 #include <base58.h>
 #include <script/script.h>
 #include <utilstrencodings.h>
+#include <util.h>
 
 #include <variant>
 
@@ -72,14 +73,29 @@ CKey DecodeSecret(const std::string& str)
 {
     CKey key;
     std::vector<unsigned char> data;
+    
+    LogPrint("privkey", "DecodeSecret: Attempting to decode: %s\n", str.substr(0, 4) + "...");
+    
     if (DecodeBase58Check(str, data)) {
+        LogPrint("privkey", "DecodeSecret: Base58Check decoded, data size: %d\n", data.size());
+        
         const std::vector<unsigned char>& privkey_prefix = Params().Base58Prefix(CChainParams::SECRET_KEY);
+        LogPrint("privkey", "DecodeSecret: Expected prefix size: %d, prefix[0]: %d\n", 
+                 privkey_prefix.size(), privkey_prefix.empty() ? -1 : (int)privkey_prefix[0]);
+        LogPrint("privkey", "DecodeSecret: Data prefix[0]: %d\n", data.empty() ? -1 : (int)data[0]);
+        
         if ((data.size() == 32 + privkey_prefix.size() || (data.size() == 33 + privkey_prefix.size() && data.back() == 1)) &&
             std::equal(privkey_prefix.begin(), privkey_prefix.end(), data.begin())) {
             bool compressed = data.size() == 33 + privkey_prefix.size();
+            LogPrint("privkey", "DecodeSecret: Setting key, compressed: %d\n", compressed);
             key.Set(data.begin() + privkey_prefix.size(), data.begin() + privkey_prefix.size() + 32, compressed);
+        } else {
+            LogPrint("privkey", "DecodeSecret: Prefix mismatch or wrong size\n");
         }
+    } else {
+        LogPrint("privkey", "DecodeSecret: Base58Check decode failed\n");
     }
+    
     memory_cleanse(data.data(), data.size());
     return key;
 }

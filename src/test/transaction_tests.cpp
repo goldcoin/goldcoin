@@ -25,10 +25,6 @@
 #include <string>
 #include <sstream>
 
-#include <boost/assign/list_of.hpp>
-#include <boost/test/unit_test.hpp>
-#include <boost/assign/list_of.hpp>
-#include <boost/foreach.hpp>
 
 #include <univalue.h>
 

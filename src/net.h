@@ -30,6 +30,7 @@
 
 #include <atomic>
 #include <deque>
+#include <list>
 #include <memory>
 #include <stdint.h>
 
@@ -39,6 +40,7 @@
 
 #include "fs.h"
 #include "core_cpp23.h"
+#include "validationinterface.h"  // For Signal class
 
 class CAddrMan;
 class CScheduler;
@@ -428,10 +430,11 @@ struct CombinerAll
 // Signals for message handling
 struct CNodeSignals
 {
-    boost::signals2::signal<bool (CNode*, CConnman&, std::atomic<bool>&), CombinerAll> ProcessMessages;
-    boost::signals2::signal<bool (CNode*, CConnman&, std::atomic<bool>&), CombinerAll> SendMessages;
-    boost::signals2::signal<void (CNode*, CConnman&)> InitializeNode;
-    boost::signals2::signal<void (NodeId, bool&)> FinalizeNode;
+    // C++23: Replace boost::signals2 with our custom Signal class
+    Signal<bool(CNode*, CConnman&, const std::atomic<bool>&)> ProcessMessages;
+    Signal<bool(CNode*, CConnman&, const std::atomic<bool>&)> SendMessages;
+    Signal<void(CNode*, CConnman&)> InitializeNode;
+    Signal<void(NodeId, bool&)> FinalizeNode;
 };
 
 

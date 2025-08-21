@@ -7,12 +7,12 @@
 //! This module implements the P2P networking layer for Goldcoin using
 //! modern Rust async patterns and QUIC transport for superior performance.
 
-// Module structure - to be implemented
+// Module structure
+pub mod seeds;
 // pub mod protocol;
 // pub mod peer;
 // pub mod message;
 // pub mod transport;
-// pub mod discovery;
 
 use std::net::SocketAddr;
 use std::sync::Arc;
@@ -22,9 +22,11 @@ use tokio::sync::{RwLock, mpsc};
 use dashmap::DashMap;
 use tracing::{info, warn, error, debug};
 use thiserror::Error;
+use goldcoin_consensus::ChainState;
+use goldcoin_mempool::MemPool;
 
 /// Network configuration constants matching C++ implementation
-pub const PROTOCOL_VERSION: u32 = 70018;
+pub const PROTOCOL_VERSION: u32 = 70015;
 pub const MAX_INV_SIZE: usize = 50_000;
 pub const MAX_PROTOCOL_MESSAGE_LENGTH: usize = 33 * 1_000_000; // 33MB
 pub const PING_INTERVAL: Duration = Duration::from_secs(2 * 60);
@@ -60,7 +62,7 @@ pub enum MessageType {
 }
 
 /// Network errors
-#[derive(Error, Debug)]
+#[derive(Error, Debug, Clone)]
 pub enum NetworkError {
     #[error("Connection failed: {0}")]
     ConnectionFailed(String),
@@ -89,6 +91,24 @@ pub enum PeerState {
     Connected,
     Disconnecting,
     Disconnected,
+}
+
+/// Network type enumeration
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum NetworkType {
+    Mainnet,
+    Testnet,
+    Regtest,
+}
+
+/// Network events
+#[derive(Debug, Clone)]
+pub enum NetworkEvent {
+    PeerConnected { peer_id: u64, addr: SocketAddr },
+    PeerDisconnected { peer_id: u64, reason: String },
+    MessageReceived { peer_id: u64, msg_type: MessageType, data: Vec<u8> },
+    PeerMisbehaving { peer_id: u64, reason: String },
+    Error(NetworkError),
 }
 
 /// Peer information
@@ -130,6 +150,7 @@ pub struct NetworkConfig {
     pub listen_addr: SocketAddr,
     pub max_peers: usize,
     pub max_outbound: usize,
+    pub network_type: NetworkType,
     pub protocol_version: u32,
     pub user_agent: String,
     pub relay: bool,
@@ -139,9 +160,10 @@ pub struct NetworkConfig {
 impl Default for NetworkConfig {
     fn default() -> Self {
         Self {
-            listen_addr: "0.0.0.0:51241".parse().unwrap(),
+            listen_addr: format!("0.0.0.0:{}", seeds::DEFAULT_PORT).parse().unwrap(),
             max_peers: MAX_PEER_CONNECTIONS,
             max_outbound: MAX_OUTBOUND_CONNECTIONS,
+            network_type: NetworkType::Mainnet,
             protocol_version: PROTOCOL_VERSION,
             user_agent: format!("/Goldcoin:0.17.0(Rust)/"),
             relay: true,
@@ -150,14 +172,6 @@ impl Default for NetworkConfig {
     }
 }
 
-/// Network events
-#[derive(Debug, Clone)]
-pub enum NetworkEvent {
-    PeerConnected { peer_id: u64, addr: SocketAddr },
-    PeerDisconnected { peer_id: u64, reason: String },
-    MessageReceived { peer_id: u64, msg_type: MessageType, data: Vec<u8> },
-    PeerMisbehaving { peer_id: u64, score: i32, reason: String },
-}
 
 impl NetworkManager {
     /// Create new network manager
@@ -272,15 +286,38 @@ impl NetworkManager {
     /// Peer discovery loop
     async fn discovery_loop(self: Arc<Self>) {
         let mut interval = tokio::time::interval(Duration::from_secs(30));
+        let mut initial_discovery = true;
         
         loop {
-            interval.tick().await;
-            
-            let peer_count = self.peers.len();
-            if peer_count < self.config.max_outbound {
-                debug!("Current peers: {}/{}", peer_count, self.config.max_peers);
-                // TODO: Connect to new peers from address manager
+            if initial_discovery || self.peers.len() < self.config.max_outbound {
+                info!("Starting peer discovery (current peers: {})", self.peers.len());
+                
+                // Discover peers from DNS seeds
+                let discovered_peers = seeds::discover_peers(20).await;
+                
+                for peer_addr in discovered_peers {
+                    if self.peers.len() >= self.config.max_peers {
+                        break;
+                    }
+                    
+                    // Check if we're already connected
+                    let already_connected = false; // TODO: Check actual peer addresses
+                    
+                    if !already_connected && seeds::is_valid_peer_addr(&peer_addr) {
+                        info!("Attempting connection to peer: {}", peer_addr);
+                        let self_clone = self.clone();
+                        tokio::spawn(async move {
+                            if let Err(e) = self_clone.connect_to_peer(peer_addr).await {
+                                debug!("Failed to connect to {}: {}", peer_addr, e);
+                            }
+                        });
+                    }
+                }
+                
+                initial_discovery = false;
             }
+            
+            interval.tick().await;
         }
     }
     
@@ -293,6 +330,17 @@ impl NetworkManager {
     async fn send_version(&self, peer_id: u64) {
         debug!("Sending version message to peer {}", peer_id);
         // TODO: Serialize and send version message
+    }
+    
+    /// Connect to a specific peer
+    async fn connect_to_peer(&self, addr: SocketAddr) -> Result<(), NetworkError> {
+        debug!("Connecting to peer: {}", addr);
+        
+        // TODO: Implement actual QUIC or TCP connection
+        // For now, we'll just log the attempt
+        info!("Would connect to peer: {} (TCP implementation pending)", addr);
+        
+        Ok(())
     }
     
     /// Handle messages from a peer
@@ -332,6 +380,75 @@ impl Clone for NetworkManager {
             config: self.config.clone(),
             shutdown: self.shutdown.clone(),
         }
+    }
+}
+
+/// Peer Manager for handling peer connections and relationships  
+pub struct PeerManager {
+    network_manager: Arc<NetworkManager>,
+    chain_state: Arc<tokio::sync::RwLock<ChainState>>,
+    mempool: Arc<tokio::sync::RwLock<MemPool>>,
+    shutdown: Arc<tokio::sync::Notify>,
+}
+
+impl PeerManager {
+    /// Create new peer manager
+    pub async fn new(
+        network_manager: Arc<NetworkManager>,
+        chain_state: Arc<tokio::sync::RwLock<ChainState>>,
+        mempool: Arc<tokio::sync::RwLock<MemPool>>,
+    ) -> Result<Self, NetworkError> {
+        Ok(Self {
+            network_manager,
+            chain_state,
+            mempool,
+            shutdown: Arc::new(tokio::sync::Notify::new()),
+        })
+    }
+    
+    /// Run the peer manager
+    pub async fn run(&self) -> Result<(), NetworkError> {
+        info!("Starting peer manager");
+        
+        // Wait for shutdown signal
+        self.shutdown.notified().await;
+        
+        Ok(())
+    }
+    
+    /// Shutdown peer manager
+    pub async fn shutdown(&self) {
+        info!("Shutting down peer manager");
+        self.shutdown.notify_waiters();
+    }
+}
+
+/// Update NetworkManager constructor to match daemon expectations
+impl NetworkManager {
+    /// Create network manager with port and network type
+    pub async fn with_port_and_network(
+        port: u16,
+        network_type: NetworkType,
+        max_connections: usize,
+    ) -> Result<Self, NetworkError> {
+        let config = NetworkConfig {
+            listen_addr: format!("0.0.0.0:{}", port).parse()
+                .map_err(|e| NetworkError::ConnectionFailed(format!("Invalid address: {}", e)))?,
+            max_peers: max_connections,
+            max_outbound: max_connections / 2,
+            network_type,
+            protocol_version: PROTOCOL_VERSION,
+            user_agent: format!("/Goldcoin:0.17.0(Rust)/"),
+            relay: true,
+            services: 0x01, // NODE_NETWORK
+        };
+        
+        Ok(Self::new(config))
+    }
+    
+    /// Run the network manager
+    pub async fn run(&self) -> Result<(), NetworkError> {
+        self.start().await
     }
 }
 

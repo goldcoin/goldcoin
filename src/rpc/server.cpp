@@ -16,13 +16,6 @@
 
 #include <univalue.h>
 
-#include <boost/bind/bind.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/signals2/signal.hpp>
-#include <boost/thread.hpp>
-#include <boost/algorithm/string/case_conv.hpp> // for to_upper()
 
 #include <memory> // for unique_ptr
 #include <unordered_map>
@@ -223,7 +216,8 @@ std::string CRPCTable::help(const std::string& strCommand) const
                         strRet += "\n";
                     category = pcmd->category;
                     string firstLetter = category.substr(0,1);
-                    firstLetter = static_cast<char>(::toupper(firstLetter));  // C++23 toupper
+                    if (!firstLetter.empty())
+                        firstLetter[0] = ::toupper(firstLetter[0]);
                     strRet += "== " + firstLetter + category.substr(1) + " ==\n";
                 }
             }

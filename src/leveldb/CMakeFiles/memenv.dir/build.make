@@ -69,28 +69,29 @@ include src/leveldb/CMakeFiles/memenv.dir/progress.make
 # Include the compile flags for this target's objects.
 include src/leveldb/CMakeFiles/memenv.dir/flags.make
 
-src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o: src/leveldb/CMakeFiles/memenv.dir/flags.make
-src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o: src/leveldb/helpers/memenv/memenv.cc
-src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o: src/leveldb/CMakeFiles/memenv.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o"
-	cd /home/microguy/git/microguy/goldcoin/src/leveldb && /usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o -MF CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o.d -o CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o -c /home/microguy/git/microguy/goldcoin/src/leveldb/helpers/memenv/memenv.cc
+src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.obj: src/leveldb/CMakeFiles/memenv.dir/flags.make
+src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.obj: src/leveldb/CMakeFiles/memenv.dir/includes_CXX.rsp
+src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.obj: src/leveldb/helpers/memenv/memenv.cc
+src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.obj: src/leveldb/CMakeFiles/memenv.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.obj"
+	cd /home/microguy/git/microguy/goldcoin/src/leveldb && /usr/bin/x86_64-w64-mingw32-g++-posix $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.obj -MF CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.obj.d -o CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.obj -c /home/microguy/git/microguy/goldcoin/src/leveldb/helpers/memenv/memenv.cc
 
 src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.i"
-	cd /home/microguy/git/microguy/goldcoin/src/leveldb && /usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/leveldb/helpers/memenv/memenv.cc > CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.i
+	cd /home/microguy/git/microguy/goldcoin/src/leveldb && /usr/bin/x86_64-w64-mingw32-g++-posix $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/leveldb/helpers/memenv/memenv.cc > CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.i
 
 src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.s"
-	cd /home/microguy/git/microguy/goldcoin/src/leveldb && /usr/bin/g++-15 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/leveldb/helpers/memenv/memenv.cc -o CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.s
+	cd /home/microguy/git/microguy/goldcoin/src/leveldb && /usr/bin/x86_64-w64-mingw32-g++-posix $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/leveldb/helpers/memenv/memenv.cc -o CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.s
 
 # Object files for target memenv
 memenv_OBJECTS = \
-"CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o"
+"CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.obj"
 
 # External object files for target memenv
 memenv_EXTERNAL_OBJECTS =
 
-lib/libmemenv.a: src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o
+lib/libmemenv.a: src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.obj
 lib/libmemenv.a: src/leveldb/CMakeFiles/memenv.dir/build.make
 lib/libmemenv.a: src/leveldb/CMakeFiles/memenv.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library ../../lib/libmemenv.a"

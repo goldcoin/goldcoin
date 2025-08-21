@@ -9,7 +9,6 @@
 #include <shlobj.h>
 #endif
 
-#include <boost/filesystem.hpp>
 
 fs::path GetTempPath() {
 #if BOOST_FILESYSTEM_VERSION == 3

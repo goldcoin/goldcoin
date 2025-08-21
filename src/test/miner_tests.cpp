@@ -22,7 +22,6 @@
 
 #include <memory>
 
-#include <boost/test/unit_test.hpp>
 
 BOOST_FIXTURE_TEST_SUITE(miner_tests, TestingSetup)
 

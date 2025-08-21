@@ -98,9 +98,17 @@ struct CompareTxIterByAncestorCount {
     }
 };
 
+// Comparator for CTxMemPoolModifiedEntry objects by iterator
+struct CompareCTxMemPoolModifiedEntry {
+    bool operator()(const CTxMemPoolModifiedEntry& a, const CTxMemPoolModifiedEntry& b) const
+    {
+        return CompareCTxMemPoolIter()(a.iter, b.iter);
+    }
+};
+
 // C++23: Replace boost::multi_index with std containers
 // Primary container ordered by iterator comparison
-using indexed_modified_transaction_set = std::set<CTxMemPoolModifiedEntry, CompareCTxMemPoolIter>;
+using indexed_modified_transaction_set = std::set<CTxMemPoolModifiedEntry, CompareCTxMemPoolModifiedEntry>;
 // Secondary index by ancestor score for fast lookups
 using ancestor_score_index = std::multiset<CTxMemPoolModifiedEntry, CompareModifiedEntry>;
 

@@ -69,28 +69,29 @@ include src/secp256k1/CMakeFiles/secp256k1.dir/progress.make
 # Include the compile flags for this target's objects.
 include src/secp256k1/CMakeFiles/secp256k1.dir/flags.make
 
-src/secp256k1/CMakeFiles/secp256k1.dir/src/secp256k1.c.o: src/secp256k1/CMakeFiles/secp256k1.dir/flags.make
-src/secp256k1/CMakeFiles/secp256k1.dir/src/secp256k1.c.o: src/secp256k1/src/secp256k1.c
-src/secp256k1/CMakeFiles/secp256k1.dir/src/secp256k1.c.o: src/secp256k1/CMakeFiles/secp256k1.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object src/secp256k1/CMakeFiles/secp256k1.dir/src/secp256k1.c.o"
-	cd /home/microguy/git/microguy/goldcoin/src/secp256k1 && /usr/bin/gcc-15 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT src/secp256k1/CMakeFiles/secp256k1.dir/src/secp256k1.c.o -MF CMakeFiles/secp256k1.dir/src/secp256k1.c.o.d -o CMakeFiles/secp256k1.dir/src/secp256k1.c.o -c /home/microguy/git/microguy/goldcoin/src/secp256k1/src/secp256k1.c
+src/secp256k1/CMakeFiles/secp256k1.dir/src/secp256k1.c.obj: src/secp256k1/CMakeFiles/secp256k1.dir/flags.make
+src/secp256k1/CMakeFiles/secp256k1.dir/src/secp256k1.c.obj: src/secp256k1/CMakeFiles/secp256k1.dir/includes_C.rsp
+src/secp256k1/CMakeFiles/secp256k1.dir/src/secp256k1.c.obj: src/secp256k1/src/secp256k1.c
+src/secp256k1/CMakeFiles/secp256k1.dir/src/secp256k1.c.obj: src/secp256k1/CMakeFiles/secp256k1.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object src/secp256k1/CMakeFiles/secp256k1.dir/src/secp256k1.c.obj"
+	cd /home/microguy/git/microguy/goldcoin/src/secp256k1 && /usr/bin/x86_64-w64-mingw32-gcc-posix $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT src/secp256k1/CMakeFiles/secp256k1.dir/src/secp256k1.c.obj -MF CMakeFiles/secp256k1.dir/src/secp256k1.c.obj.d -o CMakeFiles/secp256k1.dir/src/secp256k1.c.obj -c /home/microguy/git/microguy/goldcoin/src/secp256k1/src/secp256k1.c
 
 src/secp256k1/CMakeFiles/secp256k1.dir/src/secp256k1.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/secp256k1.dir/src/secp256k1.c.i"
-	cd /home/microguy/git/microguy/goldcoin/src/secp256k1 && /usr/bin/gcc-15 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/secp256k1/src/secp256k1.c > CMakeFiles/secp256k1.dir/src/secp256k1.c.i
+	cd /home/microguy/git/microguy/goldcoin/src/secp256k1 && /usr/bin/x86_64-w64-mingw32-gcc-posix $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/microguy/git/microguy/goldcoin/src/secp256k1/src/secp256k1.c > CMakeFiles/secp256k1.dir/src/secp256k1.c.i
 
 src/secp256k1/CMakeFiles/secp256k1.dir/src/secp256k1.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/secp256k1.dir/src/secp256k1.c.s"
-	cd /home/microguy/git/microguy/goldcoin/src/secp256k1 && /usr/bin/gcc-15 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/secp256k1/src/secp256k1.c -o CMakeFiles/secp256k1.dir/src/secp256k1.c.s
+	cd /home/microguy/git/microguy/goldcoin/src/secp256k1 && /usr/bin/x86_64-w64-mingw32-gcc-posix $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/microguy/git/microguy/goldcoin/src/secp256k1/src/secp256k1.c -o CMakeFiles/secp256k1.dir/src/secp256k1.c.s
 
 # Object files for target secp256k1
 secp256k1_OBJECTS = \
-"CMakeFiles/secp256k1.dir/src/secp256k1.c.o"
+"CMakeFiles/secp256k1.dir/src/secp256k1.c.obj"
 
 # External object files for target secp256k1
 secp256k1_EXTERNAL_OBJECTS =
 
-lib/libsecp256k1.a: src/secp256k1/CMakeFiles/secp256k1.dir/src/secp256k1.c.o
+lib/libsecp256k1.a: src/secp256k1/CMakeFiles/secp256k1.dir/src/secp256k1.c.obj
 lib/libsecp256k1.a: src/secp256k1/CMakeFiles/secp256k1.dir/build.make
 lib/libsecp256k1.a: src/secp256k1/CMakeFiles/secp256k1.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/microguy/git/microguy/goldcoin/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C static library ../../lib/libsecp256k1.a"

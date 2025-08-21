@@ -12,7 +12,7 @@
 
 #include <stdint.h>
 
-#include <boost/foreach.hpp>
+// C++23: Range-based for loops replace BOOST_FOREACH
 
 namespace Checkpoints {
     
@@ -21,9 +21,10 @@ namespace Checkpoints {
     {
         const MapCheckpoints& checkpoints = data.mapCheckpoints;
 
-        BOOST_REVERSE_FOREACH(const MapCheckpoints::value_type& i, checkpoints)
+        // C++23: Use reverse iterator instead of BOOST_REVERSE_FOREACH
+        for (auto it = checkpoints.rbegin(); it != checkpoints.rend(); ++it)
         {
-            const uint256& hash = i.second;
+            const uint256& hash = it->second;
             BlockMap::const_iterator t = mapBlockIndex.find(hash);
             if (t != mapBlockIndex.end())
                 return t->second;

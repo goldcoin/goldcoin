@@ -11,16 +11,47 @@ option(WITH_ZMQ "Enable ZMQ notifications" OFF)
 option(WITH_MINIUPNPC "Enable UPnP support" OFF)
 
 # ===== C++ STANDARD (C++23 with GCC 15.2 - No Boost!) =====
-# Force GCC 15.2 for full C++23 support
-set(CMAKE_C_COMPILER /usr/bin/gcc-15)
-set(CMAKE_CXX_COMPILER /usr/bin/g++-15)
+# Only set compiler for native Linux builds, not when using a toolchain file
+if(NOT CMAKE_TOOLCHAIN_FILE)
+    # Native Linux build - use GCC 15.2 for full C++23 support
+    set(CMAKE_C_COMPILER /usr/bin/gcc-15)
+    set(CMAKE_CXX_COMPILER /usr/bin/g++-15)
+endif()
+
+# C++23 standard for C++ files
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# C++23 specific flags
-add_compile_options(-std=c++23 -fconcepts -fcoroutines)
+# C11 standard for C files (dsa_stub.c)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+
+# C++23 specific flags - only for C++ files
+add_compile_options(
+    $<$<COMPILE_LANGUAGE:CXX>:-std=c++23>
+    $<$<COMPILE_LANGUAGE:CXX>:-fconcepts>
+    $<$<COMPILE_LANGUAGE:CXX>:-fcoroutines>
+)
+
+# ===== PLATFORM FEATURE DETECTION =====
+include(CheckFunctionExists)
+
+# Platform-specific feature detection
+if(NOT WIN32 AND NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    # Unix/Linux features
+    check_function_exists(daemon HAVE_DECL_DAEMON)
+    if(HAVE_DECL_DAEMON)
+        add_compile_definitions(HAVE_DECL_DAEMON=1)
+    endif()
+    
+    # Check for mallopt (glibc-specific)
+    check_function_exists(mallopt HAVE_MALLOPT_ARENA_MAX)
+    if(HAVE_MALLOPT_ARENA_MAX)
+        add_compile_definitions(HAVE_MALLOPT_ARENA_MAX=1)
+    endif()
+endif()
 
 # ===== BUILD TYPE =====
 if(NOT CMAKE_BUILD_TYPE)
@@ -36,8 +67,27 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 # For native Linux builds: Use Qt6 from depends but SYSTEM OpenSSL/libs
 option(USE_DEPENDS_QT "Use Qt6 from depends (native builds)" OFF)
 
-if(USE_DEPENDS)
-    # Full depends mode for cross-compilation
+# Platform-specific dependency detection
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CMAKE_TOOLCHAIN_FILE)
+    # Cross-compiling to Windows
+    set(CROSS_COMPILING_TO_WINDOWS TRUE)
+    set(DEPENDS_PREFIX "${CMAKE_SOURCE_DIR}/depends/x86_64-w64-mingw32")
+    set(USE_DEPENDS ON)
+    message(STATUS "Cross-compile mode - Windows target detected")
+    message(STATUS "Using Windows depends: ${DEPENDS_PREFIX}")
+    
+    # Ensure Windows depends are used exclusively
+    list(PREPEND CMAKE_PREFIX_PATH "${DEPENDS_PREFIX}")
+    set(CMAKE_FIND_ROOT_PATH "${DEPENDS_PREFIX}")
+    
+    # Prevent mixing with Linux dependencies
+    set(OPENSSL_ROOT_DIR "${DEPENDS_PREFIX}")
+    set(OPENSSL_INCLUDE_DIR "${DEPENDS_PREFIX}/include")
+    set(OPENSSL_SSL_LIBRARY "${DEPENDS_PREFIX}/lib/libssl.a")
+    set(OPENSSL_CRYPTO_LIBRARY "${DEPENDS_PREFIX}/lib/libcrypto.a")
+    
+elseif(USE_DEPENDS)
+    # Full depends mode for other cross-compilation
     if(WIN32)
         set(DEPENDS_PREFIX "${CMAKE_SOURCE_DIR}/depends/x86_64-w64-mingw32")
     else()
@@ -45,6 +95,7 @@ if(USE_DEPENDS)
     endif()
     list(APPEND CMAKE_PREFIX_PATH "${DEPENDS_PREFIX}")
     message(STATUS "Cross-compile mode - Using full depends: ${DEPENDS_PREFIX}")
+    
 elseif(USE_DEPENDS_QT)
     # Native build with Qt6 from depends ONLY
     set(DEPENDS_PREFIX "${CMAKE_SOURCE_DIR}/depends/${CMAKE_SYSTEM_PROCESSOR}-pc-linux-gnu")
@@ -55,6 +106,8 @@ elseif(USE_DEPENDS_QT)
     message(STATUS "Qt6_DIR: ${Qt6_DIR}")
     message(STATUS "DEPENDS_PREFIX: ${DEPENDS_PREFIX}")
 else()
+    # Native Linux build
+    set(DEPENDS_PREFIX "${CMAKE_SOURCE_DIR}/depends/${CMAKE_SYSTEM_PROCESSOR}-pc-linux-gnu")
     message(STATUS "Native build - Using system Qt6 and libraries")
 endif()
 
@@ -76,14 +129,14 @@ else()
     # Explicitly exclude depends OpenSSL
     set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY NEVER)
     set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE NEVER)
-    find_package(OpenSSL 3.0 REQUIRED)
+    find_package(OpenSSL REQUIRED)
 endif()
 message(STATUS "OpenSSL version: ${OPENSSL_VERSION}")
 
-# Version check only for native builds
+# Version check - accept OpenSSL 1.0.1k for now (wallet compatibility)
 if(NOT WIN32 AND NOT USE_DEPENDS)
-    if(OPENSSL_VERSION VERSION_LESS "3.0.0")
-        message(FATAL_ERROR "OpenSSL 3.0+ required but found ${OPENSSL_VERSION}. This is the future - we need modern crypto!")
+    if(OPENSSL_VERSION VERSION_LESS "1.0.1")
+        message(FATAL_ERROR "OpenSSL 1.0.1+ required but found ${OPENSSL_VERSION}")
     endif()
 endif()
 
@@ -111,7 +164,8 @@ if(NOT WIN32)
     pkg_check_modules(LIBEVENT_PTHREADS REQUIRED libevent_pthreads)
     
     # Other system libraries
-    pkg_check_modules(PROTOBUF REQUIRED protobuf)
+    # BIP70 removed - protobuf no longer needed
+    # pkg_check_modules(PROTOBUF REQUIRED protobuf)
     
     # Don't use system FreeType - causes version conflicts with HarfBuzz
     # We'll use the one from depends which is compatible
@@ -119,12 +173,15 @@ if(NOT WIN32)
     set(PLATFORM_LIBS 
         ${LIBEVENT_LIBRARIES} 
         ${LIBEVENT_PTHREADS_LIBRARIES}
-        ${PROTOBUF_LIBRARIES} 
+        # ${PROTOBUF_LIBRARIES}  # BIP70 removed 
         dl
     )
 else()
     # Windows libraries
+    # Add libevent from depends for Windows builds
     set(PLATFORM_LIBS 
+        ${DEPENDS_PREFIX}/lib/libevent.a
+        ${DEPENDS_PREFIX}/lib/libevent_core.a
         ws2_32 
         mswsock 
         shlwapi 
@@ -145,14 +202,23 @@ endif()
 
 # BerkeleyDB 18.1 (for wallet)
 if(BUILD_WALLET)
-    # Use BDB 18.1 from depends directory
-    set(BDB_PREFIX "${CMAKE_PREFIX_PATH}")
-    if(NOT BDB_PREFIX OR NOT EXISTS "${BDB_PREFIX}/lib/libdb_cxx-18.1.a")
-        # Fallback to project depends directory
+    # Platform-specific BDB detection
+    if(CROSS_COMPILING_TO_WINDOWS)
+        # For Windows, use the Windows depends path directly
+        set(BDB_PREFIX "${DEPENDS_PREFIX}")
+    else()
+        # For Linux, use the Linux depends path
         set(BDB_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/depends/x86_64-pc-linux-gnu")
     endif()
     
-    if(EXISTS "${BDB_PREFIX}/lib/libdb_cxx-18.1.a")
+    # Check for the appropriate BDB version
+    if(CROSS_COMPILING_TO_WINDOWS AND EXISTS "${BDB_PREFIX}/lib/libdb_cxx.a")
+        # Windows build uses generic names
+        set(BDB_CXX_LIBRARY "${BDB_PREFIX}/lib/libdb_cxx.a")
+        set(BDB_LIBRARY "${BDB_PREFIX}/lib/libdb.a")
+        set(BDB_INCLUDE_DIR "${BDB_PREFIX}/include")
+        message(STATUS "Using BerkeleyDB from Windows depends: ${BDB_PREFIX}")
+    elseif(EXISTS "${BDB_PREFIX}/lib/libdb_cxx-18.1.a")
         set(BDB_CXX_LIBRARY "${BDB_PREFIX}/lib/libdb_cxx-18.1.a")
         set(BDB_LIBRARY "${BDB_PREFIX}/lib/libdb-18.1.a")
         set(BDB_INCLUDE_DIR "${BDB_PREFIX}/include")
@@ -191,9 +257,19 @@ include_directories(
 
 # ===== GLOBAL COMPILE DEFINITIONS =====
 add_compile_definitions(
-    HAVE_CONFIG_H
     __STDC_FORMAT_MACROS
 )
+
+# Windows-specific: Work around OpenSSL 1.0.1k DSA linking issue
+if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    add_compile_definitions(OPENSSL_NO_DSA)
+endif()
+
+# Only use config file for native Linux builds
+# Windows builds use CMake definitions instead
+if(NOT WIN32 AND NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    add_compile_definitions(HAVE_CONFIG_H)
+endif()
 
 # Remove NDEBUG even in Release builds (goldcoin requires assertions)
 string(REPLACE "-DNDEBUG" "" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
@@ -214,7 +290,29 @@ endif()
 
 # ===== SUBDIRECTORIES FOR EXTERNAL LIBRARIES =====
 add_subdirectory(src/leveldb)
+
+# Configure secp256k1 field implementation based on compiler capabilities
 add_subdirectory(src/secp256k1)
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows" AND CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    # MinGW GCC 13 doesn't always support __int128
+    # Check if we can detect this properly
+    include(CheckTypeSize)
+    CHECK_TYPE_SIZE("__int128" HAVE_INT128)
+    if(HAVE_INT128)
+        target_compile_definitions(secp256k1 PRIVATE USE_FIELD_5X52=1 USE_SCALAR_4X64=1 HAVE___INT128=1)
+    else()
+        # Fallback to 32-bit implementation for MinGW without __int128
+        message(STATUS "MinGW detected without __int128 - using 32-bit field implementation")
+        target_compile_definitions(secp256k1 PRIVATE USE_FIELD_10X26=1 USE_SCALAR_8X32=1)
+    endif()
+elseif(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    # 64-bit Linux/Unix - use 5x52 field implementation with __int128
+    target_compile_definitions(secp256k1 PRIVATE USE_FIELD_5X52=1 USE_SCALAR_4X64=1 HAVE___INT128=1)
+else()
+    # 32-bit architecture - use 10x26 field implementation  
+    target_compile_definitions(secp256k1 PRIVATE USE_FIELD_10X26=1 USE_SCALAR_8X32=1)
+endif()
+
 add_subdirectory(src/univalue)
 
 # ===== CORE LIBRARIES =====
@@ -321,6 +419,11 @@ add_library(bitcoin_server STATIC
     src/versionbits.cpp
 )
 
+# Add wallet support to bitcoin_server if enabled
+if(BUILD_WALLET)
+    target_compile_definitions(bitcoin_server PRIVATE ENABLE_WALLET)
+endif()
+
 # bitcoin_wallet (conditional)
 if(BUILD_WALLET)
     add_library(bitcoin_wallet STATIC
@@ -349,15 +452,20 @@ endif()
 # ===== EXECUTABLES =====
 
 # goldcoind
-add_executable(goldcoind src/bitcoind.cpp)
+if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    # Add DSA stub for Windows - workaround for OpenSSL 1.0.1k build issue
+    add_executable(goldcoind src/goldcoind.cpp src/dsa_stub.c)
+else()
+    add_executable(goldcoind src/goldcoind.cpp)
+endif()
 target_link_libraries(goldcoind
     bitcoin_server
     bitcoin_common
     bitcoin_util
     bitcoin_consensus
     bitcoin_crypto
+    memenv  # memenv depends on leveldb, so it comes first
     leveldb
-    memenv
     secp256k1
     univalue
     # No boost libraries - using C++23 std library
@@ -383,11 +491,33 @@ if(BUILD_RUST AND TARGET goldcoin_rust)
     target_compile_definitions(goldcoind PRIVATE ENABLE_RUST)
 endif()
 
+# Make goldcoind standalone on Windows - OUTSHINE THE SUN!
+if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set_target_properties(goldcoind PROPERTIES 
+        LINK_FLAGS "-static -static-libgcc -static-libstdc++ -Wl,--whole-archive -lwinpthread -Wl,--no-whole-archive"
+    )
+    # Force static runtime
+    target_link_libraries(goldcoind 
+        -static
+        -static-libgcc
+        -static-libstdc++
+    )
+endif()
+
 # goldcoin-cli
-add_executable(goldcoin-cli 
-    src/bitcoin-cli.cpp
-    src/rpc/client.cpp
-)
+if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    # Add DSA stub for Windows - workaround for OpenSSL 1.0.1k build issue
+    add_executable(goldcoin-cli 
+        src/goldcoin-cli.cpp
+        src/rpc/client.cpp
+        src/dsa_stub.c
+    )
+else()
+    add_executable(goldcoin-cli 
+        src/goldcoin-cli.cpp
+        src/rpc/client.cpp
+    )
+endif()
 target_link_libraries(goldcoin-cli
     bitcoin_util
     bitcoin_crypto
@@ -398,8 +528,21 @@ target_link_libraries(goldcoin-cli
     ${PLATFORM_LIBS}
 )
 
+# Make goldcoin-cli standalone on Windows - OUTSHINE THE SUN!
+if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set_target_properties(goldcoin-cli PROPERTIES 
+        LINK_FLAGS "-static -static-libgcc -static-libstdc++ -Wl,--whole-archive -lwinpthread -Wl,--no-whole-archive"
+    )
+    # Force static runtime
+    target_link_libraries(goldcoin-cli 
+        -static
+        -static-libgcc
+        -static-libstdc++
+    )
+endif()
+
 # goldcoin-tx
-add_executable(goldcoin-tx src/bitcoin-tx.cpp)
+add_executable(goldcoin-tx src/goldcoin-tx.cpp)
 target_link_libraries(goldcoin-tx
     bitcoin_common
     bitcoin_util
@@ -433,6 +576,8 @@ if(BUILD_GUI)
     # Remove test files
     list(REMOVE_ITEM QT_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/qt/test/test_main.cpp)
     list(REMOVE_ITEM QT_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/qt/bitcoin-qt.cpp)
+    # goldcoin.cpp contains main() and should only be in the executable, not the library
+    list(REMOVE_ITEM QT_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/qt/goldcoin.cpp)
     
     # Remove Mac-specific files on Linux
     if(NOT APPLE)
@@ -442,13 +587,13 @@ if(BUILD_GUI)
     endif()
     
     # Qt resources
-    set(QT_RESOURCES src/qt/bitcoin.qrc)
+    set(QT_RESOURCES src/qt/goldcoin.qrc)
     
     # UI forms - CRITICAL: must be added to target sources
     file(GLOB QT_FORMS src/qt/forms/*.ui)
     
-    # Add protobuf generated files
-    list(APPEND QT_SOURCES src/qt/paymentrequest.pb.cc)
+    # BIP70 removed - deprecated since 2018, security risk
+    # list(APPEND QT_SOURCES src/qt/paymentrequest.pb.cc)
     
     # Add RPC client for Qt console
     list(APPEND QT_SOURCES src/rpc/client.cpp)
@@ -463,8 +608,8 @@ if(BUILD_GUI)
     
     # Files that include src/ui_interface.h (NOT generated ui_*.h)
     set_property(SOURCE
-        src/qt/bitcoin.cpp
-        src/qt/bitcoingui.cpp
+        src/qt/goldcoin.cpp
+        src/qt/goldcoingui.cpp
         src/qt/clientmodel.cpp
         src/qt/paymentserver.cpp
         src/qt/splashscreen.cpp
@@ -504,7 +649,16 @@ if(BUILD_GUI)
     endif()
     
     # Main Qt executable
-    add_executable(goldcoin-qt src/qt/bitcoin.cpp)
+    if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
+        # Add DSA stub for Windows - workaround for OpenSSL 1.0.1k build issue
+        # Add minimal SSL symbol for Qt Network static linking
+        file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt_ssl_symbol.c 
+            "// Required symbol for Qt Network static linking\n"
+            "void q_ssl_sess_set_new_cb(void* ctx, void* cb) { (void)ctx; (void)cb; }\n")
+        add_executable(goldcoin-qt src/qt/goldcoin.cpp src/dsa_stub.c ${CMAKE_CURRENT_BINARY_DIR}/qt_ssl_symbol.c)
+    else()
+        add_executable(goldcoin-qt src/qt/goldcoin.cpp)
+    endif()
     
     # Build library list with proper order
     set(QT_LINK_LIBS
@@ -544,6 +698,41 @@ if(BUILD_GUI)
     
     target_link_libraries(goldcoin-qt ${QT_LINK_LIBS})
     
+    # Add missing Windows dependencies for Qt static linking
+    if(WIN32)
+        # Find Qt bundled libraries in Qt installation directory
+        if(EXISTS "${Qt6_DIR}/../../../lib/libQt6BundledPcre2.a")
+            set(QT_BUNDLED_LIB_DIR "${Qt6_DIR}/../../../lib")
+        else()
+            set(QT_BUNDLED_LIB_DIR "/home/microguy/build/qt6-win-build/lib")
+        endif()
+        
+        target_link_libraries(goldcoin-qt 
+            # Qt bundled libraries (must come before Windows libraries)
+            ${QT_BUNDLED_LIB_DIR}/libQt6BundledPcre2.a
+            ${QT_BUNDLED_LIB_DIR}/libQt6BundledLibjpeg.a
+            ${QT_BUNDLED_LIB_DIR}/libQt6BundledZLIB.a
+            ${QT_BUNDLED_LIB_DIR}/libQt6BundledFreetype.a
+            ${QT_BUNDLED_LIB_DIR}/libQt6BundledHarfbuzz.a
+            ${QT_BUNDLED_LIB_DIR}/libQt6BundledLibpng.a
+            # Essential Windows system libraries
+            -lws2_32      # Windows sockets
+            -lwsock32     # Windows sockets legacy
+            -lwinmm       # Windows multimedia
+            -lgdi32       # Windows GDI
+            -lcomdlg32    # Common dialogs
+            -loleaut32    # OLE automation
+            -limm32       # Input method
+            -lole32       # OLE
+            -luuid        # UUID
+            -ladvapi32    # Advanced API
+            -lshell32     # Shell API
+            -luser32      # User interface
+            -lkernel32    # Kernel
+            -lmingw32     # MinGW runtime
+        )
+    endif()
+    
     if(WITH_ZMQ)
         target_link_libraries(goldcoin-qt bitcoin_zmq ${ZMQ_LIBRARIES})
         target_compile_definitions(goldcoin-qt PRIVATE ENABLE_ZMQ)
@@ -555,7 +744,10 @@ if(BUILD_GUI)
     endif()
     
     if(WIN32)
-        set_target_properties(goldcoin-qt PROPERTIES WIN32_EXECUTABLE TRUE)
+        set_target_properties(goldcoin-qt PROPERTIES 
+            WIN32_EXECUTABLE TRUE
+            LINK_FLAGS "-static -static-libgcc -static-libstdc++ -Wl,--as-needed"
+        )
     endif()
 endif()
 

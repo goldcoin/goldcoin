@@ -1,8 +1,8 @@
 file(REMOVE_RECURSE
   "../../lib/libmemenv.a"
   "../../lib/libmemenv.pdb"
-  "CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o"
-  "CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o.d"
+  "CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.obj"
+  "CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.obj.d"
 )
 
 # Per-language clean rules from dependency scanning.

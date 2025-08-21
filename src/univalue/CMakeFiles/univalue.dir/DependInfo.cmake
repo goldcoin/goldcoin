@@ -8,9 +8,9 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue.cpp" "src/univalue/CMakeFiles/univalue.dir/lib/univalue.cpp.o" "gcc" "src/univalue/CMakeFiles/univalue.dir/lib/univalue.cpp.o.d"
-  "/home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue_read.cpp" "src/univalue/CMakeFiles/univalue.dir/lib/univalue_read.cpp.o" "gcc" "src/univalue/CMakeFiles/univalue.dir/lib/univalue_read.cpp.o.d"
-  "/home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue_write.cpp" "src/univalue/CMakeFiles/univalue.dir/lib/univalue_write.cpp.o" "gcc" "src/univalue/CMakeFiles/univalue.dir/lib/univalue_write.cpp.o.d"
+  "/home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue.cpp" "src/univalue/CMakeFiles/univalue.dir/lib/univalue.cpp.obj" "gcc" "src/univalue/CMakeFiles/univalue.dir/lib/univalue.cpp.obj.d"
+  "/home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue_read.cpp" "src/univalue/CMakeFiles/univalue.dir/lib/univalue_read.cpp.obj" "gcc" "src/univalue/CMakeFiles/univalue.dir/lib/univalue_read.cpp.obj.d"
+  "/home/microguy/git/microguy/goldcoin/src/univalue/lib/univalue_write.cpp" "src/univalue/CMakeFiles/univalue.dir/lib/univalue_write.cpp.obj" "gcc" "src/univalue/CMakeFiles/univalue.dir/lib/univalue_write.cpp.obj.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

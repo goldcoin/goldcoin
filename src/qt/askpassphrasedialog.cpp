@@ -10,6 +10,7 @@
 #include "askpassphrasedialog.h"
 #include "ui_askpassphrasedialog.h"
 
+#include "version_info.h"  // For PACKAGE_NAME
 #include "guiconstants.h"
 #include "walletmodel.h"
 

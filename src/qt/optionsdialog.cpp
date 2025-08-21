@@ -10,7 +10,8 @@
 #include "optionsdialog.h"
 #include "ui_optionsdialog.h"
 
-#include "bitcoinunits.h"
+#include "version_info.h" // For PACKAGE_NAME
+#include "goldcoinunits.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
 
@@ -22,7 +23,6 @@
 #include "wallet/wallet.h" // for CWallet::GetRequiredFee()
 #endif
 
-#include <boost/thread.hpp>
 
 #include <QDataWidgetMapper>
 #include <QDir>

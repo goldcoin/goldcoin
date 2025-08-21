@@ -15,8 +15,7 @@
 #include <atomic>
 #include <algorithm>
 
-#include <boost/signals2/last_value.hpp>
-#include <boost/signals2/signal.hpp>
+#include "validationinterface.h"  // For Signal class
 
 class CBasicKeyStore;
 class CWallet;
@@ -326,9 +325,10 @@ public:
     }
     
     bool TriggerThreadSafeMessageBox(const std::string& message, const std::string& caption, unsigned int style) {
-        // Call boost signal first (returns last value)
-        bool result = ThreadSafeMessageBox(message, caption, style);
+        // Call Signal (returns void)
+        ThreadSafeMessageBox(message, caption, style);
         // Call std::function callbacks and return last result
+        bool result = false;
         for (auto& callback : ThreadSafeMessageBoxCallbacks) {
             result = callback(message, caption, style);
         }
@@ -337,9 +337,10 @@ public:
     
     bool TriggerThreadSafeQuestion(const std::string& message, const std::string& noninteractive_message, 
                                    const std::string& caption, unsigned int style) {
-        // Call boost signal first (returns last value)
-        bool result = ThreadSafeQuestion(message, noninteractive_message, caption, style);
+        // Call Signal (returns void)
+        ThreadSafeQuestion(message, noninteractive_message, caption, style);
         // Call std::function callbacks and return last result
+        bool result = false;
         for (auto& callback : ThreadSafeQuestionCallbacks) {
             result = callback(message, noninteractive_message, caption, style);
         }

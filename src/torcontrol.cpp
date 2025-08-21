@@ -4,6 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "torcontrol.h"
+#include "core_cpp23.h"
 #include "utilstrencodings.h"
 #include "netbase.h"
 #include "net.h"
@@ -704,7 +705,7 @@ static void TorControlThread()
     event_base_dispatch(base);
 }
 
-void StartTorControl(std::vector<std::thread>& threads, CScheduler& scheduler)
+void StartTorControl(thread_group& threads, CScheduler& scheduler)
 {
     assert(!base);
 #ifdef WIN32

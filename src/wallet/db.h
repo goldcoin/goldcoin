@@ -20,7 +20,6 @@
 #include <vector>
 #include <filesystem>
 
-#include <boost/filesystem/path.hpp>
 
 #include <db_cxx.h>
 

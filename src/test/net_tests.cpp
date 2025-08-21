@@ -5,7 +5,6 @@
 #include "addrman.h"
 #include "test/test_bitcoin.h"
 #include <string>
-#include <boost/test/unit_test.hpp>
 #include "hash.h"
 #include "serialize.h"
 #include "streams.h"

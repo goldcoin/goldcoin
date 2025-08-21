@@ -18,7 +18,7 @@ class CWallet;
 void StartShutdown();
 bool ShutdownRequested();
 /** Interrupt threads */
-void Interrupt(thread_group& threadGroup);
+void Interrupt(thread_group& threadGroup, CScheduler& scheduler);
 void Shutdown();
 //!Initialize the logging infrastructure
 void InitLogging();

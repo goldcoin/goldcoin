@@ -6,7 +6,7 @@
 #include "ui_sendcoinsdialog.h"
 
 #include "addresstablemodel.h"
-#include "bitcoinunits.h"
+#include "goldcoinunits.h"
 #include "clientmodel.h"
 #include "coincontroldialog.h"
 #include "guiutil.h"
@@ -156,8 +156,8 @@ void SendCoinsDialog::setModel(WalletModel *_model)
         connect(ui->groupFee, &QButtonGroup::idClicked, this, &SendCoinsDialog::coinControlUpdateLabels);
         connect(ui->groupCustomFee, &QButtonGroup::idClicked, this, &SendCoinsDialog::updateGlobalFeeVariables);
         connect(ui->groupCustomFee, &QButtonGroup::idClicked, this, &SendCoinsDialog::coinControlUpdateLabels);
-        connect(ui->customFee, &BitcoinAmountField::valueChanged, this, &SendCoinsDialog::updateGlobalFeeVariables);
-        connect(ui->customFee, &BitcoinAmountField::valueChanged, this, &SendCoinsDialog::coinControlUpdateLabels);
+        connect(ui->customFee, &GoldcoinAmountField::valueChanged, this, &SendCoinsDialog::updateGlobalFeeVariables);
+        connect(ui->customFee, &GoldcoinAmountField::valueChanged, this, &SendCoinsDialog::coinControlUpdateLabels);
         connect(ui->checkBoxMinimumFee, &QCheckBox::stateChanged, this, &SendCoinsDialog::setMinimumFee);
         connect(ui->checkBoxMinimumFee, &QCheckBox::stateChanged, this, &SendCoinsDialog::updateFeeSectionControls);
         connect(ui->checkBoxMinimumFee, &QCheckBox::stateChanged, this, &SendCoinsDialog::updateGlobalFeeVariables);
@@ -268,7 +268,8 @@ void SendCoinsDialog::on_sendButton_clicked()
 
         QString recipientElement;
 
-        if (!rcp.paymentRequest.IsInitialized()) // normal payment
+        // BIP70 removed - always use normal payment path
+        // if (!rcp.paymentRequest.IsInitialized()) // normal payment
         {
             if(rcp.label.length() > 0) // label with address
             {
@@ -280,14 +281,15 @@ void SendCoinsDialog::on_sendButton_clicked()
                 recipientElement = tr("%1 to %2").arg(amount, address);
             }
         }
-        else if(!rcp.authenticatedMerchant.isEmpty()) // authenticated payment request
-        {
-            recipientElement = tr("%1 to %2").arg(amount, GUIUtil::HtmlEscape(rcp.authenticatedMerchant));
-        }
-        else // unauthenticated payment request
-        {
-            recipientElement = tr("%1 to %2").arg(amount, address);
-        }
+        // BIP70 removed - no more authenticated merchant support
+        // else if(!rcp.authenticatedMerchant.isEmpty()) // authenticated payment request
+        // {
+        //     recipientElement = tr("%1 to %2").arg(amount, GUIUtil::HtmlEscape(rcp.authenticatedMerchant));
+        // }
+        // else // unauthenticated payment request
+        // {
+        //     recipientElement = tr("%1 to %2").arg(amount, address);
+        // }
 
         formatted.append(recipientElement);
     }

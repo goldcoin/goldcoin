@@ -7,7 +7,7 @@
 #include "ui_coincontroldialog.h"
 
 #include "addresstablemodel.h"
-#include "bitcoinunits.h"
+#include "goldcoinunits.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
 #include "platformstyle.h"
@@ -19,8 +19,8 @@
 #include "policy/policy.h"
 #include "validation.h" // For mempool
 #include "wallet/wallet.h"
+#include "base58.h" // For CBitcoinAddress
 
-#include <boost/assign/list_of.hpp>
 #include <variant> // for 'map_list_of()'
 
 #include <QApplication>

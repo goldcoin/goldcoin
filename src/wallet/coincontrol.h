@@ -7,6 +7,8 @@
 #define BITCOIN_WALLET_COINCONTROL_H
 
 #include "primitives/transaction.h"
+#include "script/standard.h" // For CTxDestination and CNoDestination
+#include "policy/fees.h" // For CFeeRate
 
 /** Coin Control Features. */
 class CCoinControl

@@ -16,7 +16,6 @@
 #include <stdint.h>
 #include <vector>
 
-#include <boost/test/unit_test.hpp>
 
 extern std::map<std::string, std::string> mapArgs;
 

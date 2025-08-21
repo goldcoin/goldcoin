@@ -14,15 +14,8 @@
 #include "config/bitcoin-config.h"
 #endif
 
-#ifdef WIN32
-#ifdef _WIN32_WINNT
-#undef _WIN32_WINNT
-#endif
-#define _WIN32_WINNT 0x0501
-#define WIN32_LEAN_AND_MEAN 1
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
+#if defined(_WIN32) || defined(WIN32)
+// Windows defines are already set in compat.h
 #include <windows.h>
 #else
 #include <sys/mman.h> // for mmap

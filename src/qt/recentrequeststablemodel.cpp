@@ -5,7 +5,7 @@
 
 #include "recentrequeststablemodel.h"
 
-#include "bitcoinunits.h"
+#include "goldcoinunits.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
 

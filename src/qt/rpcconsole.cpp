@@ -9,6 +9,7 @@
 
 #include "rpcconsole.h"
 #include "ui_debugwindow.h"
+#include "version_info.h" // For PACKAGE_NAME
 
 #include "bantablemodel.h"
 #include "clientmodel.h"

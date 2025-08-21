@@ -4,6 +4,10 @@ version = "0.17.0"
 edition = "2021"
 
 [dependencies]
+# Internal dependencies
+goldcoin-consensus = { path = "../goldcoin-consensus" }
+goldcoin-mempool = { path = "../goldcoin-mempool" }
+
 # Async runtime
 tokio = { version = "1.40", features = ["full"] }
 tokio-util = { version = "0.7", features = ["codec"] }

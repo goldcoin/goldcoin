@@ -17,7 +17,6 @@
 
 #include <vector>
 
-#include <boost/test/unit_test.hpp>
 
 static std::map<void*, short> tags;
 static std::map<void*, uint16_t> orders;

@@ -7,6 +7,7 @@
 #include "config/bitcoin-config.h"
 #endif
 
+#include "version_info.h"  // For PACKAGE_NAME
 #include "intro.h"
 #include "ui_intro.h"
 

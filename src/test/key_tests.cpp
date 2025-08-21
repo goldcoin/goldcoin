@@ -14,7 +14,6 @@
 #include <string>
 #include <vector>
 
-#include <boost/test/unit_test.hpp>
 
 static const std::string strSecret1     ("6NALaM2vsKB4roR14SAjTMrcTNw8XY6UU8ACNXHyUjU8JmYQv2d");
 static const std::string strSecret2     ("6PPtJADF1XeKLVsWPaz51UCVL2FasrigcpFMpaHepTUdk9VXhg3");

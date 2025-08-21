@@ -33,11 +33,7 @@
 
 #include <atomic>
 
-#include <boost/unordered_map.hpp>
 #include "fs.h"  // Use our filesystem abstraction
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/date_time/local_time_adjustor.hpp>
-#include <boost/date_time/c_local_time_adjustor.hpp>
 
 class CBlockIndex;
 class CBlockTreeDB;
@@ -278,6 +274,8 @@ bool LoadBlockIndex(const CChainParams& chainparams);
 void UnloadBlockIndex();
 /** Run an instance of the script checking thread */
 void ThreadScriptCheck();
+/** Stop the script check queue */
+void StopScriptCheckQueue();
 /** Check whether we are doing an initial block download (synchronizing from disk or network) */
 bool IsInitialBlockDownload();
 /** Format a string that describes several potential problems detected by the core.

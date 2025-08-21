@@ -18,7 +18,6 @@
 #include <QTableView>
 #include <QLabel>
 
-#include <boost/filesystem.hpp>
 
 class QValidatedLineEdit;
 class SendCoinsRecipient;

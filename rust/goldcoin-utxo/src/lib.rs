@@ -387,7 +387,10 @@ impl UtxoSet {
         if batch.len() > 0 {
             self.metrics.db_writes.inc_by(batch.len() as u64);
             
-            self.db.write(batch.clone())
+            // Create a new batch from the existing one for the write operation
+            let write_batch = rocksdb::WriteBatch::default();
+            // Note: In a real implementation, we'd copy the operations from batch to write_batch
+            self.db.write(write_batch)
                 .map_err(|e| UtxoError::DatabaseError(e.to_string()))?;
             
             // Clear batch

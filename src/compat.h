@@ -13,11 +13,11 @@
 #include "config/bitcoin-config.h"
 #endif
 
-#ifdef WIN32
+#if defined(_WIN32) || defined(WIN32)
 #ifdef _WIN32_WINNT
 #undef _WIN32_WINNT
 #endif
-#define _WIN32_WINNT 0x0501
+#define _WIN32_WINNT 0x0601  // Windows 7 minimum for 64-bit support
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
 #endif
@@ -50,8 +50,9 @@
 #include <unistd.h>
 #endif
 
-#ifdef WIN32
+#if defined(_WIN32) || defined(WIN32)
 #define MSG_DONTWAIT        0
+#define MSG_NOSIGNAL        0  // Windows doesn't have MSG_NOSIGNAL
 #else
 using SOCKET = u_int;
 #include "errno.h"
@@ -68,7 +69,7 @@ using SOCKET = u_int;
 #define SOCKET_ERROR        -1
 #endif
 
-#ifdef WIN32
+#if defined(_WIN32) || defined(WIN32)
 #ifndef S_IRUSR
 #define S_IRUSR             0400
 #define S_IWUSR             0200
@@ -87,7 +88,7 @@ size_t strnlen( const char *start, size_t max_len);
 #endif // HAVE_DECL_STRNLEN
 
 bool static inline IsSelectableSocket(SOCKET s) {
-#ifdef WIN32
+#if defined(_WIN32) || defined(WIN32)
     return true;
 #else
     return (s < FD_SETSIZE);

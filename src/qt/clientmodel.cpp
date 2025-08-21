@@ -353,11 +353,8 @@ void ClientModel::unsubscribeFromCoreSignals()
     // Note: Modern std::function callbacks are automatically cleaned up when ClientModel is destroyed
     // The vector storage handles cleanup automatically via RAII
     
-    // Disconnect legacy boost::signals2 connections
-    uiInterface.ShowProgress.disconnect(std::bind_front(ShowProgress, this));
-    uiInterface.NotifyNumConnectionsChanged.disconnect(std::bind_front(NotifyNumConnectionsChanged, this));
-    uiInterface.NotifyNetworkActiveChanged.disconnect(std::bind_front(NotifyNetworkActiveChanged, this));
-	uiInterface.BannedListChanged.disconnect(std::bind_front(BannedListChanged, this));
-	// Modern callback cleanup handled automatically
-    // Modern callback cleanup handled automatically
+    // With modern C++23 Signal implementation, connections using lambdas/std::function
+    // are automatically cleaned up when this object is destroyed.
+    // Manual disconnect is not needed for std::function-based connections.
+    // If explicit cleanup is needed, use disconnect_all_slots() on each signal.
 }

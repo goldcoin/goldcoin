@@ -189,13 +189,13 @@ memenv/fast:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/memenv.dir/build.make src/leveldb/CMakeFiles/memenv.dir/build
 .PHONY : memenv/fast
 
-db/builder.o: db/builder.cc.o
-.PHONY : db/builder.o
+db/builder.obj: db/builder.cc.obj
+.PHONY : db/builder.obj
 
 # target to build an object file
-db/builder.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/builder.cc.o
-.PHONY : db/builder.cc.o
+db/builder.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/builder.cc.obj
+.PHONY : db/builder.cc.obj
 
 db/builder.i: db/builder.cc.i
 .PHONY : db/builder.i
@@ -213,13 +213,13 @@ db/builder.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/builder.cc.s
 .PHONY : db/builder.cc.s
 
-db/c.o: db/c.cc.o
-.PHONY : db/c.o
+db/c.obj: db/c.cc.obj
+.PHONY : db/c.obj
 
 # target to build an object file
-db/c.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/c.cc.o
-.PHONY : db/c.cc.o
+db/c.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/c.cc.obj
+.PHONY : db/c.cc.obj
 
 db/c.i: db/c.cc.i
 .PHONY : db/c.i
@@ -237,13 +237,13 @@ db/c.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/c.cc.s
 .PHONY : db/c.cc.s
 
-db/db_impl.o: db/db_impl.cc.o
-.PHONY : db/db_impl.o
+db/db_impl.obj: db/db_impl.cc.obj
+.PHONY : db/db_impl.obj
 
 # target to build an object file
-db/db_impl.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/db_impl.cc.o
-.PHONY : db/db_impl.cc.o
+db/db_impl.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/db_impl.cc.obj
+.PHONY : db/db_impl.cc.obj
 
 db/db_impl.i: db/db_impl.cc.i
 .PHONY : db/db_impl.i
@@ -261,13 +261,13 @@ db/db_impl.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/db_impl.cc.s
 .PHONY : db/db_impl.cc.s
 
-db/db_iter.o: db/db_iter.cc.o
-.PHONY : db/db_iter.o
+db/db_iter.obj: db/db_iter.cc.obj
+.PHONY : db/db_iter.obj
 
 # target to build an object file
-db/db_iter.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/db_iter.cc.o
-.PHONY : db/db_iter.cc.o
+db/db_iter.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/db_iter.cc.obj
+.PHONY : db/db_iter.cc.obj
 
 db/db_iter.i: db/db_iter.cc.i
 .PHONY : db/db_iter.i
@@ -285,13 +285,13 @@ db/db_iter.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/db_iter.cc.s
 .PHONY : db/db_iter.cc.s
 
-db/dbformat.o: db/dbformat.cc.o
-.PHONY : db/dbformat.o
+db/dbformat.obj: db/dbformat.cc.obj
+.PHONY : db/dbformat.obj
 
 # target to build an object file
-db/dbformat.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/dbformat.cc.o
-.PHONY : db/dbformat.cc.o
+db/dbformat.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/dbformat.cc.obj
+.PHONY : db/dbformat.cc.obj
 
 db/dbformat.i: db/dbformat.cc.i
 .PHONY : db/dbformat.i
@@ -309,13 +309,13 @@ db/dbformat.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/dbformat.cc.s
 .PHONY : db/dbformat.cc.s
 
-db/dumpfile.o: db/dumpfile.cc.o
-.PHONY : db/dumpfile.o
+db/dumpfile.obj: db/dumpfile.cc.obj
+.PHONY : db/dumpfile.obj
 
 # target to build an object file
-db/dumpfile.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/dumpfile.cc.o
-.PHONY : db/dumpfile.cc.o
+db/dumpfile.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/dumpfile.cc.obj
+.PHONY : db/dumpfile.cc.obj
 
 db/dumpfile.i: db/dumpfile.cc.i
 .PHONY : db/dumpfile.i
@@ -333,13 +333,13 @@ db/dumpfile.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/dumpfile.cc.s
 .PHONY : db/dumpfile.cc.s
 
-db/filename.o: db/filename.cc.o
-.PHONY : db/filename.o
+db/filename.obj: db/filename.cc.obj
+.PHONY : db/filename.obj
 
 # target to build an object file
-db/filename.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/filename.cc.o
-.PHONY : db/filename.cc.o
+db/filename.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/filename.cc.obj
+.PHONY : db/filename.cc.obj
 
 db/filename.i: db/filename.cc.i
 .PHONY : db/filename.i
@@ -357,13 +357,13 @@ db/filename.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/filename.cc.s
 .PHONY : db/filename.cc.s
 
-db/log_reader.o: db/log_reader.cc.o
-.PHONY : db/log_reader.o
+db/log_reader.obj: db/log_reader.cc.obj
+.PHONY : db/log_reader.obj
 
 # target to build an object file
-db/log_reader.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/log_reader.cc.o
-.PHONY : db/log_reader.cc.o
+db/log_reader.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/log_reader.cc.obj
+.PHONY : db/log_reader.cc.obj
 
 db/log_reader.i: db/log_reader.cc.i
 .PHONY : db/log_reader.i
@@ -381,13 +381,13 @@ db/log_reader.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/log_reader.cc.s
 .PHONY : db/log_reader.cc.s
 
-db/log_writer.o: db/log_writer.cc.o
-.PHONY : db/log_writer.o
+db/log_writer.obj: db/log_writer.cc.obj
+.PHONY : db/log_writer.obj
 
 # target to build an object file
-db/log_writer.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/log_writer.cc.o
-.PHONY : db/log_writer.cc.o
+db/log_writer.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/log_writer.cc.obj
+.PHONY : db/log_writer.cc.obj
 
 db/log_writer.i: db/log_writer.cc.i
 .PHONY : db/log_writer.i
@@ -405,13 +405,13 @@ db/log_writer.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/log_writer.cc.s
 .PHONY : db/log_writer.cc.s
 
-db/memtable.o: db/memtable.cc.o
-.PHONY : db/memtable.o
+db/memtable.obj: db/memtable.cc.obj
+.PHONY : db/memtable.obj
 
 # target to build an object file
-db/memtable.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/memtable.cc.o
-.PHONY : db/memtable.cc.o
+db/memtable.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/memtable.cc.obj
+.PHONY : db/memtable.cc.obj
 
 db/memtable.i: db/memtable.cc.i
 .PHONY : db/memtable.i
@@ -429,13 +429,13 @@ db/memtable.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/memtable.cc.s
 .PHONY : db/memtable.cc.s
 
-db/repair.o: db/repair.cc.o
-.PHONY : db/repair.o
+db/repair.obj: db/repair.cc.obj
+.PHONY : db/repair.obj
 
 # target to build an object file
-db/repair.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/repair.cc.o
-.PHONY : db/repair.cc.o
+db/repair.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/repair.cc.obj
+.PHONY : db/repair.cc.obj
 
 db/repair.i: db/repair.cc.i
 .PHONY : db/repair.i
@@ -453,13 +453,13 @@ db/repair.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/repair.cc.s
 .PHONY : db/repair.cc.s
 
-db/table_cache.o: db/table_cache.cc.o
-.PHONY : db/table_cache.o
+db/table_cache.obj: db/table_cache.cc.obj
+.PHONY : db/table_cache.obj
 
 # target to build an object file
-db/table_cache.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/table_cache.cc.o
-.PHONY : db/table_cache.cc.o
+db/table_cache.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/table_cache.cc.obj
+.PHONY : db/table_cache.cc.obj
 
 db/table_cache.i: db/table_cache.cc.i
 .PHONY : db/table_cache.i
@@ -477,13 +477,13 @@ db/table_cache.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/table_cache.cc.s
 .PHONY : db/table_cache.cc.s
 
-db/version_edit.o: db/version_edit.cc.o
-.PHONY : db/version_edit.o
+db/version_edit.obj: db/version_edit.cc.obj
+.PHONY : db/version_edit.obj
 
 # target to build an object file
-db/version_edit.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/version_edit.cc.o
-.PHONY : db/version_edit.cc.o
+db/version_edit.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/version_edit.cc.obj
+.PHONY : db/version_edit.cc.obj
 
 db/version_edit.i: db/version_edit.cc.i
 .PHONY : db/version_edit.i
@@ -501,13 +501,13 @@ db/version_edit.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/version_edit.cc.s
 .PHONY : db/version_edit.cc.s
 
-db/version_set.o: db/version_set.cc.o
-.PHONY : db/version_set.o
+db/version_set.obj: db/version_set.cc.obj
+.PHONY : db/version_set.obj
 
 # target to build an object file
-db/version_set.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/version_set.cc.o
-.PHONY : db/version_set.cc.o
+db/version_set.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/version_set.cc.obj
+.PHONY : db/version_set.cc.obj
 
 db/version_set.i: db/version_set.cc.i
 .PHONY : db/version_set.i
@@ -525,13 +525,13 @@ db/version_set.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/version_set.cc.s
 .PHONY : db/version_set.cc.s
 
-db/write_batch.o: db/write_batch.cc.o
-.PHONY : db/write_batch.o
+db/write_batch.obj: db/write_batch.cc.obj
+.PHONY : db/write_batch.obj
 
 # target to build an object file
-db/write_batch.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/write_batch.cc.o
-.PHONY : db/write_batch.cc.o
+db/write_batch.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/write_batch.cc.obj
+.PHONY : db/write_batch.cc.obj
 
 db/write_batch.i: db/write_batch.cc.i
 .PHONY : db/write_batch.i
@@ -549,13 +549,13 @@ db/write_batch.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/db/write_batch.cc.s
 .PHONY : db/write_batch.cc.s
 
-helpers/memenv/memenv.o: helpers/memenv/memenv.cc.o
-.PHONY : helpers/memenv/memenv.o
+helpers/memenv/memenv.obj: helpers/memenv/memenv.cc.obj
+.PHONY : helpers/memenv/memenv.obj
 
 # target to build an object file
-helpers/memenv/memenv.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/memenv.dir/build.make src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.o
-.PHONY : helpers/memenv/memenv.cc.o
+helpers/memenv/memenv.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/memenv.dir/build.make src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.obj
+.PHONY : helpers/memenv/memenv.cc.obj
 
 helpers/memenv/memenv.i: helpers/memenv/memenv.cc.i
 .PHONY : helpers/memenv/memenv.i
@@ -573,37 +573,37 @@ helpers/memenv/memenv.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/memenv.dir/build.make src/leveldb/CMakeFiles/memenv.dir/helpers/memenv/memenv.cc.s
 .PHONY : helpers/memenv/memenv.cc.s
 
-port/port_posix.o: port/port_posix.cc.o
-.PHONY : port/port_posix.o
+port/port_win.obj: port/port_win.cc.obj
+.PHONY : port/port_win.obj
 
 # target to build an object file
-port/port_posix.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/port/port_posix.cc.o
-.PHONY : port/port_posix.cc.o
+port/port_win.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/port/port_win.cc.obj
+.PHONY : port/port_win.cc.obj
 
-port/port_posix.i: port/port_posix.cc.i
-.PHONY : port/port_posix.i
+port/port_win.i: port/port_win.cc.i
+.PHONY : port/port_win.i
 
 # target to preprocess a source file
-port/port_posix.cc.i:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/port/port_posix.cc.i
-.PHONY : port/port_posix.cc.i
+port/port_win.cc.i:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/port/port_win.cc.i
+.PHONY : port/port_win.cc.i
 
-port/port_posix.s: port/port_posix.cc.s
-.PHONY : port/port_posix.s
+port/port_win.s: port/port_win.cc.s
+.PHONY : port/port_win.s
 
 # target to generate assembly for a file
-port/port_posix.cc.s:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/port/port_posix.cc.s
-.PHONY : port/port_posix.cc.s
+port/port_win.cc.s:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/port/port_win.cc.s
+.PHONY : port/port_win.cc.s
 
-table/block.o: table/block.cc.o
-.PHONY : table/block.o
+table/block.obj: table/block.cc.obj
+.PHONY : table/block.obj
 
 # target to build an object file
-table/block.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/block.cc.o
-.PHONY : table/block.cc.o
+table/block.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/block.cc.obj
+.PHONY : table/block.cc.obj
 
 table/block.i: table/block.cc.i
 .PHONY : table/block.i
@@ -621,13 +621,13 @@ table/block.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/block.cc.s
 .PHONY : table/block.cc.s
 
-table/block_builder.o: table/block_builder.cc.o
-.PHONY : table/block_builder.o
+table/block_builder.obj: table/block_builder.cc.obj
+.PHONY : table/block_builder.obj
 
 # target to build an object file
-table/block_builder.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/block_builder.cc.o
-.PHONY : table/block_builder.cc.o
+table/block_builder.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/block_builder.cc.obj
+.PHONY : table/block_builder.cc.obj
 
 table/block_builder.i: table/block_builder.cc.i
 .PHONY : table/block_builder.i
@@ -645,13 +645,13 @@ table/block_builder.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/block_builder.cc.s
 .PHONY : table/block_builder.cc.s
 
-table/filter_block.o: table/filter_block.cc.o
-.PHONY : table/filter_block.o
+table/filter_block.obj: table/filter_block.cc.obj
+.PHONY : table/filter_block.obj
 
 # target to build an object file
-table/filter_block.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/filter_block.cc.o
-.PHONY : table/filter_block.cc.o
+table/filter_block.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/filter_block.cc.obj
+.PHONY : table/filter_block.cc.obj
 
 table/filter_block.i: table/filter_block.cc.i
 .PHONY : table/filter_block.i
@@ -669,13 +669,13 @@ table/filter_block.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/filter_block.cc.s
 .PHONY : table/filter_block.cc.s
 
-table/format.o: table/format.cc.o
-.PHONY : table/format.o
+table/format.obj: table/format.cc.obj
+.PHONY : table/format.obj
 
 # target to build an object file
-table/format.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/format.cc.o
-.PHONY : table/format.cc.o
+table/format.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/format.cc.obj
+.PHONY : table/format.cc.obj
 
 table/format.i: table/format.cc.i
 .PHONY : table/format.i
@@ -693,13 +693,13 @@ table/format.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/format.cc.s
 .PHONY : table/format.cc.s
 
-table/iterator.o: table/iterator.cc.o
-.PHONY : table/iterator.o
+table/iterator.obj: table/iterator.cc.obj
+.PHONY : table/iterator.obj
 
 # target to build an object file
-table/iterator.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/iterator.cc.o
-.PHONY : table/iterator.cc.o
+table/iterator.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/iterator.cc.obj
+.PHONY : table/iterator.cc.obj
 
 table/iterator.i: table/iterator.cc.i
 .PHONY : table/iterator.i
@@ -717,13 +717,13 @@ table/iterator.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/iterator.cc.s
 .PHONY : table/iterator.cc.s
 
-table/merger.o: table/merger.cc.o
-.PHONY : table/merger.o
+table/merger.obj: table/merger.cc.obj
+.PHONY : table/merger.obj
 
 # target to build an object file
-table/merger.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/merger.cc.o
-.PHONY : table/merger.cc.o
+table/merger.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/merger.cc.obj
+.PHONY : table/merger.cc.obj
 
 table/merger.i: table/merger.cc.i
 .PHONY : table/merger.i
@@ -741,13 +741,13 @@ table/merger.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/merger.cc.s
 .PHONY : table/merger.cc.s
 
-table/table.o: table/table.cc.o
-.PHONY : table/table.o
+table/table.obj: table/table.cc.obj
+.PHONY : table/table.obj
 
 # target to build an object file
-table/table.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/table.cc.o
-.PHONY : table/table.cc.o
+table/table.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/table.cc.obj
+.PHONY : table/table.cc.obj
 
 table/table.i: table/table.cc.i
 .PHONY : table/table.i
@@ -765,13 +765,13 @@ table/table.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/table.cc.s
 .PHONY : table/table.cc.s
 
-table/table_builder.o: table/table_builder.cc.o
-.PHONY : table/table_builder.o
+table/table_builder.obj: table/table_builder.cc.obj
+.PHONY : table/table_builder.obj
 
 # target to build an object file
-table/table_builder.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/table_builder.cc.o
-.PHONY : table/table_builder.cc.o
+table/table_builder.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/table_builder.cc.obj
+.PHONY : table/table_builder.cc.obj
 
 table/table_builder.i: table/table_builder.cc.i
 .PHONY : table/table_builder.i
@@ -789,13 +789,13 @@ table/table_builder.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/table_builder.cc.s
 .PHONY : table/table_builder.cc.s
 
-table/two_level_iterator.o: table/two_level_iterator.cc.o
-.PHONY : table/two_level_iterator.o
+table/two_level_iterator.obj: table/two_level_iterator.cc.obj
+.PHONY : table/two_level_iterator.obj
 
 # target to build an object file
-table/two_level_iterator.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/two_level_iterator.cc.o
-.PHONY : table/two_level_iterator.cc.o
+table/two_level_iterator.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/two_level_iterator.cc.obj
+.PHONY : table/two_level_iterator.cc.obj
 
 table/two_level_iterator.i: table/two_level_iterator.cc.i
 .PHONY : table/two_level_iterator.i
@@ -813,13 +813,13 @@ table/two_level_iterator.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/table/two_level_iterator.cc.s
 .PHONY : table/two_level_iterator.cc.s
 
-util/arena.o: util/arena.cc.o
-.PHONY : util/arena.o
+util/arena.obj: util/arena.cc.obj
+.PHONY : util/arena.obj
 
 # target to build an object file
-util/arena.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/arena.cc.o
-.PHONY : util/arena.cc.o
+util/arena.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/arena.cc.obj
+.PHONY : util/arena.cc.obj
 
 util/arena.i: util/arena.cc.i
 .PHONY : util/arena.i
@@ -837,13 +837,13 @@ util/arena.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/arena.cc.s
 .PHONY : util/arena.cc.s
 
-util/bloom.o: util/bloom.cc.o
-.PHONY : util/bloom.o
+util/bloom.obj: util/bloom.cc.obj
+.PHONY : util/bloom.obj
 
 # target to build an object file
-util/bloom.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/bloom.cc.o
-.PHONY : util/bloom.cc.o
+util/bloom.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/bloom.cc.obj
+.PHONY : util/bloom.cc.obj
 
 util/bloom.i: util/bloom.cc.i
 .PHONY : util/bloom.i
@@ -861,13 +861,13 @@ util/bloom.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/bloom.cc.s
 .PHONY : util/bloom.cc.s
 
-util/cache.o: util/cache.cc.o
-.PHONY : util/cache.o
+util/cache.obj: util/cache.cc.obj
+.PHONY : util/cache.obj
 
 # target to build an object file
-util/cache.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/cache.cc.o
-.PHONY : util/cache.cc.o
+util/cache.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/cache.cc.obj
+.PHONY : util/cache.cc.obj
 
 util/cache.i: util/cache.cc.i
 .PHONY : util/cache.i
@@ -885,13 +885,13 @@ util/cache.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/cache.cc.s
 .PHONY : util/cache.cc.s
 
-util/coding.o: util/coding.cc.o
-.PHONY : util/coding.o
+util/coding.obj: util/coding.cc.obj
+.PHONY : util/coding.obj
 
 # target to build an object file
-util/coding.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/coding.cc.o
-.PHONY : util/coding.cc.o
+util/coding.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/coding.cc.obj
+.PHONY : util/coding.cc.obj
 
 util/coding.i: util/coding.cc.i
 .PHONY : util/coding.i
@@ -909,13 +909,13 @@ util/coding.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/coding.cc.s
 .PHONY : util/coding.cc.s
 
-util/comparator.o: util/comparator.cc.o
-.PHONY : util/comparator.o
+util/comparator.obj: util/comparator.cc.obj
+.PHONY : util/comparator.obj
 
 # target to build an object file
-util/comparator.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/comparator.cc.o
-.PHONY : util/comparator.cc.o
+util/comparator.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/comparator.cc.obj
+.PHONY : util/comparator.cc.obj
 
 util/comparator.i: util/comparator.cc.i
 .PHONY : util/comparator.i
@@ -933,13 +933,13 @@ util/comparator.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/comparator.cc.s
 .PHONY : util/comparator.cc.s
 
-util/crc32c.o: util/crc32c.cc.o
-.PHONY : util/crc32c.o
+util/crc32c.obj: util/crc32c.cc.obj
+.PHONY : util/crc32c.obj
 
 # target to build an object file
-util/crc32c.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/crc32c.cc.o
-.PHONY : util/crc32c.cc.o
+util/crc32c.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/crc32c.cc.obj
+.PHONY : util/crc32c.cc.obj
 
 util/crc32c.i: util/crc32c.cc.i
 .PHONY : util/crc32c.i
@@ -957,13 +957,13 @@ util/crc32c.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/crc32c.cc.s
 .PHONY : util/crc32c.cc.s
 
-util/env.o: util/env.cc.o
-.PHONY : util/env.o
+util/env.obj: util/env.cc.obj
+.PHONY : util/env.obj
 
 # target to build an object file
-util/env.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/env.cc.o
-.PHONY : util/env.cc.o
+util/env.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/env.cc.obj
+.PHONY : util/env.cc.obj
 
 util/env.i: util/env.cc.i
 .PHONY : util/env.i
@@ -981,37 +981,37 @@ util/env.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/env.cc.s
 .PHONY : util/env.cc.s
 
-util/env_posix.o: util/env_posix.cc.o
-.PHONY : util/env_posix.o
+util/env_win.obj: util/env_win.cc.obj
+.PHONY : util/env_win.obj
 
 # target to build an object file
-util/env_posix.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/env_posix.cc.o
-.PHONY : util/env_posix.cc.o
+util/env_win.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/env_win.cc.obj
+.PHONY : util/env_win.cc.obj
 
-util/env_posix.i: util/env_posix.cc.i
-.PHONY : util/env_posix.i
+util/env_win.i: util/env_win.cc.i
+.PHONY : util/env_win.i
 
 # target to preprocess a source file
-util/env_posix.cc.i:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/env_posix.cc.i
-.PHONY : util/env_posix.cc.i
+util/env_win.cc.i:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/env_win.cc.i
+.PHONY : util/env_win.cc.i
 
-util/env_posix.s: util/env_posix.cc.s
-.PHONY : util/env_posix.s
+util/env_win.s: util/env_win.cc.s
+.PHONY : util/env_win.s
 
 # target to generate assembly for a file
-util/env_posix.cc.s:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/env_posix.cc.s
-.PHONY : util/env_posix.cc.s
+util/env_win.cc.s:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/env_win.cc.s
+.PHONY : util/env_win.cc.s
 
-util/filter_policy.o: util/filter_policy.cc.o
-.PHONY : util/filter_policy.o
+util/filter_policy.obj: util/filter_policy.cc.obj
+.PHONY : util/filter_policy.obj
 
 # target to build an object file
-util/filter_policy.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/filter_policy.cc.o
-.PHONY : util/filter_policy.cc.o
+util/filter_policy.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/filter_policy.cc.obj
+.PHONY : util/filter_policy.cc.obj
 
 util/filter_policy.i: util/filter_policy.cc.i
 .PHONY : util/filter_policy.i
@@ -1029,13 +1029,13 @@ util/filter_policy.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/filter_policy.cc.s
 .PHONY : util/filter_policy.cc.s
 
-util/hash.o: util/hash.cc.o
-.PHONY : util/hash.o
+util/hash.obj: util/hash.cc.obj
+.PHONY : util/hash.obj
 
 # target to build an object file
-util/hash.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/hash.cc.o
-.PHONY : util/hash.cc.o
+util/hash.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/hash.cc.obj
+.PHONY : util/hash.cc.obj
 
 util/hash.i: util/hash.cc.i
 .PHONY : util/hash.i
@@ -1053,13 +1053,13 @@ util/hash.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/hash.cc.s
 .PHONY : util/hash.cc.s
 
-util/histogram.o: util/histogram.cc.o
-.PHONY : util/histogram.o
+util/histogram.obj: util/histogram.cc.obj
+.PHONY : util/histogram.obj
 
 # target to build an object file
-util/histogram.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/histogram.cc.o
-.PHONY : util/histogram.cc.o
+util/histogram.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/histogram.cc.obj
+.PHONY : util/histogram.cc.obj
 
 util/histogram.i: util/histogram.cc.i
 .PHONY : util/histogram.i
@@ -1077,13 +1077,13 @@ util/histogram.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/histogram.cc.s
 .PHONY : util/histogram.cc.s
 
-util/logging.o: util/logging.cc.o
-.PHONY : util/logging.o
+util/logging.obj: util/logging.cc.obj
+.PHONY : util/logging.obj
 
 # target to build an object file
-util/logging.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/logging.cc.o
-.PHONY : util/logging.cc.o
+util/logging.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/logging.cc.obj
+.PHONY : util/logging.cc.obj
 
 util/logging.i: util/logging.cc.i
 .PHONY : util/logging.i
@@ -1101,13 +1101,13 @@ util/logging.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/logging.cc.s
 .PHONY : util/logging.cc.s
 
-util/options.o: util/options.cc.o
-.PHONY : util/options.o
+util/options.obj: util/options.cc.obj
+.PHONY : util/options.obj
 
 # target to build an object file
-util/options.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/options.cc.o
-.PHONY : util/options.cc.o
+util/options.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/options.cc.obj
+.PHONY : util/options.cc.obj
 
 util/options.i: util/options.cc.i
 .PHONY : util/options.i
@@ -1125,13 +1125,13 @@ util/options.cc.s:
 	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/options.cc.s
 .PHONY : util/options.cc.s
 
-util/status.o: util/status.cc.o
-.PHONY : util/status.o
+util/status.obj: util/status.cc.obj
+.PHONY : util/status.obj
 
 # target to build an object file
-util/status.cc.o:
-	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/status.cc.o
-.PHONY : util/status.cc.o
+util/status.cc.obj:
+	cd /home/microguy/git/microguy/goldcoin && $(MAKE) $(MAKESILENT) -f src/leveldb/CMakeFiles/leveldb.dir/build.make src/leveldb/CMakeFiles/leveldb.dir/util/status.cc.obj
+.PHONY : util/status.cc.obj
 
 util/status.i: util/status.cc.i
 .PHONY : util/status.i
@@ -1163,124 +1163,124 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... leveldb"
 	@echo "... memenv"
-	@echo "... db/builder.o"
+	@echo "... db/builder.obj"
 	@echo "... db/builder.i"
 	@echo "... db/builder.s"
-	@echo "... db/c.o"
+	@echo "... db/c.obj"
 	@echo "... db/c.i"
 	@echo "... db/c.s"
-	@echo "... db/db_impl.o"
+	@echo "... db/db_impl.obj"
 	@echo "... db/db_impl.i"
 	@echo "... db/db_impl.s"
-	@echo "... db/db_iter.o"
+	@echo "... db/db_iter.obj"
 	@echo "... db/db_iter.i"
 	@echo "... db/db_iter.s"
-	@echo "... db/dbformat.o"
+	@echo "... db/dbformat.obj"
 	@echo "... db/dbformat.i"
 	@echo "... db/dbformat.s"
-	@echo "... db/dumpfile.o"
+	@echo "... db/dumpfile.obj"
 	@echo "... db/dumpfile.i"
 	@echo "... db/dumpfile.s"
-	@echo "... db/filename.o"
+	@echo "... db/filename.obj"
 	@echo "... db/filename.i"
 	@echo "... db/filename.s"
-	@echo "... db/log_reader.o"
+	@echo "... db/log_reader.obj"
 	@echo "... db/log_reader.i"
 	@echo "... db/log_reader.s"
-	@echo "... db/log_writer.o"
+	@echo "... db/log_writer.obj"
 	@echo "... db/log_writer.i"
 	@echo "... db/log_writer.s"
-	@echo "... db/memtable.o"
+	@echo "... db/memtable.obj"
 	@echo "... db/memtable.i"
 	@echo "... db/memtable.s"
-	@echo "... db/repair.o"
+	@echo "... db/repair.obj"
 	@echo "... db/repair.i"
 	@echo "... db/repair.s"
-	@echo "... db/table_cache.o"
+	@echo "... db/table_cache.obj"
 	@echo "... db/table_cache.i"
 	@echo "... db/table_cache.s"
-	@echo "... db/version_edit.o"
+	@echo "... db/version_edit.obj"
 	@echo "... db/version_edit.i"
 	@echo "... db/version_edit.s"
-	@echo "... db/version_set.o"
+	@echo "... db/version_set.obj"
 	@echo "... db/version_set.i"
 	@echo "... db/version_set.s"
-	@echo "... db/write_batch.o"
+	@echo "... db/write_batch.obj"
 	@echo "... db/write_batch.i"
 	@echo "... db/write_batch.s"
-	@echo "... helpers/memenv/memenv.o"
+	@echo "... helpers/memenv/memenv.obj"
 	@echo "... helpers/memenv/memenv.i"
 	@echo "... helpers/memenv/memenv.s"
-	@echo "... port/port_posix.o"
-	@echo "... port/port_posix.i"
-	@echo "... port/port_posix.s"
-	@echo "... table/block.o"
+	@echo "... port/port_win.obj"
+	@echo "... port/port_win.i"
+	@echo "... port/port_win.s"
+	@echo "... table/block.obj"
 	@echo "... table/block.i"
 	@echo "... table/block.s"
-	@echo "... table/block_builder.o"
+	@echo "... table/block_builder.obj"
 	@echo "... table/block_builder.i"
 	@echo "... table/block_builder.s"
-	@echo "... table/filter_block.o"
+	@echo "... table/filter_block.obj"
 	@echo "... table/filter_block.i"
 	@echo "... table/filter_block.s"
-	@echo "... table/format.o"
+	@echo "... table/format.obj"
 	@echo "... table/format.i"
 	@echo "... table/format.s"
-	@echo "... table/iterator.o"
+	@echo "... table/iterator.obj"
 	@echo "... table/iterator.i"
 	@echo "... table/iterator.s"
-	@echo "... table/merger.o"
+	@echo "... table/merger.obj"
 	@echo "... table/merger.i"
 	@echo "... table/merger.s"
-	@echo "... table/table.o"
+	@echo "... table/table.obj"
 	@echo "... table/table.i"
 	@echo "... table/table.s"
-	@echo "... table/table_builder.o"
+	@echo "... table/table_builder.obj"
 	@echo "... table/table_builder.i"
 	@echo "... table/table_builder.s"
-	@echo "... table/two_level_iterator.o"
+	@echo "... table/two_level_iterator.obj"
 	@echo "... table/two_level_iterator.i"
 	@echo "... table/two_level_iterator.s"
-	@echo "... util/arena.o"
+	@echo "... util/arena.obj"
 	@echo "... util/arena.i"
 	@echo "... util/arena.s"
-	@echo "... util/bloom.o"
+	@echo "... util/bloom.obj"
 	@echo "... util/bloom.i"
 	@echo "... util/bloom.s"
-	@echo "... util/cache.o"
+	@echo "... util/cache.obj"
 	@echo "... util/cache.i"
 	@echo "... util/cache.s"
-	@echo "... util/coding.o"
+	@echo "... util/coding.obj"
 	@echo "... util/coding.i"
 	@echo "... util/coding.s"
-	@echo "... util/comparator.o"
+	@echo "... util/comparator.obj"
 	@echo "... util/comparator.i"
 	@echo "... util/comparator.s"
-	@echo "... util/crc32c.o"
+	@echo "... util/crc32c.obj"
 	@echo "... util/crc32c.i"
 	@echo "... util/crc32c.s"
-	@echo "... util/env.o"
+	@echo "... util/env.obj"
 	@echo "... util/env.i"
 	@echo "... util/env.s"
-	@echo "... util/env_posix.o"
-	@echo "... util/env_posix.i"
-	@echo "... util/env_posix.s"
-	@echo "... util/filter_policy.o"
+	@echo "... util/env_win.obj"
+	@echo "... util/env_win.i"
+	@echo "... util/env_win.s"
+	@echo "... util/filter_policy.obj"
 	@echo "... util/filter_policy.i"
 	@echo "... util/filter_policy.s"
-	@echo "... util/hash.o"
+	@echo "... util/hash.obj"
 	@echo "... util/hash.i"
 	@echo "... util/hash.s"
-	@echo "... util/histogram.o"
+	@echo "... util/histogram.obj"
 	@echo "... util/histogram.i"
 	@echo "... util/histogram.s"
-	@echo "... util/logging.o"
+	@echo "... util/logging.obj"
 	@echo "... util/logging.i"
 	@echo "... util/logging.s"
-	@echo "... util/options.o"
+	@echo "... util/options.obj"
 	@echo "... util/options.i"
 	@echo "... util/options.s"
-	@echo "... util/status.o"
+	@echo "... util/status.obj"
 	@echo "... util/status.i"
 	@echo "... util/status.s"
 .PHONY : help

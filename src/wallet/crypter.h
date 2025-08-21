@@ -9,6 +9,7 @@
 #include "keystore.h"
 #include "serialize.h"
 #include "support/allocators/secure.h"
+#include "validationinterface.h"  // For Signal class
 
 #include <functional>
 #include <vector>

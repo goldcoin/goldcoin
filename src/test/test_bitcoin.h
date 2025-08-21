@@ -12,8 +12,6 @@
 #include "txdb.h"
 #include "txmempool.h"
 
-#include <boost/filesystem.hpp>
-#include <boost/thread.hpp>
 
 /** Basic testing setup.
  * This just configures logging and chain parameters.

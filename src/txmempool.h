@@ -15,6 +15,7 @@
 #include <vector>
 #include <utility>
 #include <string>
+#include "validationinterface.h"  // For Signal class
 
 #include "amount.h"
 #include "coins.h"
@@ -23,12 +24,8 @@
 #include "sync.h"
 #include "random.h"
 
-#undef foreach
-#include "boost/multi_index_container.hpp"
-#include "boost/multi_index/ordered_index.hpp"
-#include "boost/multi_index/hashed_index.hpp"
+// C++23: Using our custom multi-index implementation instead of boost
 
-#include <boost/signals2/signal.hpp>
 
 class CAutoFile;
 class CBlockIndex;
@@ -449,63 +446,96 @@ public:
 
     static const int ROLLING_FEE_HALFLIFE = 60 * 60 * 12; // public only for testing
 
-    // C++23: Modern container replacement
-    typedef std::multimap<uint256, // Primary key by txid
-                         std::multiset< // Secondary indices
-        CTxMemPoolEntry,
-        // C++23: Replaced with std containers
-    // indexed_by<
-            // sorted by txid
-            // C++23: Replaced with std containers
-    // hashed_unique<mempoolentry_txid, SaltedTxidHasher>,
-            // sorted by fee rate
-            // C++23: Replaced with std containers
-    // ordered_non_unique<
-                // C++23: Replaced with std containers
-    // tag<descendant_score>,
-                // C++23: Replaced with std containers
-    // identity<CTxMemPoolEntry>,
-                CompareTxMemPoolEntryByDescendantScore
-            >,
-            // sorted by entry time
-            // C++23: Replaced with std containers
-    // ordered_non_unique<
-                // C++23: Replaced with std containers
-    // tag<entry_time>,
-                // C++23: Replaced with std containers
-    // identity<CTxMemPoolEntry>,
-                CompareTxMemPoolEntryByEntryTime
-            >,
-            // sorted by score (for mining prioritization)
-            // C++23: Replaced with std containers
-    // ordered_unique<
-                // C++23: Replaced with std containers
-    // tag<mining_score>,
-                // C++23: Replaced with std containers
-    // identity<CTxMemPoolEntry>,
-                CompareTxMemPoolEntryByScore
-            >,
-            // sorted by fee rate with ancestors
-            // C++23: Replaced with std containers
-    // ordered_non_unique<
-                // C++23: Replaced with std containers
-    // tag<ancestor_score>,
-                // C++23: Replaced with std containers
-    // identity<CTxMemPoolEntry>,
-                CompareTxMemPoolEntryByAncestorFee
-            >
-        >
-    > indexed_transaction_set;
+    // C++23: Simple unordered_map with wrapper iterator for compatibility
+    typedef std::unordered_map<uint256, CTxMemPoolEntry, SaltedTxidHasher> indexed_transaction_set;
+    
+    // Wrapper iterator that provides direct access to CTxMemPoolEntry
+    class txiter_wrapper {
+    private:
+        indexed_transaction_set::iterator it;
+        const indexed_transaction_set* container;
+    public:
+        txiter_wrapper() = default;
+        txiter_wrapper(indexed_transaction_set::iterator _it, const indexed_transaction_set& _container) 
+            : it(_it), container(&_container) {}
+        
+        // Read-only access to CTxMemPoolEntry (C++23: prevent in-place modification)
+        const CTxMemPoolEntry& operator*() const { return it->second; }
+        const CTxMemPoolEntry* operator->() const { return &(it->second); }
+        
+        // Get the hash (key)
+        const uint256& GetHash() const { return it->first; }
+        
+        txiter_wrapper& operator++() { ++it; return *this; }
+        txiter_wrapper operator++(int) { txiter_wrapper tmp = *this; ++(*this); return tmp; }
+        
+        bool operator==(const txiter_wrapper& other) const { return it == other.it; }
+        bool operator!=(const txiter_wrapper& other) const { return it != other.it; }
+        
+        // Check if iterator is at end
+        bool operator==(const indexed_transaction_set::const_iterator& other) const { 
+            return it == other; 
+        }
+        bool operator!=(const indexed_transaction_set::const_iterator& other) const { 
+            return it != other; 
+        }
+        
+        // Allow access to underlying iterator when needed
+        indexed_transaction_set::iterator base() { return it; }
+        const indexed_transaction_set::iterator base() const { return it; }
+    };
 
     mutable CCriticalSection cs;
     indexed_transaction_set mapTx;
+    
+    // C++23: Additional indices for sorting
+    // These maintain sorted views without duplicating data
+    struct ancestor_score {};  // Tag for get<> template
+    struct descendant_score {};
+    struct entry_time {};
+    
+    // C++23: Secondary indices using stable node handles approach
+    typedef std::multimap<double, txiter_wrapper> score_index;
+    score_index mapAncestorScore;  // Sorted by ancestor score
+    
+    // C++23: Template to access indices like boost multi_index
+    template<typename Tag>
+    auto& get() {
+        if constexpr(std::is_same_v<Tag, ancestor_score>) {
+            return mapAncestorScore;
+        } else {
+            return mapTx;  // Default to main index
+        }
+    }
+    
+    template<typename Tag>
+    const auto& get() const {
+        if constexpr(std::is_same_v<Tag, ancestor_score>) {
+            return mapAncestorScore;
+        } else {
+            return mapTx;  // Default to main index
+        }
+    }
 
-    typedef indexed_transaction_set::nth_index<0>::type::iterator txiter;
+    typedef txiter_wrapper txiter;
+    typedef txiter_wrapper const_txiter;
     std::vector<std::pair<uint256, txiter> > vTxHashes; //!< All tx witness hashes/entries in mapTx, in random order
+
+private:
+    // C++23: Safe update methods for std::unordered_map values
+    // These methods replace the entry with an updated copy to maintain container integrity
+    void SafeUpdateEntry(txiter it, std::function<void(CTxMemPoolEntry&)> updateFunc);
+    void SafeUpdateFeeDelta(txiter it, int64_t newFeeDelta);
+    void SafeUpdateDescendantState(txiter it, int64_t modifySize, CAmount modifyFee, int64_t modifyCount);
+    void SafeUpdateAncestorState(txiter it, int64_t modifySize, CAmount modifyFee, int64_t modifyCount, int modifySigOps);
+    void SafeUpdateLockPoints(txiter it, const LockPoints& lp);
+
+public:
 
 
     struct CompareIteratorByHash {
         bool operator()(const txiter &a, const txiter &b) const {
+            // C++23: Wrapper provides direct access to entry
             return a->GetTx().GetHash() < b->GetTx().GetHash();
         }
     };
@@ -527,7 +557,7 @@ private:
     void UpdateParent(txiter entry, txiter parent, bool add);
     void UpdateChild(txiter entry, txiter child, bool add);
 
-    std::vector<indexed_transaction_set::const_iterator> GetSortedDepthAndScore() const;
+    std::vector<const_txiter> GetSortedDepthAndScore() const;
 
 public:
     indirectmap<COutPoint, const CTransaction*> mapNextTx;
@@ -746,7 +776,7 @@ struct TxCoinAgePriorityCompare
     bool operator()(const TxCoinAgePriority& a, const TxCoinAgePriority& b) const
     {
         if (a.first == b.first)
-            return CompareTxMemPoolEntryByScore()(*(b.second), *(a.second)); //Reverse order to make sort less than
+            return CompareTxMemPoolEntryByScore()(*b.second, *a.second); //Reverse order to make sort less than
         return a.first < b.first;
     }
 };

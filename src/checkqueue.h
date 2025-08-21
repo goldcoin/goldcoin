@@ -158,6 +158,14 @@ public:
 
     ~CCheckQueue()
     {
+        Quit();
+    }
+
+    void Quit() 
+    {
+        std::unique_lock<std::mutex> lock(mutex);  // C++23 lock
+        fQuit = true;
+        condWorker.notify_all();
     }
 
     bool IsIdle()
