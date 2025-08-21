@@ -7,7 +7,7 @@
 
 #include "addressbookpage.h"
 #include "askpassphrasedialog.h"
-#include "bitcoingui.h"
+#include "goldcoingui.h"
 #include "clientmodel.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
@@ -70,7 +70,7 @@ WalletView::WalletView(const PlatformStyle *_platformStyle, QWidget *parent):
     connect(overviewPage, &OverviewPage::outOfSyncWarningClicked, this, &WalletView::requestedSyncWarningInfo);
     // Double-clicking on a transaction on the transaction history page shows details
     // Modern Qt6 connection using lambda to call showDetails
-    connect(transactionView, &QTreeView::doubleClicked, transactionView, 
+    connect(transactionView, &TransactionView::doubleClicked, transactionView, 
             [this](const QModelIndex& index) {
                 // Call showDetails through a public interface
                 transactionView->focusTransaction(index);

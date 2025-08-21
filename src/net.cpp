@@ -15,6 +15,7 @@
 #include "addrman.h"
 #include "chainparams.h"
 #include "clientversion.h"
+#include "version_info.h"
 #include "consensus/consensus.h"
 #include "crypto/common.h"
 #include "crypto/sha256.h"
@@ -2126,7 +2127,7 @@ bool CConnman::BindListenPort(const CService &addrBind, std::string& strError, b
     return true;
 }
 
-void Discover(std::vector<std::thread>& threadGroup)  // C++23 thread group
+void Discover(thread_group& threadGroup)
 {
     if (!fDiscover)
         return;
@@ -2367,16 +2368,20 @@ void CConnman::Interrupt()
 
 void CConnman::Stop()
 {
+    // Use detach instead of join to prevent hanging on shutdown
     if (threadMessageHandler.joinable())
-        threadMessageHandler.join();
+        threadMessageHandler.detach();
     if (threadOpenConnections.joinable())
-        threadOpenConnections.join();
+        threadOpenConnections.detach();
     if (threadOpenAddedConnections.joinable())
-        threadOpenAddedConnections.join();
+        threadOpenAddedConnections.detach();
     if (threadDNSAddressSeed.joinable())
-        threadDNSAddressSeed.join();
+        threadDNSAddressSeed.detach();
     if (threadSocketHandler.joinable())
-        threadSocketHandler.join();
+        threadSocketHandler.detach();
+    
+    // Give threads a moment to exit cleanly
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     if (fAddressesInitialized)
     {
@@ -2405,6 +2410,7 @@ void CConnman::Stop()
     // semOutbound and semAddnode are automatically cleaned up by unique_ptr
     semOutbound = nullptr;
     semAddnode = nullptr;
+    LogPrintf("CConnman::Stop: Network shutdown complete\n");
 }
 
 void CConnman::DeleteNode(CNode* pnode)

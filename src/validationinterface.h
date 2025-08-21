@@ -18,27 +18,88 @@
 template<typename Signature>
 class Signal;
 
+// Specialization for non-void return types
 template<typename R, typename... Args>
 class Signal<R(Args...)> {
 public:
     using SlotType = std::function<R(Args...)>;
+    using FunctionPtr = R(*)(Args...);
     
     void connect(SlotType slot) {
         slots_.push_back(std::move(slot));
     }
     
+    void connect(FunctionPtr fn) {
+        function_ptrs_.push_back(fn);
+    }
+    
+    void disconnect(FunctionPtr fn) {
+        function_ptrs_.erase(
+            std::remove(function_ptrs_.begin(), function_ptrs_.end(), fn),
+            function_ptrs_.end()
+        );
+    }
+    
     void disconnect_all_slots() {
         slots_.clear();
+        function_ptrs_.clear();
+    }
+    
+    R operator()(Args... args) {
+        R result{};
+        for (auto& slot : slots_) {
+            if (slot) result = slot(args...);
+        }
+        for (auto fn : function_ptrs_) {
+            if (fn) result = fn(args...);
+        }
+        return result;
+    }
+    
+private:
+    std::vector<SlotType> slots_;
+    std::vector<FunctionPtr> function_ptrs_;
+};
+
+// Specialization for void return type
+template<typename... Args>
+class Signal<void(Args...)> {
+public:
+    using SlotType = std::function<void(Args...)>;
+    using FunctionPtr = void(*)(Args...);
+    
+    void connect(SlotType slot) {
+        slots_.push_back(std::move(slot));
+    }
+    
+    void connect(FunctionPtr fn) {
+        function_ptrs_.push_back(fn);
+    }
+    
+    void disconnect(FunctionPtr fn) {
+        function_ptrs_.erase(
+            std::remove(function_ptrs_.begin(), function_ptrs_.end(), fn),
+            function_ptrs_.end()
+        );
+    }
+    
+    void disconnect_all_slots() {
+        slots_.clear();
+        function_ptrs_.clear();
     }
     
     void operator()(Args... args) {
         for (auto& slot : slots_) {
             if (slot) slot(args...);
         }
+        for (auto fn : function_ptrs_) {
+            if (fn) fn(args...);
+        }
     }
     
 private:
     std::vector<SlotType> slots_;
+    std::vector<FunctionPtr> function_ptrs_;
 };
 
 class CBlock;

@@ -7,6 +7,7 @@
 #define BITCOIN_QT_WALLETMODELTRANSACTION_H
 
 #include "walletmodel.h"
+#include "amount.h"  // For CAmount
 
 #include <QObject>
 

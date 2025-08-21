@@ -9,7 +9,6 @@
 #ifndef BITCOIN_TEST_TESTUTIL_H
 #define BITCOIN_TEST_TESTUTIL_H
 
-#include <boost/filesystem/path.hpp>
 
 fs::path GetTempPath();  // C++23 filesystem
 

@@ -6,6 +6,49 @@ use anyhow::Result;
 use std::path::Path;
 use std::sync::Arc;
 use tokio::sync::RwLock;
+use async_trait::async_trait;
+
+/// Block information
+#[derive(Debug, Clone)]
+pub struct BlockInfo {
+    pub hash: [u8; 32],
+    pub height: u32,
+    pub timestamp: u64,
+}
+
+/// Blockchain storage trait
+#[async_trait]
+pub trait BlockchainStorage: Send + Sync {
+    async fn get_best_block(&self) -> Result<Option<BlockInfo>>;
+    async fn flush(&self) -> Result<()>;
+}
+
+/// Chain database implementation
+pub struct ChainDatabase {
+    data_dir: std::path::PathBuf,
+    cache_size: usize,
+}
+
+impl ChainDatabase {
+    pub async fn new(data_dir: &Path, cache_size: usize) -> Result<Self> {
+        Ok(Self {
+            data_dir: data_dir.to_path_buf(),
+            cache_size,
+        })
+    }
+}
+
+#[async_trait]
+impl BlockchainStorage for ChainDatabase {
+    async fn get_best_block(&self) -> Result<Option<BlockInfo>> {
+        // TODO: Implement actual storage lookup
+        Ok(None)
+    }
+    
+    async fn flush(&self) -> Result<()> {
+        Ok(())
+    }
+}
 
 /// Database backend trait
 pub trait Database: Send + Sync {

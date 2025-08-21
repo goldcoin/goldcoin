@@ -13,8 +13,8 @@
 #include "script/standard.h"
 #include "sync.h"
 
-#include <boost/signals2/signal.hpp>
-#include <boost/variant.hpp>
+#include "validationinterface.h"  // For Signal class
+#include <variant>  // C++23 std::variant
 
 /** A virtual base class for key stores */
 class CKeyStore

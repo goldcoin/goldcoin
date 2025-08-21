@@ -22,7 +22,6 @@
 
 #include <stdint.h>
 
-#include <boost/assign/list_of.hpp>
 #include <variant>
 
 #include <univalue.h>
@@ -824,7 +823,7 @@ UniValue ListReceived(const UniValue& params, bool fByAccounts)
     // Reply
     UniValue ret(UniValue::VARR);
     map<string, tallyitem> mapAccountTally;
-    for (const PAIRTYPE(CBitcoinAddress, CAddressBookData)& item : pwalletMain->mapAddressBook)
+    for (const auto& item : pwalletMain->mapAddressBook)  // C++23: Use auto to avoid temporary
     {
         const CBitcoinAddress& address = item.first;
         const string& strAccount = item.second.name;

@@ -9,7 +9,8 @@
 //! Replaces QString::arg with std::format
 
 #include <format>
-#include <print>
+// #include <print>  // Not supported in MinGW GCC 13
+#include "qt_modernization.h"  // For std::print compatibility
 #include <string>
 #include <string_view>
 #include <QString>

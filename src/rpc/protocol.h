@@ -1,4 +1,5 @@
 // Copyright (c) 2007-2010 Satoshi Nakamoto
+#include <variant>
 // Copyright (c) 2013-2025 The Goldcoin Core developers
 // Copyright (c) 2009-2016 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying

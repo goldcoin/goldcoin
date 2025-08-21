@@ -1,4 +1,5 @@
 // Copyright (c) 2007-2010 Satoshi Nakamoto
+#include <thread>
 // Copyright (c) 2009-2015 The Bitcoin Core developers
 // Copyright (c) 2011-2017 The Litecoin Core developers
 // Copyright (c) 2013-2025 The Goldcoin Core developers
@@ -34,7 +35,6 @@
 #include "utilstrencodings.h"
 #include "validationinterface.h"
 
-#include <boost/thread.hpp>
 
 #if defined(NDEBUG)
 # error "Goldcoin cannot be compiled without assertions."
@@ -826,8 +826,9 @@ void PeerLogicValidation::UpdatedBlockTip(const CBlockIndex *pindexNew, const CB
         // Relay inventory, but don't relay old inventory during initial block download.
         connman->ForEachNode([nNewHeight, &vHashes](CNode* pnode) {
             if (nNewHeight > (pnode->nStartingHeight != -1 ? pnode->nStartingHeight - 2000 : 0)) {
-                BOOST_REVERSE_FOREACH(const uint256& hash, vHashes) {
-                    pnode->PushBlockHash(hash);
+                // C++23: Use reverse iterator instead of BOOST_REVERSE_FOREACH
+                for (auto it = vHashes.rbegin(); it != vHashes.rend(); ++it) {
+                    pnode->PushBlockHash(*it);
                 }
             }
         });
@@ -2348,7 +2349,9 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             } else {
                 std::vector<CInv> vGetData;
                 // Download as much as possible, from earliest to latest.
-                BOOST_REVERSE_FOREACH(const CBlockIndex *pindex, vToFetch) {
+                // C++23: Use reverse iterator instead of BOOST_REVERSE_FOREACH
+                for (auto it = vToFetch.rbegin(); it != vToFetch.rend(); ++it) {
+                    const CBlockIndex *pindex = *it;
                     if (nodestate->nBlocksInFlight >= MAX_BLOCKS_IN_TRANSIT_PER_PEER) {
                         // Can't download any more from this peer
                         break;

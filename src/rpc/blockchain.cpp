@@ -7,6 +7,7 @@
 #include "amount.h"
 #include "chain.h"
 #include "chainparams.h"
+#include "init.h"
 #include "checkpoints.h"
 #include "checkpointsync.h"
 #include "coins.h"
@@ -395,8 +396,9 @@ UniValue mempoolToJSON(bool fVerbose = false)
     {
         LOCK(mempool.cs);
         UniValue o(UniValue::VOBJ);
-        for (const CTxMemPoolEntry& e : mempool.mapTx)
+        for (const auto& pair : mempool.mapTx)
         {
+            const CTxMemPoolEntry& e = pair.second;
             const uint256& hash = e.GetTx().GetHash();
             UniValue info(UniValue::VOBJ);
             entryToJSON(info, e);
@@ -482,7 +484,7 @@ UniValue getmempoolancestors(const JSONRPCRequest& request)
 
     LOCK(mempool.cs);
 
-    CTxMemPool::txiter it = mempool.mapTx.find(hash);
+    CTxMemPool::txiter it(mempool.mapTx.find(hash), mempool.mapTx);
     if (it == mempool.mapTx.end()) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Transaction not in mempool");
     }
@@ -546,7 +548,7 @@ UniValue getmempooldescendants(const JSONRPCRequest& request)
 
     LOCK(mempool.cs);
 
-    CTxMemPool::txiter it = mempool.mapTx.find(hash);
+    CTxMemPool::txiter it(mempool.mapTx.find(hash), mempool.mapTx);
     if (it == mempool.mapTx.end()) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Transaction not in mempool");
     }
@@ -598,7 +600,7 @@ UniValue getmempoolentry(const JSONRPCRequest& request)
 
     LOCK(mempool.cs);
 
-    CTxMemPool::txiter it = mempool.mapTx.find(hash);
+    CTxMemPool::txiter it(mempool.mapTx.find(hash), mempool.mapTx);
     if (it == mempool.mapTx.end()) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Transaction not in mempool");
     }

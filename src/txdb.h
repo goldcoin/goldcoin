@@ -18,7 +18,7 @@
 #include <utility>
 #include <vector>
 
-#include <boost/function.hpp>
+#include <functional>  // C++23 std::function
 
 class CBlockIndex;
 class CCoinsViewDBCursor;

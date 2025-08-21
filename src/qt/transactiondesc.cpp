@@ -5,9 +5,9 @@
 
 #include "transactiondesc.h"
 
-#include "bitcoinunits.h"
+#include "goldcoinunits.h"
 #include "guiutil.h"
-#include "paymentserver.h"
+// BIP70 removed - #include "paymentserver.h"
 #include "transactionrecord.h"
 
 #include "base58.h"
@@ -255,17 +255,18 @@ QString TransactionDesc::toHTML(CWallet *wallet, CWalletTx &wtx, TransactionReco
     // PaymentRequest info:
     //
     // Qt 5.15+ compatibility: Replace Q_FOREACH with range-based for
-    for (const auto& r : wtx.vOrderForm)
-    {
-        if (r.first == "PaymentRequest")
-        {
-            PaymentRequestPlus req;
-            req.parse(QByteArray::fromRawData(r.second.data(), r.second.size()));
-            QString merchant;
-            if (req.getMerchant(PaymentServer::getCertStore(), merchant))
-                strHTML += "<b>" + tr("Merchant") + ":</b> " + GUIUtil::HtmlEscape(merchant) + "<br>";
-        }
-    }
+    // BIP70 removed - Payment request processing
+    // for (const auto& r : wtx.vOrderForm)
+    // {
+    //     if (r.first == "PaymentRequest")
+    //     {
+    //         PaymentRequestPlus req;
+    //         req.parse(QByteArray::fromRawData(r.second.data(), r.second.size()));
+    //         QString merchant;
+    //         if (req.getMerchant(PaymentServer::getCertStore(), merchant))
+    //             strHTML += "<b>" + tr("Merchant") + ":</b> " + GUIUtil::HtmlEscape(merchant) + "<br>";
+    //     }
+    // }
 
     if (wtx.IsCoinBase())
     {

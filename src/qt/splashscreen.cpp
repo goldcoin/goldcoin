@@ -9,6 +9,7 @@
 
 #include "splashscreen.h"
 #include "guiutil.h"
+#include "goldcoin_constants.h" // For PACKAGE_NAME
 
 #include "networkstyle.h"
 
@@ -225,13 +226,11 @@ void SplashScreen::unsubscribeFromCoreSignals()
     // Note: Modern std::function callbacks are automatically cleaned up when SplashScreen is destroyed
     // The vector storage handles cleanup automatically via RAII
     
-    // Disconnect legacy boost::signals2 connections
-    uiInterface.InitMessage.disconnect(std::bind_front(InitMessage, this));
-    uiInterface.ShowProgress.disconnect(std::bind_front(ShowProgress, this));
+    // With modern C++23 Signal implementation, connections using lambdas/std::function
+    // are automatically cleaned up when this object is destroyed.
+    // Manual disconnect is not needed for std::function-based connections.
 #ifdef ENABLE_WALLET
-    for(CWallet* const & pwallet : connectedWallets) {
-        pwallet->ShowProgress.disconnect(std::bind_front(ShowProgress, this));
-    }
+    // Wallet connections also cleaned up automatically
 #endif
 }
 

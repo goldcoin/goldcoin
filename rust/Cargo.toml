@@ -1,5 +1,11 @@
 [workspace]
 members = [
+    # Core binary applications
+    "goldcoind",
+    "goldcoin-cli", 
+    "goldcoin-tx",
+    
+    # Library crates
     "goldcoin-network",
     "goldcoin-consensus",
     "goldcoin-ffi",

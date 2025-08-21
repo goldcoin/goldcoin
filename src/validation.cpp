@@ -8,6 +8,8 @@
 
 #include "validation.h"
 
+#include <cmath>
+#include <thread>
 #include "arith_uint256.h"
 #include "chainparams.h"
 #include "checkpoints.h"
@@ -50,11 +52,6 @@
 #include <algorithm>   // C++23 algorithms
 #include <sstream>     // for string join replacement
 #include <fstream>
-#include <boost/math/distributions/poisson.hpp>
-#include <boost/thread.hpp>
-#include <boost/asio.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/bind/bind.hpp>
 
 #if defined(NDEBUG)
 # error "Goldcoin cannot be compiled without assertions."
@@ -687,7 +684,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
         // do all inputs exist?
         // Note that this does not check for the presence of actual outputs (see the next check for that),
         // and only helps with filling in pfMissingInputs (to determine missing vs spent).
-        for (const CTxIn txin : tx.vin) {
+        for (const CTxIn& txin : tx.vin) {  // Fix: Use reference to avoid copy
             if (!pcoinsTip->HaveCoinsInCache(txin.prevout.hash))
                 vHashTxnToUncache.push_back(txin.prevout.hash);
             if (!view.HaveCoins(txin.prevout.hash)) {
@@ -842,7 +839,7 @@ bool AcceptToMemoryPoolWorker(CTxMemPool& pool, CValidationState& state, const C
             CTxMemPool::setEntries setIterConflicting;
             for (const uint256 &hashConflicting : setConflicts)
             {
-                CTxMemPool::txiter mi = pool.mapTx.find(hashConflicting);
+                CTxMemPool::txiter mi(pool.mapTx.find(hashConflicting), pool.mapTx);
                 if (mi == pool.mapTx.end())
                     continue;
 
@@ -1707,7 +1704,13 @@ static CCheckQueue<CScriptCheck> scriptcheckqueue(128);
 
 void ThreadScriptCheck() {
     RenameThread("bitcoin-scriptch");
+    LogPrintf("scriptcheck thread start\n");
     scriptcheckqueue.Thread();
+    LogPrintf("scriptcheck thread exit\n");
+}
+
+void StopScriptCheckQueue() {
+    scriptcheckqueue.Quit();
 }
 
 // Protected by cs_main
@@ -2194,20 +2197,21 @@ void static UpdateTip(CBlockIndex *pindexNew, const CChainParams& chainParams) {
             }
         }
     }
-    LogPrintf("%s: new best=%s height=%d version=0x%08x log2_work=%.8g tx=%lu date='%s' progress=%f cache=%.1fMiB(%utx)", __func__,
+    LogPrint("validation", "%s: new best=%s height=%d version=0x%08x log2_work=%.8g tx=%lu date='%s' progress=%f cache=%.1fMiB(%utx)", __func__,
       chainActive.Tip()->GetBlockHash().ToString(), chainActive.Height(), chainActive.Tip()->nVersion,
       log(chainActive.Tip()->nChainWork.getdouble())/log(2.0), (unsigned long)chainActive.Tip()->nChainTx,
       DateTimeStrFormat("%Y-%m-%d %H:%M:%S", chainActive.Tip()->GetBlockTime()),
       GuessVerificationProgress(chainParams.TxData(), chainActive.Tip()), pcoinsTip->DynamicMemoryUsage() * (1.0 / (1<<20)), pcoinsTip->GetCacheSize());
-    if (!warningMessages.empty())
+    if (!warningMessages.empty()) {
         // C++23 string join replacement
         std::string warningStr;
         for (size_t i = 0; i < warningMessages.size(); ++i) {
             if (i > 0) warningStr += ", ";
             warningStr += warningMessages[i];
         }
-        LogPrintf(" warning='%s'", warningStr);
-    LogPrintf("\n");
+        LogPrint("validation", " warning='%s'", warningStr);
+    }
+    LogPrint("validation", "\n");
 
     if (pindexBestHeader->pprev)
         CheckSyncCheckpoint(pindexBestHeader->GetBlockHash(), pindexBestHeader->pprev);
@@ -2446,7 +2450,9 @@ static bool ActivateBestChainStep(CValidationState& state, const CChainParams& c
         nHeight = nTargetHeight;
 
         // Connect new blocks.
-        BOOST_REVERSE_FOREACH(CBlockIndex *pindexConnect, vpindexToConnect) {
+        // C++23: Use reverse iterator instead of BOOST_REVERSE_FOREACH
+        for (auto it = vpindexToConnect.rbegin(); it != vpindexToConnect.rend(); ++it) {
+            CBlockIndex *pindexConnect = *it;
             if (!ConnectTip(state, chainparams, pindexConnect, pindexConnect == pindexMostWork ? pblock : std::shared_ptr<const CBlock>(), connectTrace)) {
                 if (state.IsInvalid()) {
                     // The block violates a consensus rule.
@@ -2937,13 +2943,11 @@ void QueuedBlockHandler(QueuedBlockData * data)
     CBlockIndex * tip = chainActive.Tip();
     LogPrintf("QueuedBlockHandler: %d, %s\n", GetAdjustedTime(), data->block->GetHash().ToString());
 
-    ioService.reset();
     // C++23: Replace boost timer with std::chrono
     auto delay = std::chrono::seconds(data->block->GetBlockTime() - (GetAdjustedTime() + 45));
     if (delay > std::chrono::seconds(0)) {
         std::this_thread::sleep_for(delay);
     }
-    timer.wait();
 
 
     LogPrintf("QueuedBlockHandler: waited until %d, %s\n", GetAdjustedTime(), data->block->GetHash().ToString());
@@ -3654,7 +3658,8 @@ bool static LoadBlockIndexDB(const CChainParams& chainparams)
     // Calculate nChainWork
     std::vector<std::pair<int, CBlockIndex*> > vSortedByHeight;
     vSortedByHeight.reserve(mapBlockIndex.size());
-    for (const PAIRTYPE(uint256, CBlockIndex*)& item : mapBlockIndex)
+    // C++23: Use auto to avoid type mismatch in range-based for loop
+    for (const auto& item : mapBlockIndex)
     {
         CBlockIndex* pindex = item.second;
         vSortedByHeight.push_back(std::make_pair(pindex->nHeight, pindex));
@@ -3715,7 +3720,8 @@ bool static LoadBlockIndexDB(const CChainParams& chainparams)
     // Check presence of blk files
     LogPrintf("Checking all blk files are present...\n");
     std::set<int> setBlkDataFiles;
-    for (const PAIRTYPE(uint256, CBlockIndex*)& item : mapBlockIndex)
+    // C++23: Use auto to avoid type mismatch in range-based for loop
+    for (const auto& item : mapBlockIndex)
     {
         CBlockIndex* pindex = item.second;
         if (pindex->nStatus & BLOCK_HAVE_DATA) {

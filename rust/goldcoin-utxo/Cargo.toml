@@ -37,6 +37,9 @@ anyhow = "1.0"
 # Metrics
 prometheus = "0.13"
 
+# System info
+num_cpus = "1.16"
+
 [dev-dependencies]
 criterion = "0.5"
 tempfile = "3.13"

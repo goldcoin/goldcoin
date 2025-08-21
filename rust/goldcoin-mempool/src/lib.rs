@@ -558,6 +558,45 @@ pub struct MempoolStats {
     pub zero_conf_count: usize,
 }
 
+/// Mempool configuration
+#[derive(Debug, Clone)]
+pub struct MempoolConfig {
+    pub max_size: usize,
+    pub min_relay_fee: u64,
+    pub persist: bool,
+}
+
+impl Default for MempoolConfig {
+    fn default() -> Self {
+        Self {
+            max_size: MAX_MEMPOOL_SIZE,
+            min_relay_fee: MIN_FEE_RATE,
+            persist: true,
+        }
+    }
+}
+
+/// Alias to match daemon expectations
+pub use Mempool as MemPool;
+
+impl MemPool {
+    /// Create mempool with config
+    pub fn with_config(config: MempoolConfig) -> Result<Self, MempoolError> {
+        Ok(Self::new(0)) // Use default height for now
+    }
+    
+    /// Clean up expired transactions
+    pub fn cleanup_expired(&self) {
+        // TODO: Implement cleanup logic
+    }
+    
+    /// Save mempool to disk
+    pub async fn save_to_disk(&self, path: &std::path::Path) -> Result<(), MempoolError> {
+        // TODO: Implement persistence
+        Ok(())
+    }
+}
+
 // Hex encoding helper
 mod hex {
     pub fn encode(bytes: impl AsRef<[u8]>) -> String {

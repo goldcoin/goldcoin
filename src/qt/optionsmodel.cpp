@@ -9,7 +9,7 @@
 
 #include "optionsmodel.h"
 
-#include "bitcoinunits.h"
+#include "goldcoinunits.h"
 #include "guiutil.h"
 
 #include "amount.h"

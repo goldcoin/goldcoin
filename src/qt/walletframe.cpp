@@ -5,7 +5,7 @@
 
 #include "walletframe.h"
 
-#include "bitcoingui.h"
+#include "goldcoingui.h"
 #include "walletview.h"
 
 #include <cstdio>
@@ -58,9 +58,9 @@ bool WalletFrame::addWallet(const QString& name, WalletModel *walletModel)
     // Ensure a walletView is able to show the main window  
     // Modern Qt6 connection using lambda to handle the optional parameter
     connect(walletView, &WalletView::showNormalIfMinimized, gui, 
-            [gui]() {
+            [this]() {
                 // Call with default parameter value
-                gui->showNormalIfMinimized(false);
+                this->gui->showNormalIfMinimized(false);
             });
     connect(walletView, &WalletView::outOfSyncWarningClicked, this, &WalletFrame::outOfSyncWarningClicked);
     return true;

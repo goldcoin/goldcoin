@@ -6,7 +6,6 @@
 #include "key.h"
 #include "test/test_bitcoin.h"
 
-#include <boost/test/unit_test.hpp>
 
 BOOST_FIXTURE_TEST_SUITE(sanity_tests, BasicTestingSetup)
 

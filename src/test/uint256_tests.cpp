@@ -7,7 +7,6 @@
 #include "version.h"
 #include "test/test_bitcoin.h"
 
-#include <boost/test/unit_test.hpp>
 #include <stdint.h>
 #include <sstream>
 #include <iomanip>

@@ -13,7 +13,36 @@
 #include <span>
 #include <ranges>
 #include <format>
+// C++23 print support - GCC 15.1 has full support
+// MinGW GCC 13 compatibility fallback for Windows cross-compilation only
+#if __has_include(<print>)
 #include <print>
+#else
+// Temporary fallback for MinGW GCC 13 cross-compilation
+// TODO: Remove when MinGW updates to GCC 15.1
+#include <iostream>
+#include <cstdio>
+namespace std {
+    template<typename... Args>
+    void print(std::string_view fmt, Args&&... args) {
+        if constexpr (sizeof...(args) == 0) {
+            printf("%s", fmt.data());
+        } else {
+            // MinGW GCC 13 doesn't support format string as template parameter
+            // Using vformat as workaround
+            printf("%s", vformat(fmt, make_format_args(forward<Args>(args)...)).c_str());
+        }
+    }
+    template<typename... Args>
+    void print(FILE* stream, std::string_view fmt, Args&&... args) {
+        if constexpr (sizeof...(args) == 0) {
+            fprintf(stream, "%s", fmt.data());
+        } else {
+            fprintf(stream, "%s", vformat(fmt, make_format_args(forward<Args>(args)...)).c_str());
+        }
+    }
+}
+#endif
 #include <concepts>
 #include <memory>
 #include <string_view>
@@ -27,6 +56,13 @@
 #include <mutex>
 #include <condition_variable>
 #include <atomic>
+
+// Forward declarations for blockchain types
+class uint256;
+class CBlock;
+class CTransaction;
+class CTxMemPoolEntry;
+typedef int64_t CAmount;
 
 namespace goldcoin::core {
 
@@ -154,8 +190,9 @@ namespace fs = std::filesystem;
 }
 
 // C++23 formatted output
+// Renamed to avoid conflict with macro
 template<typename... Args>
-inline void LogPrint(std::string_view category, std::string_view fmt, Args&&... args) {
+inline void LogPrintFormatted(std::string_view category, std::string_view fmt, Args&&... args) {
     std::print("[{}] {}\n", category, std::format(fmt, std::forward<Args>(args)...));
 }
 
@@ -274,10 +311,19 @@ public:
     
     // Join all threads
     void join_all() {
+        size_t i = 0;
         for (auto& thread : threads) {
             if (thread.joinable()) {
+                // LogPrintf available only when util.h is included
+                #ifdef LogPrintf
+                LogPrintf("ThreadGroup::join_all: Waiting for thread %d to join...\n", i);
+                #endif
                 thread.join();
+                #ifdef LogPrintf
+                LogPrintf("ThreadGroup::join_all: Thread %d joined\n", i);
+                #endif
             }
+            i++;
         }
         threads.clear();
     }
@@ -292,6 +338,11 @@ public:
         return threads.empty();
     }
     
+    // Get underlying thread vector (for compatibility)
+    std::vector<std::thread>& get_threads() {
+        return threads;
+    }
+    
     // Destructor joins all threads
     ~ThreadGroup() {
         interrupt_all();
@@ -300,52 +351,67 @@ public:
 };
 
 // Modern signal replacement (replaces boost::signals2)
+// MinGW GCC 13 workaround: Use non-specialized template with enable_if
 template<typename Signature>
-class Signal;
-
-template<typename Return, typename... Args>
-class Signal<Return(Args...)> {
+class Signal {
 private:
-    std::vector<std::function<Return(Args...)>> slots;
-    mutable std::mutex slots_mutex;
+    // Helper to extract function signature
+    template<typename T> struct signature_traits;
+    
+    template<typename Return, typename... Args>
+    struct signature_traits<Return(Args...)> {
+        using return_type = Return;
+        using slot_type = std::function<Return(Args...)>;
+        
+        template<typename... CallArgs>
+        static void call_slot(const slot_type& slot, CallArgs&&... args) {
+            if (slot) {
+                slot(std::forward<CallArgs>(args)...);
+            }
+        }
+    };
+    
+    using traits = signature_traits<Signature>;
+    using slot_type = typename traits::slot_type;
+    
+    std::vector<slot_type> slots_;
+    mutable std::mutex mutex_;
     
 public:
-    using slot_type = std::function<Return(Args...)>;
     using connection_id = size_t;
     
     // Connect a slot and return connection ID
     connection_id connect(slot_type slot) {
-        std::lock_guard<std::mutex> lock(slots_mutex);
-        slots.push_back(std::move(slot));
-        return slots.size() - 1;
+        std::lock_guard<std::mutex> lock(mutex_);
+        slots_.push_back(std::move(slot));
+        return slots_.size() - 1;
     }
     
     // Disconnect all slots
     void disconnect_all() {
-        std::lock_guard<std::mutex> lock(slots_mutex);
-        slots.clear();
+        std::lock_guard<std::mutex> lock(mutex_);
+        slots_.clear();
     }
     
     // Emit signal to all connected slots
-    void operator()(Args... args) const {
-        std::lock_guard<std::mutex> lock(slots_mutex);
-        for (const auto& slot : slots) {
-            if (slot) {
-                slot(args...);
-            }
+    template<typename... Args>
+    void operator()(Args&&... args) const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        for (const auto& slot : slots_) {
+            traits::call_slot(slot, std::forward<Args>(args)...);
         }
     }
     
     // Check if any slots are connected
     [[nodiscard]] bool empty() const {
-        std::lock_guard<std::mutex> lock(slots_mutex);
-        return slots.empty();
+        std::lock_guard<std::mutex> lock(mutex_);
+        return slots_.empty();
     }
     
     // Get number of connected slots
     [[nodiscard]] size_t size() const {
-        std::lock_guard<std::mutex> lock(slots_mutex);
-        return slots.size();
+        std::lock_guard<std::mutex> lock(mutex_);
+        return slots_.size();
     }
 };
 
@@ -396,8 +462,11 @@ public:
 };
 
 // C++23 deducing this for method chaining
+// MinGW GCC 13 compatibility: Using traditional CRTP pattern instead of deducing this
 class ChainBuilder {
 public:
+#if __cpp_explicit_this_parameter >= 202110L
+    // GCC 15.1 path - full C++23 deducing this
     template<typename Self>
     auto&& withBlock(this Self&& self, const CBlock& block) {
         // Process block
@@ -415,6 +484,23 @@ public:
         // Validate chain
         return std::forward<Self>(self);
     }
+#else
+    // MinGW GCC 13 fallback - traditional method chaining
+    ChainBuilder& withBlock(const CBlock& block) {
+        // Process block
+        return *this;
+    }
+    
+    ChainBuilder& withTransaction(const CTransaction& tx) {
+        // Process transaction
+        return *this;
+    }
+    
+    ChainBuilder& validate() {
+        // Validate chain
+        return *this;
+    }
+#endif
 };
 
 } // namespace goldcoin::core
@@ -422,8 +508,9 @@ public:
 // Legacy compatibility aliases for boost replacements
 using thread_group = goldcoin::core::ThreadGroup;
 
+// Note: Can't use 'signal' as it conflicts with signal.h
 template<typename Signature>
-using signal = goldcoin::core::Signal<Signature>;
+using gc_signal = goldcoin::core::Signal<Signature>;
 
 // Convenience aliases
 namespace gc = goldcoin::core;

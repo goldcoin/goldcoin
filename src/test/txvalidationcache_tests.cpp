@@ -14,7 +14,6 @@
 #include "test/test_bitcoin.h"
 #include "utiltime.h"
 
-#include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(tx_validationcache_tests)
 

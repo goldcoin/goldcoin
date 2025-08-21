@@ -10,12 +10,13 @@
 #include "utilitydialog.h"
 
 #include "ui_helpmessagedialog.h"
+#include "goldcoin_constants.h" // For PACKAGE_NAME
 
-#include "bitcoingui.h"
+#include "goldcoingui.h"
 #include "clientmodel.h"
 #include "guiconstants.h"
 #include "intro.h"
-#include "paymentrequestplus.h"
+// BIP70 removed - #include "paymentrequestplus.h"
 #include "guiutil.h"
 
 #include "clientversion.h"

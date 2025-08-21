@@ -10,7 +10,6 @@
 
 #include <vector>
 
-#include <boost/test/unit_test.hpp>
 #include <openssl/aes.h>
 #include <openssl/evp.h>
 #include <openssl/opensslv.h>

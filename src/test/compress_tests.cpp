@@ -8,7 +8,6 @@
 
 #include <stdint.h>
 
-#include <boost/test/unit_test.hpp>
 
 // amounts 0.00000001 .. 0.00100000
 #define NUM_MULTIPLES_UNIT 100000

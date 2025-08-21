@@ -2,13 +2,11 @@
 // Copyright (c) 2013-2025 The Goldcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-#include <boost/test/unit_test.hpp>
 #include "cuckoocache.h"
 #include "test/test_bitcoin.h"
 #include "random.h"
 #include <thread>
 #include <deque> // For std::deque (required for GCC 13+)
-#include <boost/thread.hpp>
 
 
 /** Test Suite for CuckooCache

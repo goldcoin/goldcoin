@@ -16,7 +16,6 @@
 #include "version.h"
 
 #include <sstream>
-#include <boost/assign/list_of.hpp>
 
 CScript ParseScript(const std::string& s)
 {

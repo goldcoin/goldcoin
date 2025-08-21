@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 project(leveldb)
 
-add_library(leveldb STATIC
+# Platform-specific source files
+set(LEVELDB_SOURCES
     db/builder.cc
     db/c.cc
     db/dbformat.cc
@@ -32,16 +33,29 @@ add_library(leveldb STATIC
     util/coding.cc
     util/comparator.cc
     util/crc32c.cc
-    util/env.cc
-    util/env_posix.cc
+    util/env.cc  # Base class implementations - REQUIRED for all platforms
     util/filter_policy.cc
     util/hash.cc
     util/histogram.cc
     util/logging.cc
     util/options.cc
     util/status.cc
-    port/port_posix.cc
 )
+
+# Platform-specific configuration
+if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    list(APPEND LEVELDB_SOURCES
+        util/env_win.cc
+        port/port_win.cc
+    )
+else()
+    list(APPEND LEVELDB_SOURCES
+        util/env_posix.cc
+        port/port_posix.cc
+    )
+endif()
+
+add_library(leveldb STATIC ${LEVELDB_SOURCES})
 
 target_include_directories(leveldb PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}
@@ -52,11 +66,21 @@ target_include_directories(leveldb PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/util
 )
 
-target_compile_definitions(leveldb PRIVATE
-    LEVELDB_PLATFORM_POSIX
-    OS_LINUX
-    LEVELDB_ATOMIC_PRESENT
-)
+# Platform-specific compile definitions
+if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    target_compile_definitions(leveldb PRIVATE
+        LEVELDB_PLATFORM_WINDOWS
+        OS_WIN
+        _CRT_SECURE_NO_WARNINGS
+        LEVELDB_ATOMIC_PRESENT
+    )
+else()
+    target_compile_definitions(leveldb PRIVATE
+        LEVELDB_PLATFORM_POSIX
+        OS_LINUX
+        LEVELDB_ATOMIC_PRESENT
+    )
+endif()
 
 add_library(memenv STATIC helpers/memenv/memenv.cc)
 target_include_directories(memenv PRIVATE
@@ -65,9 +89,19 @@ target_include_directories(memenv PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/port
     ${CMAKE_CURRENT_SOURCE_DIR}/util
 )
-target_compile_definitions(memenv PRIVATE
-    LEVELDB_PLATFORM_POSIX
-    OS_LINUX
-    LEVELDB_ATOMIC_PRESENT
-)
+# Platform-specific compile definitions for memenv
+if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    target_compile_definitions(memenv PRIVATE
+        LEVELDB_PLATFORM_WINDOWS
+        OS_WIN
+        _CRT_SECURE_NO_WARNINGS
+        LEVELDB_ATOMIC_PRESENT
+    )
+else()
+    target_compile_definitions(memenv PRIVATE
+        LEVELDB_PLATFORM_POSIX
+        OS_LINUX
+        LEVELDB_ATOMIC_PRESENT
+    )
+endif()
 target_link_libraries(memenv leveldb)

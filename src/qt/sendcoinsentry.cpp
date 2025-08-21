@@ -43,7 +43,7 @@ SendCoinsEntry::SendCoinsEntry(const PlatformStyle *_platformStyle, QWidget *par
     ui->payTo_is->setFont(GUIUtil::fixedPitchFont());
 
     // Connect signals
-    connect(ui->payAmount, &BitcoinAmountField::valueChanged, this, &SendCoinsEntry::payAmountChanged);
+    connect(ui->payAmount, &GoldcoinAmountField::valueChanged, this, &SendCoinsEntry::payAmountChanged);
     connect(ui->checkboxSubtractFeeFromAmount, &QCheckBox::toggled, this, &SendCoinsEntry::subtractFeeFromAmountChanged);
     connect(ui->deleteButton, &QPushButton::clicked, this, &SendCoinsEntry::deleteClicked);    connect(ui->deleteButton_is, &QPushButton::clicked, this, &SendCoinsEntry::deleteClicked);    connect(ui->deleteButton_s, &QPushButton::clicked, this, &SendCoinsEntry::deleteClicked);}
 
@@ -121,9 +121,9 @@ bool SendCoinsEntry::validate()
     // Check input validity
     bool retval = true;
 
-    // Skip checks for payment request
-    if (recipient.paymentRequest.IsInitialized())
-        return retval;
+    // BIP70 removed - no payment request checks needed
+    // if (recipient.paymentRequest.IsInitialized())
+    //     return retval;
 
     if (!model->validateAddress(ui->payTo->text()))
     {
@@ -154,9 +154,9 @@ bool SendCoinsEntry::validate()
 
 SendCoinsRecipient SendCoinsEntry::getValue()
 {
-    // Payment request
-    if (recipient.paymentRequest.IsInitialized())
-        return recipient;
+    // BIP70 removed - no payment request support
+    // if (recipient.paymentRequest.IsInitialized())
+    //     return recipient;
 
     // Normal payment
     recipient.address = ui->payTo->text();
@@ -184,26 +184,27 @@ void SendCoinsEntry::setValue(const SendCoinsRecipient &value)
 {
     recipient = value;
 
-    if (recipient.paymentRequest.IsInitialized()) // payment request
-    {
-        if (recipient.authenticatedMerchant.isEmpty()) // unauthenticated
-        {
-            ui->payTo_is->setText(recipient.address);
-            ui->memoTextLabel_is->setText(recipient.message);
-            ui->payAmount_is->setValue(recipient.amount);
-            ui->payAmount_is->setReadOnly(true);
-            setCurrentWidget(ui->SendCoins_UnauthenticatedPaymentRequest);
-        }
-        else // authenticated
-        {
-            ui->payTo_s->setText(recipient.authenticatedMerchant);
-            ui->memoTextLabel_s->setText(recipient.message);
-            ui->payAmount_s->setValue(recipient.amount);
-            ui->payAmount_s->setReadOnly(true);
-            setCurrentWidget(ui->SendCoins_AuthenticatedPaymentRequest);
-        }
-    }
-    else // normal payment
+    // BIP70 removed - always use normal payment
+    // if (recipient.paymentRequest.IsInitialized()) // payment request
+    // {
+    //     if (recipient.authenticatedMerchant.isEmpty()) // unauthenticated
+    //     {
+    //         ui->payTo_is->setText(recipient.address);
+    //         ui->memoTextLabel_is->setText(recipient.message);
+    //         ui->payAmount_is->setValue(recipient.amount);
+    //         ui->payAmount_is->setReadOnly(true);
+    //         setCurrentWidget(ui->SendCoins_UnauthenticatedPaymentRequest);
+    //     }
+    //     else // authenticated
+    //     {
+    //         ui->payTo_s->setText(recipient.authenticatedMerchant);
+    //         ui->memoTextLabel_s->setText(recipient.message);
+    //         ui->payAmount_s->setValue(recipient.amount);
+    //         ui->payAmount_s->setReadOnly(true);
+    //         setCurrentWidget(ui->SendCoins_AuthenticatedPaymentRequest);
+    //     }
+    // }
+    // else // normal payment
     {
         // message
         ui->messageTextLabel->setText(recipient.message);

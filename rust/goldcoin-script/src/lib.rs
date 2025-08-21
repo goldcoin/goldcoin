@@ -70,7 +70,7 @@ impl Default for Script {
 
 impl fmt::Display for Script {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Script({})", hex::encode(&self.bytes))
+        write!(f, "Script({} bytes)", self.bytes.len())
     }
 }
 

@@ -20,8 +20,8 @@
 
 #include <atomic>
 
-#include <boost/version.hpp>
-#include <boost/filesystem.hpp>
+// C++23: boost version check no longer needed
+#include <filesystem>  // C++23 std::filesystem
 #include <thread>
 
 using namespace std;

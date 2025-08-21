@@ -12,7 +12,7 @@
 #include "pubkey.h"
 #include "util.h"
 
-#include <boost/foreach.hpp>
+// C++23: Range-based for loops replace BOOST_FOREACH
 
 bool CKeyStore::AddKey(const CKey &key) {
     return AddKeyPubKey(key, key.GetPubKey());

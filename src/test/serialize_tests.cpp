@@ -10,7 +10,6 @@
 
 #include <stdint.h>
 
-#include <boost/test/unit_test.hpp>
 
 BOOST_FIXTURE_TEST_SUITE(serialize_tests, BasicTestingSetup)
 

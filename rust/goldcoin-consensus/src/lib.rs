@@ -8,6 +8,9 @@
 //! using safe Rust with zero-cost abstractions and parallel validation.
 
 pub mod goldcoin_features;
+pub mod checkpoints;
+pub mod defense;
+pub mod golden_river;
 
 use std::sync::Arc;
 use std::collections::HashMap;
@@ -44,6 +47,19 @@ pub mod params {
     
     /// Initial block subsidy (48 coins)
     pub const INITIAL_SUBSIDY: u64 = 48 * 100_000_000; // in satoshis
+    
+    /// Hard fork heights
+    pub const JULY_FORK: u32 = 45_000;
+    pub const NOVEMBER_FORK: u32 = 103_000;
+    pub const NOVEMBER_FORK2: u32 = 118_800;
+    pub const MAY_FORK: u32 = 248_000;
+    pub const JULY_FORK2: u32 = 251_230;
+    pub const FEB_FORK: u32 = 372_000;
+    
+    /// Treasury block height and parameters
+    pub const TREASURY_BLOCK_HEIGHT: u32 = 1_905_100;
+    pub const TREASURY_ADDRESS: &str = "E8r2RkGvE2kfSMnGHEVBpH3Zhp7Doy38MW";
+    pub const TREASURY_AMOUNT: u64 = 1_100_000_000 * 100_000_000; // 1.1 billion GLC in satoshis
 }
 
 /// Validation errors
@@ -213,7 +229,7 @@ pub struct Block {
 
 impl Block {
     /// Validate block against consensus rules
-    pub async fn validate(&self) -> ValidationResult<()> {
+    pub async fn validate(&self, height: u32) -> ValidationResult<()> {
         // Check block size
         let block_size = self.size();
         if block_size > params::MAX_BLOCK_SIZE {
@@ -235,7 +251,12 @@ impl Block {
         }
         
         // Validate all transactions in parallel
-        self.validate_transactions().await?;
+        self.validate_transactions(height).await?;
+        
+        // Validate treasury block if applicable
+        if height == params::TREASURY_BLOCK_HEIGHT {
+            self.validate_treasury_block()?;
+        }
         
         // Count signature operations
         let sigops = self.count_sigops();
@@ -304,13 +325,25 @@ impl Block {
     }
     
     /// Validate all transactions in parallel
-    async fn validate_transactions(&self) -> ValidationResult<()> {
+    async fn validate_transactions(&self, height: u32) -> ValidationResult<()> {
         use rayon::prelude::*;
         
         // First transaction must be coinbase
         if self.transactions.is_empty() || !self.transactions[0].is_coinbase() {
             return Err(ValidationError::InvalidTransaction(
                 "First transaction must be coinbase".to_string()
+            ));
+        }
+        
+        // Validate coinbase subsidy (basic check, would need fee calculation for complete validation)
+        let expected_subsidy = get_block_subsidy(height);
+        let coinbase_value: u64 = self.transactions[0].outputs.iter().map(|o| o.value).sum();
+        
+        // Allow coinbase to be less than or equal to subsidy + fees
+        // (we can't check fees here without UTXO set)
+        if coinbase_value > expected_subsidy + 1_000_000_000 { // Allow up to 10 GLC in fees
+            return Err(ValidationError::InvalidTransaction(
+                format!("Coinbase value {} exceeds maximum allowed", coinbase_value)
             ));
         }
         
@@ -378,6 +411,29 @@ impl Block {
             .map(|tx| count_tx_sigops(tx))
             .sum()
     }
+    
+    /// Validate treasury block specifics
+    fn validate_treasury_block(&self) -> ValidationResult<()> {
+        // Treasury block must have exactly 1 output in coinbase
+        if self.transactions.is_empty() || self.transactions[0].outputs.len() != 1 {
+            return Err(ValidationError::InvalidTransaction(
+                "Treasury block must have exactly 1 coinbase output".to_string()
+            ));
+        }
+        
+        // Verify the output goes to the treasury address
+        // Note: In production, we'd need to decode the address and check the script
+        // For now, we'll check the amount
+        let coinbase_value = self.transactions[0].outputs[0].value;
+        if coinbase_value != params::TREASURY_AMOUNT {
+            return Err(ValidationError::InvalidTransaction(
+                format!("Treasury block wrong amount: {} vs expected {}", 
+                    coinbase_value, params::TREASURY_AMOUNT)
+            ));
+        }
+        
+        Ok(())
+    }
 }
 
 /// Convert compact bits representation to 256-bit target
@@ -403,6 +459,54 @@ fn count_tx_sigops(tx: &Transaction) -> u32 {
     // Simplified sigop counting
     // TODO: Implement full script analysis
     tx.inputs.len() as u32 + tx.outputs.len() as u32
+}
+
+/// Calculate block subsidy based on height
+pub fn get_block_subsidy(height: u32) -> u64 {
+    use params::*;
+    
+    // Treasury block special case
+    if height == TREASURY_BLOCK_HEIGHT {
+        return TREASURY_AMOUNT;
+    }
+    
+    // Genesis block
+    if height == 0 {
+        return 50 * 100_000_000; // 50 GLC
+    }
+    
+    // Super blocks (bounties)
+    if height > 0 && height <= 200 {
+        return 10_000 * 100_000_000; // 10,000 GLC
+    }
+    
+    // Early high reward blocks
+    if height > 200 && height <= 2_200 {
+        return 1_000 * 100_000_000; // 1,000 GLC
+    }
+    
+    // Pre-July fork
+    if height > 2_200 && height < JULY_FORK {
+        return 500 * 100_000_000; // 500 GLC
+    }
+    
+    // Post-July fork with smooth halving
+    if height >= JULY_FORK && height <= 26_325_000 {
+        let blocks_since_fork = if height >= FEB_FORK {
+            // After Feb fork, add offset
+            (height + 4_884_000 - JULY_FORK) as f64
+        } else {
+            (height - JULY_FORK) as f64
+        };
+        
+        // Smooth halving formula: 50 / (1.1 + 0.49 * (blocks_since_fork / 262800))
+        let divisor = 1.1 + 0.49 * (blocks_since_fork / 262_800.0);
+        let subsidy = (50.0 / divisor) as u64;
+        return subsidy * 100_000_000;
+    }
+    
+    // After block 26,325,000
+    0
 }
 
 /// Chain state manager with Goldcoin features
@@ -466,7 +570,7 @@ impl ChainState {
         debug!("Connecting block at height {}", height);
         
         // Validate block with Goldcoin rules
-        block.validate().await?;
+        block.validate(height).await?;
         
         // Update UTXO set
         for (tx_idx, tx) in block.transactions.iter().enumerate() {
@@ -496,6 +600,55 @@ impl ChainState {
         
         debug!("Block connected successfully");
         Ok(())
+    }
+    
+    /// Create chain state with network type  
+    pub fn with_network_type(network_type: NetworkType) -> Result<Self, ValidationError> {
+        Ok(Self::new())
+    }
+    
+    /// Update best block
+    pub fn update_best_block(&mut self, hash: [u8; 32], height: u32) -> Result<(), ValidationError> {
+        self.best_block = hash;
+        self.best_height = height;
+        Ok(())
+    }
+    
+    /// Get best height
+    pub fn best_height(&self) -> u32 {
+        self.best_height
+    }
+}
+
+/// Network type enumeration for consensus
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum NetworkType {
+    Mainnet,
+    Testnet,
+    Regtest,
+}
+
+/// Block validator with Goldcoin consensus rules
+pub struct BlockValidator {
+    chain_state: Arc<tokio::sync::RwLock<ChainState>>,
+    defense_system: Arc<tokio::sync::RwLock<DefenseSystem>>,
+}
+
+impl BlockValidator {
+    /// Create new block validator
+    pub fn new(
+        chain_state: Arc<tokio::sync::RwLock<ChainState>>,
+        defense_system: Arc<tokio::sync::RwLock<DefenseSystem>>,
+    ) -> Self {
+        Self {
+            chain_state,
+            defense_system,
+        }
+    }
+    
+    /// Validate a block according to Goldcoin consensus rules
+    pub async fn validate_block(&self, block: &Block, height: u32) -> ValidationResult<()> {
+        block.validate(height).await
     }
 }
 
@@ -545,7 +698,7 @@ mod tests {
             transactions: vec![],
         };
         
-        let result = block.validate().await;
+        let result = block.validate(1).await;
         assert!(result.is_err()); // Should fail without coinbase
     }
 }

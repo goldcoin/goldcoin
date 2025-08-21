@@ -1,12 +1,12 @@
 file(REMOVE_RECURSE
   "../../lib/libunivalue.a"
   "../../lib/libunivalue.pdb"
-  "CMakeFiles/univalue.dir/lib/univalue.cpp.o"
-  "CMakeFiles/univalue.dir/lib/univalue.cpp.o.d"
-  "CMakeFiles/univalue.dir/lib/univalue_read.cpp.o"
-  "CMakeFiles/univalue.dir/lib/univalue_read.cpp.o.d"
-  "CMakeFiles/univalue.dir/lib/univalue_write.cpp.o"
-  "CMakeFiles/univalue.dir/lib/univalue_write.cpp.o.d"
+  "CMakeFiles/univalue.dir/lib/univalue.cpp.obj"
+  "CMakeFiles/univalue.dir/lib/univalue.cpp.obj.d"
+  "CMakeFiles/univalue.dir/lib/univalue_read.cpp.obj"
+  "CMakeFiles/univalue.dir/lib/univalue_read.cpp.obj.d"
+  "CMakeFiles/univalue.dir/lib/univalue_write.cpp.obj"
+  "CMakeFiles/univalue.dir/lib/univalue_write.cpp.obj.d"
 )
 
 # Per-language clean rules from dependency scanning.

@@ -71,7 +71,7 @@ pub struct RpcConfig {
 impl Default for RpcConfig {
     fn default() -> Self {
         Self {
-            bind_addr: "127.0.0.1:51242".parse().unwrap(),
+            bind_addr: "127.0.0.1:8122".parse().unwrap(),
             rpc_user: "goldcoinrpc".to_string(),
             rpc_password: "password".to_string(),
             max_connections: 100,
@@ -155,7 +155,7 @@ pub trait WalletRpc {
 }
 
 /// Blockchain info response
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BlockchainInfo {
     pub chain: String,
     pub blocks: u32,
@@ -173,14 +173,14 @@ pub struct BlockchainInfo {
 }
 
 /// Soft fork info
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SoftFork {
     pub active: bool,
     pub height: Option<u32>,
 }
 
 /// Mempool info
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MempoolInfo {
     pub loaded: bool,
     pub size: usize,
@@ -192,7 +192,7 @@ pub struct MempoolInfo {
 }
 
 /// Peer info
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PeerInfo {
     pub id: u64,
     pub addr: String,
@@ -213,7 +213,7 @@ pub struct PeerInfo {
 }
 
 /// Network info
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NetworkInfo {
     pub version: u32,
     pub subversion: String,
@@ -233,7 +233,7 @@ pub struct NetworkInfo {
 }
 
 /// Network details
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Network {
     pub name: String,
     pub limited: bool,
@@ -242,7 +242,7 @@ pub struct Network {
 }
 
 /// Local address
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LocalAddress {
     pub address: String,
     pub port: u16,
@@ -250,7 +250,7 @@ pub struct LocalAddress {
 }
 
 /// Mining info
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MiningInfo {
     pub blocks: u32,
     pub difficulty: f64,
@@ -261,7 +261,7 @@ pub struct MiningInfo {
 }
 
 /// Block template for mining
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BlockTemplate {
     pub version: u32,
     pub previousblockhash: String,
@@ -280,7 +280,7 @@ pub struct BlockTemplate {
 }
 
 /// Transaction in block template
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TemplateTransaction {
     pub data: String,
     pub txid: String,
@@ -292,7 +292,7 @@ pub struct TemplateTransaction {
 }
 
 /// Wallet transaction
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Transaction {
     pub txid: String,
     pub amount: f64,
@@ -311,6 +311,7 @@ pub struct RpcState {
 }
 
 /// RPC server implementation
+#[derive(Clone)]
 pub struct RpcServer {
     config: RpcConfig,
     state: Arc<RpcState>,
@@ -329,11 +330,12 @@ impl RpcServer {
     
     /// Build and run the server
     pub async fn run(self) -> Result<(), Box<dyn std::error::Error>> {
+        let bind_addr = self.config.bind_addr;
         let app = self.build_router();
         
-        info!("Starting RPC server on {}", self.config.bind_addr);
+        info!("Starting RPC server on {}", bind_addr);
         
-        let listener = tokio::net::TcpListener::bind(self.config.bind_addr).await?;
+        let listener = tokio::net::TcpListener::bind(bind_addr).await?;
         axum::serve(listener, app).await?;
         
         Ok(())
@@ -421,7 +423,10 @@ async fn handle_jsonrpc(
 async fn health_check() -> impl IntoResponse {
     Json(json!({
         "status": "healthy",
-        "timestamp": chrono::Utc::now().to_rfc3339()
+        "timestamp": std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs()
     }))
 }
 
@@ -468,7 +473,7 @@ fn check_auth(headers: &HeaderMap, user: &str, password: &str) -> bool {
         if let Ok(auth_str) = auth_header.to_str() {
             if auth_str.starts_with("Basic ") {
                 let encoded = &auth_str[6..];
-                if let Ok(decoded) = base64::prelude::BASE64_STANDARD.decode(encoded) {
+                if let Ok(decoded) = base64::decode(encoded) {
                     if let Ok(credentials) = String::from_utf8(decoded) {
                         let expected = format!("{}:{}", user, password);
                         return credentials == expected;

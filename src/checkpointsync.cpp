@@ -60,6 +60,7 @@
 #include <validation.h>
 
 #include <univalue.h>
+#include <cmath>
 
 using namespace std;
 
@@ -278,10 +279,16 @@ bool CheckCheckpointPubKey()
 
 bool SetCheckpointPrivKey(string strPrivKey)
 {
+    LogPrintf("SetCheckpointPrivKey: Attempting to decode key: %s\n", strPrivKey);
+    LogPrintf("SetCheckpointPrivKey: Network is %s\n", Params().NetworkIDString());
+    
     CKey key = DecodeSecret(strPrivKey);
-    if (!key.IsValid())
+    if (!key.IsValid()) {
+        LogPrintf("SetCheckpointPrivKey: Failed to decode key - key is invalid\n");
         return false;
-
+    }
+    
+    LogPrintf("SetCheckpointPrivKey: Successfully decoded checkpoint key\n");
     CSyncCheckpoint::strMasterPrivKey = strPrivKey;
     return true;
 }

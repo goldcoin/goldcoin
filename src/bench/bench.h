@@ -10,9 +10,6 @@
 #include <string>
 #include <limits> // For std::numeric_limits (required for GCC 13+)
 
-#include <boost/function.hpp>
-#include <boost/preprocessor/cat.hpp>
-#include <boost/preprocessor/stringize.hpp>
 
 // Simple micro-benchmarking framework; API mostly matches a subset of the Google Benchmark
 // framework (see https://github.com/google/benchmark)

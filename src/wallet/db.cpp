@@ -22,7 +22,6 @@
 
 #include "fs.h"  // Use our filesystem abstraction
 #include <thread>
-#include <boost/version.hpp>
 
 using namespace std;
 
@@ -38,16 +37,19 @@ void CDBEnv::EnvShutdown()
     if (!fDbEnvInit)
         return;
 
+    LogPrintf("CDBEnv::EnvShutdown: Starting database environment shutdown\n");
     fDbEnvInit = false;
+    LogPrintf("CDBEnv::EnvShutdown: Calling dbenv->close(0)\n");
     int ret = dbenv->close(0);
+    LogPrintf("CDBEnv::EnvShutdown: dbenv->close(0) returned %d\n", ret);
     if (ret != 0)
         LogPrintf("CDBEnv::EnvShutdown: Error %d shutting down database environment: %s\n", ret, DbEnv::strerror(ret));
     if (!fMockDb) {
-        // TODO: BDB 18.1 - Verify if remove is still needed/correct
-        // In BDB 18.1, this may not be necessary or may have different semantics
-        // Commenting out for now to prevent crashes during shutdown
-        // DbEnv((u_int32_t)0).remove(strPath.c_str(), 0);
+        // BDB 4.8.30 should not need the remove call during normal shutdown
+        // This was causing issues with BDB 18.1, and likely isn't needed for 4.8 either
+        LogPrintf("CDBEnv::EnvShutdown: Skipping DbEnv::remove for BDB 4.8.30\n");
     }
+    LogPrintf("CDBEnv::EnvShutdown: Database environment shutdown complete\n");
 }
 
 void CDBEnv::Reset()

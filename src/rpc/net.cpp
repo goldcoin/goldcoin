@@ -452,7 +452,7 @@ UniValue getnetworkinfo(const JSONRPCRequest& request)
     UniValue localAddresses(UniValue::VARR);
     {
         LOCK(cs_mapLocalHost);
-        for (const PAIRTYPE(CNetAddr, LocalServiceInfo) &item : mapLocalHost)
+        for (const auto &item : mapLocalHost)  // C++23: Use auto to avoid temporary
         {
             UniValue rec(UniValue::VOBJ);
             rec.push_back(Pair("address", item.first.ToString()));

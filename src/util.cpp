@@ -85,33 +85,22 @@
 #endif
 #endif
 
-#include <boost/algorithm/string/case_conv.hpp> // for to_lower()
-#include <boost/algorithm/string/join.hpp>
-#include <boost/algorithm/string/predicate.hpp> // for startswith() and endswith()
 #include <filesystem>
 #include <fstream>
-// #include <boost/foreach.hpp> // REMOVED - not needed
-#include <boost/program_options/detail/config_file.hpp>
-#include <boost/program_options/parsers.hpp>
-#include <boost/thread.hpp>
+#include <cctype>
+#include <sstream>
+#include <list>
+#include <string>
+#include "version_info.h"
+#include "core_cpp23.h"
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
 #include <openssl/conf.h>
 #include <openssl/opensslv.h>
 
-// Work around clang compilation problem in Boost 1.46:
-// /usr/include/boost/program_options/detail/config_file.hpp:163:17: error: call to function 'to_internal' that is neither visible in the template definition nor found by argument-dependent lookup
-// See also: http://stackoverflow.com/questions/10020179/compilation-fail-in-boost-librairies-program-options
-//           http://clang.debian.net/status.php?version=3.0&key=CANNOT_FIND_FUNCTION
-namespace boost {
-
-    namespace program_options {
-        std::string to_internal(const std::string&);
-    }
-
-} // namespace boost
-
 using namespace std;
+
+// C++23: No longer using boost::program_options
 
 const char * const BITCOIN_CONF_FILENAME = "goldcoin.conf";
 const char * const BITCOIN_PID_FILENAME = "goldcoin.pid";
@@ -592,17 +581,32 @@ void ReadConfigFile(const std::string& confPath)
         set<string> setOptions;
         setOptions.insert("*");
 
-        // C++23: Replace boost::program_options with manual config parsing
+        // C++23: Manual config parsing (no boost::program_options)
         std::string line;
         while (std::getline(streamConfig, line))
         {
-            // Don't overwrite existing settings so command line settings override bitcoin.conf
-            string strKey = string("-") + it->string_key;
-            string strValue = it->value[0];
-            InterpretNegativeSetting(strKey, strValue);
-            if (mapArgs.count(strKey) == 0)
-                mapArgs[strKey] = strValue;
-            _mapMultiArgs[strKey].push_back(strValue);
+            // Skip empty lines and comments
+            if (line.empty() || line[0] == '#')
+                continue;
+            
+            // Parse key=value pairs
+            size_t pos = line.find('=');
+            if (pos != string::npos) {
+                string strKey = "-" + line.substr(0, pos);
+                string strValue = line.substr(pos + 1);
+                
+                // Trim whitespace
+                strKey.erase(strKey.find_last_not_of(" \t\r\n") + 1);
+                strKey.erase(0, strKey.find_first_not_of(" \t\r\n"));
+                strValue.erase(strValue.find_last_not_of(" \t\r\n") + 1);
+                strValue.erase(0, strValue.find_first_not_of(" \t\r\n"));
+                
+                InterpretNegativeSetting(strKey, strValue);
+                // Don't overwrite existing settings so command line settings override bitcoin.conf
+                if (mapArgs.count(strKey) == 0)
+                    mapArgs[strKey] = strValue;
+                _mapMultiArgs[strKey].push_back(strValue);
+            }
         }
     }
     // If datadir is changed in .conf file:

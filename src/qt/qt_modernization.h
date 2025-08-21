@@ -15,7 +15,21 @@
 #include <concepts>
 #include <expected>
 #include <format>
-#include <print>
+// #include <print>  // Not supported in MinGW GCC 13
+
+// Compatibility shim for std::print
+#include <iostream>
+namespace std {
+    template<typename... Args>
+    void print(const std::format_string<Args...> fmt, Args&&... args) {
+        std::cout << std::format(fmt, std::forward<Args>(args)...);
+    }
+    
+    template<typename... Args>
+    void println(const std::format_string<Args...> fmt, Args&&... args) {
+        std::cout << std::format(fmt, std::forward<Args>(args)...) << '\n';
+    }
+}
 
 namespace goldcoin::qt {
 

@@ -20,12 +20,10 @@
 #include <fstream>
 #include <sstream>
 #include <stdint.h>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <variant>
 
 #include <univalue.h>
 
-#include <boost/assign/list_of.hpp>
 
 using namespace std;
 
@@ -37,16 +35,15 @@ std::string static EncodeDumpTime(int64_t nTime) {
 }
 
 int64_t static DecodeDumpTime(const std::string &str) {
-    // C++23: Replace with std::chrono time parsing
-    static const auto epoch = std::chrono::system_clock::from_time_t(0);
+    // C++23: Use std::chrono time parsing
     std::istringstream iss(str);
     std::tm tm = {};
     iss >> std::get_time(&tm, "%Y-%m-%dT%H:%M:%SZ");
-    auto time_point = std::chrono::system_clock::from_time_t(std::mktime(&tm));
-    iss >> ptime;
-    if (ptime.is_not_a_date_time())
+    if (iss.fail()) {
         return 0;
-    return (ptime - epoch).total_seconds();
+    }
+    auto time_point = std::chrono::system_clock::from_time_t(std::mktime(&tm));
+    return std::chrono::duration_cast<std::chrono::seconds>(time_point.time_since_epoch()).count();
 }
 
 std::string static EncodeDumpString(const std::string &str) {

@@ -15,8 +15,9 @@
 #include "util.h"
 #include "utilstrencodings.h"
 #include "warnings.h"
+#include "version_info.h"
 
-#include <boost/foreach.hpp>
+// C++23: Using range-based for loops instead of BOOST_FOREACH
 
 static CCriticalSection cs_nTimeOffset;
 static int64_t nTimeOffset = 0;

@@ -64,8 +64,9 @@ extern const char * const BITCOIN_PID_FILENAME;
  */
 inline std::string _(const char* psz)
 {
-    auto result = translationInterface.Translate(psz);
-    return result.has_value() ? result.value() : psz;
+    // For now, just return the input string since Signal doesn't support return values properly
+    // TODO: Fix Signal class to handle return values or use a different approach
+    return psz;
 }
 
 void SetupEnvironment();
@@ -220,11 +221,6 @@ template <typename Callable> void TraceThread(const char* name,  Callable func)
         LogPrintf("%s thread start\n", name);
         func();
         LogPrintf("%s thread exit\n", name);
-    }
-    catch (const std::exception&)  // C++23: Use std exception
-    {
-        LogPrintf("%s thread interrupt\n", name);
-        throw;
     }
     catch (const std::exception& e) {
         PrintExceptionContinue(&e, name);

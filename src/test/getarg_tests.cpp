@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 #include <sstream>
-#include <boost/foreach.hpp>
-#include <boost/test/unit_test.hpp>
 
 BOOST_FIXTURE_TEST_SUITE(getarg_tests, BasicTestingSetup)
 

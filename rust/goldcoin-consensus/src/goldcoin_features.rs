@@ -515,27 +515,43 @@ mod tests {
     use super::*;
     
     #[test]
-    fn test_defense_system() {
+    fn test_defense_system_51_percent() {
         let defense = DefenseSystem::new();
         
-        // Test allowed reorg
-        assert!(defense.is_reorg_allowed(100, 95));
+        // Test normal case: 6 blocks in 12 minutes (720 seconds) - ALLOWED
+        let result = defense.check_51_percent_defense(1000, 280, 400_000); // height after fork
+        assert!(result.is_ok());
         
-        // Test blocked deep reorg
-        assert!(!defense.is_reorg_allowed(100, 90));
+        // Test 51% attack: 6 blocks in 5 minutes (300 seconds) - BLOCKED
+        let result = defense.check_51_percent_defense(1000, 700, 400_000); // height after fork
+        assert!(result.is_err());
+        
+        // Test before October Fork - always allowed
+        let result = defense.check_51_percent_defense(1000, 700, 300_000); // height before fork
+        assert!(result.is_ok());
     }
     
     #[test]
-    fn test_golden_river() {
-        let mut golden_river = GoldenRiverDifficulty::new();
+    fn test_checkpoint_verification() {
+        let manager = CheckpointManager::new();
         
-        // Add some block times
-        for _ in 0..10 {
-            golden_river.block_times.push(120); // Perfect 2 minute blocks
-        }
+        // Test static checkpoint
+        let genesis_hash = hex_to_hash("0x00000ffde4c020b5938441a0ea3d314cdce0120b0a5018d3a7c2cf9ad0b4cefc");
+        assert!(manager.verify(0, &genesis_hash));
         
-        // Calculate next target
-        let target = golden_river.calculate_next_target(goldcoin_params::GOLDEN_RIVER_HEIGHT, 120);
-        assert_eq!(target, golden_river.current_target);
+        // Test wrong hash
+        let wrong_hash = [0u8; 32];
+        assert!(!manager.verify(0, &wrong_hash));
+        
+        // Test height without checkpoint
+        assert!(manager.verify(123456, &wrong_hash)); // Should pass (no checkpoint)
+    }
+    
+    #[test]
+    fn test_compact_conversion() {
+        let compact = 0x1d00ffff;
+        let target = compact_to_u256(compact);
+        let back_to_compact = u256_to_compact(target);
+        assert_eq!(compact, back_to_compact);
     }
 }
