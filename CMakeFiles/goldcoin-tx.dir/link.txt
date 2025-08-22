@@ -1,1 +1,0 @@
-/usr/bin/g++-15 -O3  "CMakeFiles/goldcoin-tx.dir/src/bitcoin-tx.cpp.o" -o bin/goldcoin-tx  lib/libbitcoin_common.a lib/libbitcoin_util.a lib/libbitcoin_consensus.a lib/libbitcoin_crypto.a lib/libsecp256k1.a lib/libunivalue.a /usr/lib/x86_64-linux-gnu/libssl.so /usr/lib/x86_64-linux-gnu/libcrypto.so 

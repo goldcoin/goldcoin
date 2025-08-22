@@ -7,7 +7,7 @@ $(package)_sha256_hash=c1800c2ea835801af04a05d4a32321d79a93954ee3ae2172bbeacf13d
 $(package)_dependencies=openssl zlib
 $(package)_native_dependencies=native_cmake
 $(package)_linux_dependencies=freetype fontconfig libxcb libX11 xproto libXext
-$(package)_patches=qt6-windows-exe-suffix.patch
+# No patches needed - using proper CMake flags instead
 # Build happens in extracted directory
 $(package)_qt_libs=corelib network widgets gui plugins
 
@@ -80,8 +80,9 @@ define $(package)_extract_cmds
   tar --strip-components=1 -xf $($(package)_source)
 endef
 
+# No preprocessing needed - patches removed
 define $(package)_preprocess_cmds
-  patch -p1 < $($(package)_patch_dir)/qt6-windows-exe-suffix.patch
+  true
 endef
 
 define $(package)_config_cmds
@@ -92,15 +93,32 @@ define $(package)_config_cmds
   export OPENSSL_LIBS="-L$(host_prefix)/lib -lssl -lcrypto" && \
   export CC="$($(package)_cc)" && \
   export CXX="$($(package)_cxx)" && \
-  ./configure $($(package)_config_opts) -I $(host_prefix)/include -L $(host_prefix)/lib
+  $(if $(findstring linux,$(host_os)), \
+    $(if $(findstring linux,$(build_os)), \
+      ./configure \
+        -prefix $(build_prefix) \
+        -static \
+        -no-feature-gui -no-feature-widgets -no-feature-opengl \
+        -no-feature-dbus -no-feature-sql -no-feature-concurrent \
+        -no-feature-testlib -no-feature-printsupport \
+        -nomake examples -nomake tests \
+        -opensource -confirm-license, \
+      ./configure $($(package)_config_opts) -I $(host_prefix)/include -L $(host_prefix)/lib), \
+    $(if $(findstring mingw32,$(host_os)), \
+      ./configure $($(package)_config_opts) -I $(host_prefix)/include -L $(host_prefix)/lib -- \
+        -DCMAKE_SYSTEM_NAME=Windows \
+        -DCMAKE_EXECUTABLE_SUFFIX=.exe \
+        -DCMAKE_TRY_COMPILE_PLATFORM_VARIABLES=CMAKE_EXECUTABLE_SUFFIX \
+        $(QT_EXTRA_CMAKE_FLAGS), \
+      ./configure $($(package)_config_opts) -I $(host_prefix)/include -L $(host_prefix)/lib))
 endef
 
 define $(package)_build_cmds
-  $(MAKE) -j$(JOBS)
+  ninja
 endef
 
 define $(package)_stage_cmds
-  $(MAKE) INSTALL_ROOT=$($(package)_staging_dir) install
+  DESTDIR=$($(package)_staging_dir) ninja install
 endef
 
 define $(package)_postprocess_cmds

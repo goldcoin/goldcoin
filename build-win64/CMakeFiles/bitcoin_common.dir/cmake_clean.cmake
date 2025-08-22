@@ -1,0 +1,43 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/bitcoin_common.dir/src/amount.cpp.obj"
+  "CMakeFiles/bitcoin_common.dir/src/amount.cpp.obj.d"
+  "CMakeFiles/bitcoin_common.dir/src/base58.cpp.obj"
+  "CMakeFiles/bitcoin_common.dir/src/base58.cpp.obj.d"
+  "CMakeFiles/bitcoin_common.dir/src/chainparams.cpp.obj"
+  "CMakeFiles/bitcoin_common.dir/src/chainparams.cpp.obj.d"
+  "CMakeFiles/bitcoin_common.dir/src/coins.cpp.obj"
+  "CMakeFiles/bitcoin_common.dir/src/coins.cpp.obj.d"
+  "CMakeFiles/bitcoin_common.dir/src/compressor.cpp.obj"
+  "CMakeFiles/bitcoin_common.dir/src/compressor.cpp.obj.d"
+  "CMakeFiles/bitcoin_common.dir/src/core_read.cpp.obj"
+  "CMakeFiles/bitcoin_common.dir/src/core_read.cpp.obj.d"
+  "CMakeFiles/bitcoin_common.dir/src/core_write.cpp.obj"
+  "CMakeFiles/bitcoin_common.dir/src/core_write.cpp.obj.d"
+  "CMakeFiles/bitcoin_common.dir/src/key.cpp.obj"
+  "CMakeFiles/bitcoin_common.dir/src/key.cpp.obj.d"
+  "CMakeFiles/bitcoin_common.dir/src/key_io.cpp.obj"
+  "CMakeFiles/bitcoin_common.dir/src/key_io.cpp.obj.d"
+  "CMakeFiles/bitcoin_common.dir/src/keystore.cpp.obj"
+  "CMakeFiles/bitcoin_common.dir/src/keystore.cpp.obj.d"
+  "CMakeFiles/bitcoin_common.dir/src/netaddress.cpp.obj"
+  "CMakeFiles/bitcoin_common.dir/src/netaddress.cpp.obj.d"
+  "CMakeFiles/bitcoin_common.dir/src/netbase.cpp.obj"
+  "CMakeFiles/bitcoin_common.dir/src/netbase.cpp.obj.d"
+  "CMakeFiles/bitcoin_common.dir/src/protocol.cpp.obj"
+  "CMakeFiles/bitcoin_common.dir/src/protocol.cpp.obj.d"
+  "CMakeFiles/bitcoin_common.dir/src/scheduler.cpp.obj"
+  "CMakeFiles/bitcoin_common.dir/src/scheduler.cpp.obj.d"
+  "CMakeFiles/bitcoin_common.dir/src/script/sign.cpp.obj"
+  "CMakeFiles/bitcoin_common.dir/src/script/sign.cpp.obj.d"
+  "CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.obj"
+  "CMakeFiles/bitcoin_common.dir/src/script/standard.cpp.obj.d"
+  "CMakeFiles/bitcoin_common.dir/src/warnings.cpp.obj"
+  "CMakeFiles/bitcoin_common.dir/src/warnings.cpp.obj.d"
+  "lib/libbitcoin_common.a"
+  "lib/libbitcoin_common.pdb"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/bitcoin_common.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

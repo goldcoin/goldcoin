@@ -1,2 +1,0 @@
-/usr/bin/ar qc lib/libbitcoin_wallet.a CMakeFiles/bitcoin_wallet.dir/src/wallet/crypter.cpp.o CMakeFiles/bitcoin_wallet.dir/src/wallet/db.cpp.o CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.o CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcwallet.cpp.o CMakeFiles/bitcoin_wallet.dir/src/wallet/wallet.cpp.o CMakeFiles/bitcoin_wallet.dir/src/wallet/walletdb.cpp.o
-/usr/bin/ranlib lib/libbitcoin_wallet.a

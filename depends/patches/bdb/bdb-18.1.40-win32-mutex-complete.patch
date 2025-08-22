@@ -1,6 +1,20 @@
 --- a/src/mutex/mut_win32.c
 +++ b/src/mutex/mut_win32.c
-@@ -424,7 +426,7 @@ __db_win32_mutex_shared_lock(env, mutex, nowait)
+@@ -30,6 +30,13 @@
+  */
+ static _TCHAR hex_digits[] = _T("0123456789abcdef");
+ 
++/* Define WINCE_ATOMIC_MAGIC as a no-op for non-WinCE builds */
++#ifndef DB_WINCE
++#ifndef WINCE_ATOMIC_MAGIC
++#define WINCE_ATOMIC_MAGIC(p) do { } while (0)
++#endif
++#endif
++
+ static __inline int get_handle(env, mutexp, eventp)
+ 	ENV *env;
+ 	DB_MUTEX *mutexp;
+@@ -424,7 +431,7 @@ retry:
  		if (F_ISSET(mutexp, DB_MUTEX_OWNER_DEAD) &&
  		    !F_ISSET(dbenv, DB_ENV_FAILCHK)) {
  			InterlockedDecrement(
@@ -9,7 +23,7 @@
  			ret = __mutex_died(env, mutex);
  			goto failed;
  		}
-@@ -588,16 +590,14 @@ __db_win32_mutex_unlock(env, mutex)
+@@ -588,16 +595,14 @@ __db_win32_mutex_unlock(env, mutex)
  		}
  		if (F_ISSET(mutexp, DB_MUTEX_LOCKED)) {
  			F_CLR(mutexp, DB_MUTEX_LOCKED);

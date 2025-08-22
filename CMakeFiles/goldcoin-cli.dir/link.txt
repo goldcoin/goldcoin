@@ -1,1 +1,0 @@
-/usr/bin/g++-15 -O3  "CMakeFiles/goldcoin-cli.dir/src/bitcoin-cli.cpp.o" "CMakeFiles/goldcoin-cli.dir/src/rpc/client.cpp.o" -o bin/goldcoin-cli  lib/libbitcoin_util.a lib/libbitcoin_crypto.a lib/libunivalue.a /usr/lib/x86_64-linux-gnu/libssl.so /usr/lib/x86_64-linux-gnu/libcrypto.so -levent -levent_pthreads -levent -lprotobuf -ldl -levent_pthreads -lprotobuf -ldl 
