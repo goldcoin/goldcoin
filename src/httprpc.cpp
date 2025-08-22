@@ -160,6 +160,16 @@ static bool RPCAuthorized(const std::string& strAuth, std::string& strAuthUserna
     return multiUserAuthorized(strUserPass);
 }
 
+// Public commands that don't require authentication
+static const std::set<std::string> publicCommands = {
+    "getinfo",
+    "getblockcount",
+    "getconnectioncount",
+    "getdifficulty",
+    "getblockchaininfo",
+    "help"
+};
+
 static bool HTTPReq_JSONRPC(HTTPRequest* req, const std::string &)
 {
     // JSONRPC handles only POST
@@ -167,16 +177,32 @@ static bool HTTPReq_JSONRPC(HTTPRequest* req, const std::string &)
         req->WriteReply(HTTP_BAD_METHOD, "JSONRPC server handles only POST requests");
         return false;
     }
-    // Check authorization
-    std::pair<bool, std::string> authHeader = req->GetHeader("authorization");
-    if (!authHeader.first) {
-        req->WriteHeader("WWW-Authenticate", WWW_AUTH_HEADER_DATA);
-        req->WriteReply(HTTP_UNAUTHORIZED);
-        return false;
-    }
-
+    
+    // Parse request to check if it's a public command
     JSONRPCRequest jreq;
-    if (!RPCAuthorized(authHeader.second, jreq.authUser)) {
+    bool isPublicCommand = false;
+    try {
+        UniValue valRequest;
+        if (valRequest.read(req->ReadBody())) {
+            if (valRequest.isObject()) {
+                jreq.parse(valRequest);
+                isPublicCommand = publicCommands.count(jreq.strMethod) > 0;
+            }
+        }
+    } catch (...) {
+        // If parsing fails, treat as non-public command requiring auth
+    }
+    
+    // Check authorization (skip for public commands)
+    if (!isPublicCommand) {
+        std::pair<bool, std::string> authHeader = req->GetHeader("authorization");
+        if (!authHeader.first) {
+            req->WriteHeader("WWW-Authenticate", WWW_AUTH_HEADER_DATA);
+            req->WriteReply(HTTP_UNAUTHORIZED);
+            return false;
+        }
+
+        if (!RPCAuthorized(authHeader.second, jreq.authUser)) {
         LogPrintf("ThreadRPCServer incorrect password attempt from %s\n", req->GetPeer().ToString());
 
         /* Deter brute-forcing

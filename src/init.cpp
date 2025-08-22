@@ -1540,6 +1540,13 @@ bool AppInitMain(thread_group& threadGroup, CScheduler& scheduler)
                     strLoadError = _("Error initializing block database");
                     break;
                 }
+                
+                // Fix for C++23 refactor: ensure genesis is ready after InitBlockIndex
+                // This prevents deadlock when genesis exists but chainActive.Tip() is null
+                if (!fHaveGenesis && mapBlockIndex.count(chainparams.GetConsensus().hashGenesisBlock) > 0) {
+                    fHaveGenesis = true;
+                    condvar_GenesisWait.notify_all();
+                }
 
                 // Check for changed -txindex state
                 if (fTxIndex != GetBoolArg("-txindex", DEFAULT_TXINDEX)) {
