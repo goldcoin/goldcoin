@@ -28,9 +28,14 @@ define $(package)_config_cmds
 endef
 
 define $(package)_build_cmds
-  $(MAKE) libdb_cxx-18.1.a libdb-18.1.a
+  $(MAKE) libdb_cxx-18.1.a libdb-18.1.a && \
+  $(MAKE) db_dump db_load db_verify
 endef
 
 define $(package)_stage_cmds
-  $(MAKE) DESTDIR=$($(package)_staging_dir) install_lib install_include
+  $(MAKE) DESTDIR=$($(package)_staging_dir) install_lib install_include && \
+  mkdir -p $($(package)_staging_prefix_dir)/bin && \
+  cp -f db_dump $($(package)_staging_prefix_dir)/bin/db_dump && \
+  cp -f db_load $($(package)_staging_prefix_dir)/bin/db_load && \
+  cp -f db_verify $($(package)_staging_prefix_dir)/bin/db_verify
 endef
