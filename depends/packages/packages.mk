@@ -11,7 +11,7 @@ qt_i686_linux_packages:=$(qt_x86_64_linux_packages)
 qt_darwin_packages=qt6
 qt_mingw32_packages=qt6
 
-wallet_packages=bdb
+wallet_packages=bdb bdb48-utils
 
 upnp_packages=miniupnpc
 
