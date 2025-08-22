@@ -1,0 +1,2 @@
+/usr/bin/x86_64-w64-mingw32-ar qc lib/libbitcoin_wallet.a CMakeFiles/bitcoin_wallet.dir/src/wallet/crypter.cpp.obj CMakeFiles/bitcoin_wallet.dir/src/wallet/db.cpp.obj CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcdump.cpp.obj CMakeFiles/bitcoin_wallet.dir/src/wallet/rpcwallet.cpp.obj CMakeFiles/bitcoin_wallet.dir/src/wallet/wallet.cpp.obj CMakeFiles/bitcoin_wallet.dir/src/wallet/walletdb.cpp.obj
+/usr/bin/x86_64-w64-mingw32-ranlib lib/libbitcoin_wallet.a

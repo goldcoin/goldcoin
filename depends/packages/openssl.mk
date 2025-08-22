@@ -16,26 +16,26 @@ $(package)_config_opts+=no-dso
 $(package)_config_opts+=no-dtls1
 $(package)_config_opts+=no-ec_nistp_64_gcc_128
 $(package)_config_opts+=no-gost
-$(package)_config_opts+=no-gmp
-$(package)_config_opts+=no-heartbeats
 $(package)_config_opts+=no-idea
-$(package)_config_opts+=no-jpake
-$(package)_config_opts+=no-krb5
-$(package)_config_opts+=no-libunbound
 $(package)_config_opts+=no-md2
 $(package)_config_opts+=no-mdc2
 $(package)_config_opts+=no-rc4
 $(package)_config_opts+=no-rc5
-$(package)_config_opts+=no-rdrand
 $(package)_config_opts+=no-rfc3779
-$(package)_config_opts+=no-rsax
 $(package)_config_opts+=no-sctp
 $(package)_config_opts+=no-seed
-$(package)_config_opts+=no-sha0
 $(package)_config_opts+=no-shared
 $(package)_config_opts+=no-ssl-trace
-$(package)_config_opts+=no-ssl2
 $(package)_config_opts+=no-ssl3
+$(package)_config_opts+=no-gmp
+$(package)_config_opts+=no-heartbeats
+$(package)_config_opts+=no-jpake
+$(package)_config_opts+=no-krb5
+$(package)_config_opts+=no-libunbound
+$(package)_config_opts+=no-rdrand
+$(package)_config_opts+=no-rsax
+$(package)_config_opts+=no-sha0
+$(package)_config_opts+=no-ssl2
 $(package)_config_opts+=no-static_engine
 $(package)_config_opts+=no-store
 $(package)_config_opts+=no-unit-test
@@ -66,9 +66,9 @@ $(package)_config_opts_i686_android=linux-generic32
 endef
 
 define $(package)_preprocess_cmds
-  patch -p1 < $($(package)_patch_dir)/0001-Add-OpenSSL-termios-fix-for-musl-libc.patch && \
-  sed -i.old "/define DATE/d" util/mkbuildinf.pl && \
-  sed -i.old "s|engines apps test|engines|" Makefile.org
+    patch -p1 < $($(package)_patch_dir)/0001-Add-OpenSSL-termios-fix-for-musl-libc.patch && \
+    sed -i.old "/define DATE/d" util/mkbuildinf.pl && \
+    sed -i.old "s|engines apps test|engines|" Makefile.org
 endef
 
 define $(package)_config_cmds

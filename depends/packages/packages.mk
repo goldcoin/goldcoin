@@ -1,7 +1,7 @@
-packages:=boost openssl libevent zeromq
+packages:=openssl libevent zeromq
 native_packages := native_ccache
 
-qt_native_packages = native_protobuf native_cmake
+qt_native_packages = native_protobuf native_cmake qt6-tools
 qt_packages = qrencode protobuf zlib
 
 # For Qt6 builds, replace 'qt' with 'qt6' in the lines below

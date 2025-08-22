@@ -1,0 +1,3 @@
+/usr/bin/cmake -E rm -f CMakeFiles/goldcoind.dir/objects.a
+/usr/bin/x86_64-w64-mingw32-ar qc CMakeFiles/goldcoind.dir/objects.a @CMakeFiles/goldcoind.dir/objects1.rsp
+/usr/bin/g++-15  -std=c++17 -static-libgcc -static-libstdc++ -O3   -static -Wl,--no-undefined -Wl,--whole-archive CMakeFiles/goldcoind.dir/objects.a -Wl,--no-whole-archive -o bin/goldcoind.exe -Wl,--out-implib,lib/libgoldcoind.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles/goldcoind.dir/linkLibs.rsp

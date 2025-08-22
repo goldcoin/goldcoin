@@ -406,7 +406,6 @@ add_library(bitcoin_server STATIC
     src/rpc/net.cpp
     src/rpc/rawtransaction.cpp
     src/rpc/server.cpp
-    src/rust_integration.cpp
     src/script/sigcache.cpp
     src/script/ismine.cpp
     src/timedata.cpp
@@ -486,10 +485,6 @@ if(WITH_ZMQ)
     target_compile_definitions(goldcoind PRIVATE ENABLE_ZMQ)
 endif()
 
-if(BUILD_RUST AND TARGET goldcoin_rust)
-    target_link_libraries(goldcoind goldcoin_rust)
-    target_compile_definitions(goldcoind PRIVATE ENABLE_RUST)
-endif()
 
 # Make goldcoind standalone on Windows - OUTSHINE THE SUN!
 if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
@@ -738,10 +733,6 @@ if(BUILD_GUI)
         target_compile_definitions(goldcoin-qt PRIVATE ENABLE_ZMQ)
     endif()
     
-    if(BUILD_RUST AND TARGET goldcoin_rust)
-        target_link_libraries(goldcoin-qt goldcoin_rust)
-        target_compile_definitions(goldcoin-qt PRIVATE ENABLE_RUST)
-    endif()
     
     if(WIN32)
         set_target_properties(goldcoin-qt PROPERTIES 
@@ -797,52 +788,6 @@ if(BUILD_GUI)
     )
 endif()
 
-# ===== RUST INTEGRATION (C++23/Rust Hybrid) =====
-option(BUILD_RUST "Build Rust components for networking/consensus" ON)
-
-if(BUILD_RUST)
-    # Check for Rust compiler
-    find_program(CARGO cargo PATHS $ENV{HOME}/.cargo/bin)
-    if(NOT CARGO)
-        message(WARNING "Cargo not found - Rust components will not be built")
-        set(BUILD_RUST OFF)
-    else()
-        # Get Rust version
-        execute_process(
-            COMMAND ${CARGO} --version
-            OUTPUT_VARIABLE CARGO_VERSION
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
-        message(STATUS "Found Cargo: ${CARGO_VERSION}")
-        
-        # Set Rust build type based on CMake build type
-        if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-            set(RUST_BUILD_TYPE "debug")
-            set(RUST_TARGET_DIR "debug")
-        else()
-            set(RUST_BUILD_TYPE "release")
-            set(RUST_TARGET_DIR "release")
-        endif()
-        
-        # Custom target to build Rust components
-        add_custom_target(rust_build ALL
-            COMMAND ${CMAKE_COMMAND} -E echo "Building Rust components in ${RUST_BUILD_TYPE} mode..."
-            COMMAND ${CARGO} build $<$<CONFIG:Release>:--release>
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/rust
-            COMMENT "Building Goldcoin Rust components (networking/consensus)"
-        )
-        
-        # Import the Rust library
-        add_library(goldcoin_rust STATIC IMPORTED GLOBAL)
-        set_target_properties(goldcoin_rust PROPERTIES
-            IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/rust/target/${RUST_TARGET_DIR}/libgoldcoin_ffi.a"
-        )
-        add_dependencies(goldcoin_rust rust_build)
-        
-        # Add Rust include path
-        include_directories(${CMAKE_CURRENT_SOURCE_DIR}/rust/goldcoin-ffi/include)
-    endif()
-endif()
 
 # ===== STATUS MESSAGES =====
 message(STATUS "")
@@ -857,15 +802,11 @@ message(STATUS "  Wallet:         ${BUILD_WALLET}")
 message(STATUS "  Tests:          ${BUILD_TESTS}")
 message(STATUS "  Benchmarks:     ${BUILD_BENCH}")
 message(STATUS "  ZMQ:            ${WITH_ZMQ}")
-message(STATUS "  Rust:           ${BUILD_RUST}")
 message(STATUS "")
 message(STATUS "  C++23 std lib:  ENABLED (No Boost)")
 message(STATUS "  OpenSSL:        ${OPENSSL_VERSION}")
 if(BUILD_GUI)
     message(STATUS "  Qt:             ${Qt6_VERSION}")
-endif()
-if(BUILD_RUST AND CARGO)
-    message(STATUS "  Rust:           ${CARGO_VERSION}")
 endif()
 message(STATUS "")
 
