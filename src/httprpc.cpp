@@ -178,22 +178,27 @@ static bool HTTPReq_JSONRPC(HTTPRequest* req, const std::string &)
         return false;
     }
     
-    // Parse request to check if it's a public command
+    // Read the body exactly once
+    const std::string body = req->ReadBody();
+    
+    // Parse request to get method (so we can decide if auth can be skipped)
     JSONRPCRequest jreq;
     bool isPublicCommand = false;
     try {
         UniValue valRequest;
-        if (valRequest.read(req->ReadBody())) {
-            if (valRequest.isObject()) {
-                jreq.parse(valRequest);
-                isPublicCommand = publicCommands.count(jreq.strMethod) > 0;
-            }
+        if (!valRequest.read(body)) {
+            throw JSONRPCError(RPC_PARSE_ERROR, "Parse error");
         }
-    } catch (...) {
-        // If parsing fails, treat as non-public command requiring auth
+        if (valRequest.isObject()) {
+            jreq.parse(valRequest);  // fills jreq.strMethod, params, etc.
+            isPublicCommand = (publicCommands.count(jreq.strMethod) > 0);
+        }
+    } catch (const std::exception&) {
+        // If parsing fails here, fall through and require auth
+        isPublicCommand = false;
     }
     
-    // Check authorization (skip for public commands)
+    // Authorization for non-public commands only
     if (!isPublicCommand) {
         std::pair<bool, std::string> authHeader = req->GetHeader("authorization");
         if (!authHeader.first) {
@@ -201,24 +206,20 @@ static bool HTTPReq_JSONRPC(HTTPRequest* req, const std::string &)
             req->WriteReply(HTTP_UNAUTHORIZED);
             return false;
         }
-
         if (!RPCAuthorized(authHeader.second, jreq.authUser)) {
-        LogPrintf("ThreadRPCServer incorrect password attempt from %s\n", req->GetPeer().ToString());
-
-        /* Deter brute-forcing
-           If this results in a DoS the user really
-           shouldn't have their RPC port exposed. */
-        MilliSleep(250);
-
-        req->WriteHeader("WWW-Authenticate", WWW_AUTH_HEADER_DATA);
-        req->WriteReply(HTTP_UNAUTHORIZED);
-        return false;
+            LogPrintf("ThreadRPCServer incorrect password attempt from %s\n", req->GetPeer().ToString());
+            /* Deter brute-forcing */
+            MilliSleep(250);
+            req->WriteHeader("WWW-Authenticate", WWW_AUTH_HEADER_DATA);
+            req->WriteReply(HTTP_UNAUTHORIZED);
+            return false;
+        }
     }
 
     try {
-        // Parse request
+        // Reuse the body we already read (no double read)
         UniValue valRequest;
-        if (!valRequest.read(req->ReadBody()))
+        if (!valRequest.read(body))
             throw JSONRPCError(RPC_PARSE_ERROR, "Parse error");
 
         // Set the URI
