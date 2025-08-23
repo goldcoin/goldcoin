@@ -3035,6 +3035,7 @@ bool CWallet::TopUpKeyPool(unsigned int kpSize)
         else
             nTargetSize = max(GetArg("-keypool", DEFAULT_KEYPOOL_SIZE), (int64_t) 0);
 
+        size_t nKeysAdded = 0;
         while (setKeyPool.size() < (nTargetSize + 1))
         {
             int64_t nEnd = 1;
@@ -3043,7 +3044,10 @@ bool CWallet::TopUpKeyPool(unsigned int kpSize)
             if (!walletdb.WritePool(nEnd, CKeyPool(GenerateNewKey())))
                 throw runtime_error(std::string(__func__) + ": writing generated key failed");
             setKeyPool.insert(nEnd);
-            LogPrintf("keypool added key %d, size=%u\n", nEnd, setKeyPool.size());
+            nKeysAdded++;
+        }
+        if (nKeysAdded > 0) {
+            LogPrintf("keypool topped up, added %u keys (size=%u)\n", nKeysAdded, setKeyPool.size());
         }
     }
     return true;

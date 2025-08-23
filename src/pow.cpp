@@ -93,9 +93,10 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 
 		// Limit adjustment step
 		int64_t nActualTimespan = pindexLast->GetBlockTime() - pindexFirst->GetBlockTime();
-		LogPrintf("  nActualTimespan = %d  before bounds\n", nActualTimespan);
 		int64_t nActualTimespanMax = fNewDifficultyProtocol ? ((nTargetTimespan2Current * 99) / 70) : (nTargetTimespan2Current * 4);
 		int64_t nActualTimespanMin = fNewDifficultyProtocol ? ((nTargetTimespan2Current * 70) / 99) : (nTargetTimespan2Current / 4);
+		
+		LogPrint("pow", "  nActualTimespan = %d  before bounds\n", nActualTimespan);
 
 		if (nActualTimespan < nActualTimespanMin) {
 			nActualTimespan = nActualTimespanMin;
@@ -114,11 +115,14 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 			bnNew = bnProofOfWorkLimit;
 		}
 
-		/// debug print
-		LogPrintf("GetNextWorkRequired RETARGET\n");
-        LogPrintf("nTargetTimespan2 = %d    nActualTimespan = %d\n", nTargetTimespan2Current, nActualTimespan);
-        LogPrintf("Before: %08x\n", pindexLast->nBits);
-        LogPrintf("After:  %08x\n", bnNew.GetCompact());
+		// Log retarget event concisely (always visible)
+		LogPrintf("Difficulty retarget: %08x -> %08x (actual: %ds, target: %ds)\n", 
+		          pindexLast->nBits, bnNew.GetCompact(), nActualTimespan, nTargetTimespan2Current);
+		
+		// Detailed debug logging (only with -debug=pow)
+		LogPrint("pow", "GetNextWorkRequired RETARGET details:\n");
+        LogPrint("pow", "nTargetTimespan2 = %d    nActualTimespan = %d\n", nTargetTimespan2Current, nActualTimespan);
+        LogPrint("pow", "Before: %08x  After: %08x\n", pindexLast->nBits, bnNew.GetCompact());
 
 	} else
 		if (nHeight > params.novemberFork) {
@@ -384,7 +388,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 			} else {
 				nActualTimespan = medTime * 60;
 
-				LogPrintf("  nActualTimespan = %d  before bounds\n", nActualTimespan);
+				LogPrint("pow", "  nActualTimespan = %d  before bounds\n", nActualTimespan);
 				int64_t nActualTimespanMax = fNewDifficultyProtocol ? ((nTargetTimespanCurrent * 99) / 70) : (nTargetTimespanCurrent * 4);
 				int64_t nActualTimespanMin = fNewDifficultyProtocol ? ((nTargetTimespanCurrent * 70) / 99) : (nTargetTimespanCurrent / 4);
 
@@ -490,11 +494,14 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 				bnNew = bnProofOfWorkLimit;
 			}
 
-			/// debug print
-			LogPrintf("GetNextWorkRequired RETARGET\n");
-			LogPrintf("nTargetTimespan = %d    nActualTimespan = %d\n", nTargetTimespanCurrent, nActualTimespan);
-            LogPrintf("Before: %08x\n", pindexLast->nBits);
-            LogPrintf("After:  %08x\n", bnNew.GetCompact());
+			// Log retarget event concisely (always visible)
+			LogPrintf("Difficulty retarget: %08x -> %08x (actual: %ds, target: %ds)\n", 
+			          pindexLast->nBits, bnNew.GetCompact(), nActualTimespan, nTargetTimespanCurrent);
+			
+			// Detailed debug logging (only with -debug=pow)
+			LogPrint("pow", "GetNextWorkRequired RETARGET details:\n");
+			LogPrint("pow", "nTargetTimespan = %d    nActualTimespan = %d\n", nTargetTimespanCurrent, nActualTimespan);
+            LogPrint("pow", "Before: %08x  After: %08x\n", pindexLast->nBits, bnNew.GetCompact());
 
 		} else {
 			const_cast<Consensus::Params&>(params).hardForkedJuly = true;
@@ -566,11 +573,14 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
 				bnNew = bnProofOfWorkLimit;
 			}
 
-			/// debug print
-			LogPrintf("GetNextWorkRequired RETARGET\n");
-			LogPrintf("nTargetTimespan = %d    nActualTimespan = %d\n", nTargetTimespanCurrent, nActualTimespan);
-            LogPrintf("Before: %08x\n", pindexLast->nBits);
-            LogPrintf("After:  %08x\n", bnNew.GetCompact());
+			// Log retarget event concisely (always visible)
+			LogPrintf("Difficulty retarget: %08x -> %08x (actual: %ds, target: %ds)\n", 
+			          pindexLast->nBits, bnNew.GetCompact(), nActualTimespan, nTargetTimespanCurrent);
+			
+			// Detailed debug logging (only with -debug=pow)
+			LogPrint("pow", "GetNextWorkRequired RETARGET details:\n");
+			LogPrint("pow", "nTargetTimespan = %d    nActualTimespan = %d\n", nTargetTimespanCurrent, nActualTimespan);
+            LogPrint("pow", "Before: %08x  After: %08x\n", pindexLast->nBits, bnNew.GetCompact());
 		}
 
 	return bnNew.GetCompact();
