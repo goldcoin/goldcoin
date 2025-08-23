@@ -59,7 +59,7 @@ bool BDB48Compat::exportWallet(const fs::path& walletPath,
 bool BDB48Compat::exportUsingDbDump(const fs::path& wallet, const fs::path& output) {
     // Try different possible db_dump commands
     std::vector<std::string> commands = {
-        "/home/microguy/git/microguy/goldcoin/depends/work/build/x86_64-pc-linux-gnu/bdb48-utils/4.8.30.NC-056c5e5e1b8/build_unix/db_dump",  // Depends-built BDB 4.8
+        "/home/microguy/git/microguy/goldcoin/depends/work/build/x86_64-pc-linux-gnu/bdb48-utils/4.8.30.NC-638779dad17/build_unix/db_dump",  // Depends-built BDB 4.8 (correct hash)
         "/usr/local/bin/db_dump",  // Fallback to system BDB 4.8.30
         "db_dump",                  // Fallback to PATH
         "db4.8_dump",
