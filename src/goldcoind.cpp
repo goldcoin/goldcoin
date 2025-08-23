@@ -1,5 +1,6 @@
 // Copyright (c) 2007-2010 Satoshi Nakamoto
 #include <thread>
+#include <future>
 // Copyright (c) 2009-2015 The Bitcoin Core developers
 // Copyright (c) 2011-2017 The Litecoin Core developers
 // Copyright (c) 2013-2025 The Goldcoin Core developers
@@ -58,8 +59,37 @@ void WaitForShutdown(thread_group* threadGroup, CScheduler* scheduler)
     }
     if (threadGroup && scheduler)
     {
+        LogPrintf("Shutdown: Interrupting all threads...\n");
         Interrupt(*threadGroup, *scheduler);
-        threadGroup->join_all();
+        
+        // Use C++23 approach with timed join
+        LogPrintf("Shutdown: Waiting for threads to finish (max 5 seconds)...\n");
+        
+        // Create a future that will complete when all threads join
+        std::promise<void> joinPromise;
+        auto joinFuture = joinPromise.get_future();
+        
+        // Start a thread to join all threads
+        std::thread joiner([threadGroup, &joinPromise]() {
+            try {
+                threadGroup->join_all();
+                joinPromise.set_value();
+            } catch (...) {
+                joinPromise.set_exception(std::current_exception());
+            }
+        });
+        
+        // Wait up to 5 seconds for threads to finish
+        auto status = joinFuture.wait_for(std::chrono::seconds(5));
+        
+        if (status == std::future_status::ready) {
+            LogPrintf("Shutdown: All threads stopped cleanly\n");
+            joiner.join();
+        } else {
+            LogPrintf("Shutdown: Warning - %zu threads did not finish in time, forcing shutdown\n", threadGroup->size());
+            // Detach the joiner thread and let process exit handle cleanup
+            joiner.detach();
+        }
     }
 }
 
@@ -191,6 +221,13 @@ bool AppInit(int argc, char* argv[])
         WaitForShutdown(&threadGroup, &scheduler);
     }
     Shutdown();
+
+    // Force exit if we're shutting down - some threads may still be running
+    // but Shutdown() has completed all critical cleanup
+    if (ShutdownRequested()) {
+        LogPrintf("Forcing process exit after clean shutdown\n");
+        exit(EXIT_SUCCESS);
+    }
 
     return fRet;
 }

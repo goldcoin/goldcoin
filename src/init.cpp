@@ -189,8 +189,10 @@ void Interrupt(thread_group& threadGroup, CScheduler& scheduler)
     StopScriptCheckQueue();
     // Stop the scheduler to prevent new tasks and exit the serviceQueue loop
     scheduler.stop();
-    if (g_connman)
+    if (g_connman) {
         g_connman->Interrupt();
+        g_connman->Stop();
+    }
     threadGroup.interrupt_all();
 }
 
@@ -209,40 +211,55 @@ void Shutdown()
     RenameThread("bitcoin-shutoff");
     mempool.AddTransactionsUpdated(1);
 
+    // Stop accepting new work
     StopHTTPRPC();
     StopREST();
     StopRPC();
     StopHTTPServer();
+    
+    // Flush critical data
 #ifdef ENABLE_WALLET
     if (pwalletMain)
         pwalletMain->Flush(false);
 #endif
     MapPort(false);
+    
+    // Clean up network connections
     UnregisterValidationInterface(peerLogic.get());
     peerLogic.reset();
+    
+    // Network threads already stopped in Interrupt()
     g_connman.reset();
 
+    // Stop auxiliary services
     StopTorControl();
     UnregisterNodeSignals(GetNodeSignals());
-    if (fDumpMempoolLater)
+    
+    // Save mempool and other data
+    if (fDumpMempoolLater) {
         DumpMempool();
+    }
 
     if (fFeeEstimatesInitialized)
     {
         std::filesystem::path est_path = GetDataDir() / FEE_ESTIMATES_FILENAME;
         CAutoFile est_fileout(fopen(est_path.string().c_str(), "wb"), SER_DISK, CLIENT_VERSION);
-        if (!est_fileout.IsNull())
+        if (!est_fileout.IsNull()) {
             mempool.WriteFeeEstimates(est_fileout);
-        else
+        } else {
             LogPrintf("%s: Failed to write fee estimates to %s\n", __func__, est_path.string());
+        }
         fFeeEstimatesInitialized = false;
     }
 
+    // Flush all databases
     {
         LOCK(cs_main);
         if (pcoinsTip != nullptr) {
             FlushStateToDisk();
         }
+        
+        // Clean up database connections
         delete pcoinsTip;
         pcoinsTip = nullptr;
         delete pcoinscatcher;
@@ -254,9 +271,7 @@ void Shutdown()
     }
 #ifdef ENABLE_WALLET
     if (pwalletMain) {
-        LogPrintf("Shutdown: Flushing wallet (final pass)...\n");
         pwalletMain->Flush(true);
-        LogPrintf("Shutdown: Wallet flush (final pass) complete\n");
     }
 #endif
 
@@ -275,13 +290,12 @@ void Shutdown()
         LogPrintf("%s: Unable to remove pidfile: %s\n", __func__, e.what());
     }
 #endif
+    // Final cleanup
     UnregisterAllValidationInterfaces();
 #ifdef ENABLE_WALLET
     if (pwalletMain) {
-        LogPrintf("Shutdown: Deleting wallet...\n");
         delete pwalletMain;
         pwalletMain = nullptr;
-        LogPrintf("Shutdown: Wallet deleted\n");
     }
 #endif
     globalVerifyHandle.reset();
@@ -571,7 +585,6 @@ static void BlockNotifyCallback(bool initialSync, const CBlockIndex *pBlockIndex
 static bool fHaveGenesis = false;
 static std::mutex cs_GenesisWait;
 static CConditionVariable condvar_GenesisWait;
-static size_t genesisWaitCallbackIndex = 0; // Track our callback index
 
 static void BlockNotifyGenesisWait(bool, const CBlockIndex *pBlockIndex)
 {
@@ -630,7 +643,7 @@ void CleanupBlockRevFiles()
     // keeping a separate counter.  Once we hit a gap (or if 0 doesn't exist)
     // start removing block files.
     int nContigCounter = 0;
-    for (const PAIRTYPE(std::string, std::filesystem::path)& item : mapBlockFiles) {
+    for (const auto& item : mapBlockFiles) {
         if (atoi(item.first) == nContigCounter) {
             nContigCounter++;
             continue;
@@ -821,7 +834,6 @@ void InitLogging()
     fLogTimeMicros = GetBoolArg("-logtimemicros", DEFAULT_LOGTIMEMICROS);
     fLogIPs = GetBoolArg("-logips", DEFAULT_LOGIPS);
 
-    LogPrintf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
     LogPrintf("Goldcoin version %s\n", FormatFullVersion());
 }
 
