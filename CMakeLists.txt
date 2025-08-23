@@ -9,6 +9,7 @@ option(BUILD_TESTS "Build test suite" OFF)
 option(BUILD_BENCH "Build benchmarks" OFF)
 option(WITH_ZMQ "Enable ZMQ notifications" OFF)
 option(WITH_MINIUPNPC "Enable UPnP support" OFF)
+option(BUILD_STATIC "Build static binaries (Linux only)" OFF)
 
 # ===== C++ STANDARD (C++23 with GCC 15.2 - No Boost!) =====
 # Only set compiler for native Linux builds, not when using a toolchain file
@@ -485,6 +486,19 @@ if(WITH_ZMQ)
     target_compile_definitions(goldcoind PRIVATE ENABLE_ZMQ)
 endif()
 
+# Static build for Linux
+if(BUILD_STATIC AND NOT WIN32 AND NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set_target_properties(goldcoind PROPERTIES 
+        LINK_FLAGS "-static -pthread"
+    )
+    # Force static linking for all libraries
+    target_link_libraries(goldcoind 
+        -static
+        -pthread
+        -ldl
+    )
+    message(STATUS "Building static goldcoind for Linux")
+endif()
 
 # Make goldcoind standalone on Windows - OUTSHINE THE SUN!
 if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
@@ -522,6 +536,18 @@ target_link_libraries(goldcoin-cli
     OpenSSL::Crypto
     ${PLATFORM_LIBS}
 )
+
+# Static build for Linux CLI
+if(BUILD_STATIC AND NOT WIN32 AND NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set_target_properties(goldcoin-cli PROPERTIES 
+        LINK_FLAGS "-static -pthread"
+    )
+    target_link_libraries(goldcoin-cli 
+        -static
+        -pthread
+        -ldl
+    )
+endif()
 
 # Make goldcoin-cli standalone on Windows - OUTSHINE THE SUN!
 if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
