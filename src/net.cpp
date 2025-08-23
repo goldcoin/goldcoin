@@ -45,6 +45,7 @@
 // Standard library threading headers for CI compatibility
 #include <condition_variable>
 #include <functional>
+#include <future>
 #include <mutex>
 #include <thread>
 
@@ -2368,20 +2369,46 @@ void CConnman::Interrupt()
 
 void CConnman::Stop()
 {
-    // Use detach instead of join to prevent hanging on shutdown
-    if (threadMessageHandler.joinable())
-        threadMessageHandler.detach();
-    if (threadOpenConnections.joinable())
-        threadOpenConnections.detach();
-    if (threadOpenAddedConnections.joinable())
-        threadOpenAddedConnections.detach();
-    if (threadDNSAddressSeed.joinable())
-        threadDNSAddressSeed.detach();
-    if (threadSocketHandler.joinable())
-        threadSocketHandler.detach();
+    LogPrintf("CConnman::Stop() - Gracefully stopping network threads\n");
     
-    // Give threads a moment to exit cleanly
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    // Modern C++23 approach: Try to join with timeout, then detach if necessary
+    auto tryJoinWithTimeout = [](std::thread& t, const char* name, int timeoutMs = 2000) {
+        if (!t.joinable()) {
+            LogPrintf("Thread %s not joinable (already stopped)\n", name);
+            return;
+        }
+        
+        LogPrintf("Waiting for %s thread to finish (timeout: %dms)...\n", name, timeoutMs);
+        
+        // Create a promise/future pair for timeout
+        std::promise<void> p;
+        auto f = p.get_future();
+        
+        // Thread to do the actual join
+        std::thread joiner([&t, &p]() {
+            t.join();
+            p.set_value();
+        });
+        
+        // Wait with timeout
+        if (f.wait_for(std::chrono::milliseconds(timeoutMs)) == std::future_status::ready) {
+            joiner.join();
+            LogPrintf("Thread %s stopped cleanly\n", name);
+        } else {
+            LogPrintf("Thread %s didn't stop in time, detaching\n", name);
+            joiner.detach();
+            t.detach();
+        }
+    };
+    
+    // Stop threads in order of dependency
+    tryJoinWithTimeout(threadMessageHandler, "msghand", 3000);
+    tryJoinWithTimeout(threadOpenConnections, "opencon", 2000);
+    tryJoinWithTimeout(threadOpenAddedConnections, "addcon", 2000);
+    tryJoinWithTimeout(threadDNSAddressSeed, "dnsseed", 1000);
+    tryJoinWithTimeout(threadSocketHandler, "net", 2000);
+    
+    LogPrintf("CConnman::Stop() - All network threads stopped or detached\n");
 
     if (fAddressesInitialized)
     {
