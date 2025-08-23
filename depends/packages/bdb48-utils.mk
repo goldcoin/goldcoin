@@ -9,24 +9,22 @@ define $(package)_set_vars
 $(package)_config_opts=--disable-shared --enable-cxx --disable-replication --enable-compat185
 $(package)_config_opts_mingw32=--enable-mingw
 $(package)_config_opts_linux=--with-pic
+$(package)_config_env_mingw32=CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++
 $(package)_cxxflags=-std=c++17
 endef
 
 define $(package)_config_cmds
-  ../dist/configure $($(package)_config_opts)
+  ../dist/$($(package)_autoconf)
 endef
 
 define $(package)_build_cmds
-  $(MAKE) -C . && \
-  cd .. && \
-  $(MAKE) -C db_dump && \
-  $(MAKE) -C db_load && \
-  $(MAKE) -C db_verify
+  $(MAKE) libdb.a libdb_cxx.a && \
+  $(MAKE) db_dump db_load db_verify
 endef
 
 define $(package)_stage_cmds
   mkdir -p $($(package)_staging_prefix_dir)/bin && \
-  cp -f db_dump $($(package)_staging_prefix_dir)/bin/db48_dump && \
-  cp -f db_load $($(package)_staging_prefix_dir)/bin/db48_load && \
-  cp -f db_verify $($(package)_staging_prefix_dir)/bin/db48_verify
+  cp -f db_dump* $($(package)_staging_prefix_dir)/bin/db48_dump && \
+  cp -f db_load* $($(package)_staging_prefix_dir)/bin/db48_load && \
+  cp -f db_verify* $($(package)_staging_prefix_dir)/bin/db48_verify
 endef

@@ -93,6 +93,8 @@ define $(package)_config_cmds
   export OPENSSL_LIBS="-L$(host_prefix)/lib -lssl -lcrypto" && \
   export CC="$($(package)_cc)" && \
   export CXX="$($(package)_cxx)" && \
+  export CFLAGS="-I$(host_prefix)/include" && \
+  export CXXFLAGS="-I$(host_prefix)/include" && \
   $(if $(findstring linux,$(host_os)), \
     $(if $(findstring linux,$(build_os)), \
       ./configure \
@@ -109,6 +111,13 @@ define $(package)_config_cmds
         -DCMAKE_SYSTEM_NAME=Windows \
         -DCMAKE_EXECUTABLE_SUFFIX=.exe \
         -DCMAKE_TRY_COMPILE_PLATFORM_VARIABLES=CMAKE_EXECUTABLE_SUFFIX \
+        -DQT_HOST_PATH=/home/microguy/git/microguy/goldcoin/depends/x86_64-pc-linux-gnu/native \
+        -DCMAKE_FIND_ROOT_PATH=$(host_prefix) \
+        -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
+        -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
+        -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
+        -DCMAKE_C_COMPILER=$($(package)_cc) \
+        -DCMAKE_CXX_COMPILER=$($(package)_cxx) \
         $(QT_EXTRA_CMAKE_FLAGS), \
       ./configure $($(package)_config_opts) -I $(host_prefix)/include -L $(host_prefix)/lib))
 endef

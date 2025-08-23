@@ -9,7 +9,7 @@ qt_x86_64_linux_packages:=qt6 expat dbus libxcb xcb_proto libXau xproto freetype
 qt_i686_linux_packages:=$(qt_x86_64_linux_packages)
 
 qt_darwin_packages=qt6
-qt_mingw32_packages=qt6
+qt_mingw32_packages=qt6 zlib
 
 wallet_packages=bdb bdb48-utils
 
