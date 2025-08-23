@@ -314,14 +314,12 @@ public:
         size_t i = 0;
         for (auto& thread : threads) {
             if (thread.joinable()) {
-                // LogPrintf available only when util.h is included
-                #ifdef LogPrintf
-                LogPrintf("ThreadGroup::join_all: Waiting for thread %d to join...\n", i);
-                #endif
+                // Debug logging - requires util.h to be included by caller
+                // LogPrintf("ThreadGroup::join_all: Waiting for thread %zu to join...\n", i);
                 thread.join();
-                #ifdef LogPrintf
-                LogPrintf("ThreadGroup::join_all: Thread %d joined\n", i);
-                #endif
+                // LogPrintf("ThreadGroup::join_all: Thread %zu joined\n", i);
+            } else {
+                // LogPrintf("ThreadGroup::join_all: Thread %zu is not joinable (already joined or detached)\n", i);
             }
             i++;
         }

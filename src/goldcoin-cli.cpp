@@ -302,8 +302,8 @@ int CommandLineRPC(int argc, char *argv[])
                 const UniValue reply = CallRPC(strMethod, params);
 
                 // Parse reply
-                const UniValue& result = find_value(reply, "result");
-                const UniValue& error  = find_value(reply, "error");
+                const UniValue result = find_value(reply, "result");
+                const UniValue error  = find_value(reply, "error");
 
                 if (!error.isNull()) {
                     // Error
@@ -340,9 +340,6 @@ int CommandLineRPC(int argc, char *argv[])
                     throw;
             }
         } while (fWait);
-    }
-    catch (const std::exception&) {  // C++23: Use std exception
-        throw;
     }
     catch (const std::exception& e) {
         strPrint = std::string("error: ") + e.what();
