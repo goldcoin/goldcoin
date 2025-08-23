@@ -5,9 +5,16 @@ sources/*
 !sources/.gitkeep
 !sources/qrencode-*.tar.bz2
 config.site
-x86_64*
-i686*
-mips*
-arm*
-aarch64*
+# SACRED DEPENDENCIES - DO NOT DELETE
+# Commenting out architecture patterns to preserve built dependencies
+# x86_64*
+# i686*
+# mips*
+# arm*
+# aarch64*
+# Instead, explicitly ignore only build artifacts:
+*.log
+*.tmp
+*.o
+*.d
 !sources/zlib-*.tar.gz
