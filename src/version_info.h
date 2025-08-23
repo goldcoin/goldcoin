@@ -8,10 +8,10 @@
 // Project identification
 #define PACKAGE_NAME "Goldcoin Core"
 #define PACKAGE_TARNAME "goldcoin"
-#define PACKAGE_VERSION "0.14.2"
-#define PACKAGE_STRING "Goldcoin Core 0.14.2"
+#define PACKAGE_VERSION "0.17.0"
+#define PACKAGE_STRING "Goldcoin Core 0.17.0"
 #define PACKAGE_BUGREPORT "https://github.com/goldcoin/goldcoin/issues"
-#define PACKAGE_URL "https://goldcoin.org/"
+#define PACKAGE_URL "https://www.goldcoinproject.org"
 
 // Copyright information
 #define COPYRIGHT_YEAR 2025
