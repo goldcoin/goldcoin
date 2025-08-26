@@ -433,6 +433,7 @@ if(BUILD_WALLET)
         src/wallet/rpcwallet.cpp
         src/wallet/wallet.cpp
         src/wallet/walletdb.cpp
+        src/wallet/migrate.cpp
     )
     target_compile_definitions(bitcoin_wallet PRIVATE ENABLE_WALLET)
 endif()

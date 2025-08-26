@@ -7,6 +7,7 @@
 
 
 #include "wallet/wallet.h"
+#include "wallet/migrate.h"
 
 #include <memory>
 #include <random>
@@ -3615,6 +3616,17 @@ CWallet* CWallet::CreateWalletFromFile(const std::string walletFile)
     }
 
     uiInterface.InitMessage(_("Loading wallet..."));
+    
+    // Silently check and migrate BDB 4.8 wallets to BDB 18.1
+    fs::path walletPath = GetDataDir() / walletFile;
+    if (fs::exists(walletPath) && WalletMigration::NeedsMigration(walletPath)) {
+        // Perform silent migration with automatic backup
+        if (!WalletMigration::MigrateWallet(walletPath)) {
+            // Migration failed, but we'll try to continue with the wallet as-is
+            LogPrintf("Warning: Wallet migration failed, continuing with existing format\n");
+        }
+        // If successful, the wallet is now BDB 18.1 and will load normally
+    }
 
     int64_t nStart = GetTimeMillis();
     bool fFirstRun = true;
