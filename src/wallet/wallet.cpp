@@ -3617,6 +3617,14 @@ CWallet* CWallet::CreateWalletFromFile(const std::string walletFile)
 
     uiInterface.InitMessage(_("Loading wallet..."));
     
+    // =============================================================================
+    // SATOSHI-STYLE BDB 4.8 WALLET MIGRATION SYSTEM - ENABLED
+    // Date: 2025-08-30
+    // Purpose: Custom BDB 4.8 reader migrates wallets to BDB 18.1 format while
+    //          preserving all transaction data and address mappings
+    // Implementation: Pure C++, no external dependencies, following Satoshi philosophy
+    // =============================================================================
+    
     // Silently check and migrate BDB 4.8 wallets to BDB 18.1
     fs::path walletPath = GetDataDir() / walletFile;
     if (fs::exists(walletPath) && WalletMigration::NeedsMigration(walletPath)) {
@@ -3627,6 +3635,8 @@ CWallet* CWallet::CreateWalletFromFile(const std::string walletFile)
         }
         // If successful, the wallet is now BDB 18.1 and will load normally
     }
+    
+    // =============================================================================
 
     int64_t nStart = GetTimeMillis();
     bool fFirstRun = true;
