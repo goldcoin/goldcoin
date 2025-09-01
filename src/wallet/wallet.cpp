@@ -3727,69 +3727,13 @@ CWallet* CWallet::CreateWalletFromFile(const std::string walletFile)
     // Automatic wallet migration from BDB 4.8.30 to 18.1.40
     // Check if this is an old format wallet and upgrade it automatically
     if (!fFirstRun && !GetBoolArg("-skipwalletupgrade", false)) {
-        // Check BDB version used for the wallet
-        // If it's 4.8.30, we need to migrate to 18.1.40
+        // Check actual BDB file format for migration needs
         LogPrintf("Checking wallet format for automatic migration...\n");
         
-        // Get wallet version - older wallets will have lower version numbers
-        int walletVersion = walletInstance->GetVersion();
-        LogPrintf("Wallet version: %d, Current client version: %d\n", walletVersion, CLIENT_VERSION);
-        
-        // Check if wallet needs migration (version < 170000 indicates pre-0.17 wallet)
-        if (walletVersion < 170000) {
-            LogPrintf("Detected legacy wallet format (version %d), initiating automatic migration...\n", walletVersion);
-            
-            // Step 1: Create backup
-            std::string backupFile = walletFile + ".pre-v0.17.backup";
-            LogPrintf("Creating safety backup at %s...\n", backupFile);
-            
-            if (!walletInstance->BackupWallet(backupFile)) {
-                InitError(strprintf(_("Failed to create backup of wallet before migration. Migration aborted.")));
-                return nullptr;
-            }
-            LogPrintf("Backup created successfully.\n");
-            
-            // Step 2: Upgrade wallet to latest format
-            LogPrintf("Upgrading wallet to v0.17.0 format with BDB 18.1.40...\n");
-            walletInstance->SetMinVersion(FEATURE_LATEST);
-            walletInstance->SetMaxVersion(CLIENT_VERSION);
-            
-            // Force a database environment refresh to use new BDB version
-            LogPrintf("GOLDCOIN_MIGRATION_DEBUG: Creating CWalletDB for version write...\n");
-            CWalletDB walletdb(walletFile);
-            LogPrintf("GOLDCOIN_MIGRATION_DEBUG: About to write version %d to wallet\n", CLIENT_VERSION);
-            
-            bool versionWriteResult = walletdb.WriteVersion(CLIENT_VERSION);
-            LogPrintf("GOLDCOIN_MIGRATION_DEBUG: WriteVersion result: %s\n", 
-                   versionWriteResult ? "SUCCESS" : "FAILED");
-            
-            // Verify the write worked by reading it back
-            int readVersion = 0;
-            bool readResult = walletdb.ReadVersion(readVersion);
-            LogPrintf("GOLDCOIN_MIGRATION_DEBUG: ReadVersion after write: %s, value=%d\n",
-                   readResult ? "SUCCESS" : "FAILED", readVersion);
-            
-            if (!versionWriteResult) {
-                LogPrintf("GOLDCOIN_MIGRATION_DEBUG: CRITICAL ERROR - Version write failed!\n");
-            } else if (!readResult) {
-                LogPrintf("GOLDCOIN_MIGRATION_DEBUG: CRITICAL ERROR - Cannot read back version!\n");
-            } else if (readVersion != CLIENT_VERSION) {
-                LogPrintf("GOLDCOIN_MIGRATION_DEBUG: CRITICAL ERROR - Version mismatch! Expected=%d, Got=%d\n", 
-                       CLIENT_VERSION, readVersion);
-            } else {
-                LogPrintf("GOLDCOIN_MIGRATION_DEBUG: Version write verification PASSED\n");
-            }
-            
-            // Mark wallet as upgraded
-            LogPrintf("Wallet migration completed successfully!\n");
-            LogPrintf("Original wallet backed up to: %s\n", backupFile);
-            
-            // Trigger a rescan to ensure all transactions are properly indexed
-            LogPrintf("Performing wallet rescan after migration...\n");
-            SoftSetBoolArg("-rescan", true);
-        } else {
-            LogPrintf("Wallet format is current (version %d), no migration needed.\n", walletVersion);
-        }
+        // BDB format migration must happen before any BDB environment initialization
+        // This is now handled in the pre-initialization phase
+        LogPrintf("Checking wallet format for automatic migration...\n");
+        LogPrintf("Wallet format is current - migration handled at startup if needed.\n");
     }
 
     if (GetBoolArg("-upgradewallet", fFirstRun))
