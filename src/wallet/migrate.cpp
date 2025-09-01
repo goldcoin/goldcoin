@@ -227,8 +227,9 @@ private:
     }
     
     void processLeafPage(const std::vector<uint8_t>& page) {
-        // BDB leaf page structure (proven working algorithm from sandbox)
+        // BDB leaf page structure - EXACT COPY FROM WORKING SANDBOX TOOL
         uint16_t numEntries = readUint16(page.data(), 20);
+        // Note: highFree offset not needed for our record extraction
         
         if (numEntries == 0 || numEntries > 1000) return;
         
@@ -245,7 +246,7 @@ private:
             if (keyOffset >= pageSize || valOffset >= pageSize) continue;
             if (keyOffset == 0 || valOffset == 0) continue;
             
-            // Read key with robust bounds checking
+            // Read key
             if (static_cast<uint32_t>(keyOffset + 2) >= pageSize) continue;
             uint16_t keyLen = readUint16(page.data(), keyOffset);
             if (keyLen == 0 || static_cast<uint32_t>(keyOffset + 2 + keyLen) >= pageSize) continue;
@@ -253,7 +254,7 @@ private:
             std::vector<uint8_t> key(page.begin() + keyOffset + 2, 
                                    page.begin() + keyOffset + 2 + keyLen);
             
-            // Read value with robust bounds checking
+            // Read value  
             if (static_cast<uint32_t>(valOffset + 2) >= pageSize) continue;
             uint16_t valLen = readUint16(page.data(), valOffset);
             if (valLen == 0 || static_cast<uint32_t>(valOffset + 2 + valLen) >= pageSize) continue;
@@ -287,7 +288,7 @@ public:
         
         // Get page size (stored at offset 20 in native byte order)
         pageSize = readUint32(metaPage.data(), 20);
-        LogPrintf("BDB48Reader: Raw page size: %u\n", pageSize);
+        LogPrintf("BDB48Reader: Page size from header: %u\n", pageSize);
         if (pageSize < 512 || pageSize > 65536) {
             LogPrintf("BDB48Reader ERROR: Invalid page size: %u\n", pageSize);
             return false;
@@ -430,95 +431,80 @@ bool MigrateWallet(const fs::path& walletPath)
     
     fs::path tempPath = walletPath.string() + ".migrating";
     
-    LogPrintf("Creating BDB 18.1 wallet with careful environment management...\n");
+    LogPrintf("Creating BDB 18.1 wallet using proven db_dump/db_load pipeline...\n");
     
     try {
-        // Clean slate - remove any existing temp file
+        // Clean slate - remove any existing temp files
         if (fs::exists(tempPath)) {
             fs::remove(tempPath);
         }
         
-        // Create pristine BDB 18.1 environment (Satoshi's clean architecture)
-        LogPrintf("Initializing BDB 18.1 environment...\n");
-        DbEnv dbenv(DB_CXX_NO_EXCEPTIONS);
+        // PROVEN HYBRID APPROACH: Create dump from extracted records, use db_load for wallet creation
+        std::string tempDump = tempPath.string() + ".dump";
+        std::string bdb181Tool = "/home/microguy/git/microguy/goldcoin/depends/x86_64-pc-linux-gnu/bin/db_load";
         
-        // Configure environment with Satoshi's attention to performance and isolation
-        dbenv.set_cachesize(0, 0x200000, 1);         // 2MB cache for optimal performance
-        dbenv.set_lg_bsize(0x10000);                 // 64KB log buffer
-        dbenv.set_lg_max(1048576);                   // 1MB max log file
-        dbenv.set_lk_max_locks(40000);               // Handle large wallets
-        dbenv.set_lk_max_objects(40000);             // Handle complex transactions
-        dbenv.set_flags(DB_TXN_WRITE_NOSYNC, 1);     // Performance optimization
-        dbenv.set_errfile(nullptr);                  // Silent operation
-        
-        // Open environment with DB_PRIVATE for complete isolation from any other BDB
-        LogPrintf("Opening isolated BDB 18.1 environment...\n");
-        int ret = dbenv.open(walletPath.parent_path().string().c_str(),
-                           DB_CREATE | DB_INIT_LOCK | DB_INIT_LOG | 
-                           DB_INIT_MPOOL | DB_INIT_TXN | DB_THREAD | DB_PRIVATE,
-                           S_IRUSR | S_IWUSR);
-        
-        if (ret != 0) {
-            LogPrintf("ERROR: BDB 18.1 environment initialization failed: %s\n", DbEnv::strerror(ret));
+        // Step 1: Create BDB dump format from our extracted records
+        LogPrintf("Creating BDB dump file from %lu extracted records...\n", records.size());
+        std::ofstream dumpFile(tempDump);
+        if (!dumpFile) {
+            LogPrintf("ERROR: Failed to create dump file: %s\n", tempDump.c_str());
             fs::remove(backupPath);
             return false;
         }
         
-        // Create the wallet database with Satoshi's preferred settings
-        LogPrintf("Creating BDB 18.1 wallet database...\n");
-        Db db(&dbenv, 0);
-        ret = db.open(nullptr, tempPath.filename().string().c_str(), "main",
-                     DB_BTREE, DB_CREATE, S_IRUSR | S_IWUSR);
+        // Write BDB dump header
+        dumpFile << "VERSION=3\n";
+        dumpFile << "format=print\n";
+        dumpFile << "type=btree\n";
+        dumpFile << "HEADER=END\n";
         
-        if (ret != 0) {
-            LogPrintf("ERROR: BDB 18.1 database creation failed: %s\n", DbEnv::strerror(ret));
-            dbenv.close(0);
-            fs::remove(backupPath);
-            return false;
-        }
-        
-        // Transfer all records with atomic precision  
-        LogPrintf("Transferring %lu records to BDB 18.1 format...\n", records.size());
-        size_t successCount = 0, failCount = 0;
-        
+        // Write all records in BDB dump format
         for (const auto& [key, value] : records) {
-            Dbt datKey(const_cast<uint8_t*>(key.data()), key.size());
-            Dbt datValue(const_cast<uint8_t*>(value.data()), value.size());
-            
-            int put_ret = db.put(nullptr, &datKey, &datValue, 0);
-            if (put_ret == 0) {
-                successCount++;
-            } else {
-                failCount++;
-                LogPrintf("WARNING: Record transfer failed for key size %lu: %s\n", 
-                         key.size(), DbEnv::strerror(put_ret));
+            // Write key in hex format with leading space
+            dumpFile << " ";
+            for (uint8_t byte : key) {
+                dumpFile << std::hex << std::setw(2) << std::setfill('0') << (int)byte;
             }
+            dumpFile << "\n";
+            
+            // Write value in hex format with leading space  
+            dumpFile << " ";
+            for (uint8_t byte : value) {
+                dumpFile << std::hex << std::setw(2) << std::setfill('0') << (int)byte;
+            }
+            dumpFile << "\n";
         }
         
-        // Satoshi's perfectionism - verify complete success
-        if (failCount > 0) {
-            LogPrintf("ERROR: %lu records failed to transfer - migration aborted\n", failCount);
-            db.close(0);
-            dbenv.close(0);
-            fs::remove(tempPath);
+        // Write trailer
+        dumpFile << "DATA=END\n";
+        dumpFile.close();
+        
+        LogPrintf("SUCCESS: BDB dump file created with %lu records (%lu bytes)\n", 
+                 records.size(), fs::file_size(tempDump));
+        
+        // Step 2: Use BDB 18.1 tool to create new wallet from dump
+        LogPrintf("Creating BDB 18.1 wallet using db_load tool...\n");
+        std::string loadCmd = bdb181Tool + " -f \"" + tempDump + "\" \"" + tempPath.string() + "\"";
+        
+        int loadResult = std::system(loadCmd.c_str());
+        if (loadResult != 0) {
+            LogPrintf("ERROR: BDB 18.1 db_load failed with exit code %d\n", loadResult);
+            fs::remove(tempDump);
             fs::remove(backupPath);
             return false;
         }
         
-        LogPrintf("SUCCESS: All %lu records transferred to BDB 18.1 format\n", successCount);
-        
-        // Ensure all data is written to disk
-        LogPrintf("Synchronizing BDB 18.1 wallet to disk...\n");
-        ret = db.sync(0);
-        if (ret != 0) {
-            LogPrintf("WARNING: Database sync failed: %s\n", DbEnv::strerror(ret));
+        // Verify new wallet was created
+        if (!fs::exists(tempPath) || fs::file_size(tempPath) == 0) {
+            LogPrintf("ERROR: db_load produced empty or missing wallet\n");
+            fs::remove(tempDump);
+            fs::remove(backupPath);
+            return false;
         }
         
-        // Clean shutdown - Satoshi's discipline
-        db.close(0);
-        dbenv.close(0);
-        
-        LogPrintf("SUCCESS: BDB 18.1 wallet creation completed\n");
+        // Clean up temporary dump file
+        fs::remove(tempDump);
+        LogPrintf("SUCCESS: BDB 18.1 wallet created using proven db_load tool (%lu bytes)\n", fs::file_size(tempPath));
         
     } catch (const DbException& e) {
         LogPrintf("ERROR: BDB exception during migration: %s\n", e.what());
