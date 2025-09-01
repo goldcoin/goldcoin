@@ -13,6 +13,7 @@
 #include "serialize.h"
 #include "streams.h"
 #include "sync.h"
+#include "util.h"
 #include "version.h"
 
 #include <map>
@@ -167,8 +168,27 @@ protected:
         ssValue << value;
         Dbt datValue(ssValue.data(), ssValue.size());
 
-        // Write
-        int ret = pdb->put(activeTxn, &datKey, &datValue, (fOverwrite ? 0 : DB_NOOVERWRITE));
+        // Write - BDB 18.1 compatibility fix with DEBUG
+        // In BDB 18.1, explicit transaction handling is required for wallet writes
+        // to persist properly after migration from BDB 4.8 format
+        int flags = (fOverwrite ? 0 : DB_NOOVERWRITE);
+        if (activeTxn == nullptr) {
+            // For BDB 18.1: when no explicit transaction, use DB_AUTO_COMMIT
+            // to ensure writes persist correctly in migrated wallets
+            flags |= DB_AUTO_COMMIT;
+            LogPrintf("GOLDCOIN_WRITE_DEBUG: Write with DB_AUTO_COMMIT, flags=%d\n", flags);
+        } else {
+            LogPrintf("GOLDCOIN_WRITE_DEBUG: Write with explicit transaction, flags=%d\n", flags);
+        }
+        
+        LogPrintf("GOLDCOIN_WRITE_DEBUG: Attempting BDB put operation...\n");
+        int ret = pdb->put(activeTxn, &datKey, &datValue, flags);
+        LogPrintf("GOLDCOIN_WRITE_DEBUG: BDB put result: %d %s\n", ret, 
+               ret == 0 ? "(SUCCESS)" : "(FAILED)");
+        
+        if (ret != 0) {
+            LogPrintf("GOLDCOIN_WRITE_DEBUG: ERROR - BDB put failed with error code: %d\n", ret);
+        }
 
         // Clear memory in case it was a private key
         memset(datKey.get_data(), 0, datKey.get_size());
@@ -190,8 +210,24 @@ protected:
         ssKey << key;
         Dbt datKey(ssKey.data(), ssKey.size());
 
-        // Erase
-        int ret = pdb->del(activeTxn, &datKey, 0);
+        // Erase - BDB 18.1 compatibility fix with DEBUG
+        int flags = 0;
+        if (activeTxn == nullptr) {
+            // For BDB 18.1: ensure delete operations persist correctly
+            flags |= DB_AUTO_COMMIT;
+            LogPrintf("GOLDCOIN_ERASE_DEBUG: Delete with DB_AUTO_COMMIT, flags=%d\n", flags);
+        } else {
+            LogPrintf("GOLDCOIN_ERASE_DEBUG: Delete with explicit transaction, flags=%d\n", flags);
+        }
+        
+        LogPrintf("GOLDCOIN_ERASE_DEBUG: Attempting BDB delete operation...\n");
+        int ret = pdb->del(activeTxn, &datKey, flags);
+        LogPrintf("GOLDCOIN_ERASE_DEBUG: BDB delete result: %d %s\n", ret,
+               ret == 0 || ret == DB_NOTFOUND ? "(SUCCESS)" : "(FAILED)");
+        
+        if (ret != 0 && ret != DB_NOTFOUND) {
+            LogPrintf("GOLDCOIN_ERASE_DEBUG: ERROR - BDB delete failed with error code: %d\n", ret);
+        }
 
         // Clear memory
         memset(datKey.get_data(), 0, datKey.get_size());
@@ -302,7 +338,14 @@ public:
 
     bool WriteVersion(int nVersion)
     {
-        return Write(std::string("version"), nVersion);
+        LogPrintf("GOLDCOIN_VERSION_DEBUG: *** WRITING WALLET VERSION %d ***\n", nVersion);
+        bool result = Write(std::string("version"), nVersion);
+        LogPrintf("GOLDCOIN_VERSION_DEBUG: WriteVersion result: %s\n", 
+               result ? "SUCCESS" : "FAILED");
+        if (!result) {
+            LogPrintf("GOLDCOIN_VERSION_DEBUG: CRITICAL ERROR - Failed to write wallet version!\n");
+        }
+        return result;
     }
 
     bool static Rewrite(const std::string& strFile, const char* pszSkip = nullptr);

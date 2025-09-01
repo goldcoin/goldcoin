@@ -11,6 +11,9 @@
 
 #include <memory>
 #include <random>
+#include <fstream>
+#include <cstring>
+#include <cstdlib>
 
 #include "base58.h"
 #include "version_info.h"
@@ -3627,13 +3630,65 @@ CWallet* CWallet::CreateWalletFromFile(const std::string walletFile)
     
     // Silently check and migrate BDB 4.8 wallets to BDB 18.1
     fs::path walletPath = GetDataDir() / walletFile;
-    if (fs::exists(walletPath) && WalletMigration::NeedsMigration(walletPath)) {
-        // Perform silent migration with automatic backup
-        if (!WalletMigration::MigrateWallet(walletPath)) {
-            // Migration failed, but we'll try to continue with the wallet as-is
-            LogPrintf("Warning: Wallet migration failed, continuing with existing format\n");
+    LogPrintf("GOLDCOIN_PATH_DEBUG: walletFile='%s'\n", walletFile);
+    LogPrintf("GOLDCOIN_PATH_DEBUG: GetDataDir()='%s'\n", GetDataDir().string());
+    LogPrintf("GOLDCOIN_PATH_DEBUG: walletPath='%s'\n", walletPath.string());
+    LogPrintf("GOLDCOIN_PATH_DEBUG: fs::exists(walletPath)=%s\n", fs::exists(walletPath) ? "TRUE" : "FALSE");
+    
+    if (fs::exists(walletPath)) {
+        LogPrintf("GOLDCOIN_PATH_DEBUG: Checking if wallet needs BDB format upgrade...\n");
+        
+        // Check if this is a BDB 4.8 wallet by reading the version byte
+        std::ifstream file(walletPath.string(), std::ios::binary);
+        if (file) {
+            uint8_t header[32];
+            file.read(reinterpret_cast<char*>(header), sizeof(header));
+            
+            if (file.gcount() >= 17) {
+                // Check BDB magic at offset 12
+                static const uint8_t BDB_BTREE_MAGIC[] = {0x62, 0x31, 0x05, 0x00};
+                if (std::memcmp(header + 12, BDB_BTREE_MAGIC, 4) == 0) {
+                    uint8_t version = header[16];
+                    LogPrintf("GOLDCOIN_PATH_DEBUG: BDB version byte: 0x%02x\n", version);
+                    
+                    if (version == 0x09) {
+                        LogPrintf("GOLDCOIN_UPGRADE: Detected BDB 4.8 wallet, upgrading to BDB 18.1 format...\n");
+                        
+                        // Create backup
+                        std::string backupPath = walletPath.string() + ".bdb48-backup";
+                        fs::copy_file(walletPath, backupPath, fs::copy_options::overwrite_existing);
+                        LogPrintf("GOLDCOIN_UPGRADE: Created backup at %s\n", backupPath);
+                        
+                        // Use db_upgrade utility to convert the wallet
+                        std::string upgradeCmd = "db_upgrade \"" + walletPath.string() + "\"";
+                        LogPrintf("GOLDCOIN_UPGRADE: Running: %s\n", upgradeCmd);
+                        
+                        int result = system(upgradeCmd.c_str());
+                        if (result == 0) {
+                            LogPrintf("GOLDCOIN_UPGRADE: Successfully upgraded wallet to BDB 18.1 format\n");
+                        } else {
+                            LogPrintf("GOLDCOIN_UPGRADE: db_upgrade failed with code %d, trying alternative method\n", result);
+                            
+                            // Alternative: Use db_dump and db_load
+                            std::string tempFile = walletPath.string() + ".dump";
+                            std::string dumpCmd = "db4.8_dump \"" + walletPath.string() + "\" > \"" + tempFile + "\"";
+                            std::string loadCmd = "db_load \"" + walletPath.string() + ".new\" < \"" + tempFile + "\"";
+                            
+                            LogPrintf("GOLDCOIN_UPGRADE: Attempting dump/load migration...\n");
+                            if (system(dumpCmd.c_str()) == 0 && system(loadCmd.c_str()) == 0) {
+                                // Replace old wallet with new one
+                                fs::rename(walletPath.string() + ".new", walletPath);
+                                fs::remove(tempFile);
+                                LogPrintf("GOLDCOIN_UPGRADE: Dump/load migration successful\n");
+                            } else {
+                                LogPrintf("GOLDCOIN_UPGRADE: WARNING - All upgrade attempts failed, continuing with BDB 4.8 format\n");
+                            }
+                        }
+                    }
+                }
+            }
+            file.close();
         }
-        // If successful, the wallet is now BDB 18.1 and will load normally
     }
     
     // =============================================================================
@@ -3700,8 +3755,30 @@ CWallet* CWallet::CreateWalletFromFile(const std::string walletFile)
             walletInstance->SetMaxVersion(CLIENT_VERSION);
             
             // Force a database environment refresh to use new BDB version
+            LogPrintf("GOLDCOIN_MIGRATION_DEBUG: Creating CWalletDB for version write...\n");
             CWalletDB walletdb(walletFile);
-            walletdb.WriteVersion(CLIENT_VERSION);
+            LogPrintf("GOLDCOIN_MIGRATION_DEBUG: About to write version %d to wallet\n", CLIENT_VERSION);
+            
+            bool versionWriteResult = walletdb.WriteVersion(CLIENT_VERSION);
+            LogPrintf("GOLDCOIN_MIGRATION_DEBUG: WriteVersion result: %s\n", 
+                   versionWriteResult ? "SUCCESS" : "FAILED");
+            
+            // Verify the write worked by reading it back
+            int readVersion = 0;
+            bool readResult = walletdb.ReadVersion(readVersion);
+            LogPrintf("GOLDCOIN_MIGRATION_DEBUG: ReadVersion after write: %s, value=%d\n",
+                   readResult ? "SUCCESS" : "FAILED", readVersion);
+            
+            if (!versionWriteResult) {
+                LogPrintf("GOLDCOIN_MIGRATION_DEBUG: CRITICAL ERROR - Version write failed!\n");
+            } else if (!readResult) {
+                LogPrintf("GOLDCOIN_MIGRATION_DEBUG: CRITICAL ERROR - Cannot read back version!\n");
+            } else if (readVersion != CLIENT_VERSION) {
+                LogPrintf("GOLDCOIN_MIGRATION_DEBUG: CRITICAL ERROR - Version mismatch! Expected=%d, Got=%d\n", 
+                       CLIENT_VERSION, readVersion);
+            } else {
+                LogPrintf("GOLDCOIN_MIGRATION_DEBUG: Version write verification PASSED\n");
+            }
             
             // Mark wallet as upgraded
             LogPrintf("Wallet migration completed successfully!\n");
