@@ -206,96 +206,61 @@ T ReadValue(const uint8_t* buffer, size_t offset) {
     return value;
 }
 
-// Simple BDB 4.8 reader - extracts key-value pairs
+// WORKING BDB 4.8 reader from successful sandbox tool - native byte order approach
 class BDB48Reader {
 private:
     std::ifstream file;
-    uint32_t pageSize;
+    uint32_t pageSize = 4096;
     std::vector<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>> records;
     
-    bool ReadPage(uint32_t pgno, std::vector<uint8_t>& page) {
-        if (pgno == 0 || pgno == 0xFFFFFFFF) return false;
-        file.seekg(pgno * pageSize);
-        page.resize(pageSize);
-        file.read(reinterpret_cast<char*>(page.data()), pageSize);
-        return file.good();
+    // Helper functions - native byte order (working approach from sandbox)
+    static uint16_t readUint16(const uint8_t* buffer, size_t offset) {
+        uint16_t value;
+        memcpy(&value, buffer + offset, sizeof(value));
+        return value; // Native byte order - this was the key fix!
     }
     
-    // Handle overflow pages for large records
-    std::vector<uint8_t> ReadOverflowData(uint32_t pgno, uint32_t totalLen) {
-        std::vector<uint8_t> data;
-        data.reserve(totalLen);
-        
-        while (pgno != 0 && data.size() < totalLen) {
-            std::vector<uint8_t> page;
-            if (!ReadPage(pgno, page)) break;
-            
-            // Overflow page header
-            PageHeader header;
-            memcpy(&header, page.data(), sizeof(PageHeader));
-            
-            // Get next overflow page
-            pgno = ntohl(header.next_pgno);
-            
-            // Copy data from this page (after header)
-            size_t dataStart = sizeof(PageHeader);
-            size_t dataLen = std::min(size_t(totalLen - data.size()), 
-                                     pageSize - dataStart);
-            data.insert(data.end(), 
-                       page.begin() + dataStart, 
-                       page.begin() + dataStart + dataLen);
-        }
-        
-        return data;
+    static uint32_t readUint32(const uint8_t* buffer, size_t offset) {
+        uint32_t value;
+        memcpy(&value, buffer + offset, sizeof(value));
+        return value; // Native byte order - this was the key fix!
     }
     
-    void ProcessBtreePage(const std::vector<uint8_t>& page) {
-        PageHeader header;
-        memcpy(&header, page.data(), sizeof(PageHeader));
-        header.pgno = ntohl(header.pgno);
-        header.entries = ntohs(header.entries);
-        header.hf_offset = ntohs(header.hf_offset);
+    void processLeafPage(const std::vector<uint8_t>& page) {
+        // BDB leaf page structure (proven working algorithm from sandbox)
+        uint16_t numEntries = readUint16(page.data(), 20);
         
-        // Only process leaf pages (level 0)
-        if (header.level != 0) return;
+        if (numEntries == 0 || numEntries > 1000) return;
         
-        // Btree leaf page entries are pairs of key-value records
-        // Index starts after the page header
-        size_t indexStart = sizeof(PageHeader);
+        // Index starts at end of page and grows backwards
+        size_t indexStart = pageSize - (numEntries * 2);
         
-        // Process each entry in the page
-        for (uint16_t i = 0; i < header.entries; i += 2) {
-            // BDB btree stores key/value pairs, so we read in pairs
-            if (i + 1 >= header.entries) break;
+        for (uint16_t i = 0; i < numEntries; i += 2) {
+            if (i + 1 >= numEntries) break;
             
-            // Get offsets for key and value
-            uint16_t keyOffset = ReadValue<uint16_t>(page.data(), indexStart + (i * 2));
-            uint16_t valOffset = ReadValue<uint16_t>(page.data(), indexStart + ((i + 1) * 2));
+            // Get offsets for key and value from index
+            uint16_t keyOffset = readUint16(page.data(), indexStart + (i * 2));
+            uint16_t valOffset = readUint16(page.data(), indexStart + ((i + 1) * 2));
             
             if (keyOffset >= pageSize || valOffset >= pageSize) continue;
+            if (keyOffset == 0 || valOffset == 0) continue;
             
-            // Read key data
-            size_t keyPos = keyOffset;
-            if (keyPos + 3 > pageSize) continue;
+            // Read key with robust bounds checking
+            if (static_cast<uint32_t>(keyOffset + 2) >= pageSize) continue;
+            uint16_t keyLen = readUint16(page.data(), keyOffset);
+            if (keyLen == 0 || static_cast<uint32_t>(keyOffset + 2 + keyLen) >= pageSize) continue;
             
-            // BDB record format: [len:2][data:len] for simple data records
-            uint16_t keyLen = ReadValue<uint16_t>(page.data(), keyPos);
-            keyPos += 2;
+            std::vector<uint8_t> key(page.begin() + keyOffset + 2, 
+                                   page.begin() + keyOffset + 2 + keyLen);
             
-            if (keyPos + keyLen > pageSize) continue;
-            std::vector<uint8_t> key(page.begin() + keyPos, page.begin() + keyPos + keyLen);
+            // Read value with robust bounds checking
+            if (static_cast<uint32_t>(valOffset + 2) >= pageSize) continue;
+            uint16_t valLen = readUint16(page.data(), valOffset);
+            if (valLen == 0 || static_cast<uint32_t>(valOffset + 2 + valLen) >= pageSize) continue;
             
-            // Read value data
-            size_t valPos = valOffset;
-            if (valPos + 3 > pageSize) continue;
+            std::vector<uint8_t> value(page.begin() + valOffset + 2,
+                                     page.begin() + valOffset + 2 + valLen);
             
-            uint16_t valLen = ReadValue<uint16_t>(page.data(), valPos);
-            valPos += 2;
-            
-            if (valPos + valLen > pageSize) continue;
-            std::vector<uint8_t> value(page.begin() + valPos, page.begin() + valPos + valLen);
-            
-            // Store the key-value pair
             if (!key.empty() && !value.empty()) {
                 records.push_back({key, value});
             }
@@ -304,44 +269,65 @@ private:
     
 public:
     bool Open(const fs::path& walletPath) {
+        LogPrintf("BDB48Reader: Opening %s\n", walletPath.string().c_str());
+        
         file.open(walletPath, std::ios::binary);
-        if (!file) return false;
-        
-        // First read metadata to get page size
-        uint8_t metaBuffer[512];
-        file.read(reinterpret_cast<char*>(metaBuffer), sizeof(metaBuffer));
-        if (!file.good()) return false;
-        
-        BtreeMetaData meta;
-        memcpy(&meta, metaBuffer, sizeof(BtreeMetaData));
-        
-        // Verify magic at correct offset (12 from file start)
-        if (memcmp(metaBuffer + 12, BDB_BTREE_MAGIC, 4) != 0) {
-            LogPrintf("GOLDCOIN_MIGRATE_DEBUG: Magic mismatch - expected 62 31 05 00, got %02x %02x %02x %02x\n",
-                     metaBuffer[12], metaBuffer[13], metaBuffer[14], metaBuffer[15]);
+        if (!file) {
+            LogPrintf("BDB48Reader ERROR: Failed to open file\n");
             return false;
         }
         
-        pageSize = ntohl(meta.pagesize);
-        if (pageSize == 0 || pageSize > 65536) {
+        // Read metadata page
+        std::vector<uint8_t> metaPage(4096);
+        file.read(reinterpret_cast<char*>(metaPage.data()), 4096);
+        if (!file.good()) {
+            LogPrintf("BDB48Reader ERROR: Failed to read metadata page\n");
             return false;
         }
         
-        uint32_t lastPage = ntohl(meta.last_pgno);
+        // Get page size (stored at offset 20 in native byte order)
+        pageSize = readUint32(metaPage.data(), 20);
+        LogPrintf("BDB48Reader: Raw page size: %u\n", pageSize);
+        if (pageSize < 512 || pageSize > 65536) {
+            LogPrintf("BDB48Reader ERROR: Invalid page size: %u\n", pageSize);
+            return false;
+        }
         
-        // Read all pages and extract records
+        // Get last page number (stored at offset 32)
+        uint32_t lastPage = readUint32(metaPage.data(), 32);
+        LogPrintf("BDB48Reader: Last page: %u\n", lastPage);
+        if (lastPage == 0 || lastPage > 100000) {
+            LogPrintf("BDB48Reader ERROR: Invalid last page: %u\n", lastPage);
+            return false;
+        }
+        
+        // Process all pages using working algorithm from sandbox
         for (uint32_t pgno = 1; pgno <= lastPage; pgno++) {
-            std::vector<uint8_t> page;
-            if (!ReadPage(pgno, page)) continue;
+            std::vector<uint8_t> page(pageSize);
+            file.seekg(pgno * pageSize);
+            file.read(reinterpret_cast<char*>(page.data()), pageSize);
             
-            // Check page type
-            uint8_t pageType = page[sizeof(PageHeader) - 1];
-            if (pageType == P_LBTREE) {
-                ProcessBtreePage(page);
+            if (!file.good()) continue;
+            if (page.size() < 26) continue;
+            
+            // Check page type at offset 25
+            uint8_t pageType = page[25];
+            if (pageType != 0) {
+                LogPrintf("BDB48Reader: Page %u: type=%d\n", pgno, (int)pageType);
+            }
+            
+            // Process btree leaf pages (type 5) - this matches working sandbox tool
+            if (pageType == 5) {
+                size_t beforeCount = records.size();
+                processLeafPage(page);
+                size_t afterCount = records.size();
+                LogPrintf("BDB48Reader: Leaf page %u extracted %lu records\n", 
+                         pgno, (afterCount - beforeCount));
             }
         }
         
-        return true;
+        LogPrintf("BDB48Reader: Total records extracted: %lu\n", records.size());
+        return !records.empty();
     }
     
     const std::vector<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>>& GetRecords() const {
