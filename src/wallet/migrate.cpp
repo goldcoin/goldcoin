@@ -25,8 +25,11 @@ static const uint8_t BDB18_VERSION = 0x0a;  // at offset 16
 
 WalletDBVersion DetectWalletVersion(const fs::path& walletPath)
 {
+    LogPrintf("GOLDCOIN_DETECT_DEBUG: DetectWalletVersion called with path='%s'\n", walletPath.string());
+    
     std::ifstream file(walletPath, std::ios::binary);
     if (!file) {
+        LogPrintf("GOLDCOIN_DETECT_DEBUG: ERROR - Cannot open file\n");
         return WalletDBVersion::UNKNOWN;
     }
     
@@ -34,18 +37,35 @@ WalletDBVersion DetectWalletVersion(const fs::path& walletPath)
     uint8_t header[32];
     file.read(reinterpret_cast<char*>(header), sizeof(header));
     
+    LogPrintf("GOLDCOIN_DETECT_DEBUG: Read %d bytes\n", (int)file.gcount());
+    
     if (file.gcount() >= 17) {
         // Check BDB magic at offset 12
+        LogPrintf("GOLDCOIN_DETECT_DEBUG: Magic bytes at offset 12: %02x %02x %02x %02x\n", 
+                 header[12], header[13], header[14], header[15]);
+        
         if (std::memcmp(header + 12, BDB_BTREE_MAGIC, 4) == 0) {
+            LogPrintf("GOLDCOIN_DETECT_DEBUG: BDB magic MATCH!\n");
             uint8_t version = header[16];
+            LogPrintf("GOLDCOIN_DETECT_DEBUG: Version byte at offset 16: 0x%02x\n", version);
+            
             if (version == BDB48_VERSION) {
+                LogPrintf("GOLDCOIN_DETECT_DEBUG: DETECTED BDB 4.8 - returning BDB_4_8\n");
                 return WalletDBVersion::BDB_4_8;
             } else if (version == BDB18_VERSION) {
+                LogPrintf("GOLDCOIN_DETECT_DEBUG: DETECTED BDB 18.1 - returning BDB_18_1\n");
                 return WalletDBVersion::BDB_18_1;
+            } else {
+                LogPrintf("GOLDCOIN_DETECT_DEBUG: Unknown BDB version: 0x%02x\n", version);
             }
+        } else {
+            LogPrintf("GOLDCOIN_DETECT_DEBUG: BDB magic MISMATCH!\n");
         }
+    } else {
+        LogPrintf("GOLDCOIN_DETECT_DEBUG: File too short: %d bytes\n", (int)file.gcount());
     }
     
+    LogPrintf("GOLDCOIN_DETECT_DEBUG: Returning UNKNOWN\n");
     return WalletDBVersion::UNKNOWN;
 }
 
@@ -255,8 +275,10 @@ public:
         BtreeMetaData meta;
         memcpy(&meta, metaBuffer, sizeof(BtreeMetaData));
         
-        // Verify magic
-        if (memcmp(&meta.magic, BDB_BTREE_MAGIC, 4) != 0) {
+        // Verify magic at correct offset (12 from file start)
+        if (memcmp(metaBuffer + 12, BDB_BTREE_MAGIC, 4) != 0) {
+            LogPrintf("GOLDCOIN_MIGRATE_DEBUG: Magic mismatch - expected 62 31 05 00, got %02x %02x %02x %02x\n",
+                     metaBuffer[12], metaBuffer[13], metaBuffer[14], metaBuffer[15]);
             return false;
         }
         
@@ -289,6 +311,10 @@ public:
 
 bool MigrateWallet(const fs::path& walletPath)
 {
+    LogPrintf("GOLDCOIN_MIGRATE_DEBUG: *** STARTING WALLET MIGRATION ***\n");
+    LogPrintf("GOLDCOIN_MIGRATE_DEBUG: Wallet path: %s\n", walletPath.string().c_str());
+    LogPrintf("GOLDCOIN_MIGRATE_DEBUG: Wallet size: %lu bytes\n", fs::file_size(walletPath));
+    
     LogPrintf("Starting wallet migration for %s\n", walletPath.string());
     LogPrintf("Wallet size: %lu bytes\n", fs::file_size(walletPath));
     
@@ -338,6 +364,7 @@ bool MigrateWallet(const fs::path& walletPath)
         }
         
         // Create new BDB environment for the migrated wallet
+        LogPrintf("GOLDCOIN_MIGRATE_DEBUG: Creating new BDB 18.1 environment...\n");
         DbEnv dbenv(DB_CXX_NO_EXCEPTIONS);
         dbenv.set_lg_dir(".");
         dbenv.set_cachesize(0, 0x100000, 1); // 1MB cache
@@ -349,6 +376,9 @@ bool MigrateWallet(const fs::path& walletPath)
         dbenv.set_flags(DB_AUTO_COMMIT, 1);
         dbenv.set_flags(DB_TXN_WRITE_NOSYNC, 1);
         dbenv.log_set_config(DB_LOG_AUTO_REMOVE, 1);
+        
+        LogPrintf("GOLDCOIN_MIGRATE_DEBUG: Opening BDB environment at: %s\n", 
+               walletPath.parent_path().string().c_str());
         
         // Open environment
         int ret = dbenv.open(walletPath.parent_path().string().c_str(),
@@ -362,12 +392,15 @@ bool MigrateWallet(const fs::path& walletPath)
                            S_IRUSR | S_IWUSR);
         
         if (ret != 0) {
+            LogPrintf("GOLDCOIN_MIGRATE_DEBUG: ERROR - BDB environment open failed: %s\n", DbEnv::strerror(ret));
             LogPrintf("Failed to create BDB environment: %s\n", DbEnv::strerror(ret));
             fs::remove(backupPath);
             return false;
         }
+        LogPrintf("GOLDCOIN_MIGRATE_DEBUG: BDB environment opened successfully\n");
         
         // Create the new database
+        LogPrintf("GOLDCOIN_MIGRATE_DEBUG: Creating new database file: %s\n", tempPath.filename().string().c_str());
         Db db(&dbenv, 0);
         
         ret = db.open(nullptr,                    // Txn pointer
@@ -378,22 +411,35 @@ bool MigrateWallet(const fs::path& walletPath)
                      0);
         
         if (ret != 0) {
+            LogPrintf("GOLDCOIN_MIGRATE_DEBUG: ERROR - Database creation failed: %s\n", DbEnv::strerror(ret));
             LogPrintf("Failed to create new wallet database: %s\n", DbEnv::strerror(ret));
             dbenv.close(0);
             fs::remove(backupPath);
             return false;
         }
+        LogPrintf("GOLDCOIN_MIGRATE_DEBUG: Database created successfully\n");
         
         // Write all records to new database
+        LogPrintf("GOLDCOIN_MIGRATE_DEBUG: Writing %lu records to new database...\n", records.size());
+        size_t successCount = 0, failCount = 0;
+        
         for (const auto& [key, value] : records) {
             Dbt datKey(const_cast<uint8_t*>(key.data()), key.size());
             Dbt datValue(const_cast<uint8_t*>(value.data()), value.size());
             
             int put_ret = db.put(nullptr, &datKey, &datValue, 0);
             if (put_ret != 0) {
+                failCount++;
+                LogPrintf("GOLDCOIN_MIGRATE_DEBUG: Write failed for record (key size=%lu): %s\n", 
+                       key.size(), DbEnv::strerror(put_ret));
                 LogPrintf("Warning: Failed to write record: %s\n", DbEnv::strerror(put_ret));
+            } else {
+                successCount++;
             }
         }
+        
+        LogPrintf("GOLDCOIN_MIGRATE_DEBUG: Write complete. Success: %lu, Failed: %lu\n", 
+               successCount, failCount);
         
         // Close database and environment
         db.close(0);
@@ -416,25 +462,37 @@ bool MigrateWallet(const fs::path& walletPath)
     }
     
     // Step 4: Verify the migrated wallet is BDB 18.1
-    if (DetectWalletVersion(tempPath) != WalletDBVersion::BDB_18_1) {
+    LogPrintf("GOLDCOIN_MIGRATE_DEBUG: Verifying migrated wallet format...\n");
+    WalletDBVersion migratedVersion = DetectWalletVersion(tempPath);
+    LogPrintf("GOLDCOIN_MIGRATE_DEBUG: Detected migrated wallet version: %d\n", (int)migratedVersion);
+    
+    if (migratedVersion != WalletDBVersion::BDB_18_1) {
+        LogPrintf("GOLDCOIN_MIGRATE_DEBUG: ERROR - Migration verification failed. Expected BDB 18.1, got %d\n", 
+               (int)migratedVersion);
         LogPrintf("Migration verification failed - not BDB 18.1 format\n");
         fs::remove(tempPath);
         fs::remove(backupPath);
         return false;
     }
+    LogPrintf("GOLDCOIN_MIGRATE_DEBUG: Migration verification PASSED - wallet is BDB 18.1\n");
     
     // Step 5: Atomic replacement
+    LogPrintf("GOLDCOIN_MIGRATE_DEBUG: Performing atomic wallet replacement...\n");
     try {
         // Move original aside temporarily
         fs::path oldPath = walletPath.string() + ".old";
+        LogPrintf("GOLDCOIN_MIGRATE_DEBUG: Moving original wallet to: %s\n", oldPath.string().c_str());
         fs::rename(walletPath, oldPath);
         
         // Move new wallet into place
+        LogPrintf("GOLDCOIN_MIGRATE_DEBUG: Moving migrated wallet to: %s\n", walletPath.string().c_str());
         fs::rename(tempPath, walletPath);
         
         // Remove old wallet
+        LogPrintf("GOLDCOIN_MIGRATE_DEBUG: Removing old wallet file\n");
         fs::remove(oldPath);
         
+        LogPrintf("GOLDCOIN_MIGRATE_DEBUG: *** MIGRATION COMPLETED SUCCESSFULLY ***\n");
         LogPrintf("Wallet migrated successfully (backup: %s)\n", backupPath.filename().string());
         return true;
         
