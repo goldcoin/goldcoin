@@ -45,6 +45,14 @@ bool MigrateWallet(const fs::path& walletPath);
  */
 fs::path CreateMigrationBackup(const fs::path& walletPath);
 
+/**
+ * Inject wallet metadata using direct BDB API (the breakthrough function)
+ * @param wallet_path Path to migrated wallet
+ * @param err Error message output
+ * @return true if injection successful
+ */
+bool InjectWalletMetadata(const std::string& wallet_path, std::string& err);
+
 } // namespace WalletMigration
 
 #endif // BITCOIN_WALLET_MIGRATE_H
