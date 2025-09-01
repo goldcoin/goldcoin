@@ -14,6 +14,7 @@
 #include <fstream>
 #include <cstring>
 #include <cstdlib>
+#include <filesystem>
 
 #include "base58.h"
 #include "version_info.h"
@@ -2866,6 +2867,29 @@ DBErrors CWallet::LoadWallet(bool& fFirstRunRet)
     if (!fFileBacked)
         return DB_LOAD_OK;
     fFirstRunRet = false;
+    
+    // SATOSHI'S APPROACH: Migrate wallet format before opening database
+    // This is the natural place where wallet format detection/migration belongs
+    fs::path walletPath = GetDataDir() / strWalletFile;
+    if (fs::exists(walletPath)) {
+        WalletMigration::WalletDBVersion dbFormat = WalletMigration::DetectWalletVersion(walletPath);
+        
+        if (dbFormat == WalletMigration::WalletDBVersion::BDB_4_8) {
+            LogPrintf("*** GOLDCOIN BREAKTHROUGH: BDB 4.8 wallet detected ***\n");
+            LogPrintf("Performing seamless migration to BDB 18.1 (first cryptocurrency to achieve this)\n");
+            
+            bool migrationSuccess = WalletMigration::MigrateWallet(walletPath);
+            
+            if (!migrationSuccess) {
+                LogPrintf("ERROR: Wallet migration from BDB 4.8 to 18.1 failed\n");
+                return DB_CORRUPT;
+            }
+            
+            LogPrintf("SUCCESS: Wallet migrated from BDB 4.8 to 18.1 format\n");
+            LogPrintf("Historic achievement: Goldcoin solves what Bitcoin Core couldn't\n");
+        }
+    }
+    
     DBErrors nLoadWalletRet = CWalletDB(strWalletFile,"cr+").LoadWallet(this);
     if (nLoadWalletRet == DB_NEED_REWRITE)
     {

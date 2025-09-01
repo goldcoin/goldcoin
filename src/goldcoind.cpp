@@ -189,34 +189,7 @@ bool AppInit(int argc, char* argv[])
             exit(1);
         }
         
-        // SATOSHI'S SOLUTION: Pre-migration check before any BDB environment initialization
-        LogPrintf("Performing pre-initialization wallet migration check...\n");
-        fs::path dataDir = GetDataDir();
-        fs::path walletPath = dataDir / GetArg("-wallet", "wallet.dat");
-        
-        if (fs::exists(walletPath)) {
-            WalletMigration::WalletDBVersion dbFormat = WalletMigration::DetectWalletVersion(walletPath);
-            
-            if (dbFormat == WalletMigration::WalletDBVersion::BDB_4_8) {
-                LogPrintf("Pre-migration: Detected BDB 4.8 wallet - performing seamless migration...\n");
-                
-                // SATOSHI'S ELEGANT SOLUTION: Direct integration using proven breakthrough code
-                bool migrationSuccess = WalletMigration::MigrateWallet(walletPath);
-                
-                if (!migrationSuccess) {
-                    fprintf(stderr, "Error: Failed to migrate wallet from BDB 4.8 to 18.1\n");
-                    fprintf(stderr, "Your wallet backup is preserved. See debug.log for details.\n");
-                    exit(1);
-                }
-                
-                LogPrintf("Pre-migration: BDB 4.8 wallet seamlessly upgraded to 18.1 format\n");
-                LogPrintf("Pre-migration: Goldcoin achieves what Bitcoin Core couldn't - seamless BDB migration\n");
-            } else {
-                LogPrintf("Pre-migration: Wallet is already BDB 18.1 format\n");
-            }
-        } else {
-            LogPrintf("Pre-migration: No existing wallet found\n");
-        }
+        // Migration now handled during wallet load (Satoshi's approach)
         if (GetBoolArg("-daemon", false))
         {
 #if HAVE_DECL_DAEMON
