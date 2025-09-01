@@ -14,8 +14,6 @@
 #include <vector>
 #include <arpa/inet.h>  // For ntohl, ntohs
 #include <sys/stat.h>   // For file permissions
-#include <sys/wait.h>   // For waitpid, WIFEXITED, WEXITSTATUS
-#include <unistd.h>     // For fork, exit
 #include <db_cxx.h>     // Berkeley DB C++ API
 
 namespace WalletMigration {
@@ -439,122 +437,125 @@ bool MigrateWallet(const fs::path& walletPath)
               records.size(), totalKeySize, totalValueSize);
     
     // ========================================================================
-    // PHASE 3: SATOSHI'S PROCESS ISOLATION - BDB 18.1 CREATION
+    // PHASE 3: SATOSHI'S ELEGANT BDB 18.1 CREATION - SINGLE PROCESS
     // ========================================================================
-    // Create BDB 18.1 wallet in isolated process to avoid environment conflicts.
-    // This is pure Satoshi engineering - elegant isolation prevents interference.
+    // Create BDB 18.1 wallet using careful environment management.
+    // No fork() needed - pure Satoshi engineering with universal compatibility.
     
     fs::path tempPath = walletPath.string() + ".migrating";
     
-    LogPrintf("Creating BDB 18.1 wallet using process isolation...\n");
-    pid_t migration_pid = fork();
+    LogPrintf("Creating BDB 18.1 wallet with careful environment management...\n");
     
-    if (migration_pid == -1) {
-        LogPrintf("ERROR: Process isolation failed\n");
-        fs::remove(backupPath);
-        return false;
-    }
-    
-    if (migration_pid == 0) {
-        // CHILD PROCESS: BDB 18.1 Creation in Complete Isolation
-        LogPrintf("Child process: Creating BDB 18.1 environment...\n");
+    try {
+        // Clean slate - remove any existing temp file
+        if (fs::exists(tempPath)) {
+            fs::remove(tempPath);
+        }
         
-        try {
-            // Clean slate - remove any existing temp file
-            if (fs::exists(tempPath)) {
-                fs::remove(tempPath);
+        // Create pristine BDB 18.1 environment (Satoshi's clean architecture)
+        LogPrintf("Initializing BDB 18.1 environment...\n");
+        DbEnv dbenv(DB_CXX_NO_EXCEPTIONS);
+        
+        // Configure environment with Satoshi's attention to performance and isolation
+        dbenv.set_cachesize(0, 0x200000, 1);         // 2MB cache for optimal performance
+        dbenv.set_lg_bsize(0x10000);                 // 64KB log buffer
+        dbenv.set_lg_max(1048576);                   // 1MB max log file
+        dbenv.set_lk_max_locks(40000);               // Handle large wallets
+        dbenv.set_lk_max_objects(40000);             // Handle complex transactions
+        dbenv.set_flags(DB_TXN_WRITE_NOSYNC, 1);     // Performance optimization
+        dbenv.set_errfile(nullptr);                  // Silent operation
+        
+        // Open environment with DB_PRIVATE for complete isolation from any other BDB
+        LogPrintf("Opening isolated BDB 18.1 environment...\n");
+        int ret = dbenv.open(walletPath.parent_path().string().c_str(),
+                           DB_CREATE | DB_INIT_LOCK | DB_INIT_LOG | 
+                           DB_INIT_MPOOL | DB_INIT_TXN | DB_THREAD | DB_PRIVATE,
+                           S_IRUSR | S_IWUSR);
+        
+        if (ret != 0) {
+            LogPrintf("ERROR: BDB 18.1 environment initialization failed: %s\n", DbEnv::strerror(ret));
+            fs::remove(backupPath);
+            return false;
+        }
+        
+        // Create the wallet database with Satoshi's preferred settings
+        LogPrintf("Creating BDB 18.1 wallet database...\n");
+        Db db(&dbenv, 0);
+        ret = db.open(nullptr, tempPath.filename().string().c_str(), "main",
+                     DB_BTREE, DB_CREATE, S_IRUSR | S_IWUSR);
+        
+        if (ret != 0) {
+            LogPrintf("ERROR: BDB 18.1 database creation failed: %s\n", DbEnv::strerror(ret));
+            dbenv.close(0);
+            fs::remove(backupPath);
+            return false;
+        }
+        
+        // Transfer all records with atomic precision  
+        LogPrintf("Transferring %lu records to BDB 18.1 format...\n", records.size());
+        size_t successCount = 0, failCount = 0;
+        
+        for (const auto& [key, value] : records) {
+            Dbt datKey(const_cast<uint8_t*>(key.data()), key.size());
+            Dbt datValue(const_cast<uint8_t*>(value.data()), value.size());
+            
+            int put_ret = db.put(nullptr, &datKey, &datValue, 0);
+            if (put_ret == 0) {
+                successCount++;
+            } else {
+                failCount++;
+                LogPrintf("WARNING: Record transfer failed for key size %lu: %s\n", 
+                         key.size(), DbEnv::strerror(put_ret));
             }
-            
-            // Create pristine BDB 18.1 environment (Satoshi's clean architecture)
-            DbEnv dbenv(DB_CXX_NO_EXCEPTIONS);
-            
-            // Configure environment with Satoshi's attention to performance
-            dbenv.set_cachesize(0, 0x200000, 1);     // 2MB cache for optimal performance
-            dbenv.set_lg_bsize(0x10000);             // 64KB log buffer
-            dbenv.set_lg_max(1048576);               // 1MB max log file
-            dbenv.set_lk_max_locks(40000);           // Handle large wallets
-            dbenv.set_lk_max_objects(40000);         // Handle complex transactions
-            dbenv.set_flags(DB_TXN_WRITE_NOSYNC, 1); // Performance optimization
-            dbenv.set_errfile(nullptr);              // Silent operation
-            
-            // Open environment with minimal required subsystems
-            int ret = dbenv.open(walletPath.parent_path().string().c_str(),
-                               DB_CREATE | DB_INIT_LOCK | DB_INIT_LOG | 
-                               DB_INIT_MPOOL | DB_INIT_TXN | DB_THREAD | DB_PRIVATE,
-                               S_IRUSR | S_IWUSR);
-            
-            if (ret != 0) {
-                LogPrintf("Child ERROR: BDB 18.1 environment failed: %s\n", DbEnv::strerror(ret));
-                exit(1);
-            }
-            
-            // Create the wallet database with Satoshi's preferred settings
-            Db db(&dbenv, 0);
-            ret = db.open(nullptr, tempPath.filename().string().c_str(), "main",
-                         DB_BTREE, DB_CREATE, S_IRUSR | S_IWUSR);
-            
-            if (ret != 0) {
-                LogPrintf("Child ERROR: Database creation failed: %s\n", DbEnv::strerror(ret));
-                dbenv.close(0);
-                exit(1);
-            }
-            
-            // Transfer all records with atomic precision  
-            LogPrintf("Child: Transferring %lu records to BDB 18.1...\n", records.size());
-            size_t successCount = 0, failCount = 0;
-            
-            for (const auto& [key, value] : records) {
-                Dbt datKey(const_cast<uint8_t*>(key.data()), key.size());
-                Dbt datValue(const_cast<uint8_t*>(value.data()), value.size());
-                
-                int put_ret = db.put(nullptr, &datKey, &datValue, 0);
-                if (put_ret == 0) {
-                    successCount++;
-                } else {
-                    failCount++;
-                    LogPrintf("Child WARNING: Record transfer failed: %s\n", DbEnv::strerror(put_ret));
-                }
-            }
-            
-            // Satoshi's perfectionism - verify complete success
-            if (failCount > 0) {
-                LogPrintf("Child ERROR: %lu records failed to transfer\n", failCount);
-                db.close(0);
-                dbenv.close(0);
-                exit(1);
-            }
-            
-            LogPrintf("Child SUCCESS: All %lu records transferred to BDB 18.1\n", successCount);
-            
-            // Clean shutdown - Satoshi's discipline
+        }
+        
+        // Satoshi's perfectionism - verify complete success
+        if (failCount > 0) {
+            LogPrintf("ERROR: %lu records failed to transfer - migration aborted\n", failCount);
             db.close(0);
             dbenv.close(0);
-            exit(0);
-            
-        } catch (const DbException& e) {
-            LogPrintf("Child EXCEPTION: %s\n", e.what());
-            exit(1);
-        } catch (...) {
-            LogPrintf("Child EXCEPTION: Unknown error during migration\n");
-            exit(1);
+            fs::remove(tempPath);
+            fs::remove(backupPath);
+            return false;
         }
-    }
-    
-    // PARENT PROCESS: Wait for child completion with Satoshi's error handling
-    int status;
-    pid_t wait_result = waitpid(migration_pid, &status, 0);
-    
-    if (wait_result == -1 || !WIFEXITED(status) || WEXITSTATUS(status) != 0) {
-        LogPrintf("ERROR: BDB 18.1 creation failed (child status: %d)\n", 
-                 WIFEXITED(status) ? WEXITSTATUS(status) : -1);
+        
+        LogPrintf("SUCCESS: All %lu records transferred to BDB 18.1 format\n", successCount);
+        
+        // Ensure all data is written to disk
+        LogPrintf("Synchronizing BDB 18.1 wallet to disk...\n");
+        ret = db.sync(0);
+        if (ret != 0) {
+            LogPrintf("WARNING: Database sync failed: %s\n", DbEnv::strerror(ret));
+        }
+        
+        // Clean shutdown - Satoshi's discipline
+        db.close(0);
+        dbenv.close(0);
+        
+        LogPrintf("SUCCESS: BDB 18.1 wallet creation completed\n");
+        
+    } catch (const DbException& e) {
+        LogPrintf("ERROR: BDB exception during migration: %s\n", e.what());
+        fs::remove(backupPath);
+        if (fs::exists(tempPath)) {
+            fs::remove(tempPath);
+        }
+        return false;
+    } catch (const std::exception& e) {
+        LogPrintf("ERROR: Exception during BDB 18.1 creation: %s\n", e.what());
+        fs::remove(backupPath);
+        if (fs::exists(tempPath)) {
+            fs::remove(tempPath);
+        }
+        return false;
+    } catch (...) {
+        LogPrintf("ERROR: Unknown exception during BDB 18.1 creation\n");
         fs::remove(backupPath);
         if (fs::exists(tempPath)) {
             fs::remove(tempPath);
         }
         return false;
     }
-    
-    LogPrintf("SUCCESS: BDB 18.1 wallet created in isolated process\n");
     
     // ========================================================================
     // PHASE 4: VERIFICATION - TRUST BUT VERIFY (SATOSHI'S PRINCIPLE)
