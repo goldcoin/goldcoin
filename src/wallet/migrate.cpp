@@ -431,7 +431,7 @@ bool MigrateWallet(const fs::path& walletPath)
     
     fs::path tempPath = walletPath.string() + ".migrating";
     
-    LogPrintf("Creating BDB 18.1 wallet using proven db_dump/db_load pipeline...\n");
+    LogPrintf("Creating BDB 18.1 wallet using exact working sandbox approach...\n");
     
     try {
         // Clean slate - remove any existing temp files
@@ -439,50 +439,53 @@ bool MigrateWallet(const fs::path& walletPath)
             fs::remove(tempPath);
         }
         
-        // PROVEN HYBRID APPROACH: Create dump from extracted records, use db_load for wallet creation
+        // EXACT WORKING SANDBOX APPROACH: Use db_dump → db_load pipeline
         std::string tempDump = tempPath.string() + ".dump";
+        std::string bdb48Tool = "/home/microguy/git/microguy/goldcoin/depends/x86_64-pc-linux-gnu/bin/db_dump";
         std::string bdb181Tool = "/home/microguy/git/microguy/goldcoin/depends/x86_64-pc-linux-gnu/bin/db_load";
         
-        // Step 1: Create BDB dump format from our extracted records
-        LogPrintf("Creating BDB dump file from %lu extracted records...\n", records.size());
-        std::ofstream dumpFile(tempDump);
-        if (!dumpFile) {
-            LogPrintf("ERROR: Failed to create dump file: %s\n", tempDump.c_str());
+        // Step 1: Create temporary copy for db_dump (wallet is locked by goldcoind)
+        fs::path tempSource = tempPath.string() + ".source";
+        fs::copy_file(walletPath, tempSource);
+        
+        // Use BDB 4.8 tool to dump temporary wallet copy (EXACT SANDBOX APPROACH)
+        LogPrintf("Extracting records using BDB 4.8 db_dump tool...\n");
+        std::string dumpCmd = bdb48Tool + " -p \"" + tempSource.string() + "\"";
+        
+        FILE* pipe = popen(dumpCmd.c_str(), "r");
+        if (!pipe) {
+            LogPrintf("ERROR: Failed to run BDB dump tool\n");
+            fs::remove(tempSource);
             fs::remove(backupPath);
             return false;
         }
         
-        // Write BDB dump header
-        dumpFile << "VERSION=3\n";
-        dumpFile << "format=print\n";
-        dumpFile << "type=btree\n";
-        dumpFile << "HEADER=END\n";
-        
-        // Write all records in BDB dump format
-        for (const auto& [key, value] : records) {
-            // Write key in hex format with leading space
-            dumpFile << " ";
-            for (uint8_t byte : key) {
-                dumpFile << std::hex << std::setw(2) << std::setfill('0') << (int)byte;
-            }
-            dumpFile << "\n";
-            
-            // Write value in hex format with leading space  
-            dumpFile << " ";
-            for (uint8_t byte : value) {
-                dumpFile << std::hex << std::setw(2) << std::setfill('0') << (int)byte;
-            }
-            dumpFile << "\n";
+        // Create dump file from pipe output
+        std::ofstream dumpFile(tempDump);
+        if (!dumpFile) {
+            pclose(pipe);
+            LogPrintf("ERROR: Failed to create dump file\n");
+            fs::remove(backupPath);
+            return false;
         }
         
-        // Write trailer
-        dumpFile << "DATA=END\n";
+        char buffer[8192];
+        while (fgets(buffer, sizeof(buffer), pipe)) {
+            dumpFile << buffer;
+        }
+        pclose(pipe);
         dumpFile.close();
         
-        LogPrintf("SUCCESS: BDB dump file created with %lu records (%lu bytes)\n", 
-                 records.size(), fs::file_size(tempDump));
+        // Verify dump file was created and contains data
+        if (!fs::exists(tempDump) || fs::file_size(tempDump) == 0) {
+            LogPrintf("ERROR: db_dump produced empty or missing dump file\n");
+            fs::remove(backupPath);
+            return false;
+        }
         
-        // Step 2: Use BDB 18.1 tool to create new wallet from dump
+        LogPrintf("SUCCESS: BDB 4.8 dump created (%lu bytes)\n", fs::file_size(tempDump));
+        
+        // Step 2: Use BDB 18.1 tool to create new wallet from dump (EXACT SANDBOX APPROACH)
         LogPrintf("Creating BDB 18.1 wallet using db_load tool...\n");
         std::string loadCmd = bdb181Tool + " -f \"" + tempDump + "\" \"" + tempPath.string() + "\"";
         
@@ -502,9 +505,10 @@ bool MigrateWallet(const fs::path& walletPath)
             return false;
         }
         
-        // Clean up temporary dump file
+        // Clean up temporary files
         fs::remove(tempDump);
-        LogPrintf("SUCCESS: BDB 18.1 wallet created using proven db_load tool (%lu bytes)\n", fs::file_size(tempPath));
+        fs::remove(tempSource);
+        LogPrintf("SUCCESS: BDB 18.1 wallet created using exact sandbox approach (%lu bytes)\n", fs::file_size(tempPath));
         
     } catch (const DbException& e) {
         LogPrintf("ERROR: BDB exception during migration: %s\n", e.what());
