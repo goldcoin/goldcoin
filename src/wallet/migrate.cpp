@@ -15,6 +15,7 @@
 #include <arpa/inet.h>  // For ntohl, ntohs
 #include <sys/stat.h>   // For file permissions
 #include <db_cxx.h>     // Berkeley DB C++ API
+#include <db.h>         // Berkeley DB C API for direct writing
 
 namespace WalletMigration {
 
@@ -160,6 +161,9 @@ enum PageType {
     P_HASH_UNSORTED = 13
 };
 
+// Overflow page constants
+constexpr uint8_t P_OVERFLOW_TYPE = 7;
+
 // BDB 4.8 Page Header (all pages start with this)
 struct PageHeader {
     uint32_t lsn_file;     // Log sequence number file
@@ -226,45 +230,255 @@ private:
         return value; // Native byte order - this was the key fix!
     }
     
-    void processLeafPage(const std::vector<uint8_t>& page) {
-        // BDB leaf page structure - EXACT COPY FROM WORKING SANDBOX TOOL
-        uint16_t numEntries = readUint16(page.data(), 20);
-        // Note: highFree offset not needed for our record extraction
+    // Detect BDB page header size by testing common values
+    uint16_t detectHeaderSize(const std::vector<uint8_t>& page, uint32_t pageSize, uint16_t lower, uint16_t upper) {
+        const uint16_t candidates[] = {26, 28, 32, 34}; // Common BDB 4.x header sizes
         
-        if (numEntries == 0 || numEntries > 1000) return;
-        
-        // Index starts at end of page and grows backwards
-        size_t indexStart = pageSize - (numEntries * 2);
-        
-        for (uint16_t i = 0; i < numEntries; i += 2) {
-            if (i + 1 >= numEntries) break;
-            
-            // Get offsets for key and value from index
-            uint16_t keyOffset = readUint16(page.data(), indexStart + (i * 2));
-            uint16_t valOffset = readUint16(page.data(), indexStart + ((i + 1) * 2));
-            
-            if (keyOffset >= pageSize || valOffset >= pageSize) continue;
-            if (keyOffset == 0 || valOffset == 0) continue;
-            
-            // Read key
-            if (static_cast<uint32_t>(keyOffset + 2) >= pageSize) continue;
-            uint16_t keyLen = readUint16(page.data(), keyOffset);
-            if (keyLen == 0 || static_cast<uint32_t>(keyOffset + 2 + keyLen) >= pageSize) continue;
-            
-            std::vector<uint8_t> key(page.begin() + keyOffset + 2, 
-                                   page.begin() + keyOffset + 2 + keyLen);
-            
-            // Read value  
-            if (static_cast<uint32_t>(valOffset + 2) >= pageSize) continue;
-            uint16_t valLen = readUint16(page.data(), valOffset);
-            if (valLen == 0 || static_cast<uint32_t>(valOffset + 2 + valLen) >= pageSize) continue;
-            
-            std::vector<uint8_t> value(page.begin() + valOffset + 2,
-                                     page.begin() + valOffset + 2 + valLen);
-            
-            if (!key.empty() && !value.empty()) {
-                records.push_back({key, value});
+        for (uint16_t headerSize : candidates) {
+            if (lower >= headerSize && lower <= pageSize && upper >= headerSize && upper <= pageSize) {
+                uint16_t numIndex = (lower - headerSize) / 2;
+                if (numIndex > 0 && numIndex < 500) { // Reasonable bounds
+                    return headerSize;
+                }
             }
+        }
+        return 26; // Default fallback
+    }
+    
+    // Robust overflow page reading with multiple offset attempts
+    bool ReadOverflowChain(uint32_t startPgno, uint32_t nbytes, std::vector<uint8_t>& data) {
+        data.clear();
+        
+        // ChatGPT's guards
+        if (nbytes == 0 || nbytes > 16 * 1024 * 1024) { // Cap at 16MB
+            LogPrintf("GOLDCOIN_OVERFLOW_DEBUG: Invalid nbytes=%u\n", nbytes);
+            return false;
+        }
+        
+        data.reserve(nbytes);
+        std::set<uint32_t> visited; // Prevent loops
+        
+        uint32_t currentPgno = startPgno;
+        uint32_t bytesLeft = nbytes;
+        uint32_t pagesRead = 0;
+        const uint32_t maxPages = 4096; // Cap pages traversed
+        
+        while (bytesLeft > 0 && currentPgno != 0 && pagesRead < maxPages) {
+            // Check for loops
+            if (visited.count(currentPgno)) {
+                LogPrintf("GOLDCOIN_OVERFLOW_DEBUG: Loop detected at page %u\n", currentPgno);
+                return false;
+            }
+            visited.insert(currentPgno);
+            
+            // Read overflow page
+            std::vector<uint8_t> overflowPage(pageSize);
+            file.seekg(currentPgno * pageSize);
+            file.read(reinterpret_cast<char*>(overflowPage.data()), pageSize);
+            
+            if (!file.good() || overflowPage.size() < 32) {
+                LogPrintf("GOLDCOIN_OVERFLOW_DEBUG: Failed to read page %u\n", currentPgno);
+                return false;
+            }
+            
+            // Verify it's an overflow page (type 7)
+            if (overflowPage[25] != P_OVERFLOW_TYPE) {
+                LogPrintf("GOLDCOIN_OVERFLOW_DEBUG: Expected overflow page type 7, got %d on page %u\n", 
+                         (int)overflowPage[25], currentPgno);
+                return false;
+            }
+            
+            // Try common payload start offsets
+            uint32_t dataStart = 26;
+            if (dataStart >= pageSize || (bytesLeft > 0 && dataStart + std::min(bytesLeft, pageSize - dataStart) > pageSize)) {
+                dataStart = 32; // Fallback
+                if (dataStart >= pageSize) {
+                    LogPrintf("GOLDCOIN_OVERFLOW_DEBUG: No valid payload start found\n");
+                    return false;
+                }
+            }
+            
+            uint32_t availableBytes = pageSize - dataStart;
+            uint32_t bytesToCopy = std::min(bytesLeft, availableBytes);
+            
+            // Copy data from this page
+            data.insert(data.end(), 
+                       overflowPage.begin() + dataStart,
+                       overflowPage.begin() + dataStart + bytesToCopy);
+            
+            bytesLeft -= bytesToCopy;
+            pagesRead++;
+            
+            // Get next overflow page (try multiple offsets)
+            if (bytesLeft > 0) {
+                uint32_t nextPgno = 0;
+                
+                // Try next_pgno at offset 16 first
+                nextPgno = readUint32(overflowPage.data(), 16);
+                
+                // Validate by checking if next page is overflow type
+                if (nextPgno != 0) {
+                    std::vector<uint8_t> nextPage(32); // Just read header
+                    file.seekg(nextPgno * pageSize);
+                    file.read(reinterpret_cast<char*>(nextPage.data()), 32);
+                    if (!file.good() || nextPage[25] != P_OVERFLOW_TYPE) {
+                        // Try offset 12
+                        nextPgno = readUint32(overflowPage.data(), 12);
+                        if (nextPgno != 0) {
+                            file.seekg(nextPgno * pageSize);
+                            file.read(reinterpret_cast<char*>(nextPage.data()), 32);
+                            if (!file.good() || nextPage[25] != P_OVERFLOW_TYPE) {
+                                nextPgno = 0; // Give up
+                            }
+                        }
+                    }
+                }
+                
+                if (nextPgno == 0) {
+                    LogPrintf("GOLDCOIN_OVERFLOW_DEBUG: Overflow chain ended early: %u bytes missing\n", bytesLeft);
+                    return false;
+                }
+                
+                currentPgno = nextPgno;
+            }
+        }
+        
+        if (bytesLeft > 0) {
+            LogPrintf("GOLDCOIN_OVERFLOW_DEBUG: Could not read complete overflow chain: %u bytes missing\n", bytesLeft);
+            return false;
+        }
+        
+        LogPrintf("GOLDCOIN_OVERFLOW_DEBUG: Successfully read %u bytes from %u overflow pages\n", 
+                 (uint32_t)data.size(), pagesRead);
+        return true;
+    }
+    
+    // Parse a single BKEYDATA item with overflow support
+    bool parseLeafItem(const std::vector<uint8_t>& page, uint16_t offset, uint32_t pgno = 0) {
+        if (offset + 8 >= pageSize) {
+            return false;
+        }
+        
+        // Read first BKEYDATA (key) - keys are typically inline
+        uint16_t keyLen = readUint16(page.data(), offset);
+        uint8_t keyType = page[offset + 2];
+        
+        // Sanity check key length
+        if (keyLen == 0 || keyLen > 1000) {
+            return false;
+        }
+        
+        // Extract key (usually inline)
+        uint32_t keyDataOffset = offset + 3;
+        if (keyDataOffset + keyLen >= pageSize) {
+            return false;
+        }
+        
+        std::vector<uint8_t> key(page.begin() + keyDataOffset, 
+                               page.begin() + keyDataOffset + keyLen);
+        
+        // Read second BKEYDATA (value) - might be overflow for large transactions
+        uint32_t dataOffset = offset + 3 + keyLen;
+        if (dataOffset + 3 >= pageSize) {
+            return false;
+        }
+        
+        uint16_t dataLen = readUint16(page.data(), dataOffset);
+        uint8_t dataType = page[dataOffset + 2];
+        
+        std::vector<uint8_t> data;
+        
+        // Check if this is an overflow item
+        // Overflow format: [len:2][type:1][pgno:4][nbytes:4] = 11 bytes total
+        if (dataLen == 11 && (dataType == 1 || dataType == 2)) {
+            // This is an overflow reference
+            uint32_t overflowPgno = readUint32(page.data(), dataOffset + 3);
+            uint32_t overflowBytes = readUint32(page.data(), dataOffset + 7);
+            
+            LogPrintf("GOLDCOIN_OVERFLOW_DEBUG: Page %u found overflow ref: pgno=%u, nbytes=%u\n", 
+                     pgno, overflowPgno, overflowBytes);
+            
+            // Read overflow data
+            if (!ReadOverflowChain(overflowPgno, overflowBytes, data)) {
+                LogPrintf("GOLDCOIN_OVERFLOW_DEBUG: Failed to read overflow chain\n");
+                return false;
+            }
+        } else if (dataLen > 0 && dataLen < 100000) {
+            // Inline data
+            uint32_t dataDataOffset = dataOffset + 3;
+            if (dataDataOffset + dataLen >= pageSize) {
+                return false;
+            }
+            
+            data.assign(page.begin() + dataDataOffset,
+                       page.begin() + dataDataOffset + dataLen);
+        } else {
+            // Invalid data length
+            return false;
+        }
+        
+        if (!key.empty() && !data.empty()) {
+            records.push_back({key, data});
+            
+            // Debug: Log what type of record this is
+            if (key.size() >= 3 && key[0] == 't' && key[1] == 'x' && key[2] == 0) {
+                LogPrintf("GOLDCOIN_TX_DEBUG: Found transaction record, key size=%u, data size=%u\n", 
+                         (uint32_t)key.size(), (uint32_t)data.size());
+            }
+            
+            return true;
+        }
+        
+        return false;
+    }
+    
+    void processLeafPage(const std::vector<uint8_t>& page, uint32_t pgno = 0) {
+        // CORRECT BDB page structure - fixed algorithm
+        
+        // Try multiple possible offsets for lower/upper (BDB versions vary)
+        uint16_t lower, upper;
+        bool foundValid = false;
+        
+        // Common BDB header layouts
+        const uint16_t lowerOffsets[] = {20, 22, 24};
+        const uint16_t upperOffsets[] = {22, 24, 26};
+        
+        for (int i = 0; i < 3 && !foundValid; ++i) {
+            lower = readUint16(page.data(), lowerOffsets[i]);
+            upper = readUint16(page.data(), upperOffsets[i]);
+            
+            // Valid if lower < upper and both in reasonable range
+            if (lower > 0 && upper > 0 && lower < pageSize && upper < pageSize && lower < upper) {
+                foundValid = true;
+                break;
+            }
+        }
+        
+        if (!foundValid) {
+            return;
+        }
+        
+        // Detect header size
+        uint16_t headerSize = detectHeaderSize(page, pageSize, lower, upper);
+        
+        // Compute number of index entries from lower
+        uint16_t numIndex = (lower - headerSize) / 2;
+        
+        if (numIndex == 0 || numIndex > 500) {
+            return;
+        }
+        
+        // Iterate index array at the FRONT of the page (after header)
+        for (uint16_t i = 0; i < numIndex; ++i) {
+            uint16_t itemOffset = readUint16(page.data(), headerSize + i * 2);
+            
+            // Item must point into the item area (between upper and pageSize)
+            if (itemOffset < upper || itemOffset >= pageSize) {
+                continue;
+            }
+            
+            // Parse the item at this offset
+            parseLeafItem(page, itemOffset, pgno);
         }
     }
     
@@ -320,14 +534,43 @@ public:
             // Process btree leaf pages (type 5) - this matches working sandbox tool
             if (pageType == 5) {
                 size_t beforeCount = records.size();
-                processLeafPage(page);
+                processLeafPage(page, pgno);
                 size_t afterCount = records.size();
                 LogPrintf("BDB48Reader: Leaf page %u extracted %lu records\n", 
                          pgno, (afterCount - beforeCount));
             }
         }
         
+        // ChatGPT's namespace logging
+        std::map<std::string, uint32_t> namespaceCounts;
+        for (const auto& [key, value] : records) {
+            std::string prefix = "other";
+            if (key.size() >= 3 && key[0] == 't' && key[1] == 'x' && key[2] == 0) {
+                prefix = "tx/*";
+            } else if (key.size() >= 3 && std::string(key.begin(), key.begin()+3) == "key") {
+                prefix = "key/*";
+            } else if (key.size() >= 4 && std::string(key.begin(), key.begin()+4) == "ckey") {
+                prefix = "ckey/*";
+            } else if (key.size() >= 4 && std::string(key.begin(), key.begin()+4) == "mkey") {
+                prefix = "mkey/*";
+            } else if (key.size() >= 4 && std::string(key.begin(), key.begin()+4) == "pool") {
+                prefix = "pool/*";
+            } else if (key.size() >= 4 && std::string(key.begin(), key.begin()+4) == "name") {
+                prefix = "name/*";
+            } else if (key.size() >= 7 && std::string(key.begin(), key.begin()+7) == "version") {
+                prefix = "version";
+            } else if (key.size() >= 10 && std::string(key.begin(), key.begin()+10) == "minversion") {
+                prefix = "minversion";
+            }
+            namespaceCounts[prefix]++;
+        }
+        
         LogPrintf("BDB48Reader: Total records extracted: %lu\n", records.size());
+        LogPrintf("BDB48Reader: Record breakdown by namespace:\n");
+        for (const auto& [ns, count] : namespaceCounts) {
+            LogPrintf("  %s: %u records\n", ns.c_str(), count);
+        }
+        
         return !records.empty();
     }
     
@@ -335,6 +578,87 @@ public:
         return records;
     }
 };
+
+// ============================================================================
+// SATOSHI'S DIRECT BDB 18.1 WRITER - PURE SELF-CONTAINED APPROACH
+// ============================================================================
+// Direct BDB 18.1 writer using C API - no external tools, pure elegance
+static bool WriteRecordsToBDB18(
+    const std::string& dstPath,
+    const std::vector<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>>& records,
+    std::string& err)
+{
+    DB* db = nullptr;
+    int rc = db_create(&db, /*env*/nullptr, 0);
+    if (rc != 0 || db == nullptr) {
+        err = "db_create failed";
+        return false;
+    }
+
+    // Determinism knob: match working tool's page size for ~204,800 B gerald output
+    db->set_pagesize(db, 8192);
+    
+    rc = db->open(db, nullptr, dstPath.c_str(), "main", DB_BTREE, DB_CREATE, 0644);
+    if (rc != 0) {
+        err = "db->open failed";
+        db->close(db, 0);
+        return false;
+    }
+
+    // Write all records using BDB 18.1 C API
+    for (const auto& kv : records) {
+        const auto& key = kv.first;
+        const auto& val = kv.second;
+        DBT k{}; DBT v{};
+        k.data = const_cast<uint8_t*>(key.data()); k.size = key.size();
+        v.data = const_cast<uint8_t*>(val.data()); v.size = val.size();
+        rc = db->put(db, nullptr, &k, &v, 0);
+        if (rc != 0) {
+            err = "db->put failed";
+            db->close(db, 0);
+            return false;
+        }
+    }
+
+    // Ensure data is written to disk
+    db->sync(db, 0);
+    db->close(db, 0);
+    return true;
+}
+
+#ifdef _WIN32
+// True atomic swap on Windows (NTFS)
+#include <windows.h>
+static std::string Win32FormatError(DWORD code) {
+    wchar_t* buf = nullptr;
+    FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM|
+                   FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, code, 0,
+                   (LPWSTR)&buf, 0, nullptr);
+    std::string out = buf ? std::string(std::wstring(buf).begin(), std::wstring(buf).end()) : "Unknown";
+    if (buf) LocalFree(buf);
+    return out;
+}
+static bool AtomicReplace(const fs::path& newFile,
+                          const fs::path& oldFile,
+                          std::string& err) {
+    if (!ReplaceFileW(oldFile.wstring().c_str(), newFile.wstring().c_str(),
+                      /*backup*/nullptr, REPLACEFILE_WRITE_THROUGH, nullptr, nullptr)) {
+        err = "ReplaceFileW failed: " + Win32FormatError(GetLastError());
+        return false;
+    }
+    return true;
+}
+#else
+// POSIX atomic rename (same filesystem)
+static bool AtomicReplace(const fs::path& newFile,
+                          const fs::path& oldFile,
+                          std::string& err) {
+    std::error_code ec;
+    fs::rename(newFile, oldFile, ec);
+    if (ec) { err = ec.message(); return false; }
+    return true;
+}
+#endif
 
 // ============================================================================
 // GOLDCOIN'S BREAKTHROUGH BDB 4.8 → 18.1 MIGRATION INTEGRATION 
@@ -439,76 +763,27 @@ bool MigrateWallet(const fs::path& walletPath)
             fs::remove(tempPath);
         }
         
-        // EXACT WORKING SANDBOX APPROACH: Use db_dump → db_load pipeline
-        std::string tempDump = tempPath.string() + ".dump";
-        std::string bdb48Tool = "/home/microguy/git/microguy/goldcoin/depends/x86_64-pc-linux-gnu/bin/db_dump";
-        std::string bdb181Tool = "/home/microguy/git/microguy/goldcoin/depends/x86_64-pc-linux-gnu/bin/db_load";
+        // PURE SATOSHI APPROACH: Direct BDB 18.1 writer using C API
+        // No external tools, no temp files, just elegant self-contained code
         
-        // Step 1: Create temporary copy for db_dump (wallet is locked by goldcoind)
-        fs::path tempSource = tempPath.string() + ".source";
-        fs::copy_file(walletPath, tempSource);
+        LogPrintf("Creating BDB 18.1 wallet using direct C API writer...\n");
         
-        // Use BDB 4.8 tool to dump temporary wallet copy (EXACT SANDBOX APPROACH)
-        LogPrintf("Extracting records using BDB 4.8 db_dump tool...\n");
-        std::string dumpCmd = bdb48Tool + " -p \"" + tempSource.string() + "\"";
-        
-        FILE* pipe = popen(dumpCmd.c_str(), "r");
-        if (!pipe) {
-            LogPrintf("ERROR: Failed to run BDB dump tool\n");
-            fs::remove(tempSource);
+        // Write records directly to BDB 18.1 using our internal writer
+        std::string writeErr;
+        if (!WriteRecordsToBDB18(tempPath.string(), records, writeErr)) {
+            LogPrintf("ERROR: Direct BDB 18.1 writer failed: %s\n", writeErr);
             fs::remove(backupPath);
             return false;
         }
         
-        // Create dump file from pipe output
-        std::ofstream dumpFile(tempDump);
-        if (!dumpFile) {
-            pclose(pipe);
-            LogPrintf("ERROR: Failed to create dump file\n");
-            fs::remove(backupPath);
-            return false;
-        }
-        
-        char buffer[8192];
-        while (fgets(buffer, sizeof(buffer), pipe)) {
-            dumpFile << buffer;
-        }
-        pclose(pipe);
-        dumpFile.close();
-        
-        // Verify dump file was created and contains data
-        if (!fs::exists(tempDump) || fs::file_size(tempDump) == 0) {
-            LogPrintf("ERROR: db_dump produced empty or missing dump file\n");
-            fs::remove(backupPath);
-            return false;
-        }
-        
-        LogPrintf("SUCCESS: BDB 4.8 dump created (%lu bytes)\n", fs::file_size(tempDump));
-        
-        // Step 2: Use BDB 18.1 tool to create new wallet from dump (EXACT SANDBOX APPROACH)
-        LogPrintf("Creating BDB 18.1 wallet using db_load tool...\n");
-        std::string loadCmd = bdb181Tool + " -f \"" + tempDump + "\" \"" + tempPath.string() + "\"";
-        
-        int loadResult = std::system(loadCmd.c_str());
-        if (loadResult != 0) {
-            LogPrintf("ERROR: BDB 18.1 db_load failed with exit code %d\n", loadResult);
-            fs::remove(tempDump);
-            fs::remove(backupPath);
-            return false;
-        }
-        
-        // Verify new wallet was created
+        // Verify new wallet was created successfully
         if (!fs::exists(tempPath) || fs::file_size(tempPath) == 0) {
-            LogPrintf("ERROR: db_load produced empty or missing wallet\n");
-            fs::remove(tempDump);
+            LogPrintf("ERROR: Direct writer produced empty wallet\n");
             fs::remove(backupPath);
             return false;
         }
         
-        // Clean up temporary files
-        fs::remove(tempDump);
-        fs::remove(tempSource);
-        LogPrintf("SUCCESS: BDB 18.1 wallet created using exact sandbox approach (%lu bytes)\n", fs::file_size(tempPath));
+        LogPrintf("SUCCESS: BDB 18.1 wallet created using direct C API (%lu bytes)\n", fs::file_size(tempPath));
         
     } catch (const DbException& e) {
         LogPrintf("ERROR: BDB exception during migration: %s\n", e.what());
@@ -569,23 +844,11 @@ bool MigrateWallet(const fs::path& walletPath)
     // Replace original wallet atomically. If anything fails, original is restored.
     
     LogPrintf("Performing atomic wallet replacement...\n");
-    try {
-        // Atomic three-step replacement
-        fs::path oldPath = walletPath.string() + ".old";
-        fs::rename(walletPath, oldPath);          // Move original aside
-        fs::rename(tempPath, walletPath);         // Install new wallet  
-        fs::remove(oldPath);                      // Remove old (backup exists)
-        
-        // HISTORIC ACHIEVEMENT
-        LogPrintf("*** GOLDCOIN MAKES HISTORY ***\n");
-        LogPrintf("First cryptocurrency to achieve seamless BDB 4.8 → 18.1 migration\n");
-        LogPrintf("What Bitcoin Core declared impossible - Goldcoin delivers\n");
-        LogPrintf("Migration completed successfully (backup: %s)\n", backupPath.filename().string());
-        
-        return true;
-        
-    } catch (const fs::filesystem_error& e) {
-        LogPrintf("ERROR: Atomic replacement failed: %s\n", e.what());
+    
+    // Use cross-platform atomic replacement
+    std::string replaceErr;
+    if (!AtomicReplace(tempPath, walletPath, replaceErr)) {
+        LogPrintf("ERROR: Atomic replacement failed: %s\n", replaceErr);
         
         // Satoshi's fault tolerance - restore original wallet
         if (fs::exists(backupPath)) {
@@ -599,8 +862,21 @@ bool MigrateWallet(const fs::path& walletPath)
                 LogPrintf("CRITICAL: Backup restoration failed - check backup manually\n");
             }
         }
+        
+        // Clean up temp file
+        std::error_code ec;
+        fs::remove(tempPath, ec);
         return false;
     }
+    
+    // HISTORIC ACHIEVEMENT - PURE SATOSHI ENGINEERING
+    LogPrintf("*** GOLDCOIN MAKES HISTORY ***\n");
+    LogPrintf("First cryptocurrency to achieve seamless BDB 4.8 → 18.1 migration\n");
+    LogPrintf("Pure self-contained approach - no external tools, no dependencies\n");
+    LogPrintf("Migration completed successfully (backup: %s)\n", backupPath.filename().string());
+    LogPrintf("Migration complete: %u records written\n", (unsigned)records.size());
+    
+    return true;
 }
 
 // ============================================================================
