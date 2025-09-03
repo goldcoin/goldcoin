@@ -16,7 +16,11 @@
 #include <set>
 #include <map>
 #include <unordered_set>
-#include <arpa/inet.h>  // For ntohl, ntohs
+#ifdef _WIN32
+#include <winsock2.h>   // For ntohl, ntohs on Windows
+#else
+#include <arpa/inet.h>  // For ntohl, ntohs on Unix/Linux
+#endif
 #include <sys/stat.h>   // For file permissions
 #include <db_cxx.h>     // Berkeley DB C++ API
 #include <db.h>         // Berkeley DB C API for direct writing
@@ -841,7 +845,7 @@ bool InjectWalletMetadata(const std::string& wallet_path, std::string& err) {
     // Private, minimal init; mpool is required to access pages.
     // Same flags as working tool - DB_PRIVATE avoids conflicts
     u_int32_t env_flags = DB_PRIVATE | DB_INIT_MPOOL | DB_CREATE;
-    ret = env->open(env, walletDir.c_str(), env_flags, 0);
+    ret = env->open(env, walletDir.string().c_str(), env_flags, 0);
     if (ret) { 
         err = "env->open in " + walletDir.string() + ": " + std::string(db_strerror(ret)); 
         return false; 
