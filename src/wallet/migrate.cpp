@@ -5,6 +5,7 @@
 #include <wallet/migrate.h>
 #include <util.h>
 #include <utiltime.h>
+#include <utilstrencodings.h>
 
 #include <fstream>
 #include <cstring>
@@ -12,6 +13,9 @@
 #include <iomanip>
 #include <sstream>
 #include <vector>
+#include <set>
+#include <map>
+#include <unordered_set>
 #include <arpa/inet.h>  // For ntohl, ntohs
 #include <sys/stat.h>   // For file permissions
 #include <db_cxx.h>     // Berkeley DB C++ API
@@ -23,6 +27,45 @@ namespace WalletMigration {
 static const uint8_t BDB_BTREE_MAGIC[] = {0x62, 0x31, 0x05, 0x00};
 static const uint8_t BDB48_VERSION = 0x09;  // at offset 16
 static const uint8_t BDB18_VERSION = 0x0a;  // at offset 16
+
+// ChatGPT's key parsing structure
+struct ParsedKey {
+    std::string tag;            // e.g. "tx", "key", "ckey", "name", "defaultkey", "version", ...
+    size_t payload_off = 0;     // start of remaining key payload
+};
+
+// ChatGPT's strict wallet key parser - returns empty string if malformed
+static std::string ParseWalletTag(const std::vector<uint8_t>& key, size_t& p) {
+    p = 0;
+    if (key.empty()) return "";
+    
+    // Simple CompactSize reader  
+    uint64_t tagLen = 0;
+    if (key[p] < 0xFD) {
+        tagLen = key[p];
+        p++;
+    } else if (key[p] == 0xFD && p + 2 < key.size()) {
+        tagLen = key[p+1] | (key[p+2] << 8);
+        p += 3;
+    } else if (key[p] == 0xFE && p + 4 < key.size()) {
+        tagLen = key[p+1] | (key[p+2] << 8) | (key[p+3] << 16) | (key[p+4] << 24);
+        p += 5;
+    } else {
+        return "";  // Malformed CompactSize
+    }
+    
+    if (tagLen == 0 || tagLen > 32) return "";         // tags are short ASCII strings
+    if (p + tagLen > key.size()) return "";
+    
+    std::string tag((const char*)&key[p], (size_t)tagLen);
+    p += tagLen;
+    
+    // Quick ASCII sanity: all printable and no NULs
+    for (unsigned char c : tag) {
+        if (c < 0x20 || c > 0x7e) return "";
+    }
+    return tag;
+}
 
 // CompactSize serialization (Bitcoin format) - THE BREAKTHROUGH THAT MADE IT WORK
 static void write_compact_size(std::vector<unsigned char>& v, uint64_t size) {
@@ -164,6 +207,18 @@ enum PageType {
 // Overflow page constants
 constexpr uint8_t P_OVERFLOW_TYPE = 7;
 
+// ChatGPT's robust overflow detection
+struct OverflowProbe {
+    bool looks_overflow = false;
+    uint32_t pgno = 0;
+    uint32_t nbytes = 0;
+    int layout = -1; // 0: +3/+7, 1: alternate layout
+};
+
+struct OffsetPair { uint16_t k, v; };
+struct OffsetPairHash { size_t operator()(const OffsetPair& p) const { return (size_t(p.k) << 16) ^ p.v; } };
+struct OffsetPairEq   { bool operator()(const OffsetPair& a, const OffsetPair& b) const { return a.k==b.k && a.v==b.v; } };
+
 // BDB 4.8 Page Header (all pages start with this)
 struct PageHeader {
     uint32_t lsn_file;     // Log sequence number file
@@ -210,368 +265,139 @@ T ReadValue(const uint8_t* buffer, size_t offset) {
     return value;
 }
 
-// WORKING BDB 4.8 reader from successful sandbox tool - native byte order approach
+// Clean BDB 4.8 reader based on official Berkeley DB source code structures
 class BDB48Reader {
 private:
     std::ifstream file;
-    uint32_t pageSize = 4096;
+    uint32_t pageSize = 0;
     std::vector<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>> records;
-    
-    // Helper functions - native byte order (working approach from sandbox)
-    static uint16_t readUint16(const uint8_t* buffer, size_t offset) {
-        uint16_t value;
-        memcpy(&value, buffer + offset, sizeof(value));
-        return value; // Native byte order - this was the key fix!
+
+    // Official BDB structures from Berkeley DB source code
+    struct PAGE {
+        uint64_t  lsn;        // 00-07: Log sequence number
+        uint32_t  pgno;       // 08-11: Current page number  
+        uint32_t  prev_pgno;  // 12-15: Previous page number
+        uint32_t  next_pgno;  // 16-19: Next page number
+        uint16_t  entries;    // 20-21: Number of items on the page
+        uint16_t  hf_offset;  // 22-23: High free byte page offset
+        uint8_t   level;      //    24: Btree tree level
+        uint8_t   type;       //    25: Page type
+    }; // Total: 26 bytes
+
+    struct BKEYDATA {
+        uint16_t len;      // 00-01: Key/data item length
+        uint8_t  type;     //    02: Page type AND DELETE FLAG
+        uint8_t  data[1];  // Variable length key/data item
+    };
+
+    // Page types from BDB source
+    static constexpr uint8_t P_LBTREE = 5;  // Btree leaf page
+    static constexpr uint8_t P_OVERFLOW = 7;  // Overflow page
+    static constexpr uint8_t P_BTREEMETA = 9;  // Btree metadata page
+
+    // Item types
+    static constexpr uint8_t B_KEYDATA = 1;  // Key/data item
+    static constexpr uint8_t B_OVERFLOW = 3;  // Overflow key/data item
+
+    bool ReadPage(uint32_t pgno, std::vector<uint8_t>& page) {
+        if (pgno == 0) return false;
+        
+        file.seekg(pgno * pageSize);
+        page.resize(pageSize);
+        file.read(reinterpret_cast<char*>(page.data()), pageSize);
+        return file.good();
     }
-    
-    static uint32_t readUint32(const uint8_t* buffer, size_t offset) {
-        uint32_t value;
-        memcpy(&value, buffer + offset, sizeof(value));
-        return value; // Native byte order - this was the key fix!
+
+    void ProcessLeafPage(const std::vector<uint8_t>& pageData, uint32_t pgno) {
+        if (pageData.size() < sizeof(PAGE)) return;
+        
+        // Cast to PAGE structure (official BDB format)
+        const PAGE* page = reinterpret_cast<const PAGE*>(pageData.data());
+        
+        if (page->type != P_LBTREE) return;
+        if (page->entries == 0 || page->entries > 1000) return;
+        
+        LogPrintf("BDB48Reader: Page %u: entries=%u hf_offset=%u type=%u\n", 
+                  pgno, page->entries, page->hf_offset, (unsigned)page->type);
+        
+        // Index array starts at offset 26 (after PAGE header)
+        const uint16_t* index = reinterpret_cast<const uint16_t*>(pageData.data() + 26);
+        
+        // Process each pair of entries (key, value)
+        uint32_t extracted = 0;
+        for (uint16_t i = 0; i < page->entries; i += 2) {
+            if (i + 1 >= page->entries) break;
+            
+            uint16_t key_offset = index[i];
+            uint16_t val_offset = index[i + 1];
+            
+            if (key_offset >= pageSize || val_offset >= pageSize) continue;
+            if (key_offset < 26 || val_offset < 26) continue;
+            
+            // Read key
+            const BKEYDATA* key_item = reinterpret_cast<const BKEYDATA*>(pageData.data() + key_offset);
+            if (key_offset + sizeof(BKEYDATA) + key_item->len > pageSize) continue;
+            
+            std::vector<uint8_t> key(key_item->data, key_item->data + key_item->len);
+            
+            // Read value  
+            const BKEYDATA* val_item = reinterpret_cast<const BKEYDATA*>(pageData.data() + val_offset);
+            if (val_offset + sizeof(BKEYDATA) + val_item->len > pageSize) continue;
+            
+            std::vector<uint8_t> value(val_item->data, val_item->data + val_item->len);
+            
+            // Store record
+            records.push_back({key, value});
+            extracted++;
+        }
+        
+        LogPrintf("BDB48Reader: Leaf page %u extracted %u records\n", pgno, extracted);
     }
-    
-    // Detect BDB page header size by testing common values
-    uint16_t detectHeaderSize(const std::vector<uint8_t>& page, uint32_t pageSize, uint16_t lower, uint16_t upper) {
-        const uint16_t candidates[] = {26, 28, 32, 34}; // Common BDB 4.x header sizes
-        
-        for (uint16_t headerSize : candidates) {
-            if (lower >= headerSize && lower <= pageSize && upper >= headerSize && upper <= pageSize) {
-                uint16_t numIndex = (lower - headerSize) / 2;
-                if (numIndex > 0 && numIndex < 500) { // Reasonable bounds
-                    return headerSize;
-                }
-            }
-        }
-        return 26; // Default fallback
-    }
-    
-    // Robust overflow page reading with multiple offset attempts
-    bool ReadOverflowChain(uint32_t startPgno, uint32_t nbytes, std::vector<uint8_t>& data) {
-        data.clear();
-        
-        // ChatGPT's guards
-        if (nbytes == 0 || nbytes > 16 * 1024 * 1024) { // Cap at 16MB
-            LogPrintf("GOLDCOIN_OVERFLOW_DEBUG: Invalid nbytes=%u\n", nbytes);
-            return false;
-        }
-        
-        data.reserve(nbytes);
-        std::set<uint32_t> visited; // Prevent loops
-        
-        uint32_t currentPgno = startPgno;
-        uint32_t bytesLeft = nbytes;
-        uint32_t pagesRead = 0;
-        const uint32_t maxPages = 4096; // Cap pages traversed
-        
-        while (bytesLeft > 0 && currentPgno != 0 && pagesRead < maxPages) {
-            // Check for loops
-            if (visited.count(currentPgno)) {
-                LogPrintf("GOLDCOIN_OVERFLOW_DEBUG: Loop detected at page %u\n", currentPgno);
-                return false;
-            }
-            visited.insert(currentPgno);
-            
-            // Read overflow page
-            std::vector<uint8_t> overflowPage(pageSize);
-            file.seekg(currentPgno * pageSize);
-            file.read(reinterpret_cast<char*>(overflowPage.data()), pageSize);
-            
-            if (!file.good() || overflowPage.size() < 32) {
-                LogPrintf("GOLDCOIN_OVERFLOW_DEBUG: Failed to read page %u\n", currentPgno);
-                return false;
-            }
-            
-            // Verify it's an overflow page (type 7)
-            if (overflowPage[25] != P_OVERFLOW_TYPE) {
-                LogPrintf("GOLDCOIN_OVERFLOW_DEBUG: Expected overflow page type 7, got %d on page %u\n", 
-                         (int)overflowPage[25], currentPgno);
-                return false;
-            }
-            
-            // Try common payload start offsets
-            uint32_t dataStart = 26;
-            if (dataStart >= pageSize || (bytesLeft > 0 && dataStart + std::min(bytesLeft, pageSize - dataStart) > pageSize)) {
-                dataStart = 32; // Fallback
-                if (dataStart >= pageSize) {
-                    LogPrintf("GOLDCOIN_OVERFLOW_DEBUG: No valid payload start found\n");
-                    return false;
-                }
-            }
-            
-            uint32_t availableBytes = pageSize - dataStart;
-            uint32_t bytesToCopy = std::min(bytesLeft, availableBytes);
-            
-            // Copy data from this page
-            data.insert(data.end(), 
-                       overflowPage.begin() + dataStart,
-                       overflowPage.begin() + dataStart + bytesToCopy);
-            
-            bytesLeft -= bytesToCopy;
-            pagesRead++;
-            
-            // Get next overflow page (try multiple offsets)
-            if (bytesLeft > 0) {
-                uint32_t nextPgno = 0;
-                
-                // Try next_pgno at offset 16 first
-                nextPgno = readUint32(overflowPage.data(), 16);
-                
-                // Validate by checking if next page is overflow type
-                if (nextPgno != 0) {
-                    std::vector<uint8_t> nextPage(32); // Just read header
-                    file.seekg(nextPgno * pageSize);
-                    file.read(reinterpret_cast<char*>(nextPage.data()), 32);
-                    if (!file.good() || nextPage[25] != P_OVERFLOW_TYPE) {
-                        // Try offset 12
-                        nextPgno = readUint32(overflowPage.data(), 12);
-                        if (nextPgno != 0) {
-                            file.seekg(nextPgno * pageSize);
-                            file.read(reinterpret_cast<char*>(nextPage.data()), 32);
-                            if (!file.good() || nextPage[25] != P_OVERFLOW_TYPE) {
-                                nextPgno = 0; // Give up
-                            }
-                        }
-                    }
-                }
-                
-                if (nextPgno == 0) {
-                    LogPrintf("GOLDCOIN_OVERFLOW_DEBUG: Overflow chain ended early: %u bytes missing\n", bytesLeft);
-                    return false;
-                }
-                
-                currentPgno = nextPgno;
-            }
-        }
-        
-        if (bytesLeft > 0) {
-            LogPrintf("GOLDCOIN_OVERFLOW_DEBUG: Could not read complete overflow chain: %u bytes missing\n", bytesLeft);
-            return false;
-        }
-        
-        LogPrintf("GOLDCOIN_OVERFLOW_DEBUG: Successfully read %u bytes from %u overflow pages\n", 
-                 (uint32_t)data.size(), pagesRead);
-        return true;
-    }
-    
-    // Parse a single BKEYDATA item with overflow support
-    bool parseLeafItem(const std::vector<uint8_t>& page, uint16_t offset, uint32_t pgno = 0) {
-        if (offset + 8 >= pageSize) {
-            return false;
-        }
-        
-        // Read first BKEYDATA (key) - keys are typically inline
-        uint16_t keyLen = readUint16(page.data(), offset);
-        uint8_t keyType = page[offset + 2];
-        
-        // Sanity check key length
-        if (keyLen == 0 || keyLen > 1000) {
-            return false;
-        }
-        
-        // Extract key (usually inline)
-        uint32_t keyDataOffset = offset + 3;
-        if (keyDataOffset + keyLen >= pageSize) {
-            return false;
-        }
-        
-        std::vector<uint8_t> key(page.begin() + keyDataOffset, 
-                               page.begin() + keyDataOffset + keyLen);
-        
-        // Read second BKEYDATA (value) - might be overflow for large transactions
-        uint32_t dataOffset = offset + 3 + keyLen;
-        if (dataOffset + 3 >= pageSize) {
-            return false;
-        }
-        
-        uint16_t dataLen = readUint16(page.data(), dataOffset);
-        uint8_t dataType = page[dataOffset + 2];
-        
-        std::vector<uint8_t> data;
-        
-        // Check if this is an overflow item
-        // Overflow format: [len:2][type:1][pgno:4][nbytes:4] = 11 bytes total
-        if (dataLen == 11 && (dataType == 1 || dataType == 2)) {
-            // This is an overflow reference
-            uint32_t overflowPgno = readUint32(page.data(), dataOffset + 3);
-            uint32_t overflowBytes = readUint32(page.data(), dataOffset + 7);
-            
-            LogPrintf("GOLDCOIN_OVERFLOW_DEBUG: Page %u found overflow ref: pgno=%u, nbytes=%u\n", 
-                     pgno, overflowPgno, overflowBytes);
-            
-            // Read overflow data
-            if (!ReadOverflowChain(overflowPgno, overflowBytes, data)) {
-                LogPrintf("GOLDCOIN_OVERFLOW_DEBUG: Failed to read overflow chain\n");
-                return false;
-            }
-        } else if (dataLen > 0 && dataLen < 100000) {
-            // Inline data
-            uint32_t dataDataOffset = dataOffset + 3;
-            if (dataDataOffset + dataLen >= pageSize) {
-                return false;
-            }
-            
-            data.assign(page.begin() + dataDataOffset,
-                       page.begin() + dataDataOffset + dataLen);
-        } else {
-            // Invalid data length
-            return false;
-        }
-        
-        if (!key.empty() && !data.empty()) {
-            records.push_back({key, data});
-            
-            // Debug: Log what type of record this is
-            if (key.size() >= 3 && key[0] == 't' && key[1] == 'x' && key[2] == 0) {
-                LogPrintf("GOLDCOIN_TX_DEBUG: Found transaction record, key size=%u, data size=%u\n", 
-                         (uint32_t)key.size(), (uint32_t)data.size());
-            }
-            
-            return true;
-        }
-        
-        return false;
-    }
-    
-    void processLeafPage(const std::vector<uint8_t>& page, uint32_t pgno = 0) {
-        // CORRECT BDB page structure - fixed algorithm
-        
-        // Try multiple possible offsets for lower/upper (BDB versions vary)
-        uint16_t lower, upper;
-        bool foundValid = false;
-        
-        // Common BDB header layouts
-        const uint16_t lowerOffsets[] = {20, 22, 24};
-        const uint16_t upperOffsets[] = {22, 24, 26};
-        
-        for (int i = 0; i < 3 && !foundValid; ++i) {
-            lower = readUint16(page.data(), lowerOffsets[i]);
-            upper = readUint16(page.data(), upperOffsets[i]);
-            
-            // Valid if lower < upper and both in reasonable range
-            if (lower > 0 && upper > 0 && lower < pageSize && upper < pageSize && lower < upper) {
-                foundValid = true;
-                break;
-            }
-        }
-        
-        if (!foundValid) {
-            return;
-        }
-        
-        // Detect header size
-        uint16_t headerSize = detectHeaderSize(page, pageSize, lower, upper);
-        
-        // Compute number of index entries from lower
-        uint16_t numIndex = (lower - headerSize) / 2;
-        
-        if (numIndex == 0 || numIndex > 500) {
-            return;
-        }
-        
-        // Iterate index array at the FRONT of the page (after header)
-        for (uint16_t i = 0; i < numIndex; ++i) {
-            uint16_t itemOffset = readUint16(page.data(), headerSize + i * 2);
-            
-            // Item must point into the item area (between upper and pageSize)
-            if (itemOffset < upper || itemOffset >= pageSize) {
-                continue;
-            }
-            
-            // Parse the item at this offset
-            parseLeafItem(page, itemOffset, pgno);
-        }
-    }
-    
+
 public:
     bool Open(const fs::path& walletPath) {
         LogPrintf("BDB48Reader: Opening %s\n", walletPath.string().c_str());
         
         file.open(walletPath, std::ios::binary);
-        if (!file) {
-            LogPrintf("BDB48Reader ERROR: Failed to open file\n");
-            return false;
-        }
+        if (!file) return false;
         
-        // Read metadata page
-        std::vector<uint8_t> metaPage(4096);
-        file.read(reinterpret_cast<char*>(metaPage.data()), 4096);
-        if (!file.good()) {
-            LogPrintf("BDB48Reader ERROR: Failed to read metadata page\n");
-            return false;
-        }
+        // Read metadata page (page 0)
+        uint8_t metaBuffer[512];
+        file.read(reinterpret_cast<char*>(metaBuffer), sizeof(metaBuffer));
+        if (!file.good()) return false;
         
-        // Get page size (stored at offset 20 in native byte order)
-        pageSize = readUint32(metaPage.data(), 20);
+        // Check BDB magic at offset 12
+        const uint8_t BDB_MAGIC[] = {0x62, 0x31, 0x05, 0x00};
+        if (std::memcmp(metaBuffer + 12, BDB_MAGIC, 4) != 0) return false;
+        
+        // Read page size at offset 20
+        pageSize = *reinterpret_cast<uint32_t*>(metaBuffer + 20);
         LogPrintf("BDB48Reader: Page size from header: %u\n", pageSize);
-        if (pageSize < 512 || pageSize > 65536) {
-            LogPrintf("BDB48Reader ERROR: Invalid page size: %u\n", pageSize);
-            return false;
-        }
         
-        // Get last page number (stored at offset 32)
-        uint32_t lastPage = readUint32(metaPage.data(), 32);
-        LogPrintf("BDB48Reader: Last page: %u\n", lastPage);
-        if (lastPage == 0 || lastPage > 100000) {
-            LogPrintf("BDB48Reader ERROR: Invalid last page: %u\n", lastPage);
-            return false;
-        }
+        // Calculate number of pages
+        file.seekg(0, std::ios::end);
+        size_t fileSize = file.tellg();
+        size_t numPages = fileSize / pageSize;
         
-        // Process all pages using working algorithm from sandbox
-        for (uint32_t pgno = 1; pgno <= lastPage; pgno++) {
-            std::vector<uint8_t> page(pageSize);
-            file.seekg(pgno * pageSize);
-            file.read(reinterpret_cast<char*>(page.data()), pageSize);
-            
-            if (!file.good()) continue;
-            if (page.size() < 26) continue;
-            
-            // Check page type at offset 25
-            uint8_t pageType = page[25];
-            if (pageType != 0) {
-                LogPrintf("BDB48Reader: Page %u: type=%d\n", pgno, (int)pageType);
-            }
-            
-            // Process btree leaf pages (type 5) - this matches working sandbox tool
-            if (pageType == 5) {
-                size_t beforeCount = records.size();
-                processLeafPage(page, pgno);
-                size_t afterCount = records.size();
-                LogPrintf("BDB48Reader: Leaf page %u extracted %lu records\n", 
-                         pgno, (afterCount - beforeCount));
-            }
-        }
+        LogPrintf("BDB48Reader: Last page: %lu\n", numPages - 1);
         
-        // ChatGPT's namespace logging
-        std::map<std::string, uint32_t> namespaceCounts;
-        for (const auto& [key, value] : records) {
-            std::string prefix = "other";
-            if (key.size() >= 3 && key[0] == 't' && key[1] == 'x' && key[2] == 0) {
-                prefix = "tx/*";
-            } else if (key.size() >= 3 && std::string(key.begin(), key.begin()+3) == "key") {
-                prefix = "key/*";
-            } else if (key.size() >= 4 && std::string(key.begin(), key.begin()+4) == "ckey") {
-                prefix = "ckey/*";
-            } else if (key.size() >= 4 && std::string(key.begin(), key.begin()+4) == "mkey") {
-                prefix = "mkey/*";
-            } else if (key.size() >= 4 && std::string(key.begin(), key.begin()+4) == "pool") {
-                prefix = "pool/*";
-            } else if (key.size() >= 4 && std::string(key.begin(), key.begin()+4) == "name") {
-                prefix = "name/*";
-            } else if (key.size() >= 7 && std::string(key.begin(), key.begin()+7) == "version") {
-                prefix = "version";
-            } else if (key.size() >= 10 && std::string(key.begin(), key.begin()+10) == "minversion") {
-                prefix = "minversion";
+        // Scan all pages for leaf pages
+        for (size_t pageNum = 1; pageNum < numPages; pageNum++) {
+            std::vector<uint8_t> pageData;
+            if (ReadPage(pageNum, pageData)) {
+                if (pageData.size() >= sizeof(PAGE)) {
+                    const PAGE* page = reinterpret_cast<const PAGE*>(pageData.data());
+                    LogPrintf("BDB48Reader: Page %lu: type=%u\n", pageNum, (unsigned)page->type);
+                    
+                    if (page->type == P_LBTREE) {
+                        ProcessLeafPage(pageData, pageNum);
+                    }
+                }
             }
-            namespaceCounts[prefix]++;
         }
         
         LogPrintf("BDB48Reader: Total records extracted: %lu\n", records.size());
-        LogPrintf("BDB48Reader: Record breakdown by namespace:\n");
-        for (const auto& [ns, count] : namespaceCounts) {
-            LogPrintf("  %s: %u records\n", ns.c_str(), count);
-        }
-        
-        return !records.empty();
+        return true;
     }
     
     const std::vector<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>>& GetRecords() const {
@@ -731,6 +557,55 @@ bool MigrateWallet(const fs::path& walletPath)
     
     const auto& records = reader.GetRecords();
     LogPrintf("Extracted %lu records from BDB 4.8 format\n", records.size());
+    
+    // ========================================================================
+    // HD WALLET DETECTION - Critical for migration strategy
+    // ========================================================================
+    uint32_t walletVersion = 0;
+    bool isHDWallet = false;
+    std::set<std::string> recordTypes;
+    
+    for (const auto& record : records) {
+        const auto& key = record.first;
+        const auto& value = record.second;
+        
+        // Parse wallet record type
+        size_t payload_off = 0;
+        std::string tag = ParseWalletTag(key, payload_off);
+        if (!tag.empty()) {
+            recordTypes.insert(tag);
+            
+            // Check for wallet version record
+            if (tag == "version" && value.size() >= 4) {
+                walletVersion = *reinterpret_cast<const uint32_t*>(value.data());
+            }
+            
+            // Check for HD wallet indicators
+            if (tag == "hdchain" || tag == "hdpubkey" || tag == "hdseed") {
+                isHDWallet = true;
+            }
+        }
+    }
+    
+    // Log wallet analysis
+    LogPrintf("*** WALLET ANALYSIS ***\n");
+    LogPrintf("Wallet Version: %u %s\n", walletVersion, 
+              walletVersion == 60000 ? "(FEATURE_COMPRPUBKEY)" :
+              walletVersion == 130000 ? "(FEATURE_HD)" :
+              walletVersion == 170000 ? "(FEATURE_BDB18)" : "(UNKNOWN)");
+    LogPrintf("HD Wallet: %s\n", isHDWallet ? "YES" : "NO");
+    LogPrintf("Record Types Found: ");
+    for (const auto& type : recordTypes) {
+        LogPrintf("%s ", type.c_str());
+    }
+    LogPrintf("\n");
+    
+    if (walletVersion == 130000 && isHDWallet) {
+        LogPrintf("⚠️  COMPLEX HD WALLET DETECTED - Migration requires careful handling\n");
+    } else if (walletVersion == 60000) {
+        LogPrintf("✅ SIMPLE WALLET DETECTED - Standard migration should work well\n");
+    }
+    LogPrintf("*** END WALLET ANALYSIS ***\n");
     
     if (records.empty()) {
         LogPrintf("ERROR: Empty wallet - nothing to migrate\n");

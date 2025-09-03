@@ -130,3 +130,6 @@ contrib/devtools/split-debug.sh
 CLAUDE.md
 # Claude AI settings
 .claude/
+depends/x86_64-pc-linux-gnu/
+depends/x86_64-w64-mingw32/
+build-win64/
