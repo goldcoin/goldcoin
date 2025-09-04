@@ -95,16 +95,6 @@ static std::vector<unsigned char> ser_key(const std::string& s) {
     return v;
 }
 
-// Serialize value in CompactSize format
-static std::vector<unsigned char> ser_value(uint32_t val) {
-    std::vector<unsigned char> v;
-    v.push_back((unsigned char)(val & 0xFF));
-    v.push_back((unsigned char)((val >> 8) & 0xFF));
-    v.push_back((unsigned char)((val >> 16) & 0xFF));
-    v.push_back((unsigned char)((val >> 24) & 0xFF));
-    return v;
-}
-
 WalletDBVersion DetectWalletVersion(const fs::path& walletPath)
 {
     LogPrintf("GOLDCOIN_DETECT_DEBUG: DetectWalletVersion called with path='%s'\n", walletPath.string());
