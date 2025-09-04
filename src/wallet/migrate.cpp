@@ -237,20 +237,6 @@ struct BtreeMetaData {
     uint8_t  uid[20];      // Unique file ID
 };
 
-// Read a value from buffer with endianness handling
-template<typename T>
-T ReadValue(const uint8_t* buffer, size_t offset) {
-    T value;
-    memcpy(&value, buffer + offset, sizeof(T));
-    // BDB uses big-endian for multi-byte values
-    if (sizeof(T) == 2) {
-        value = ntohs(value);
-    } else if (sizeof(T) == 4) {
-        value = ntohl(value);
-    }
-    return value;
-}
-
 // Clean BDB 4.8 reader based on official Berkeley DB source code structures
 class BDB48Reader {
 private:
