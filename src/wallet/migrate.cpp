@@ -32,13 +32,7 @@ static const uint8_t BDB_BTREE_MAGIC[] = {0x62, 0x31, 0x05, 0x00};
 static const uint8_t BDB48_VERSION = 0x09;  // at offset 16
 static const uint8_t BDB18_VERSION = 0x0a;  // at offset 16
 
-// ChatGPT's key parsing structure
-struct ParsedKey {
-    std::string tag;            // e.g. "tx", "key", "ckey", "name", "defaultkey", "version", ...
-    size_t payload_off = 0;     // start of remaining key payload
-};
-
-// ChatGPT's strict wallet key parser - returns empty string if malformed
+// Strict wallet key parser - returns empty string if malformed
 static std::string ParseWalletTag(const std::vector<uint8_t>& key, size_t& p) {
     p = 0;
     if (key.empty()) return "";
