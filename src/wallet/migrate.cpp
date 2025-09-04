@@ -174,27 +174,6 @@ fs::path CreateMigrationBackup(const fs::path& walletPath)
     return fs::path(); // empty path on failure
 }
 
-// BDB 4.8 Page Types
-enum PageType {
-    P_INVALID    = 0,
-    P_DUPLICATE  = 1,
-    P_HASH       = 2,
-    P_IBTREE     = 3,
-    P_IRECNO     = 4,
-    P_LBTREE     = 5,
-    P_LRECNO     = 6,
-    P_OVERFLOW   = 7,
-    P_HASHMETA   = 8,
-    P_BTREEMETA  = 9,
-    P_QAMMETA    = 10,
-    P_QAMDATA    = 11,
-    P_LDUP       = 12,
-    P_HASH_UNSORTED = 13
-};
-
-// Overflow page constants
-constexpr uint8_t P_OVERFLOW_TYPE = 7;
-
 // Clean BDB 4.8 reader based on official Berkeley DB source code structures
 class BDB48Reader {
 private:
