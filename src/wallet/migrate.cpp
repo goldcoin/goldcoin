@@ -205,38 +205,6 @@ enum PageType {
 // Overflow page constants
 constexpr uint8_t P_OVERFLOW_TYPE = 7;
 
-// BDB 4.8 Page Header (all pages start with this)
-struct PageHeader {
-    uint32_t lsn_file;     // Log sequence number file
-    uint32_t lsn_offset;   // Log sequence number offset  
-    uint32_t pgno;         // Page number
-    uint32_t prev_pgno;    // Previous page
-    uint32_t next_pgno;    // Next page
-    uint16_t entries;      // Number of items on page
-    uint16_t hf_offset;    // High free byte page offset
-    uint8_t  level;        // Btree level (0=leaf)
-    uint8_t  type;         // Page type (PageType enum)
-};
-
-// Btree metadata page (page 0)
-struct BtreeMetaData {
-    PageHeader header;
-    uint32_t magic;        // Btree magic number
-    uint32_t version;      // Version
-    uint32_t pagesize;     // Page size
-    uint8_t  encrypt_alg;  // Encryption algorithm
-    uint8_t  page_type;    // Page type  
-    uint8_t  metaflags;    // Metadata flags
-    uint8_t  unused1;      // Unused
-    uint32_t free;         // Free list page number
-    uint32_t last_pgno;    // Last page in database
-    uint32_t nparts;       // Number of partitions
-    uint32_t key_count;    // Cached key count
-    uint32_t record_count; // Cached record count
-    uint32_t flags;        // Flags
-    uint8_t  uid[20];      // Unique file ID
-};
-
 // Clean BDB 4.8 reader based on official Berkeley DB source code structures
 class BDB48Reader {
 private:
