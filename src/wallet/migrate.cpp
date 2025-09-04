@@ -459,42 +459,12 @@ static bool AtomicReplace(const fs::path& newFile,
 #endif
 
 // ============================================================================
-// GOLDCOIN'S BREAKTHROUGH BDB 4.8 → 18.1 MIGRATION INTEGRATION 
+// SATOSHI-STYLE BDB 4.8 → 18.1 MIGRATION - THE BREAKTHROUGH FUNCTION
 // ============================================================================
-// This function implements the exact same proven migration logic used by the 
-// standalone wallet-migrate tool that took over a week to perfect. It uses a 
-// hybrid approach that avoids BDB environment conflicts:
-//
-// PHASE 1: External db_dump/db_load pipeline (no environment conflicts)
-// PHASE 2: Direct BDB C API metadata injection (CompactSize serialization)
-//
-// This makes Goldcoin the FIRST cryptocurrency to achieve seamless BDB 4.8→18.1 
-// migration - something Bitcoin Core abandoned as impossible.
-//
-// CRITICAL IMPLEMENTATION NOTES FOR FUTURE DEVELOPERS:
-// - DO NOT change this to pure API approach (causes environment conflicts)
-// - DO NOT change CompactSize serialization (goldcoind won't read the keys)  
-// - DO NOT skip the cursor-based duplicate deletion (causes multiple entries)
-// - DO NOT modify the db_dump/db_load tool paths (depends-built versions only)
-// ============================================================================
-
-// ============================================================================
-// SATOSHI'S ELEGANT BDB 4.8 → 18.1 MIGRATION - THE IMPOSSIBLE MADE POSSIBLE
-// ============================================================================
-// "I've been working on a new electronic cash system that's fully peer-to-peer,
-// with no trusted third party." - Satoshi Nakamoto
-//
-// This function achieves what Bitcoin Core abandoned as impossible: seamless 
-// migration from Berkeley DB 4.8 to 18.1. Using pure internal APIs with no 
-// external dependencies, it demonstrates the elegant engineering Satoshi 
-// embodied - solving the hardest problems with the simplest, most robust code.
-//
 // ARCHITECTURE: Three-phase atomic operation
 // Phase 1: Read BDB 4.8 wallet using custom parser (zero external dependencies)  
 // Phase 2: Create BDB 18.1 wallet using direct API (process isolated for safety)
 // Phase 3: Inject critical metadata using CompactSize serialization breakthrough
-//
-// Result: Goldcoin becomes the first cryptocurrency to achieve this migration.
 // ============================================================================
 
 bool MigrateWallet(const fs::path& walletPath)
