@@ -217,6 +217,46 @@ private:
         return file.good();
     }
 
+    // Read overflow pages to reconstruct large key/value data
+    std::vector<uint8_t> ReadOverflowData(uint32_t pgno, uint32_t totalLen) {
+        std::vector<uint8_t> result;
+        if (pgno == 0 || totalLen == 0) return result;
+        result.reserve(totalLen);
+
+        uint32_t current = pgno;
+        uint32_t bytesRead = 0;
+        while (current != 0 && bytesRead < totalLen) {
+            std::vector<uint8_t> pageData;
+            if (!ReadPage(current, pageData)) break;
+
+            if (pageData.size() < 32) break; // need header + next + len
+            const PAGE* p = reinterpret_cast<const PAGE*>(pageData.data());
+            if (p->type != P_OVERFLOW) {
+                LogPrintf("BDB48Reader: Expected overflow page, got type %u\n", (unsigned)p->type);
+                break;
+            }
+
+            // Layout after PAGE header:
+            // [26..29] next overflow page (uint32)
+            // [30..31] bytes on this page (uint16)
+            uint32_t nextPg = *reinterpret_cast<const uint32_t*>(pageData.data() + 26);
+            uint16_t bytesOnPage = *reinterpret_cast<const uint16_t*>(pageData.data() + 30);
+
+            uint32_t dataOffset = 32;
+            uint32_t toCopy = std::min<uint32_t>(bytesOnPage, totalLen - bytesRead);
+            if (dataOffset + toCopy <= pageData.size()) {
+                result.insert(result.end(), pageData.begin() + dataOffset, pageData.begin() + dataOffset + toCopy);
+                bytesRead += toCopy;
+            } else {
+                break;
+            }
+
+            current = nextPg;
+        }
+
+        return result;
+    }
+
     void ProcessLeafPage(const std::vector<uint8_t>& pageData, uint32_t pgno) {
         if (pageData.size() < sizeof(PAGE)) return;
         
@@ -243,17 +283,42 @@ private:
             if (key_offset >= pageSize || val_offset >= pageSize) continue;
             if (key_offset < 26 || val_offset < 26) continue;
             
-            // Read key
+            // Read key (handle inline or overflow)
+            std::vector<uint8_t> key;
+            if (key_offset + sizeof(BKEYDATA) > pageSize) continue;
             const BKEYDATA* key_item = reinterpret_cast<const BKEYDATA*>(pageData.data() + key_offset);
-            if (key_offset + sizeof(BKEYDATA) + key_item->len > pageSize) continue;
-            
-            std::vector<uint8_t> key(key_item->data, key_item->data + key_item->len);
-            
-            // Read value  
+            if ((key_item->type & 0x0F) == B_OVERFLOW) {
+                // BOVERFLOW stub layout (packed) as seen on leaf page
+                struct BOVERFLOW { uint16_t len; uint8_t type; uint8_t pad; uint32_t pgno; uint32_t tlen; };
+                if (key_offset + sizeof(BOVERFLOW) <= pageSize) {
+                    const BOVERFLOW* ov = reinterpret_cast<const BOVERFLOW*>(pageData.data() + key_offset);
+                    key = ReadOverflowData(ov->pgno, ov->tlen);
+                    LogPrintf("BDB48Reader: Overflow key len=%u from pg=%u\n", (unsigned)ov->tlen, (unsigned)ov->pgno);
+                } else {
+                    continue;
+                }
+            } else {
+                if (key_offset + sizeof(BKEYDATA) + key_item->len > pageSize) continue;
+                key.assign(key_item->data, key_item->data + key_item->len);
+            }
+
+            // Read value (handle inline or overflow)
+            std::vector<uint8_t> value;
+            if (val_offset + sizeof(BKEYDATA) > pageSize) continue;
             const BKEYDATA* val_item = reinterpret_cast<const BKEYDATA*>(pageData.data() + val_offset);
-            if (val_offset + sizeof(BKEYDATA) + val_item->len > pageSize) continue;
-            
-            std::vector<uint8_t> value(val_item->data, val_item->data + val_item->len);
+            if ((val_item->type & 0x0F) == B_OVERFLOW) {
+                struct BOVERFLOW { uint16_t len; uint8_t type; uint8_t pad; uint32_t pgno; uint32_t tlen; };
+                if (val_offset + sizeof(BOVERFLOW) <= pageSize) {
+                    const BOVERFLOW* ov = reinterpret_cast<const BOVERFLOW*>(pageData.data() + val_offset);
+                    value = ReadOverflowData(ov->pgno, ov->tlen);
+                    LogPrintf("BDB48Reader: Overflow value len=%u from pg=%u\n", (unsigned)ov->tlen, (unsigned)ov->pgno);
+                } else {
+                    continue;
+                }
+            } else {
+                if (val_offset + sizeof(BKEYDATA) + val_item->len > pageSize) continue;
+                value.assign(val_item->data, val_item->data + val_item->len);
+            }
             
             // Store record
             records.push_back({key, value});
@@ -329,9 +394,7 @@ static bool WriteRecordsToBDB18(
         err = "db_create failed";
         return false;
     }
-
-    // Determinism knob: match working tool's page size for ~204,800 B gerald output
-    db->set_pagesize(db, 8192);
+    // Let BDB choose pagesize for compatibility across wallets
     
     rc = db->open(db, nullptr, dstPath.c_str(), "main", DB_BTREE, DB_CREATE, 0644);
     if (rc != 0) {
