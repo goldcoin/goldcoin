@@ -205,18 +205,6 @@ enum PageType {
 // Overflow page constants
 constexpr uint8_t P_OVERFLOW_TYPE = 7;
 
-// ChatGPT's robust overflow detection
-struct OverflowProbe {
-    bool looks_overflow = false;
-    uint32_t pgno = 0;
-    uint32_t nbytes = 0;
-    int layout = -1; // 0: +3/+7, 1: alternate layout
-};
-
-struct OffsetPair { uint16_t k, v; };
-struct OffsetPairHash { size_t operator()(const OffsetPair& p) const { return (size_t(p.k) << 16) ^ p.v; } };
-struct OffsetPairEq   { bool operator()(const OffsetPair& a, const OffsetPair& b) const { return a.k==b.k && a.v==b.v; } };
-
 // BDB 4.8 Page Header (all pages start with this)
 struct PageHeader {
     uint32_t lsn_file;     // Log sequence number file
