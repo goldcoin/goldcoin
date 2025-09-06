@@ -24,6 +24,7 @@
 #include "httpserver.h"
 #include "httprpc.h"
 #include "utilstrencodings.h"
+#include "wallet/migrate.h"
 
 #include <filesystem>
 #include <algorithm>
@@ -187,6 +188,8 @@ bool AppInit(int argc, char* argv[])
             // InitError will have been called with detailed error, which ends up on console
             exit(1);
         }
+        
+        // Migration now handled during wallet load (Satoshi's approach)
         if (GetBoolArg("-daemon", false))
         {
 #if HAVE_DECL_DAEMON

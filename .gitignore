@@ -14,6 +14,13 @@ src/test/test_goldcoin
 src/test/test_goldcoin_fuzzy
 src/qt/test/test_goldcoin-qt
 
+# Wallet migration tool artifacts
+src/tools/wallet-migrate/build/
+src/tools/wallet-migrate/wallet-migrate
+src/tools/wallet-migrate/test-wallets/
+src/tools/wallet-migrate/*.backup
+src/tools/wallet-migrate/*.dat
+
 # autoreconf
 Makefile.in
 aclocal.m4
@@ -123,3 +130,6 @@ contrib/devtools/split-debug.sh
 CLAUDE.md
 # Claude AI settings
 .claude/
+depends/x86_64-pc-linux-gnu/
+depends/x86_64-w64-mingw32/
+build-win64/

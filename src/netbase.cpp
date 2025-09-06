@@ -32,6 +32,11 @@
 #define MSG_NOSIGNAL 0
 #endif
 
+// Note: Static linking with getaddrinfo/getservbyname/getprotobynumber produces glibc warnings.
+// These warnings can be safely ignored - we primarily use direct IP addresses for node connections
+// and the basic functionality works without NSS modules. This is a deliberate tradeoff for maximum
+// portability with static binaries. - Satoshi approach: simple, portable, no dependencies.
+
 // Settings
 static proxyType proxyInfo[NET_MAX];
 static proxyType nameProxy;
