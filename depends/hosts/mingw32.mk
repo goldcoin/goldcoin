@@ -1,3 +1,5 @@
+mingw32_native_toolchain=native_cmake
+
 mingw32_CFLAGS=-pipe
 mingw32_CXXFLAGS=$(mingw32_CFLAGS)
 

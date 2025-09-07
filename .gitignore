@@ -132,4 +132,11 @@ CLAUDE.md
 .claude/
 depends/x86_64-pc-linux-gnu/
 depends/x86_64-w64-mingw32/
+depends/work/
+depends/built/
 build-win64/
+
+# Binary executables that shouldn't be in repo
+bin/
+goldcoind
+goldcoin-qt.exe

@@ -129,9 +129,9 @@ $(1)_config_env+=$($(1)_config_env_$(host_arch)_$(host_os)) $($(1)_config_env_$(
 
 $(1)_config_env+=PKG_CONFIG_LIBDIR=$($($(1)_type)_prefix)/lib/pkgconfig
 $(1)_config_env+=PKG_CONFIG_PATH=$($($(1)_type)_prefix)/share/pkgconfig
-$(1)_config_env+=PATH=$(build_prefix)/bin:$(PATH)
-$(1)_build_env+=PATH=$(build_prefix)/bin:$(PATH)
-$(1)_stage_env+=PATH=$(build_prefix)/bin:$(PATH)
+$(1)_config_env+=PATH='$(host_prefix)/native/bin:$(build_prefix)/bin:$(PATH)'
+$(1)_build_env+=PATH='$(host_prefix)/native/bin:$(build_prefix)/bin:$(PATH)'
+$(1)_stage_env+=PATH='$(host_prefix)/native/bin:$(build_prefix)/bin:$(PATH)'
 $(1)_autoconf=./configure --host=$($($(1)_type)_host) --disable-dependency-tracking --prefix=$($($(1)_type)_prefix) $$($(1)_config_opts) CC="$$($(1)_cc)" CXX="$$($(1)_cxx)"
 
 ifneq ($($(1)_nm),)
@@ -170,7 +170,7 @@ $($(1)_extracted): | $($(1)_fetched)
 	$(AT)mkdir -p $$(@D)
 	$(AT)cd $$(@D); $(call $(1)_extract_cmds,$(1))
 	$(AT)touch $$@
-$($(1)_preprocessed): | $($(1)_dependencies) $($(1)_extracted)
+$($(1)_preprocessed): | $($(1)_dependencies) $($(1)_native_dependencies) $($(1)_extracted)
 	$(AT)echo Preprocessing $(1)...
 	$(AT)mkdir -p $$(@D) $($(1)_patch_dir)
 	$(AT)$(foreach patch,$($(1)_patches),cd $(PATCHES_PATH)/$(1); cp $(patch) $($(1)_patch_dir) ;)
@@ -204,6 +204,7 @@ $($(1)_cached): | $($(1)_dependencies) $($(1)_postprocessed)
 	$(AT)rm -rf $$(@D) && mkdir -p $$(@D)
 	$(AT)mv $$($(1)_staging_dir)/$$(@F) $$(@)
 	$(AT)rm -rf $($(1)_staging_dir)
+	$(AT)if test "$($(1)_type)" = "build"; then echo "Auto-installing native package $(1)..."; mkdir -p $(host_prefix) && cd $(host_prefix) && tar xzf $$(@); fi
 $($(1)_cached_checksum): $($(1)_cached)
 	$(AT)cd $$(@D); $(build_SHA256SUM) $$(<F) > $$(@)
 
@@ -243,3 +244,4 @@ $(foreach package,$(all_packages),$(eval $(call int_add_cmds,$(package))))
 
 #special exception: if a toolchain package exists, all non-native packages depend on it
 $(foreach package,$(packages),$(eval $($(package)_unpacked): |$($($(host_arch)_$(host_os)_native_toolchain)_cached) ))
+

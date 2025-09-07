@@ -7,6 +7,12 @@ $(package)_sha256_hash=c1800c2ea835801af04a05d4a32321d79a93954ee3ae2172bbeacf13d
 # Mark as host tools only; the depends framework will place them under .../<build-triplet>/native/
 $(package)_native_only=1
 
+# qt6-tools needs cmake from native_cmake package
+$(package)_dependencies=native_cmake
+$(package)_config_env=PATH="$(host_prefix)/native/bin:$(build_prefix)/bin:$(PATH)"
+$(package)_build_env=PATH="$(host_prefix)/native/bin:$(build_prefix)/bin:$(PATH)"
+$(package)_stage_env=PATH="$(host_prefix)/native/bin:$(build_prefix)/bin:$(PATH)"
+
 # Use the native toolchain
 $(package)_cc  = $(build_cc)
 $(package)_cxx = $(build_cxx)

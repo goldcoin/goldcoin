@@ -1,3 +1,5 @@
+linux_native_toolchain=native_cmake
+
 linux_CFLAGS=-pipe
 linux_CXXFLAGS=$(linux_CFLAGS)
 
