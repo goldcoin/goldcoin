@@ -1,11 +1,14 @@
+# Archives
 *.tar.gz
 *.tar.bz2
 *.zip
 
+# Compiled binaries
 *.exe
-goldcoin-*-release/
-windows-release*/
-release/
+goldcoind
+goldcoin-cli
+goldcoin-tx
+goldcoin-qt
 src/goldcoin
 src/goldcoind
 src/goldcoin-cli
@@ -14,129 +17,44 @@ src/test/test_goldcoin
 src/test/test_goldcoin_fuzzy
 src/qt/test/test_goldcoin-qt
 
-# Wallet migration tool artifacts
-src/tools/wallet-migrate/build/
-src/tools/wallet-migrate/wallet-migrate
-src/tools/wallet-migrate/test-wallets/
-src/tools/wallet-migrate/*.backup
-src/tools/wallet-migrate/*.dat
+# Build artifacts
+*.o
+*.a
+*.lo
+*.la
+build/
+*.log
+*.trs
 
-# autoreconf
-Makefile.in
-aclocal.m4
-autom4te.cache/
-build-aux/config.guess
-build-aux/config.sub
-build-aux/depcomp
-build-aux/install-sh
-build-aux/ltmain.sh
-build-aux/m4/libtool.m4
-build-aux/m4/lt~obsolete.m4
-build-aux/m4/ltoptions.m4
-build-aux/m4/ltsugar.m4
-build-aux/m4/ltversion.m4
-build-aux/missing
-build-aux/compile
-build-aux/test-driver
-config.log
-config.status
-configure
-libtool
-src/config/bitcoin-config.h
-src/config/bitcoin-config.h.in
-src/config/stamp-h1
-share/setup.nsi
-share/qt/Info.plist
-
-src/univalue/gen
-
+# Generated Qt files
 src/qt/*.moc
 src/qt/moc_*.cpp
 src/qt/forms/ui_*.h
-
 src/qt/test/moc*.cpp
+qrc_*.cpp
+*.qm
 
-.deps
-.dirstamp
-.libs
-.*.swp
-*.*~*
+# Temporary files
+*.swp
+*~
 *.bak
 *.rej
 *.orig
 *.pyc
-*.o
-*.o-*
-*.a
-*.pb.cc
-*.pb.h
 
-*.log
-*.trs
-*.dmg
-
-*.json.h
-*.raw.h
-
-#libtool object files
-*.lo
-*.la
-
-# Compilation and Qt preprocessor part
-*.qm
-Makefile
-goldcoin-qt
-Goldcoin-Qt.app
-
-# Unit-tests
-Makefile.test
-goldcoin-qt_test
-src/test/buildenv.py
-
-# Resources cpp
-qrc_*.cpp
-
-# Mac specific
+# OS specific
 .DS_Store
-build
 
-#lcov
-*.gcno
-*.gcda
-/*.info
-test_goldcoin.coverage/
-total.coverage/
-coverage_percent.txt
-
-#build tests
-linux-coverage-build
-linux-build
-win32-build
-qa/pull-tester/tests_config.py
-qa/cache/*
-
-!src/leveldb*/Makefile
-
-/doc/doxygen/
-
-libbitcoinconsensus.pc
-contrib/devtools/split-debug.sh
-
+# IDE
 .vscode/
-*.cflags
-*.cxxflags
 
-# Private/sensitive project documentation
-CLAUDE.md
-# Claude AI settings
-.claude/
-depends/x86_64-pc-linux-gnu/
-depends/x86_64-w64-mingw32/
-depends/work/
-depends/built/
-build-win64/
+# CMake build directory
+build/
 
-# Binary executables that shouldn't be in repo
-bin/
-goldcoind
-goldcoin-qt.exe
+# Release directories
+*-release/
+release/
+
+# Generated config files
+src/config/bitcoin-config.h
+src/secp256k1/src/libsecp256k1-config.h

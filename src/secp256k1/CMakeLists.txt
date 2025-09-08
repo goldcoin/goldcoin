@@ -11,9 +11,5 @@ target_include_directories(secp256k1 PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-target_compile_definitions(secp256k1 PRIVATE
-    USE_NUM_NONE
-    USE_FIELD_INV_BUILTIN
-    USE_SCALAR_INV_BUILTIN
-    ENABLE_MODULE_RECOVERY
-)
+# secp256k1 configuration now handled by generated libsecp256k1-config.h
+# No manual compile definitions needed - config header provides everything

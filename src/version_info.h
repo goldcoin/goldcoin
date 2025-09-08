@@ -13,10 +13,10 @@
 #define PACKAGE_BUGREPORT "https://github.com/goldcoin/goldcoin/issues"
 #define PACKAGE_URL "https://www.goldcoinproject.org"
 
-// Copyright information
-#define COPYRIGHT_YEAR 2025
-#define COPYRIGHT_HOLDERS "The %s developers"
+// Copyright information - defined in generated bitcoin-config.h
+// #define COPYRIGHT_YEAR - from config
+// #define COPYRIGHT_HOLDERS - from config  
+// #define COPYRIGHT_HOLDERS_FINAL - from config
 #define COPYRIGHT_HOLDERS_SUBSTITUTION "Goldcoin Core"
-#define COPYRIGHT_HOLDERS_FINAL "The Goldcoin Core developers"
 
 #endif // GOLDCOIN_VERSION_INFO_H

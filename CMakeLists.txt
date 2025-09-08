@@ -1,23 +1,31 @@
 cmake_minimum_required(VERSION 3.21)
+
+# ===== SET COMPILER BEFORE PROJECT =====
+# Only set compiler for native Linux builds, not when using a toolchain file
+if(NOT CMAKE_TOOLCHAIN_FILE AND NOT DEFINED CMAKE_C_COMPILER)
+    # Native Linux build - use GCC 15.2 for full C++23 support
+    # Check for depends-built GCC first, fall back to system
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/depends/x86_64-pc-linux-gnu/native/bin/gcc")
+        set(CMAKE_C_COMPILER "${CMAKE_CURRENT_SOURCE_DIR}/depends/x86_64-pc-linux-gnu/native/bin/gcc" CACHE STRING "C compiler" FORCE)
+        set(CMAKE_CXX_COMPILER "${CMAKE_CURRENT_SOURCE_DIR}/depends/x86_64-pc-linux-gnu/native/bin/g++" CACHE STRING "C++ compiler" FORCE)
+        message(STATUS "Using depends GCC 15.2")
+    elseif(EXISTS "/usr/bin/gcc-15")
+        set(CMAKE_C_COMPILER "/usr/bin/gcc-15" CACHE STRING "C compiler" FORCE)
+        set(CMAKE_CXX_COMPILER "/usr/bin/g++-15" CACHE STRING "C++ compiler" FORCE)
+    endif()
+endif()
+
 project(goldcoin VERSION 0.17.0 LANGUAGES CXX C ASM)
 
 # ===== BUILD OPTIONS =====
-option(USE_DEPENDS "Use depends/ prefix (for cross-compile only)" OFF)
-option(BUILD_GUI "Build goldcoin-qt GUI with Qt 6.9" ON)
+option(USE_DEPENDS "Use depends/ prefix for all dependencies" ON)
+option(BUILD_GUI "Build goldcoin-qt GUI with Qt 6.9" OFF)
 option(BUILD_WALLET "Enable wallet functionality" ON)
 option(BUILD_TESTS "Build test suite" OFF)
 option(BUILD_BENCH "Build benchmarks" OFF)
 option(WITH_ZMQ "Enable ZMQ notifications" OFF)
 option(WITH_MINIUPNPC "Enable UPnP support" OFF)
 option(BUILD_STATIC "Build static binaries (Linux only)" OFF)
-
-# ===== C++ STANDARD (C++23 with GCC 15.2 - No Boost!) =====
-# Only set compiler for native Linux builds, not when using a toolchain file
-if(NOT CMAKE_TOOLCHAIN_FILE)
-    # Native Linux build - use GCC 15.2 for full C++23 support
-    set(CMAKE_C_COMPILER /usr/bin/gcc-15)
-    set(CMAKE_CXX_COMPILER /usr/bin/g++-15)
-endif()
 
 # C++23 standard for C++ files
 set(CMAKE_CXX_STANDARD 23)
@@ -52,12 +60,62 @@ if(NOT WIN32 AND NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
     if(HAVE_MALLOPT_ARENA_MAX)
         add_compile_definitions(HAVE_MALLOPT_ARENA_MAX=1)
     endif()
+    
+    # Check for strnlen declaration
+    check_function_exists(strnlen HAVE_DECL_STRNLEN)
+    if(HAVE_DECL_STRNLEN)
+        set(HAVE_DECL_STRNLEN 1)
+    else()
+        set(HAVE_DECL_STRNLEN 0)
+    endif()
 endif()
 
 # ===== BUILD TYPE =====
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
+
+# ===== CONFIG FILE GENERATION =====
+# Generate bitcoin-config.h
+set(CLIENT_VERSION_MAJOR 0)
+set(CLIENT_VERSION_MINOR 17)
+set(CLIENT_VERSION_REVISION 0)
+set(CLIENT_VERSION_BUILD 0)
+set(CLIENT_VERSION_IS_RELEASE true)
+set(COPYRIGHT_HOLDERS "The %s developers")
+set(COPYRIGHT_HOLDERS_FINAL "The Goldcoin Core developers")
+set(COPYRIGHT_YEAR "2025")
+set(PACKAGE_NAME "Goldcoin Core")
+
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/config/bitcoin-config.h.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/src/config/bitcoin-config.h"
+    @ONLY
+)
+
+# Generate libsecp256k1-config.h  
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(USE_FIELD_5X52 ON)
+    set(USE_SCALAR_4X64 ON)
+    set(HAVE___INT128 ON)
+    set(USE_ASM_X86_64 ON)
+else()
+    set(USE_FIELD_10X26 ON)
+    set(USE_SCALAR_8X32 ON)
+endif()
+set(ENABLE_MODULE_RECOVERY ON)
+set(USE_ECMULT_STATIC_PRECOMPUTATION ON)
+set(HAVE_BUILTIN_EXPECT ON)
+set(HAVE_LIBCRYPTO ON)
+set(USE_NUM_NONE ON)
+set(USE_FIELD_INV_BUILTIN ON)
+set(USE_SCALAR_INV_BUILTIN ON)
+
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1/src/libsecp256k1-config.h.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/src/secp256k1/src/libsecp256k1-config.h"
+    @ONLY
+)
 
 # ===== OUTPUT DIRECTORIES =====
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -249,7 +307,9 @@ endif()
 # ===== GLOBAL INCLUDES (MINIMAL) =====
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/config
+    ${CMAKE_CURRENT_BINARY_DIR}/src  # Generated headers (for config/ subdirs)
+    ${CMAKE_CURRENT_BINARY_DIR}/src/config  # Direct access to bitcoin-config.h
+    ${CMAKE_CURRENT_BINARY_DIR}/src/secp256k1/src  # Direct access to libsecp256k1-config.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/leveldb/include
     ${CMAKE_CURRENT_SOURCE_DIR}/src/leveldb/helpers/memenv
     ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1/include
@@ -284,6 +344,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         -Wformat
         -Wformat-security
         -Wno-unused-parameter
+        -Wno-unused-function
+        -Wno-nonnull-compare
         -fstack-protector-all
     )
     add_compile_definitions(_FORTIFY_SOURCE=2)
@@ -292,27 +354,8 @@ endif()
 # ===== SUBDIRECTORIES FOR EXTERNAL LIBRARIES =====
 add_subdirectory(src/leveldb)
 
-# Configure secp256k1 field implementation based on compiler capabilities
+# secp256k1 configuration now handled by generated libsecp256k1-config.h
 add_subdirectory(src/secp256k1)
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows" AND CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    # MinGW GCC 13 doesn't always support __int128
-    # Check if we can detect this properly
-    include(CheckTypeSize)
-    CHECK_TYPE_SIZE("__int128" HAVE_INT128)
-    if(HAVE_INT128)
-        target_compile_definitions(secp256k1 PRIVATE USE_FIELD_5X52=1 USE_SCALAR_4X64=1 HAVE___INT128=1)
-    else()
-        # Fallback to 32-bit implementation for MinGW without __int128
-        message(STATUS "MinGW detected without __int128 - using 32-bit field implementation")
-        target_compile_definitions(secp256k1 PRIVATE USE_FIELD_10X26=1 USE_SCALAR_8X32=1)
-    endif()
-elseif(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    # 64-bit Linux/Unix - use 5x52 field implementation with __int128
-    target_compile_definitions(secp256k1 PRIVATE USE_FIELD_5X52=1 USE_SCALAR_4X64=1 HAVE___INT128=1)
-else()
-    # 32-bit architecture - use 10x26 field implementation  
-    target_compile_definitions(secp256k1 PRIVATE USE_FIELD_10X26=1 USE_SCALAR_8X32=1)
-endif()
 
 add_subdirectory(src/univalue)
 
