@@ -99,7 +99,7 @@
 
 /* Define to 1 if you have the declaration of `daemon', and to 0 if you don't.
    */
-#undef HAVE_DECL_DAEMON
+#cmakedefine HAVE_DECL_DAEMON 1
 
 /* Define to 1 if you have the declaration of `EVP_MD_CTX_new', and to 0 if
    you don't. */
@@ -312,7 +312,7 @@
 #undef PACKAGE_BUGREPORT
 
 /* Define to the full name of this package. */
-#undef PACKAGE_NAME
+#define PACKAGE_NAME "@PACKAGE_NAME@"
 
 /* Define to the full name and version of this package. */
 #undef PACKAGE_STRING

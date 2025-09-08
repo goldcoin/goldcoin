@@ -1,5 +1,5 @@
 packages:=openssl libevent zeromq
-native_packages := native_ccache
+native_packages := native_ccache native_gcc
 
 qt_native_packages = native_protobuf native_cmake qt6-tools
 qt_packages = qrencode protobuf zlib
@@ -11,7 +11,7 @@ qt_i686_linux_packages:=$(qt_x86_64_linux_packages)
 qt_darwin_packages=qt6
 qt_mingw32_packages=qt6 zlib
 
-wallet_packages=bdb bdb48-utils
+wallet_packages=bdb
 
 upnp_packages=miniupnpc
 

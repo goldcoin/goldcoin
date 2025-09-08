@@ -25,7 +25,7 @@ option(BUILD_TESTS "Build test suite" OFF)
 option(BUILD_BENCH "Build benchmarks" OFF)
 option(WITH_ZMQ "Enable ZMQ notifications" OFF)
 option(WITH_MINIUPNPC "Enable UPnP support" OFF)
-option(BUILD_STATIC "Build static binaries (Linux only)" OFF)
+option(BUILD_STATIC "Build static binaries (Linux only)" ON)
 
 # C++23 standard for C++ files
 set(CMAKE_CXX_STANDARD 23)
@@ -51,9 +51,6 @@ include(CheckFunctionExists)
 if(NOT WIN32 AND NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
     # Unix/Linux features
     check_function_exists(daemon HAVE_DECL_DAEMON)
-    if(HAVE_DECL_DAEMON)
-        add_compile_definitions(HAVE_DECL_DAEMON=1)
-    endif()
     
     # Check for mallopt (glibc-specific)
     check_function_exists(mallopt HAVE_MALLOPT_ARENA_MAX)
@@ -146,14 +143,37 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CMAKE_TOOLCHAIN_FILE)
     set(OPENSSL_CRYPTO_LIBRARY "${DEPENDS_PREFIX}/lib/libcrypto.a")
     
 elseif(USE_DEPENDS)
-    # Full depends mode for other cross-compilation
+    # Full depends mode for cross-compilation AND native static builds
     if(WIN32)
         set(DEPENDS_PREFIX "${CMAKE_SOURCE_DIR}/depends/x86_64-w64-mingw32")
+        message(STATUS "Cross-compile mode - Using full depends: ${DEPENDS_PREFIX}")
     else()
         set(DEPENDS_PREFIX "${CMAKE_SOURCE_DIR}/depends/${CMAKE_SYSTEM_PROCESSOR}-pc-linux-gnu")
+        message(STATUS "Native static build - Using full depends: ${DEPENDS_PREFIX}")
     endif()
     list(APPEND CMAKE_PREFIX_PATH "${DEPENDS_PREFIX}")
-    message(STATUS "Cross-compile mode - Using full depends: ${DEPENDS_PREFIX}")
+    set(CMAKE_FIND_ROOT_PATH "${DEPENDS_PREFIX}")
+    
+    # Force depends libraries over system libraries for enterprise reproducibility
+    set(OPENSSL_ROOT_DIR "${DEPENDS_PREFIX}")
+    set(OPENSSL_USE_STATIC_LIBS ON)
+    set(OPENSSL_SSL_LIBRARY "${DEPENDS_PREFIX}/lib/libssl.a")
+    set(OPENSSL_CRYPTO_LIBRARY "${DEPENDS_PREFIX}/lib/libcrypto.a")
+    
+    # For Linux static builds, use system libevent (static .a files) for true static linking
+    # This allows proper glibc static linking to achieve 22MB binary
+    if(NOT WIN32)
+        # Use pkg-config to find system libevent - linker will use .a files with -static flag
+        find_package(PkgConfig REQUIRED)
+        pkg_check_modules(LIBEVENT REQUIRED libevent)
+        pkg_check_modules(LIBEVENT_PTHREADS REQUIRED libevent_pthreads)
+        # Don't override - let pkg-config and -static flag handle it
+    else()
+        # Windows uses depends libevent
+        set(LIBEVENT_LIBRARIES "${DEPENDS_PREFIX}/lib/libevent.a")
+        set(LIBEVENT_PTHREADS_LIBRARIES "${DEPENDS_PREFIX}/lib/libevent_pthreads.a")
+        set(LIBEVENT_INCLUDE_DIRS "${DEPENDS_PREFIX}/include")
+    endif()
     
 elseif(USE_DEPENDS_QT)
     # Native build with Qt6 from depends ONLY
@@ -216,11 +236,8 @@ endif()
 
 # Platform-specific dependencies
 if(NOT WIN32)
-    find_package(PkgConfig REQUIRED)
-    
-    # libevent with pthreads support
-    pkg_check_modules(LIBEVENT REQUIRED libevent)
-    pkg_check_modules(LIBEVENT_PTHREADS REQUIRED libevent_pthreads)
+    # For static builds, pkg-config sets LIBEVENT_LIBRARIES to -levent
+    # With -static flag, linker will use /usr/lib/x86_64-linux-gnu/libevent.a
     
     # Other system libraries
     # BIP70 removed - protobuf no longer needed

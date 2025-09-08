@@ -68,8 +68,8 @@ $(package)_config_opts_i686_linux = -xplatform linux-g++-32
 $(package)_config_env = PATH="$(host_prefix)/native/bin:$(build_prefix)/bin:$(PATH)"
 $(package)_build_env = QT_RCC_TEST=1
 $(package)_build_env += CMAKE_PREFIX_PATH="$(build_prefix)/lib/cmake"
-$(package)_build_env += PATH="$(host_prefix)/native/bin:$(build_prefix)/bin:$(PATH)"
-$(package)_stage_env = PATH="$(host_prefix)/native/bin:$(build_prefix)/bin:$(PATH)"
+$(package)_build_env += PATH="$(host_prefix)/native/bin:$(build_prefix)/bin:/usr/bin:/bin:$(PATH)"
+$(package)_stage_env = PATH="$(host_prefix)/native/bin:$(build_prefix)/bin:/usr/bin:/bin:$(PATH)"
 endef
 
 define $(package)_fetch_cmds

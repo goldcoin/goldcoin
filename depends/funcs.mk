@@ -178,7 +178,7 @@ $($(1)_preprocessed): | $($(1)_dependencies) $($(1)_native_dependencies) $($(1)_
 	$(AT)touch $$@
 $($(1)_configured): | $($(1)_preprocessed)
 	$(AT)echo Configuring $(1)...
-	$(AT)rm -rf $(host_prefix); mkdir -p $(host_prefix)/lib; cd $(host_prefix); $(foreach package,$($(1)_all_dependencies), tar xf $($(package)_cached); )
+	$(AT)mkdir -p $(host_prefix)/lib; cd $(host_prefix); $(foreach package,$($(1)_all_dependencies), tar xf $($(package)_cached); )
 	$(AT)mkdir -p $$(@D)
 	$(AT)+cd $$(@D); $($(1)_config_env) $(call $(1)_config_cmds, $(1))
 	$(AT)touch $$@
@@ -204,7 +204,7 @@ $($(1)_cached): | $($(1)_dependencies) $($(1)_postprocessed)
 	$(AT)rm -rf $$(@D) && mkdir -p $$(@D)
 	$(AT)mv $$($(1)_staging_dir)/$$(@F) $$(@)
 	$(AT)rm -rf $($(1)_staging_dir)
-	$(AT)if test "$($(1)_type)" = "build"; then echo "Auto-installing native package $(1)..."; mkdir -p $(host_prefix) && cd $(host_prefix) && tar xzf $$(@); fi
+	$(AT)echo "Auto-installing package $(1)..."; mkdir -p $(host_prefix) && cd $(host_prefix) && tar xzf $$(@)
 $($(1)_cached_checksum): $($(1)_cached)
 	$(AT)cd $$(@D); $(build_SHA256SUM) $$(<F) > $$(@)
 
