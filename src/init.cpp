@@ -1514,7 +1514,7 @@ bool AppInitMain(thread_group& threadGroup, CScheduler& scheduler)
         bool fReset = fReindex;
         std::string strLoadError;
 
-        uiInterface.InitMessage(_("Loading block index..."));
+        uiInterface.TriggerInitMessage(_("Loading block index..."));
 
         nStart = GetTimeMillis();
         do {
@@ -1574,20 +1574,20 @@ bool AppInitMain(thread_group& threadGroup, CScheduler& scheduler)
                 }
 
                 if (!fReindex && chainActive.Tip() != nullptr) {
-                    uiInterface.InitMessage(_("Rewinding blocks..."));
+                    uiInterface.TriggerInitMessage(_("Rewinding blocks..."));
                     if (!RewindBlockIndex(chainparams)) {
                         strLoadError = _("Unable to rewind the database to a pre-fork state. You will need to redownload the blockchain");
                         break;
                     }
                 }
 
-                uiInterface.InitMessage(_("Checking ACP ..."));
+                uiInterface.TriggerInitMessage(_("Checking ACP ..."));
                 if (!CheckCheckpointPubKey()) {
                     strLoadError = _("Checking ACP pubkey failed");
                     break;
                 }
 
-                uiInterface.InitMessage(_("Verifying blocks..."));
+                uiInterface.TriggerInitMessage(_("Verifying blocks..."));
                 if (fHavePruned && GetArg("-checkblocks", DEFAULT_CHECKBLOCKS) > MIN_BLOCKS_TO_KEEP) {
                     LogPrintf("Prune: pruned datadir may not have more than %d blocks; only checking available blocks",
                         MIN_BLOCKS_TO_KEEP);
@@ -1672,7 +1672,7 @@ bool AppInitMain(thread_group& threadGroup, CScheduler& scheduler)
         LogPrintf("Unsetting NODE_NETWORK on prune mode\n");
         nLocalServices = ServiceFlags(nLocalServices & ~NODE_NETWORK);
         if (!fReindex) {
-            uiInterface.InitMessage(_("Pruning blockstore..."));
+            uiInterface.TriggerInitMessage(_("Pruning blockstore..."));
             PruneAndFlush();
         }
     }
@@ -1748,7 +1748,7 @@ bool AppInitMain(thread_group& threadGroup, CScheduler& scheduler)
     // ********************************************************* Step 12: finished
 
     SetRPCWarmupFinished();
-    uiInterface.InitMessage(_("Done loading"));
+    uiInterface.TriggerInitMessage(_("Done loading"));
 
 #ifdef ENABLE_WALLET
     if (pwalletMain)

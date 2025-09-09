@@ -462,7 +462,7 @@ bool CWallet::Verify()
     std::string walletFile = GetArg("-wallet", DEFAULT_WALLET_DAT);
 
     LogPrintf("Using wallet %s\n", walletFile);
-    uiInterface.InitMessage(_("Verifying wallet..."));
+    uiInterface.TriggerInitMessage(_("Verifying wallet..."));
 
     // Wallet file must be a plain filename without a directory
     if (walletFile != fs::path(walletFile).stem().string() + fs::path(walletFile).extension().string())
@@ -1587,13 +1587,13 @@ CBlockIndex* CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool f
         while (pindex && nTimeFirstKey && (pindex->GetBlockTime() < (nTimeFirstKey - 7200)))
             pindex = chainActive.Next(pindex);
 
-        ShowProgress(_("Rescanning..."), 0); // show rescan progress in GUI as dialog or on splashscreen, if -rescan on startup
+        TriggerWalletShowProgress(_("Rescanning..."), 0); // show rescan progress in GUI as dialog or on splashscreen, if -rescan on startup
         double dProgressStart = GuessVerificationProgress(chainParams.TxData(), pindex);
         double dProgressTip = GuessVerificationProgress(chainParams.TxData(), chainActive.Tip());
         while (pindex)
         {
             if (pindex->nHeight % 100 == 0 && dProgressTip - dProgressStart > 0.0)
-                ShowProgress(_("Rescanning..."), std::max(1, std::min(99, (int)((GuessVerificationProgress(chainParams.TxData(), pindex) - dProgressStart) / (dProgressTip - dProgressStart) * 100))));
+                TriggerWalletShowProgress(_("Rescanning..."), std::max(1, std::min(99, (int)((GuessVerificationProgress(chainParams.TxData(), pindex) - dProgressStart) / (dProgressTip - dProgressStart) * 100))));
 
             CBlock block;
             if (ReadBlockFromDisk(block, pindex, Params().GetConsensus())) {
@@ -1612,7 +1612,7 @@ CBlockIndex* CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool f
                 LogPrintf("Still rescanning. At block %d. Progress=%f\n", pindex->nHeight, GuessVerificationProgress(chainParams.TxData(), pindex));
             }
         }
-        ShowProgress(_("Rescanning..."), 100); // hide progress dialog in GUI
+        TriggerWalletShowProgress(_("Rescanning..."), 100); // hide progress dialog in GUI
     }
     return ret;
 }
@@ -3629,7 +3629,7 @@ CWallet* CWallet::CreateWalletFromFile(const std::string walletFile)
     std::vector<CWalletTx> vWtx;
 
     if (GetBoolArg("-zapwallettxes", false)) {
-        uiInterface.InitMessage(_("Zapping all transactions from wallet..."));
+        uiInterface.TriggerInitMessage(_("Zapping all transactions from wallet..."));
 
         CWallet *tempWallet = new CWallet(walletFile);
         DBErrors nZapWalletRet = tempWallet->ZapWalletTx(vWtx);
@@ -3642,7 +3642,7 @@ CWallet* CWallet::CreateWalletFromFile(const std::string walletFile)
         tempWallet = nullptr;
     }
 
-    uiInterface.InitMessage(_("Loading wallet..."));
+    uiInterface.TriggerInitMessage(_("Loading wallet..."));
 
     int64_t nStart = GetTimeMillis();
     bool fFirstRun = true;
@@ -3771,7 +3771,7 @@ CWallet* CWallet::CreateWalletFromFile(const std::string walletFile)
             }
         }
 
-        uiInterface.InitMessage(_("Rescanning..."));
+        uiInterface.TriggerInitMessage(_("Rescanning..."));
         LogPrintf("Rescanning last %i blocks (from block %i)...\n", chainActive.Height() - pindexRescan->nHeight, pindexRescan->nHeight);
         nStart = GetTimeMillis();
         walletInstance->ScanForWalletTransactions(pindexRescan, true);
