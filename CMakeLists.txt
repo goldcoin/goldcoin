@@ -117,8 +117,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CMAKE_TOOLCHAIN_FILE)
     # Prevent mixing with Linux dependencies
     set(OPENSSL_ROOT_DIR "${DEPENDS_PREFIX}")
     set(OPENSSL_INCLUDE_DIR "${DEPENDS_PREFIX}/include")
-    set(OPENSSL_SSL_LIBRARY "${DEPENDS_PREFIX}/lib/libssl.a")
-    set(OPENSSL_CRYPTO_LIBRARY "${DEPENDS_PREFIX}/lib/libcrypto.a")
+    set(OPENSSL_SSL_LIBRARY "${DEPENDS_PREFIX}/lib64/libssl.a")
+    set(OPENSSL_CRYPTO_LIBRARY "${DEPENDS_PREFIX}/lib64/libcrypto.a")
     
 elseif(USE_DEPENDS)
     # Full depends mode for cross-compilation AND native static builds
@@ -135,8 +135,8 @@ elseif(USE_DEPENDS)
     # Force depends libraries over system libraries for enterprise reproducibility
     set(OPENSSL_ROOT_DIR "${DEPENDS_PREFIX}")
     set(OPENSSL_USE_STATIC_LIBS ON)
-    set(OPENSSL_SSL_LIBRARY "${DEPENDS_PREFIX}/lib/libssl.a")
-    set(OPENSSL_CRYPTO_LIBRARY "${DEPENDS_PREFIX}/lib/libcrypto.a")
+    set(OPENSSL_SSL_LIBRARY "${DEPENDS_PREFIX}/lib64/libssl.a")
+    set(OPENSSL_CRYPTO_LIBRARY "${DEPENDS_PREFIX}/lib64/libcrypto.a")
     
     # For Linux static builds, use system libevent (static .a files) for true static linking
     # This allows proper glibc static linking to achieve 22MB binary

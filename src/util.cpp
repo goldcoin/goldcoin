@@ -97,6 +97,7 @@
 #include <openssl/rand.h>
 #include <openssl/conf.h>
 #include <openssl/opensslv.h>
+#include <openssl/provider.h>
 
 using namespace std;
 
@@ -119,19 +120,9 @@ bool fLogIPs = DEFAULT_LOGIPS;
 std::atomic<bool> fReopenDebugLog(false);
 CTranslationInterface translationInterface;
 
-/** Init OpenSSL library multithreading support */
-// OpenSSL 1.1.0+ has built-in thread safety, so locking callbacks are no longer needed
-#if OPENSSL_VERSION_NUMBER < 0x10100000L
-static CCriticalSection** ppmutexOpenSSL;
-void locking_callback(int mode, int i, const char* file, int line) NO_THREAD_SAFETY_ANALYSIS
-{
-    if (mode & CRYPTO_LOCK) {
-        ENTER_CRITICAL_SECTION(*ppmutexOpenSSL[i]);
-    } else {
-        LEAVE_CRITICAL_SECTION(*ppmutexOpenSSL[i]);
-    }
-}
-#endif
+// OpenSSL 3.x provider management
+static OSSL_PROVIDER* g_openssl_default_provider = nullptr;
+static OSSL_PROVIDER* g_openssl_legacy_provider = nullptr;
 
 // Init
 class CInit
@@ -139,48 +130,29 @@ class CInit
 public:
     CInit()
     {
-#if OPENSSL_VERSION_NUMBER < 0x10100000L
-        // Init OpenSSL library multithreading support (only needed for OpenSSL < 1.1.0)
-        ppmutexOpenSSL = (CCriticalSection**)OPENSSL_malloc(CRYPTO_num_locks() * sizeof(CCriticalSection*));
-        for (int i = 0; i < CRYPTO_num_locks(); i++)
-            ppmutexOpenSSL[i] = new CCriticalSection();
-        CRYPTO_set_locking_callback(locking_callback);
-
-        // OpenSSL can optionally load a config file which lists optional loadable modules and engines.
-        // We don't use them so we don't require the config. However some of our libs may call functions
-        // which attempt to load the config file, possibly resulting in an exit() or crash if it is missing
-        // or corrupt. Explicitly tell OpenSSL not to try to load the file. The result for our libs will be
-        // that the config appears to have been loaded and there are no modules/engines available.
-        OPENSSL_no_config();
-#else
-        // OpenSSL 1.1.0+ auto-initializes and has built-in thread safety
-        // No explicit initialization needed
-#endif
-
-#ifdef WIN32
-#if OPENSSL_VERSION_NUMBER < 0x10100000L
-        // Seed OpenSSL PRNG with current contents of the screen
-        // RAND_screen() was removed in OpenSSL 1.1.0
-        RAND_screen();
-#endif
-#endif
-
+        // Load OpenSSL 3.x providers (required for all cryptographic operations)
+        g_openssl_default_provider = OSSL_PROVIDER_load(nullptr, "default");
+        g_openssl_legacy_provider = OSSL_PROVIDER_load(nullptr, "legacy");
+        
+        if (!g_openssl_default_provider)
+            throw std::runtime_error("Failed to load OpenSSL default provider");
+        if (!g_openssl_legacy_provider)
+            throw std::runtime_error("Failed to load OpenSSL legacy provider");
+        
         // Seed OpenSSL PRNG with performance counter
         RandAddSeed();
     }
     ~CInit()
     {
-#if OPENSSL_VERSION_NUMBER < 0x10100000L
-        // Securely erase the memory used by the PRNG (no-op in OpenSSL 1.1.0+)
-        RAND_cleanup();
-        // Shutdown OpenSSL library multithreading support
-        CRYPTO_set_locking_callback(nullptr);
-        for (int i = 0; i < CRYPTO_num_locks(); i++)
-            delete ppmutexOpenSSL[i];
-        OPENSSL_free(ppmutexOpenSSL);
-#else
-        // OpenSSL 1.1.0+ handles cleanup automatically
-#endif
+        // Unload OpenSSL providers in reverse order
+        if (g_openssl_legacy_provider) {
+            OSSL_PROVIDER_unload(g_openssl_legacy_provider);
+            g_openssl_legacy_provider = nullptr;
+        }
+        if (g_openssl_default_provider) {
+            OSSL_PROVIDER_unload(g_openssl_default_provider);
+            g_openssl_default_provider = nullptr;
+        }
     }
 }
 instance_of_cinit;
