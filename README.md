@@ -72,7 +72,7 @@ sudo apt-get install -y qtbase5-dev qttools5-dev qttools5-dev-tools
 
 ### Quick Build (Unix)
 ```bash
-git clone https://github.com/microguy/goldcoin.git
+git clone https://github.com/goldcoin/goldcoin.git
 cd goldcoin
 mkdir build && cd build
 cmake ..
