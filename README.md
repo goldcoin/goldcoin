@@ -49,11 +49,12 @@ Goldcoin is pioneering the transition from human-controlled to fully AI-autonomo
 ### Current Release: v0.15.0
 - Stable release with core functionality
 
-### In Development: v0.17.0
-- Qt 6.9 migration (in progress)
-- C++20 standard upgrade
-- Windows cross-compilation with zero external dependencies
-- Deprecated code removal and refactors
+### In Development: v0.17.0-beta1
+- Complete C++23 modernization with Boost elimination
+- Automatic BDB 4.8 → 18.1 wallet migration
+- Qt 6.9 interface with modern frameworks
+- OpenSSL 3.5.2 LTS and secp256k1 v0.6.0 cryptographic modernization
+- Enterprise CMake build system with static linking
 
 ### Upcoming: v0.18.0
 - Quantum-resistant signatures
@@ -64,29 +65,27 @@ Goldcoin is pioneering the transition from human-controlled to fully AI-autonomo
 
 ### Prerequisites (Ubuntu/Debian)
 ```bash
-sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils
-sudo apt-get install -y libboost-all-dev
-sudo apt-get install -y software-properties-common
-sudo add-apt-repository -y ppa:bitcoin/bitcoin
-sudo apt-get update
-sudo apt-get install -y libdb4.8-dev libdb4.8++-dev
+sudo apt-get install -y build-essential cmake pkg-config libssl-dev libevent-dev
+sudo apt-get install -y libdb-dev libdb++-dev
+sudo apt-get install -y qtbase5-dev qttools5-dev qttools5-dev-tools
 ```
 
 ### Quick Build (Unix)
 ```bash
 git clone https://github.com/microguy/goldcoin.git
 cd goldcoin
-./autogen.sh
-./configure --with-incompatible-bdb
+mkdir build && cd build
+cmake ..
 make -j"$(nproc)"
 # Optional:
 sudo make install
 ```
 
-### Cross-Compile for Windows (no Qt example)
+### Cross-Compile for Windows
 ```bash
-make -C depends HOST=x86_64-w64-mingw32 NO_QT=1 -j"$(nproc)"
-CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --prefix=/
+make -C depends HOST=x86_64-w64-mingw32 -j"$(nproc)"
+mkdir build && cd build
+cmake -DCMAKE_TOOLCHAIN_FILE=../depends/x86_64-w64-mingw32/share/toolchain.cmake ..
 make -j"$(nproc)"
 ```
 
@@ -130,8 +129,8 @@ git push origin feature/amazing-feature
 ```
 
 ### Code Standards
-- C++20 for new code
-- Follow existing code style
+- C++23 for new code (zero Boost dependencies)
+- CMake build system with static linking
 - Write unit tests for new features
 - Update documentation
 
