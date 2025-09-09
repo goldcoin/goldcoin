@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
     QCoreApplication app(argc, argv);
     app.setApplicationName("Goldcoin-Qt-test");
 
-    SSL_library_init();
+    // OpenSSL 3.x auto-initializes - SSL_library_init() removed
 
     URITests test1;
     if (QTest::qExec(&test1) != 0)

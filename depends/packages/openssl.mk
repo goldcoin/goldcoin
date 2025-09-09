@@ -1,9 +1,10 @@
 package=openssl
-$(package)_version=1.0.1k
-$(package)_download_path=https://www.openssl.org/source
+$(package)_version=3.5.2
+$(package)_download_path=https://github.com/openssl/openssl/releases/download/openssl-$($(package)_version)
 $(package)_file_name=$(package)-$($(package)_version).tar.gz
-$(package)_sha256_hash=8f9faeaebad088e772f4ef5e38252d472be4d878c6b3a2718c10a4fcebe7a41c
-$(package)_patches=0001-Add-OpenSSL-termios-fix-for-musl-libc.patch
+$(package)_sha256_hash=c53a47e5e441c930c3928cf7bf6fb00e5d129b630e0aa873b08258656e7345ec
+# OpenSSL uses ./Configure, not CMake - no native dependencies needed
+$(package)_native_dependencies=
 
 define $(package)_set_vars
 $(package)_config_env=AR="$($(package)_ar)" RANLIB="$($(package)_ranlib)" CC="$($(package)_cc)"
@@ -27,17 +28,7 @@ $(package)_config_opts+=no-seed
 $(package)_config_opts+=no-shared
 $(package)_config_opts+=no-ssl-trace
 $(package)_config_opts+=no-ssl3
-$(package)_config_opts+=no-gmp
-$(package)_config_opts+=no-heartbeats
-$(package)_config_opts+=no-jpake
-$(package)_config_opts+=no-krb5
-$(package)_config_opts+=no-libunbound
 $(package)_config_opts+=no-rdrand
-$(package)_config_opts+=no-rsax
-$(package)_config_opts+=no-sha0
-$(package)_config_opts+=no-ssl2
-$(package)_config_opts+=no-static_engine
-$(package)_config_opts+=no-store
 $(package)_config_opts+=no-unit-test
 $(package)_config_opts+=no-weak-ssl-ciphers
 $(package)_config_opts+=no-whirlpool
@@ -66,9 +57,6 @@ $(package)_config_opts_i686_android=linux-generic32
 endef
 
 define $(package)_preprocess_cmds
-    patch -p1 < $($(package)_patch_dir)/0001-Add-OpenSSL-termios-fix-for-musl-libc.patch && \
-    sed -i.old "/define DATE/d" util/mkbuildinf.pl && \
-    sed -i.old "s|engines apps test|engines|" Makefile.org
 endef
 
 define $(package)_config_cmds

@@ -1,8 +1,8 @@
-/**********************************************************************
- * Copyright (c) 2014, 2015 Pieter Wuille                             *
- * Distributed under the MIT software license, see the accompanying   *
- * file COPYING or http://www.opensource.org/licenses/mit-license.php.*
- **********************************************************************/
+/***********************************************************************
+ * Copyright (c) 2014, 2015 Pieter Wuille                              *
+ * Distributed under the MIT software license, see the accompanying    *
+ * file COPYING or https://www.opensource.org/licenses/mit-license.php.*
+ ***********************************************************************/
 
 /****
  * Please do not link this file directly. It is not part of the libsecp256k1
@@ -25,22 +25,27 @@
  * library are sufficient.
  */
 
-#ifndef _SECP256K1_CONTRIB_BER_PRIVATEKEY_H_
-#define _SECP256K1_CONTRIB_BER_PRIVATEKEY_H_
+#ifndef SECP256K1_CONTRIB_BER_PRIVATEKEY_H
+#define SECP256K1_CONTRIB_BER_PRIVATEKEY_H
 
+/* #include secp256k1.h only when it hasn't been included yet.
+   This enables this file to be #included directly in other project
+   files (such as tests.c) without the need to set an explicit -I flag,
+   which would be necessary to locate secp256k1.h. */
+#ifndef SECP256K1_H
 #include <secp256k1.h>
+#endif
 
-# ifdef __cplusplus
+#ifdef __cplusplus
 extern "C" {
-# endif
+#endif
 
 /** Export a private key in DER format.
  *
  *  Returns: 1 if the private key was valid.
- *  Args: ctx:        pointer to a context object, initialized for signing (cannot
- *                    be nullptr)
+ *  Args: ctx:        pointer to a context object (not secp256k1_context_static).
  *  Out: privkey:     pointer to an array for storing the private key in BER.
- *                    Should have space for 279 bytes, and cannot be nullptr.
+ *                    Should have space for 279 bytes, and cannot be NULL.
  *       privkeylen:  Pointer to an int where the length of the private key in
  *                    privkey will be stored.
  *  In:  seckey:      pointer to a 32-byte secret key to export.
@@ -64,10 +69,10 @@ SECP256K1_WARN_UNUSED_RESULT int ec_privkey_export_der(
 
 /** Import a private key in DER format.
  * Returns: 1 if a private key was extracted.
- * Args: ctx:        pointer to a context object (cannot be nullptr).
+ * Args: ctx:        pointer to a context object (cannot be NULL).
  * Out:  seckey:     pointer to a 32-byte array for storing the private key.
- *                   (cannot be nullptr).
- * In:   privkey:    pointer to a private key in DER format (cannot be nullptr).
+ *                   (cannot be NULL).
+ * In:   privkey:    pointer to a private key in DER format (cannot be NULL).
  *       privkeylen: length of the DER private key pointed to be privkey.
  *
  * This function will accept more than just strict DER, and even allow some BER
@@ -87,4 +92,4 @@ SECP256K1_WARN_UNUSED_RESULT int ec_privkey_import_der(
 }
 #endif
 
-#endif
+#endif /* SECP256K1_CONTRIB_BER_PRIVATEKEY_H */

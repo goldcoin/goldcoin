@@ -16,6 +16,8 @@
 
 BOOST_FIXTURE_TEST_SUITE(wallet_crypto, BasicTestingSetup)
 
+// Legacy function for backward compatibility testing
+// Uses deprecated EVP_BytesToKey intentionally to verify wallet compatibility
 bool OldSetKeyFromPassphrase(const SecureString& strKeyData, const std::vector<unsigned char>& chSalt, const unsigned int nRounds, const unsigned int nDerivationMethod, unsigned char* chKey, unsigned char* chIV)
 {
     if (nRounds < 1 || chSalt.size() != WALLET_CRYPTO_SALT_SIZE)
@@ -23,6 +25,7 @@ bool OldSetKeyFromPassphrase(const SecureString& strKeyData, const std::vector<u
 
     int i = 0;
     if (nDerivationMethod == 0)
+        // Deprecated but required for compatibility testing with old wallets
         i = EVP_BytesToKey(EVP_aes_256_cbc(), EVP_sha512(), &chSalt[0],
                           (unsigned char *)&strKeyData[0], strKeyData.size(), nRounds, chKey, chIV);
 

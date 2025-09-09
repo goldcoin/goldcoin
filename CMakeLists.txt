@@ -90,29 +90,7 @@ configure_file(
     @ONLY
 )
 
-# Generate libsecp256k1-config.h  
-if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(USE_FIELD_5X52 ON)
-    set(USE_SCALAR_4X64 ON)
-    set(HAVE___INT128 ON)
-    set(USE_ASM_X86_64 ON)
-else()
-    set(USE_FIELD_10X26 ON)
-    set(USE_SCALAR_8X32 ON)
-endif()
-set(ENABLE_MODULE_RECOVERY ON)
-set(USE_ECMULT_STATIC_PRECOMPUTATION ON)
-set(HAVE_BUILTIN_EXPECT ON)
-set(HAVE_LIBCRYPTO ON)
-set(USE_NUM_NONE ON)
-set(USE_FIELD_INV_BUILTIN ON)
-set(USE_SCALAR_INV_BUILTIN ON)
-
-configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1/src/libsecp256k1-config.h.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/src/secp256k1/src/libsecp256k1-config.h"
-    @ONLY
-)
+# secp256k1 v0.6.0 handles its own configuration via modern CMake
 
 # ===== OUTPUT DIRECTORIES =====
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -326,7 +304,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_BINARY_DIR}/src  # Generated headers (for config/ subdirs)
     ${CMAKE_CURRENT_BINARY_DIR}/src/config  # Direct access to bitcoin-config.h
-    ${CMAKE_CURRENT_BINARY_DIR}/src/secp256k1/src  # Direct access to libsecp256k1-config.h
+    # secp256k1 v0.6.0 provides its own include paths via CMake targets
     ${CMAKE_CURRENT_SOURCE_DIR}/src/leveldb/include
     ${CMAKE_CURRENT_SOURCE_DIR}/src/leveldb/helpers/memenv
     ${CMAKE_CURRENT_SOURCE_DIR}/src/secp256k1/include
@@ -371,8 +349,11 @@ endif()
 # ===== SUBDIRECTORIES FOR EXTERNAL LIBRARIES =====
 add_subdirectory(src/leveldb)
 
-# secp256k1 configuration now handled by generated libsecp256k1-config.h
+# secp256k1 v0.6.0 with modern CMake integration - static build with recovery module
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Force static libraries for secp256k1" FORCE)
+set(SECP256K1_ENABLE_MODULE_RECOVERY ON CACHE BOOL "Enable recovery module for goldcoind" FORCE)
 add_subdirectory(src/secp256k1)
+set(BUILD_SHARED_LIBS ON CACHE BOOL "Reset to default" FORCE)
 
 add_subdirectory(src/univalue)
 

@@ -1,4 +1,5 @@
-linux_native_toolchain=native_cmake
+# No global native toolchain for Linux - packages declare what they need
+linux_native_toolchain=
 
 linux_CFLAGS=-pipe
 linux_CXXFLAGS=$(linux_CFLAGS)
