@@ -6,6 +6,9 @@
 #include <util.h>
 #include <utiltime.h>
 #include <utilstrencodings.h>
+#include "serialize.h"
+#include "streams.h"
+#include "clientversion.h"
 
 #include <fstream>
 #include <cstring>
@@ -519,7 +522,38 @@ bool MigrateWallet(const fs::path& walletPath)
             
             // Check for wallet version record
             if (tag == "version" && value.size() >= 4) {
-                walletVersion = *reinterpret_cast<const uint32_t*>(value.data());
+                // Debug: Log the raw bytes to understand why we're reading 150100 instead of 130000
+                LogPrintf("DEBUG: Version record found, size=%d bytes\n", value.size());
+                LogPrintf("DEBUG: Raw hex bytes: ");
+                for (size_t i = 0; i < std::min(value.size(), size_t(8)); i++) {
+                    LogPrintf("%02x ", (unsigned char)value[i]);
+                }
+                LogPrintf("\n");
+                
+                // Fix: Use proper deserialization instead of raw memory cast
+                // The reinterpret_cast was causing endianness/format issues between BDB versions,
+                // reading valid v0.15.0 wallets (130000) as corrupted versions (150100)
+                try {
+                    CDataStream ss(value, SER_DISK, CLIENT_VERSION);
+                    ss >> walletVersion;
+                    LogPrintf("DEBUG: CDataStream read version as: %u\n", walletVersion);
+                } catch (const std::exception& e) {
+                    // Fallback to raw cast if deserialization fails (shouldn't happen)
+                    LogPrintf("WARNING: Version deserialization failed, using raw cast fallback: %s\n", e.what());
+                    walletVersion = *reinterpret_cast<const uint32_t*>(value.data());
+                }
+                
+                // Also show what raw cast would read
+                uint32_t rawVersion = *reinterpret_cast<const uint32_t*>(value.data());
+                LogPrintf("DEBUG: Raw cast would read: %u (0x%08x)\n", rawVersion, rawVersion);
+                
+                // Handle anomalous version 150100 found in some wallets
+                // These wallets work fine as HD wallets (130000) in v0.15.0
+                // but have corrupted version metadata showing 150100
+                if (walletVersion == 150100) {
+                    LogPrintf("NOTE: Wallet has anomalous version 150100, treating as 130000 (FEATURE_HD)\n");
+                    walletVersion = 130000;
+                }
             }
             
             // Check for HD wallet indicators

@@ -3326,7 +3326,6 @@ bool CheckBlock51Percent(CNode * pfrom, const CBlock& block, CValidationState& s
                         queuedBlock = data;
                         std::thread thread([data]() { QueuedBlockHandler(data); }); // C++23 thread
                         thread.detach();
-                        thread.detach();
 
                         LogPrintf("Local has found possible valid block... queueing (%d s) until timestamp is valid at %d: %s\n", block.GetBlockTime() - (GetAdjustedTime() + 45), block.GetBlockTime() - 45, block.GetHash().ToString());
 

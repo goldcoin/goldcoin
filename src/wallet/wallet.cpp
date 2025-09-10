@@ -3743,16 +3743,24 @@ CWallet* CWallet::CreateWalletFromFile(const std::string walletFile)
     RegisterValidationInterface(walletInstance);
 
     CBlockIndex *pindexRescan = chainActive.Tip();
-    if (GetBoolArg("-rescan", false))
+    LogPrintf("DEBUG: Starting rescan decision logic\n");
+    LogPrintf("DEBUG: GetBoolArg(\"-rescan\") = %s\n", GetBoolArg("-rescan", false) ? "true" : "false");
+    
+    if (GetBoolArg("-rescan", false)) {
+        LogPrintf("DEBUG: -rescan flag detected, forcing genesis rescan\n");
         pindexRescan = chainActive.Genesis();
-    else
-    {
+    } else {
+        LogPrintf("DEBUG: No -rescan flag, checking bestblock\n");
         CWalletDB walletdb(walletFile);
         CBlockLocator locator;
-        if (walletdb.ReadBestBlock(locator))
+        if (walletdb.ReadBestBlock(locator)) {
+            LogPrintf("DEBUG: ReadBestBlock succeeded, finding fork point\n");
             pindexRescan = FindForkInGlobalIndex(chainActive, locator);
-        else
+            LogPrintf("DEBUG: Fork point found at height %d\n", pindexRescan ? pindexRescan->nHeight : -1);
+        } else {
+            LogPrintf("DEBUG: ReadBestBlock failed, forcing genesis rescan\n");
             pindexRescan = chainActive.Genesis();
+        }
     }
     if (chainActive.Tip() && chainActive.Tip() != pindexRescan)
     {
