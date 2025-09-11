@@ -853,14 +853,14 @@ std::string CopyrightHolders(const std::string& strPrefix)
     // Check for untranslated substitution to make sure Litecoin Core copyright is not removed by accident
     if (strprintf(COPYRIGHT_HOLDERS, COPYRIGHT_HOLDERS_SUBSTITUTION).find("Litecoin Core") == std::string::npos) {
         std::string strYear = strPrefix;
-        strYear.replace(strYear.find("2013"), sizeof("2013")-1, "2011");
+        strYear.replace(strYear.find("2013-2025"), sizeof("2013-2025")-1, "2011-2017");
         strCopyrightHolders += "\n" + strYear + "The Litecoin Core developers";
     }
 
     // Check for untranslated substitution to make sure Bitcoin Core copyright is not removed by accident
     if (strprintf(COPYRIGHT_HOLDERS, COPYRIGHT_HOLDERS_SUBSTITUTION).find("Bitcoin Core") == std::string::npos) {
         std::string strYear = strPrefix;
-        strYear.replace(strYear.find("2013"), sizeof("2013")-1, "2009");
+        strYear.replace(strYear.find("2013-2025"), sizeof("2013-2025")-1, "2009-2015");
         strCopyrightHolders += "\n" + strYear + "The Bitcoin Core developers";
     }
     return strCopyrightHolders;
