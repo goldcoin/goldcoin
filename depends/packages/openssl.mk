@@ -8,6 +8,7 @@ $(package)_native_dependencies=
 
 define $(package)_set_vars
 $(package)_config_env=AR="$($(package)_ar)" RANLIB="$($(package)_ranlib)" CC="$($(package)_cc)"
+$(package)_config_env_mingw32=WINDRES="x86_64-w64-mingw32-windres"
 $(package)_config_opts=--prefix=$(host_prefix) --openssldir=$(host_prefix)/etc/openssl
 $(package)_config_opts+=no-camellia
 $(package)_config_opts+=no-capieng
@@ -47,8 +48,8 @@ $(package)_config_opts_powerpc_linux=linux-generic32
 $(package)_config_opts_riscv32_linux=linux-generic32
 $(package)_config_opts_riscv64_linux=linux-generic64
 $(package)_config_opts_x86_64_darwin=darwin64-x86_64-cc
-$(package)_config_opts_x86_64_mingw32=mingw64
-$(package)_config_opts_i686_mingw32=mingw
+$(package)_config_opts_x86_64_mingw32=mingw64 --libdir=lib
+$(package)_config_opts_i686_mingw32=mingw --libdir=lib
 $(package)_config_opts_android=-fPIC
 $(package)_config_opts_aarch64_android=linux-generic64
 $(package)_config_opts_x86_64_android=linux-generic64
@@ -64,13 +65,50 @@ define $(package)_config_cmds
 endef
 
 define $(package)_build_cmds
-  $(MAKE) -j1 build_libs libcrypto.pc libssl.pc openssl.pc
+	$(MAKE) -j1 build_libs libcrypto.pc libssl.pc openssl.pc
 endef
 
 define $(package)_stage_cmds
-  $(MAKE) INSTALL_PREFIX=$($(package)_staging_dir) -j1 install_sw
+	$(MAKE) DESTDIR=$($(package)_staging_dir) -j1 install_sw install_dev
 endef
 
 define $(package)_postprocess_cmds
-  rm -rf share bin etc
+	echo "=== OPENSSL DEBUG: Configuration used ==="
+	echo "Config opts: $($(package)_config_opts)"
+	echo "Platform opts: $($(package)_config_opts_$(host_os))"
+	echo "Host OS: $(host_os)"
+	echo "staging_dir=$($(package)_staging_dir)"
+	echo "host_prefix=$(host_prefix)"
+	if [ "$(host_os)" = "mingw32" ]; then \
+		echo "=== OPENSSL DEBUG (mingw32) ==="; \
+		echo "tree (top 30):"; \
+		find "$($(package)_staging_dir)$(host_prefix)" -maxdepth 4 -type f | head -30; \
+		echo "all .a files under prefix:"; \
+		find "$($(package)_staging_dir)$(host_prefix)" -name "*.a" -type f 2>/dev/null || true; \
+		if [ -d "$($(package)_staging_dir)$(host_prefix)/lib64" ]; then \
+			echo "Normalizing lib64 -> lib"; \
+			mkdir -p "$($(package)_staging_dir)$(host_prefix)/lib" \
+			         "$($(package)_staging_dir)$(host_prefix)/lib/pkgconfig"; \
+			cp -a "$($(package)_staging_dir)$(host_prefix)/lib64/"* \
+			      "$($(package)_staging_dir)$(host_prefix)/lib/"; \
+			if [ -d "$($(package)_staging_dir)$(host_prefix)/lib64/pkgconfig" ]; then \
+				cp -a "$($(package)_staging_dir)$(host_prefix)/lib64/pkgconfig/"* \
+				      "$($(package)_staging_dir)$(host_prefix)/lib/pkgconfig/" 2>/dev/null || true; \
+			fi; \
+		fi; \
+		test -f "$($(package)_staging_dir)$(host_prefix)/lib/libcrypto.a"; \
+		test -f "$($(package)_staging_dir)$(host_prefix)/lib/libssl.a"; \
+		echo "FOUND:"; \
+		ls -l "$($(package)_staging_dir)$(host_prefix)/lib/libcrypto.a"; \
+		ls -l "$($(package)_staging_dir)$(host_prefix)/lib/libssl.a"; \
+		rm -rf "$($(package)_staging_dir)$(host_prefix)/share" \
+		       "$($(package)_staging_dir)$(host_prefix)/bin" \
+		       "$($(package)_staging_dir)$(host_prefix)/etc"; \
+	else \
+		echo "=== OPENSSL DEBUG: Testing expected paths (Linux) ==="; \
+		test -f "$($(package)_staging_dir)$($(package)_prefix)/lib/libcrypto.a"; \
+		test -f "$($(package)_staging_dir)$($(package)_prefix)/lib/libssl.a"; \
+		rm -rf share bin etc; \
+	fi
 endef
+
