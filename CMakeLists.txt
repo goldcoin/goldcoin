@@ -352,6 +352,14 @@ add_subdirectory(src/leveldb)
 # secp256k1 v0.6.0 with modern CMake integration - static build with recovery module
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Force static libraries for secp256k1" FORCE)
 set(SECP256K1_ENABLE_MODULE_RECOVERY ON CACHE BOOL "Enable recovery module for goldcoind" FORCE)
+
+# Ensure secp256k1 inherits cross-compilation toolchain
+if(CMAKE_CROSSCOMPILING)
+    # Force secp256k1 to use the correct toolchain
+    set(CMAKE_C_COMPILER_FORCED TRUE CACHE BOOL "Force compiler for secp256k1")
+    set(CMAKE_CXX_COMPILER_FORCED TRUE CACHE BOOL "Force compiler for secp256k1")
+endif()
+
 add_subdirectory(src/secp256k1)
 set(BUILD_SHARED_LIBS ON CACHE BOOL "Reset to default" FORCE)
 
@@ -763,11 +771,18 @@ if(BUILD_GUI)
     
     # Add missing Windows dependencies for Qt static linking
     if(WIN32)
-        # Find Qt bundled libraries in Qt installation directory
-        if(EXISTS "${Qt6_DIR}/../../../lib/libQt6BundledPcre2.a")
+        # Allow override of Qt bundled lib directory (for enterprise builds)
+        if(DEFINED QT_BUNDLED_LIB_DIR)
+            # Use provided path (from Makefile or command line)
+            message(STATUS "Using provided Qt bundled lib dir: ${QT_BUNDLED_LIB_DIR}")
+        elseif(EXISTS "${Qt6_DIR}/../../../lib/libQt6BundledPcre2.a")
+            # Auto-detect from Qt6_DIR
             set(QT_BUNDLED_LIB_DIR "${Qt6_DIR}/../../../lib")
+            message(STATUS "Auto-detected Qt bundled lib dir: ${QT_BUNDLED_LIB_DIR}")
         else()
-            set(QT_BUNDLED_LIB_DIR "/home/microguy/build/qt6-win-build/lib")
+            # Fallback (will likely fail, but user will get clear error)
+            set(QT_BUNDLED_LIB_DIR "/path/to/qt6-win-build/lib")
+            message(WARNING "Qt bundled lib directory not found. Set QT_BUNDLED_LIB_DIR variable.")
         endif()
         
         target_link_libraries(goldcoin-qt 

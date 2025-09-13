@@ -240,6 +240,27 @@ x86_64-w64-mingw32-g++ -v
 # Should show: --enable-threads=posix
 ```
 
+### WSL2 Cross-Compilation Issues
+
+**Problem:** Windows error popups about missing DLLs (libwinpthread-1.dll) during build. Multiple "checking for... no" messages in configure output.
+
+**Cause:** WSL2 attempts to run Windows test executables (conftest.exe) generated during cross-compilation, causing Windows to search for MinGW runtime DLLs.
+
+**Solution:** Temporarily disable WSL Windows interoperability during builds:
+```bash
+# Before building dependencies
+echo 0 | sudo tee /proc/sys/fs/binfmt_misc/WSLInterop
+
+# Build Windows dependencies
+cd depends
+make HOST=x86_64-w64-mingw32 -j$(nproc)
+
+# Re-enable Windows interop after build completes
+echo 1 | sudo tee /proc/sys/fs/binfmt_misc/WSLInterop
+```
+
+**Note:** This is harmless to the build process - the configure tests correctly assume "no" for cross-compilation. The popups are just an annoyance, not actual build failures.
+
 Testing Windows Builds
 -----------------------
 

@@ -27,7 +27,7 @@ define $(package)_extract_cmds
   echo "#!/bin/sh" > toolchain/bin/$(host)-dsymutil && \
   echo "exit 0" >> toolchain/bin/$(host)-dsymutil && \
   chmod +x toolchain/bin/$(host)-dsymutil && \
-  tar --strip-components=1 -xf $($(package)_source)
+  tar --strip-components=1 -C $($(package)_extract_dir) -xf $($(package)_source)
 endef
 
 define $(package)_set_vars

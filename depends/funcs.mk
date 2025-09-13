@@ -77,7 +77,7 @@ $(1)_download_path_fixed=$(subst :,\:,$$($(1)_download_path))
 
 #default commands
 $(1)_fetch_cmds ?= $(call fetch_file,$(1),$(subst \:,:,$$($(1)_download_path_fixed)),$$($(1)_download_file),$($(1)_file_name),$($(1)_sha256_hash))
-$(1)_extract_cmds ?= mkdir -p $$($(1)_extract_dir) && echo "$$($(1)_sha256_hash)  $$($(1)_source)" > $$($(1)_extract_dir)/.$$($(1)_file_name).hash &&  $(build_SHA256SUM) -c $$($(1)_extract_dir)/.$$($(1)_file_name).hash && tar --strip-components=1 -xf $$($(1)_source)
+$(1)_extract_cmds ?= mkdir -p $$($(1)_extract_dir) && echo "$$($(1)_sha256_hash)  $$($(1)_source)" > $$($(1)_extract_dir)/.$$($(1)_file_name).hash &&  $(build_SHA256SUM) -c $$($(1)_extract_dir)/.$$($(1)_file_name).hash && tar --strip-components=1 -C $$($(1)_extract_dir) -xf $$($(1)_source)
 $(1)_preprocess_cmds ?=
 $(1)_build_cmds ?=
 $(1)_config_cmds ?=
@@ -176,9 +176,16 @@ $($(1)_preprocessed): | $($(1)_dependencies) $($(1)_native_dependencies) $($(1)_
 	$(AT)$(foreach patch,$($(1)_patches),cd $(PATCHES_PATH)/$(1); cp $(patch) $($(1)_patch_dir) ;)
 	$(AT)cd $$(@D); $(call $(1)_preprocess_cmds, $(1))
 	$(AT)touch $$@
+$(eval $(1)_dep_archives := $(strip $(foreach p,$($(1)_all_dependencies),$($(p)_cached))))
+
 $($(1)_configured): | $($(1)_preprocessed)
 	$(AT)echo Configuring $(1)...
-	$(AT)mkdir -p $(host_prefix)/lib; cd $(host_prefix); $(foreach package,$($(1)_all_dependencies), tar xf $($(package)_cached); )
+	$(AT)mkdir -p $(host_prefix)/lib; cd $(host_prefix); \
+	  for a in $($(1)_dep_archives); do \
+	    if [ -n "$$a" ] && [ -f "$$a" ]; then \
+	      tar -xf "$$a"; \
+	    fi; \
+	  done
 	$(AT)mkdir -p $$(@D)
 	$(AT)+cd $$(@D); $($(1)_config_env) $(call $(1)_config_cmds, $(1))
 	$(AT)touch $$@
@@ -204,7 +211,7 @@ $($(1)_cached): | $($(1)_dependencies) $($(1)_postprocessed)
 	$(AT)rm -rf $$(@D) && mkdir -p $$(@D)
 	$(AT)mv $$($(1)_staging_dir)/$$(@F) $$(@)
 	$(AT)rm -rf $($(1)_staging_dir)
-	$(AT)echo "Auto-installing package $(1)..."; mkdir -p $(host_prefix) && cd $(host_prefix) && tar xzf $$(@)
+	$(AT)echo "Auto-installing package $(1)..."; mkdir -p $(host_prefix) && cd $(host_prefix) && tar -xzf $$(@)
 $($(1)_cached_checksum): $($(1)_cached)
 	$(AT)cd $$(@D); $(build_SHA256SUM) $$(<F) > $$(@)
 
