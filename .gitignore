@@ -17,12 +17,17 @@ src/test/test_goldcoin
 src/test/test_goldcoin_fuzzy
 src/qt/test/test_goldcoin-qt
 
-# Build artifacts
+# Build artifacts (exclude binaries and build outputs, keep interface files)
 *.o
-*.a
 *.lo
 *.la
-build/
+build/windows/
+build/linux/
+build/bin/
+build/lib/
+build/CMakeFiles/
+build/CMakeCache.txt
+build/cmake_install.cmake
 *.log
 *.trs
 
@@ -48,8 +53,7 @@ qrc_*.cpp
 # IDE
 .vscode/
 
-# CMake build directory
-build/
+# CMake build directory (already handled above)
 
 # Release directories
 *-release/
