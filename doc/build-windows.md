@@ -1,294 +1,330 @@
-WINDOWS BUILD NOTES
-====================
+# Goldcoin Core v17 Windows Build Guide
 
-Building Goldcoin Core v17 for Windows using cross-compilation.
+**Enterprise-grade cross-compilation system for Windows binaries**
 
-Overview
---------
+This guide covers building Goldcoin Core v17 for Windows using the modern enterprise build system with separation of concerns, hybrid toolchain architecture, and C++23 support.
 
-Goldcoin Core Windows builds use **cross-compilation from Linux** with the CMake enterprise build system. This produces statically linked Windows executables with no runtime dependencies.
+## System Requirements
 
-**Recommended environment:** WSL2 (Windows Subsystem for Linux 2) with Ubuntu 22.04+
+### Recommended Environment
+- **WSL2** (Windows Subsystem for Linux 2) with Ubuntu 22.04+
+- **8+ CPU cores** for reasonable build times
+- **16+ GB RAM** for parallel compilation
+- **50+ GB free space** for dependencies and build artifacts
 
-Cross-Compilation Setup
------------------------
+### Enterprise Toolchain Architecture
 
-### Install WSL2 (if not already installed)
+The build system uses a **hybrid approach**:
+- **System compilers**: GCC 13 (native) + MinGW GCC 13 (cross-compiler)
+- **Depends libraries**: All dependencies built statically (OpenSSL 3.5.2, BDB 18.1, Qt 6.9)
+- **Two-phase process**: Dependency building → Binary compilation (separation of concerns)
 
-1. **Enable WSL2:**
-   ```powershell
-   # Run in PowerShell as Administrator
-   wsl --install Ubuntu-22.04
-   ```
+## Initial Setup
 
-2. **Complete Ubuntu setup:**
-   ```bash
-   # Create UNIX user account when prompted
-   # Update system packages
-   sudo apt update && sudo apt upgrade
-   ```
+### 1. Install WSL2 (if needed)
 
-### Install Build Dependencies
+```powershell
+# Run in PowerShell as Administrator
+wsl --install Ubuntu-22.04
+```
+
+Complete Ubuntu setup and create user account when prompted.
+
+### 2. System Toolchain Installation
 
 **Essential packages:**
 ```bash
-sudo apt-get install build-essential pkg-config curl git
-sudo apt-get install g++-mingw-w64-x86-64 mingw-w64-tools
+sudo apt update && sudo apt upgrade
+sudo apt install build-essential pkg-config curl git cmake ninja-build
 ```
 
-**Configure mingw compiler:**
+**Install Ubuntu 24.04 backports for MinGW GCC 13:**
 ```bash
-# Set to posix threading model
+# Add Noble (24.04) backports repository
+sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu noble main universe"
+sudo apt update
+
+# Install MinGW GCC 13 (required for C++23 support)
+sudo apt install gcc-mingw-w64 g++-mingw-w64 gcc-mingw-w64-x86-64-posix g++-mingw-w64-x86-64-posix
+```
+
+**Configure MinGW for POSIX threading:**
+```bash
 sudo update-alternatives --config x86_64-w64-mingw32-g++
 # Choose: x86_64-w64-mingw32-g++-posix
 ```
 
-Building for Windows 64-bit
-----------------------------
-
-### Quick Build
-
+**Verify installation:**
 ```bash
-# Build Windows dependencies (one-time setup)
-cd depends
-make HOST=x86_64-w64-mingw32 -j$(nproc)
+# Should show GCC 13-posix (required for C++23 <expected> headers)
+x86_64-w64-mingw32-gcc-posix --version
 
-# Configure and build
-cd ..
-mkdir build-win && cd build-win
-cmake .. -DCMAKE_TOOLCHAIN_FILE=../depends/x86_64-w64-mingw32/toolchain.cmake
-make -j$(nproc)
+# Should show GCC 13
+gcc-13 --version
 ```
 
-**Output location:** `build-win/bin/`
-- `goldcoind.exe` - Windows daemon
-- `goldcoin-cli.exe` - Command line interface
-- `goldcoin-tx.exe` - Transaction utility
+## Enterprise Build System
 
-### Windows Dependencies
+### Build Process: Separation of Concerns
 
-The depends system builds all Windows requirements:
+The enterprise build system implements clean **two-phase architecture**:
 
-| Component | Version | Purpose |
-|-----------|---------|---------|
-| OpenSSL | 1.0.1k | Cryptographic operations |
-| libevent | 2.1.8 | Network event handling |
-| BerkeleyDB | 18.1 | Wallet storage |
-| Qt6 | 6.9.0 | GUI framework |
-| MinGW-w64 | Latest | Cross-compilation toolchain |
-
-### GUI Build (Optional)
-
+#### Phase 1: Dependency Building
 ```bash
-# Build with Qt6 GUI
-cd build-win
-cmake .. -DCMAKE_TOOLCHAIN_FILE=../depends/x86_64-w64-mingw32/toolchain.cmake \
-         -DBUILD_GUI=ON
-make -j$(nproc)
+cd build
+make deps-windows-no-qt JOBS=8    # For command-line only
+# OR
+make deps-windows JOBS=8          # For GUI (includes Qt 6.9)
 ```
 
-This produces `goldcoin-qt.exe` in addition to command-line tools.
+**What this builds:**
+- OpenSSL 3.5.2 (cryptographic operations)
+- BerkeleyDB 18.1 (wallet database)
+- libevent 2.1.12 (network event handling)  
+- ZeroMQ 4.3.4 (message queuing)
+- miniupnpc 2.2.2 (UPnP support)
+- Qt 6.9.0 (GUI framework, if requested)
 
-Windows Binary Features
------------------------
+**Output:** Static libraries in `depends/x86_64-w64-mingw32/`
 
-**Static linking:** All Windows binaries are fully static with no external dependencies.
-
-**Verification:**
+#### Phase 2: Binary Compilation
 ```bash
-# Check binary dependencies (should show only system32 DLLs)
-x86_64-w64-mingw32-objdump -p build-win/bin/goldcoind.exe | grep DLL
+cd build
+make windows JOBS=8               # Command-line binaries
+# OR  
+make windows-qt JOBS=8            # GUI binary
 ```
 
-**Security hardening:**
-- ASLR (Address Space Layout Randomization)
-- DEP (Data Execution Prevention) 
-- Control Flow Guard
-- Stack protection
+**What this builds:**
+- Uses pre-built dependencies (read-only access)
+- Compiles Goldcoin Core C++23 codebase
+- Links everything statically for Windows
 
-Installation on Windows
------------------------
+**Output:** Windows executables in `build/bin/windows/`
 
-### Manual Installation
+### Why Separation of Concerns?
 
-Copy binaries to Windows directory:
+**Before**: Mixed phases caused:
+- 40+ minute dependency rebuilds during binary compilation
+- Cache invalidation from build system changes
+- Cross-contamination between dependency building and binary compilation
+
+**After**: Clean separation ensures:
+- Dependencies build once, use many times
+- Fast binary rebuilds (minutes, not hours)  
+- Stable dependency cache
+- Enterprise-grade predictability
+
+## Quick Start Commands
+
 ```bash
-# Create Windows installation directory
+# Clone repository
+git clone https://github.com/microguy/goldcoin.git
+cd goldcoin/build
+
+# Check build system status
+make status
+
+# Build Windows dependencies (one-time, ~60 minutes)
+make deps-windows-no-qt JOBS=8
+
+# Build Windows binaries (fast, ~5 minutes)
+make windows JOBS=8
+
+# Binaries ready at: build/bin/windows/
+ls -la bin/windows/
+```
+
+## Build Outputs
+
+### Command-Line Binaries
+**Location:** `build/bin/windows/`
+
+- **`goldcoind.exe`** - Windows daemon/server
+- **`goldcoin-cli.exe`** - Command-line interface  
+- **`goldcoin-tx.exe`** - Transaction utility
+
+### GUI Binary (Optional)
+**Location:** `build/bin/windows-qt/`
+
+- **`goldcoin-qt.exe`** - Qt 6.9 GUI wallet
+
+All binaries are **fully static** with no external dependencies.
+
+## Advanced Options
+
+### Job Control
+```bash
+# Auto-detect CPU cores (default)
+make windows
+
+# Specify job count
+make windows JOBS=4              # 4 parallel jobs
+make windows JOBS=16             # 16 parallel jobs (powerful machines)
+```
+
+### Clean Builds
+```bash
+make clean                       # Clean build artifacts (preserve dependencies)
+make status                      # Check what needs rebuilding
+```
+
+### Debug Builds
+```bash
+# For development/debugging (not production)
+cd build/windows
+cmake ../.. -DCMAKE_BUILD_TYPE=Debug \
+           -DCMAKE_TOOLCHAIN_FILE=../../depends/x86_64-w64-mingw32/share/toolchain.cmake
+make -j8
+```
+
+## Verification
+
+### Check Binary Dependencies
+```bash
+# Should show only system32 DLLs (no external dependencies)
+x86_64-w64-mingw32-objdump -p build/bin/windows/goldcoind.exe | grep DLL
+```
+
+### Test Execution (Wine)
+```bash
+# Install Wine for testing
+sudo apt install wine64
+
+# Test Windows binary on Linux
+wine build/bin/windows/goldcoind.exe --version
+wine build/bin/windows/goldcoin-cli.exe --help
+```
+
+## Installation on Windows
+
+### Copy to Windows
+```bash
+# Via WSL2 Windows mount
 mkdir -p /mnt/c/Goldcoin/bin
+cp build/bin/windows/*.exe /mnt/c/Goldcoin/bin/
 
-# Copy executables
-cp build-win/bin/*.exe /mnt/c/Goldcoin/bin/
+# Via network copy, USB, etc.
+scp build/bin/windows/*.exe user@windows-machine:/path/to/goldcoin/
 ```
 
-### Automatic Installation
-
-```bash
-# Install to Windows drive
-make install DESTDIR=/mnt/c/Goldcoin
-```
-
-### Windows Service Setup
-
+### Windows Configuration
 **Create goldcoin.conf:**
 ```ini
-# C:\Users\%USERNAME%\AppData\Roaming\Goldcoin\goldcoin.conf
+# Location: C:\Users\%USERNAME%\AppData\Roaming\Goldcoin\goldcoin.conf
 server=1
-rpcuser=goldcoinrpc
+rpcuser=goldcoinrpc  
 rpcpassword=your_secure_password_here
 rpcallowip=127.0.0.1
+daemon=1
 ```
 
-**Run as Windows service:**
+### Windows Service (Optional)
 ```cmd
-# Install service (Run as Administrator)
+# Install as Windows service (Run as Administrator)
 goldcoind.exe -install
 
-# Start service  
+# Start service
 net start "Goldcoin Core"
+
+# Check status
+goldcoin-cli.exe getblockchaininfo
 ```
 
-Building for Windows 32-bit
-----------------------------
+## Troubleshooting
 
-**Install 32-bit toolchain:**
+### MinGW Version Issues
+**Problem:** `<expected>` header not found, C++23 compilation errors
+
+**Solution:** Verify MinGW GCC 13 installation:
 ```bash
-sudo apt-get install g++-mingw-w64-i686 mingw-w64-i686-dev
-sudo update-alternatives --config i686-w64-mingw32-g++
+x86_64-w64-mingw32-gcc-posix --version
+# Must show: GCC 13-posix
 ```
 
-**Build process:**
+If showing GCC 10, reinstall Ubuntu 24.04 backports as shown above.
+
+### WSL2 Cross-Compilation Popups
+**Problem:** Windows DLL error popups during dependency building
+
+**Solution:** Temporarily disable Windows interoperability:
 ```bash
-cd depends
-make HOST=i686-w64-mingw32 -j$(nproc)
-cd ..
-mkdir build-win32 && cd build-win32
-cmake .. -DCMAKE_TOOLCHAIN_FILE=../depends/i686-w64-mingw32/toolchain.cmake
-make -j$(nproc)
-```
-
-Advanced Options
-----------------
-
-### Custom Build Configuration
-
-```bash
-# Release build (default)
-cmake .. -DCMAKE_BUILD_TYPE=Release \
-         -DCMAKE_TOOLCHAIN_FILE=../depends/x86_64-w64-mingw32/toolchain.cmake
-
-# Debug build with symbols
-cmake .. -DCMAKE_BUILD_TYPE=Debug \
-         -DCMAKE_TOOLCHAIN_FILE=../depends/x86_64-w64-mingw32/toolchain.cmake
-
-# Wallet disabled
-cmake .. -DBUILD_WALLET=OFF \
-         -DCMAKE_TOOLCHAIN_FILE=../depends/x86_64-w64-mingw32/toolchain.cmake
-```
-
-### Clean Rebuild
-
-```bash
-# Remove all build artifacts
-rm -rf build-win depends/x86_64-w64-mingw32
-
-# Full rebuild
-cd depends
-make HOST=x86_64-w64-mingw32 -j$(nproc)
-cd .. && mkdir build-win && cd build-win
-cmake .. -DCMAKE_TOOLCHAIN_FILE=../depends/x86_64-w64-mingw32/toolchain.cmake
-make -j$(nproc)
-```
-
-Troubleshooting
----------------
-
-### WSL Path Issues
-
-**Problem:** Build fails with path-related errors.
-
-**Solution:** Ensure source code is in WSL filesystem, not Windows mount:
-```bash
-# Good: /home/user/goldcoin
-# Bad:  /mnt/c/goldcoin
-```
-
-### Memory Issues
-
-**Problem:** Compilation fails with "out of memory" errors.
-
-**Solution:** Reduce parallel jobs:
-```bash
-make -j2  # Instead of -j$(nproc)
-```
-
-### Dependency Download Failures
-
-**Problem:** Cannot download source packages.
-
-**Solution:** 
-1. Check internet connectivity in WSL2
-2. Source archives are cached in `depends/sources/`
-3. Manually download if needed
-
-### MinGW Compiler Issues
-
-**Problem:** ABI compatibility errors.
-
-**Solution:** Verify posix threading model:
-```bash
-x86_64-w64-mingw32-g++ -v
-# Should show: --enable-threads=posix
-```
-
-### WSL2 Cross-Compilation Issues
-
-**Problem:** Windows error popups about missing DLLs (libwinpthread-1.dll) during build. Multiple "checking for... no" messages in configure output.
-
-**Cause:** WSL2 attempts to run Windows test executables (conftest.exe) generated during cross-compilation, causing Windows to search for MinGW runtime DLLs.
-
-**Solution:** Temporarily disable WSL Windows interoperability during builds:
-```bash
-# Before building dependencies
+# Before building dependencies  
 echo 0 | sudo tee /proc/sys/fs/binfmt_misc/WSLInterop
 
-# Build Windows dependencies
-cd depends
-make HOST=x86_64-w64-mingw32 -j$(nproc)
+# Build dependencies
+make deps-windows-no-qt JOBS=8
 
-# Re-enable Windows interop after build completes
+# Re-enable after completion
 echo 1 | sudo tee /proc/sys/fs/binfmt_misc/WSLInterop
 ```
 
-**Note:** This is harmless to the build process - the configure tests correctly assume "no" for cross-compilation. The popups are just an annoyance, not actual build failures.
+### Memory Issues
+**Problem:** "out of memory" errors during compilation
 
-Testing Windows Builds
------------------------
-
-### In Wine (Linux)
-
+**Solutions:**
 ```bash
-# Install Wine
-sudo apt-get install wine64
+# Reduce parallel jobs
+make windows JOBS=2
 
-# Test Windows binary
-wine build-win/bin/goldcoind.exe --version
+# Or increase WSL2 memory (edit .wslconfig)
+# C:\Users\%USERNAME%\.wslconfig
+[wsl2]
+memory=8GB
 ```
 
-### On Windows
+### Path Issues
+**Problem:** Build fails with path-related errors
 
-Copy binaries to Windows machine and test:
-```cmd
-goldcoind.exe --version
-goldcoin-cli.exe --help
+**Solution:** Ensure source is in WSL filesystem:
+```bash
+# Good: /home/user/goldcoin (WSL filesystem)
+# Bad:  /mnt/c/goldcoin (Windows mount)
 ```
 
-Security Notes
---------------
+### Dependency Download Failures
+**Problem:** Cannot download source packages
 
-**Code signing:** For production releases, sign Windows executables with valid certificate.
+**Solutions:**
+1. Check internet connectivity in WSL2
+2. Source archives cached in `depends/sources/`
+3. Manually download missing packages if needed
+4. Verify DNS resolution: `nslookup bitcoincore.org`
 
-**Antivirus:** Some antivirus software may flag unsigned crypto binaries. This is normal for self-compiled builds.
+## Security Considerations
 
-**Firewall:** Windows Firewall may prompt for network access when running goldcoind.exe.
+### Code Signing
+- **Production releases**: Sign with valid Windows code signing certificate
+- **Antivirus**: Some AV software flags unsigned crypto binaries (normal for development builds)
+- **Firewall**: Windows may prompt for network access permissions
 
-For maximum security, build on isolated systems and verify source archive checksums in `depends/sources/`.
+### Build Security
+- Build on isolated/dedicated systems for production
+- Verify source archive checksums in `depends/sources/`
+- Use deterministic builds when possible
+- Review dependency versions for security updates
+
+## Technical Details
+
+### Modern Features
+- **C++23 support**: Uses modern language features (`<expected>`, concepts, ranges)
+- **OpenSSL 3.5.2**: Latest cryptographic library with enhanced security
+- **Qt 6.9**: Modern GUI framework (first Qt 6.9 crypto wallet)
+- **BDB 18.1**: Latest Berkeley Database with improved Windows file locking
+
+### Build System Architecture
+- **CMake 3.21+**: Modern build system generator
+- **Ninja**: Fast parallel build execution (when available)
+- **Static linking**: Zero-dependency Windows executables  
+- **Cross-compilation**: Linux host → Windows target
+- **Hybrid toolchain**: System compilers + depends libraries
+
+### Performance
+- **Parallel builds**: Automatic CPU detection with job control
+- **Incremental builds**: Only rebuild changed components
+- **Dependency caching**: Build dependencies once, use many times
+- **Smart detection**: Auto-detect available tools and paths
+
+---
+
+**This enterprise build system is designed for production use with clean architecture, separation of concerns, and proven toolchain compatibility.**

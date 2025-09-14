@@ -147,6 +147,33 @@ $(host_prefix)/.stamp_$(final_build_id): $(native_packages) $(packages)
 	$(AT)echo copying packages: $^
 	$(AT)echo to: $(@D)
 	$(AT)cd $(@D); $(foreach package,$^, tar xf $($(package)_cached); )
+	$(AT)mkdir -p $(@D)/share
+	$(AT)if [ "$(host_os)" = "mingw32" ]; then \
+		echo "Creating Windows toolchain.cmake"; \
+		echo 'set(CMAKE_SYSTEM_NAME Windows)' > $(@D)/share/toolchain.cmake; \
+		echo 'set(CMAKE_SYSTEM_PROCESSOR x86_64)' >> $(@D)/share/toolchain.cmake; \
+		echo '' >> $(@D)/share/toolchain.cmake; \
+		echo '# Explicit compiler settings for cross-compilation' >> $(@D)/share/toolchain.cmake; \
+		echo 'set(CMAKE_C_COMPILER x86_64-w64-mingw32-gcc-posix)' >> $(@D)/share/toolchain.cmake; \
+		echo 'set(CMAKE_CXX_COMPILER x86_64-w64-mingw32-g++-posix)' >> $(@D)/share/toolchain.cmake; \
+		echo 'set(CMAKE_RC_COMPILER x86_64-w64-mingw32-windres)' >> $(@D)/share/toolchain.cmake; \
+		echo 'set(CMAKE_AR x86_64-w64-mingw32-gcc-ar-posix)' >> $(@D)/share/toolchain.cmake; \
+		echo 'set(CMAKE_RANLIB x86_64-w64-mingw32-gcc-ranlib-posix)' >> $(@D)/share/toolchain.cmake; \
+		echo '' >> $(@D)/share/toolchain.cmake; \
+		echo '# Ensure cross-compilation is detected' >> $(@D)/share/toolchain.cmake; \
+		echo 'set(CMAKE_CROSSCOMPILING TRUE)' >> $(@D)/share/toolchain.cmake; \
+		echo '' >> $(@D)/share/toolchain.cmake; \
+		echo '# Use depends-built libraries instead of system libraries' >> $(@D)/share/toolchain.cmake; \
+		echo 'set(CMAKE_PREFIX_PATH "$(realpath $(@D))")' >> $(@D)/share/toolchain.cmake; \
+		echo 'set(CMAKE_FIND_ROOT_PATH $(realpath $(@D)))' >> $(@D)/share/toolchain.cmake; \
+		echo '' >> $(@D)/share/toolchain.cmake; \
+		echo 'set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)' >> $(@D)/share/toolchain.cmake; \
+		echo 'set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)' >> $(@D)/share/toolchain.cmake; \
+		echo 'set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)' >> $(@D)/share/toolchain.cmake; \
+		echo '' >> $(@D)/share/toolchain.cmake; \
+		echo '# Windows-specific definitions' >> $(@D)/share/toolchain.cmake; \
+		echo 'add_definitions(-DWIN32)' >> $(@D)/share/toolchain.cmake; \
+	fi
 	$(AT)touch $@
 
 $(host_prefix)/share/config.site : config.site.in $(host_prefix)/.stamp_$(final_build_id)

@@ -101,14 +101,13 @@ define $(package)_postprocess_cmds
 		echo "FOUND:"; \
 		ls -l "$($(package)_staging_dir)$(host_prefix)/lib/libcrypto.a"; \
 		ls -l "$($(package)_staging_dir)$(host_prefix)/lib/libssl.a"; \
-		rm -rf "$($(package)_staging_dir)$(host_prefix)/share" \
-		       "$($(package)_staging_dir)$(host_prefix)/bin" \
+		rm -rf "$($(package)_staging_dir)$(host_prefix)/bin" \
 		       "$($(package)_staging_dir)$(host_prefix)/etc"; \
 	else \
 		echo "=== OPENSSL DEBUG: Testing expected paths (Linux) ==="; \
 		test -f "$($(package)_staging_dir)$($(package)_prefix)/lib/libcrypto.a"; \
 		test -f "$($(package)_staging_dir)$($(package)_prefix)/lib/libssl.a"; \
-		rm -rf share bin etc; \
+		rm -rf bin etc; \
 	fi
 endef
 

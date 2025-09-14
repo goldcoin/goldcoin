@@ -848,20 +848,17 @@ int GetNumCores()
 
 std::string CopyrightHolders(const std::string& strPrefix)
 {
-    std::string strCopyrightHolders = strPrefix + strprintf(_(COPYRIGHT_HOLDERS), _(COPYRIGHT_HOLDERS_SUBSTITUTION));
+    // Set COPYRIGHT_HOLDERS as "The Goldcoin Core developers"
+    std::string strCopyrightHolders = strPrefix + _(COPYRIGHT_HOLDERS);
 
-    // Check for untranslated substitution to make sure Litecoin Core copyright is not removed by accident
-    if (strprintf(COPYRIGHT_HOLDERS, COPYRIGHT_HOLDERS_SUBSTITUTION).find("Litecoin Core") == std::string::npos) {
-        std::string strYear = strPrefix;
-        strYear.replace(strYear.find("2013-2025"), sizeof("2013-2025")-1, "2011-2017");
-        strCopyrightHolders += "\n" + strYear + "The Litecoin Core developers";
-    }
-
-    // Check for untranslated substitution to make sure Bitcoin Core copyright is not removed by accident
-    if (strprintf(COPYRIGHT_HOLDERS, COPYRIGHT_HOLDERS_SUBSTITUTION).find("Bitcoin Core") == std::string::npos) {
-        std::string strYear = strPrefix;
-        strYear.replace(strYear.find("2013-2025"), sizeof("2013-2025")-1, "2009-2015");
-        strCopyrightHolders += "\n" + strYear + "The Bitcoin Core developers";
-    }
+    // Add historical copyright holders
+    std::string strYear = strPrefix;
+    strYear.replace(strYear.find("2013-2025"), sizeof("2013-2025")-1, "2011-2017");
+    strCopyrightHolders += "\n" + strYear + "The Litecoin Core developers";
+    
+    strYear = strPrefix;
+    strYear.replace(strYear.find("2013-2025"), sizeof("2013-2025")-1, "2009-2015");
+    strCopyrightHolders += "\n" + strYear + "The Bitcoin Core developers";
+    
     return strCopyrightHolders;
 }

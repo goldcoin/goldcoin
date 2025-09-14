@@ -22,11 +22,8 @@
 /* Build revision */
 #define CLIENT_VERSION_REVISION @CLIENT_VERSION_REVISION@
 
-/* Copyright holder(s) before %s replacement */
-#define COPYRIGHT_HOLDERS "@COPYRIGHT_HOLDERS@"
-
 /* Copyright holder(s) */
-#define COPYRIGHT_HOLDERS_FINAL "@COPYRIGHT_HOLDERS_FINAL@"
+#define COPYRIGHT_HOLDERS "@COPYRIGHT_HOLDERS@"
 
 /* Replacement for %s in copyright holders string */
 #undef COPYRIGHT_HOLDERS_SUBSTITUTION

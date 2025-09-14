@@ -42,8 +42,11 @@ goldcoin/
 - `make clean` - Clean build artifacts
 - `make status` - Show build status
 
-### Build Flow Logic
+### Build Flow Logic: Separation of Concerns
 
+The build system implements a clean **two-phase approach** to prevent cross-contamination:
+
+#### Phase 1: Dependency Building
 1. **User Command**: `make deps-windows-no-qt JOBS=6` (from build/ directory)
 2. **GNUmakefile**: Calls `make -C ../depends HOST=x86_64-w64-mingw32 NO_QT=1 -j6`
 3. **Depends Makefile**: 
@@ -55,33 +58,69 @@ goldcoin/
    - Target packages: openssl, libevent, zeromq, bdb, miniupnpc
 5. **Final Output**: `depends/x86_64-w64-mingw32/` with complete toolchain
 
-## Current Status & Known Issues
+#### Phase 2: Binary Compilation
+1. **User Command**: `make windows JOBS=6` (from build/ directory)
+2. **Dependency Verification**: Checks for required libraries, fails fast if missing
+3. **Read-Only Access**: Uses existing `depends/` libraries without modification
+4. **CMake Build**: Compiles Goldcoin Core binaries using pre-built dependencies
+5. **Final Output**: Binaries in `build/bin/windows/`
 
-### Working Systems
+#### Critical Engineering Principle
+**Binary compilation commands cannot modify the depends system.** This prevents:
+- Cache invalidation from build system changes
+- Accidental dependency rebuilds during binary compilation
+- Cross-contamination between dependency building and binary compilation phases
+- 40+ minute OpenSSL rebuilds when only compiling binaries
+
+The `make windows` command has **read-only** access to `depends/` and will fail immediately if required dependencies are missing, directing users to run the appropriate `make deps-*` command first.
+
+## Current Status
+
+### ✅ Working Systems
 - **Linux Dependencies**: Complete and functional at `depends/x86_64-pc-linux-gnu/`
-- **Linux Builds**: Full working system
-- **Enterprise Server**: Isolated build system working perfectly
+- **Linux Builds**: Full working system with GCC 13 and C++23
+- **Enterprise Server**: Ubuntu 24.04 with MinGW GCC 13, building successfully for months
+- **Windows Dependencies**: OpenSSL cache invalidation issues completely resolved
+- **Separation of Concerns**: Build system architecture prevents cross-contamination
+- **Hybrid Toolchain**: System compilers + depends libraries architecture proven
 
-### Current Problem
-- **Windows Dependencies**: Failing after ~40 minutes of building
-- **Issue Pattern**: Build starts, rebuilds GCC (~40min), hits error, requires patches, cache invalidated, repeat cycle
-- **Attempts**: 6+ failed build cycles as of documentation creation
-- **Root Cause**: Unknown - waiting for error message to diagnose
+### 🔄 In Progress  
+- **MinGW GCC 13 Installation**: Upgrading from GCC 10 to GCC 13 via Ubuntu 24.04 backports
+- **C++23 Windows Support**: Waiting for MinGW upgrade to resolve `<expected>` header issues
+
+### 📋 System Requirements
+**For C++23 Support (Required):**
+- **Ubuntu 22.04+** with Noble (24.04) backports repository
+- **MinGW GCC 13-posix** (not the default GCC 10 from Ubuntu 22.04)
+- **System GCC 13** for Linux builds
+
+**Installation:**
+```bash
+# Add Ubuntu 24.04 backports
+sudo add-apt-repository "deb http://archive.ubuntu.com/ubuntu noble main universe"
+sudo apt update
+sudo apt install gcc-mingw-w64 g++-mingw-w64 gcc-mingw-w64-x86-64-posix g++-mingw-w64-x86-64-posix
+```
 
 ## Package Definitions
 
 ### Windows NO_QT Build Packages
 
+**Hybrid Toolchain Architecture:**
+- **System Compilers**: MinGW GCC 13-posix (from Ubuntu 24.04 backports)
+- **Depends Libraries**: All dependencies built statically in `depends/x86_64-w64-mingw32/`
+
 **Native Packages** (build tools):
 - `native_ccache`: Compiler cache for faster rebuilds
-- `native_gcc`: Cross-compiler toolchain (GCC 15.2.0)
 
 **Target Packages** (runtime dependencies):
-- `openssl`: Cryptography library
-- `libevent`: Event notification library  
-- `zeromq`: Message queue library
-- `bdb`: Berkeley DB (wallet support)
-- `miniupnpc`: UPnP client library
+- `openssl`: OpenSSL 3.5.2 (cryptographic operations)
+- `libevent`: libevent 2.1.12 (network event handling)
+- `zeromq`: ZeroMQ 4.3.4 (message queuing) 
+- `bdb`: BerkeleyDB 18.1 (wallet database with Windows file lock fixes)
+- `miniupnpc`: miniUPnPc 2.2.2 (UPnP port mapping)
+
+**Note:** Unlike previous versions, we do NOT build `native_gcc` - the system provides MinGW GCC 13 cross-compiler, while depends provides all static libraries.
 
 ## Build System Components
 
@@ -101,17 +140,20 @@ goldcoin/
 
 ### Common Issues
 
-1. **Repeated GCC Rebuilds**
-   - Cause: Cache invalidation due to build modifications
-   - Solution: Avoid modifying build files mid-build
+1. **C++23 Header Missing (`<expected>` not found)**
+   - Cause: MinGW GCC 10 doesn't support C++23
+   - Solution: Install MinGW GCC 13 via Ubuntu 24.04 backports (see System Requirements above)
+   - Verify: `x86_64-w64-mingw32-gcc-posix --version` should show "GCC 13-posix"
    
-2. **Tar Extraction Errors**
-   - Check: tar commands have proper -C directory specification
-   - Location: funcs.mk and individual package .mk files
+2. **Windows Dependencies Missing**
+   - Check: Run `make status` from build/ directory
+   - Solution: Run `make deps-windows-no-qt JOBS=8` first
+   - Verify: `ls depends/x86_64-w64-mingw32/lib/libcrypto.a` should exist
 
-3. **Hash Mismatches**
-   - Cause: Modified source files or build scripts
-   - Solution: Verify package integrity and build script consistency
+3. **Hash Mismatches** (Rare)
+   - Cause: Corrupted downloaded files or build modifications
+   - Solution: Clean and rebuild affected package
+   - Command: `rm -rf depends/built/x86_64-w64-mingw32/[package]` and retry
 
 ### Debug Commands
 
