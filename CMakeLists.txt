@@ -17,6 +17,20 @@ endif()
 
 project(goldcoin VERSION 0.17.0 LANGUAGES CXX C ASM)
 
+# Force proper C++23 on MinGW (CMake 3.22 may not map it)
+if(MINGW OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    # Honor the standard but also explicitly set the flag so CMake doesn't downshift to C++20
+    set(CMAKE_CXX_STANDARD 23)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    set(CMAKE_CXX_EXTENSIONS ON)  # we use gnu++23 typically
+    
+    # Explicitly add the flag in case this CMake version doesn't know C++23 for MinGW
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-std=gnu++23>)
+    
+    # Ensure all targets see secp256k1 as static library (prevents __imp_ symbols)
+    add_compile_definitions(SECP256K1_STATIC)
+endif()
+
 # ===== BUILD OPTIONS =====
 option(USE_DEPENDS "Use depends/ prefix for all dependencies" ON)
 option(BUILD_GUI "Build goldcoin-qt GUI with Qt 6.9" OFF)
@@ -27,17 +41,21 @@ option(WITH_ZMQ "Enable ZMQ notifications" OFF)
 option(WITH_MINIUPNPC "Enable UPnP support" OFF)
 option(BUILD_STATIC "Build static binaries (Linux only)" ON)
 
-# C++23 standard for C++ files
+# Default: C++23
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_EXTENSIONS ON) # we use gnu++* on Linux/MinGW
+
+# We have verified MinGW GCC 13+ supports C++23
+# Removing fallback to C++20 since we have proper toolchain
+
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# C11 standard for C files (dsa_stub.c)
+# C11 standard for C files
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-# C++23 specific flags - only for C++ files
+# C++ specific flags - force C++23 for all builds
 add_compile_options(
     $<$<COMPILE_LANGUAGE:CXX>:-std=c++23>
     $<$<COMPILE_LANGUAGE:CXX>:-fconcepts>
@@ -65,6 +83,11 @@ if(NOT WIN32 AND NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
     else()
         set(HAVE_DECL_STRNLEN 0)
     endif()
+	else()
+      # Windows doesn't have daemon or mallopt (glibc-specific), but has strnlen
+      set(HAVE_DECL_DAEMON 0)
+      set(HAVE_DECL_STRNLEN 1)
+      # mallopt not available on Windows - skip HAVE_MALLOPT_ARENA_MAX
 endif()
 
 # ===== BUILD TYPE =====
@@ -79,8 +102,7 @@ set(CLIENT_VERSION_MINOR 17)
 set(CLIENT_VERSION_REVISION 0)
 set(CLIENT_VERSION_BUILD 0)
 set(CLIENT_VERSION_IS_RELEASE true)
-set(COPYRIGHT_HOLDERS "The %s developers")
-set(COPYRIGHT_HOLDERS_FINAL "The Goldcoin Core developers")
+set(COPYRIGHT_HOLDERS "The Goldcoin Core developers")
 set(COPYRIGHT_YEAR "2025")
 set(PACKAGE_NAME "Goldcoin Core")
 
@@ -316,16 +338,13 @@ add_compile_definitions(
     __STDC_FORMAT_MACROS
 )
 
-# Windows-specific: Work around OpenSSL 1.0.1k DSA linking issue
+# Windows OpenSSL 3.5.2 DSA compatibility
 if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_compile_definitions(OPENSSL_NO_DSA)
 endif()
 
-# Only use config file for native Linux builds
-# Windows builds use CMake definitions instead
-if(NOT WIN32 AND NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+# All builds should use the generated config header
     add_compile_definitions(HAVE_CONFIG_H)
-endif()
 
 # Remove NDEBUG even in Release builds (goldcoin requires assertions)
 string(REPLACE "-DNDEBUG" "" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
@@ -341,8 +360,11 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         -Wno-unused-parameter
         -Wno-unused-function
         -Wno-nonnull-compare
-        -fstack-protector-all
     )
+    # Stack protection unavailable in MinGW runtime
+    if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+        add_compile_options(-fstack-protector-all)
+    endif()
     add_compile_definitions(_FORTIFY_SOURCE=2)
 endif()
 
@@ -353,6 +375,14 @@ add_subdirectory(src/leveldb)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Force static libraries for secp256k1" FORCE)
 set(SECP256K1_ENABLE_MODULE_RECOVERY ON CACHE BOOL "Enable recovery module for goldcoind" FORCE)
 
+# Disable secp256k1 tests/benchmarks for Windows cross-compilation (stack protection issues)
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(SECP256K1_BUILD_TESTS OFF CACHE BOOL "Disable tests for Windows build" FORCE)
+    set(SECP256K1_BUILD_EXHAUSTIVE_TESTS OFF CACHE BOOL "Disable exhaustive tests for Windows build" FORCE)
+    set(SECP256K1_BUILD_BENCHMARK OFF CACHE BOOL "Disable benchmarks for Windows build" FORCE)
+    set(SECP256K1_BUILD_CTIME_TESTS OFF CACHE BOOL "Disable ctime tests for Windows build" FORCE)
+endif()
+
 # Ensure secp256k1 inherits cross-compilation toolchain
 if(CMAKE_CROSSCOMPILING)
     # Force secp256k1 to use the correct toolchain
@@ -361,6 +391,12 @@ if(CMAKE_CROSSCOMPILING)
 endif()
 
 add_subdirectory(src/secp256k1)
+
+# Windows requires explicit static library declaration
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    target_compile_definitions(secp256k1 PUBLIC SECP256K1_STATIC)
+endif()
+
 set(BUILD_SHARED_LIBS ON CACHE BOOL "Reset to default" FORCE)
 
 add_subdirectory(src/univalue)
@@ -502,12 +538,7 @@ endif()
 # ===== EXECUTABLES =====
 
 # goldcoind
-if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    # Add DSA stub for Windows - workaround for OpenSSL 1.0.1k build issue
-    add_executable(goldcoind src/goldcoind.cpp src/dsa_stub.c)
-else()
-    add_executable(goldcoind src/goldcoind.cpp)
-endif()
+add_executable(goldcoind src/goldcoind.cpp)
 target_link_libraries(goldcoind
     bitcoin_server
     bitcoin_common
@@ -564,19 +595,10 @@ if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
 endif()
 
 # goldcoin-cli
-if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    # Add DSA stub for Windows - workaround for OpenSSL 1.0.1k build issue
-    add_executable(goldcoin-cli 
-        src/goldcoin-cli.cpp
-        src/rpc/client.cpp
-        src/dsa_stub.c
-    )
-else()
-    add_executable(goldcoin-cli 
-        src/goldcoin-cli.cpp
-        src/rpc/client.cpp
-    )
-endif()
+add_executable(goldcoin-cli 
+    src/goldcoin-cli.cpp
+    src/rpc/client.cpp
+)
 target_link_libraries(goldcoin-cli
     bitcoin_util
     bitcoin_crypto
@@ -721,12 +743,11 @@ if(BUILD_GUI)
     
     # Main Qt executable
     if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
-        # Add DSA stub for Windows - workaround for OpenSSL 1.0.1k build issue
         # Add minimal SSL symbol for Qt Network static linking
         file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt_ssl_symbol.c 
             "// Required symbol for Qt Network static linking\n"
             "void q_ssl_sess_set_new_cb(void* ctx, void* cb) { (void)ctx; (void)cb; }\n")
-        add_executable(goldcoin-qt src/qt/goldcoin.cpp src/dsa_stub.c ${CMAKE_CURRENT_BINARY_DIR}/qt_ssl_symbol.c)
+        add_executable(goldcoin-qt src/qt/goldcoin.cpp ${CMAKE_CURRENT_BINARY_DIR}/qt_ssl_symbol.c)
     else()
         add_executable(goldcoin-qt src/qt/goldcoin.cpp)
     endif()
