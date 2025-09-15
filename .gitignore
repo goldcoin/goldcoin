@@ -21,13 +21,7 @@ src/qt/test/test_goldcoin-qt
 *.o
 *.lo
 *.la
-build/windows/
-build/linux/
-build/bin/
-build/lib/
-build/CMakeFiles/
-build/CMakeCache.txt
-build/cmake_install.cmake
+build/
 *.log
 *.trs
 
@@ -53,7 +47,7 @@ qrc_*.cpp
 # IDE
 .vscode/
 
-# CMake build directory (already handled above)
+# Build directory (all contents are generated artifacts)
 
 # Release directories
 *-release/

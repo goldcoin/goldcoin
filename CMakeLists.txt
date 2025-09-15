@@ -17,6 +17,10 @@ endif()
 
 project(goldcoin VERSION 0.17.0 LANGUAGES CXX C ASM)
 
+if(NOT GOLDCOIN_INTERNAL_BUILD)
+      message(FATAL_ERROR "Do not call cmake directly! Use: make linux, make windows, or make windows-qt")
+  endif()
+
 # Force proper C++23 on MinGW (CMake 3.22 may not map it)
 if(MINGW OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
     # Honor the standard but also explicitly set the flag so CMake doesn't downshift to C++20
@@ -212,10 +216,10 @@ else()
 endif()
 message(STATUS "OpenSSL version: ${OPENSSL_VERSION}")
 
-# Version check - accept OpenSSL 1.0.1k for now (wallet compatibility)
+# Version check - require modern OpenSSL 3.0+
 if(NOT WIN32 AND NOT USE_DEPENDS)
-    if(OPENSSL_VERSION VERSION_LESS "1.0.1")
-        message(FATAL_ERROR "OpenSSL 1.0.1+ required but found ${OPENSSL_VERSION}")
+    if(OPENSSL_VERSION VERSION_LESS "3.0.0")
+        message(FATAL_ERROR "OpenSSL 3.0+ required but found ${OPENSSL_VERSION}")
     endif()
 endif()
 
@@ -395,13 +399,11 @@ add_subdirectory(src/leveldb)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Force static libraries for secp256k1" FORCE)
 set(SECP256K1_ENABLE_MODULE_RECOVERY ON CACHE BOOL "Enable recovery module for goldcoind" FORCE)
 
-# Disable secp256k1 tests/benchmarks for Windows cross-compilation (stack protection issues)
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    set(SECP256K1_BUILD_TESTS OFF CACHE BOOL "Disable tests for Windows build" FORCE)
-    set(SECP256K1_BUILD_EXHAUSTIVE_TESTS OFF CACHE BOOL "Disable exhaustive tests for Windows build" FORCE)
-    set(SECP256K1_BUILD_BENCHMARK OFF CACHE BOOL "Disable benchmarks for Windows build" FORCE)
-    set(SECP256K1_BUILD_CTIME_TESTS OFF CACHE BOOL "Disable ctime tests for Windows build" FORCE)
-endif()
+# Disable secp256k1 tests/benchmarks for all builds (enterprise production builds only)
+set(SECP256K1_BUILD_TESTS OFF CACHE BOOL "Disable tests for production builds" FORCE)
+set(SECP256K1_BUILD_EXHAUSTIVE_TESTS OFF CACHE BOOL "Disable exhaustive tests for production builds" FORCE)
+set(SECP256K1_BUILD_BENCHMARK OFF CACHE BOOL "Disable benchmarks for production builds" FORCE)
+set(SECP256K1_BUILD_CTIME_TESTS OFF CACHE BOOL "Disable ctime tests for production builds" FORCE)
 
 # Ensure secp256k1 inherits cross-compilation toolchain
 if(CMAKE_CROSSCOMPILING)

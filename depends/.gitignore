@@ -5,14 +5,12 @@ sources/*
 !sources/.gitkeep
 !sources/qrencode-*.tar.bz2
 config.site
-# SACRED DEPENDENCIES - DO NOT DELETE
-# Commenting out architecture patterns to preserve built dependencies
-# x86_64*
-# i686*
-# mips*
-# arm*
-# aarch64*
-# Instead, explicitly ignore only build artifacts:
+# Built architecture dependencies - keep local, never push to remote
+x86_64*
+i686*
+mips*
+arm*
+aarch64*
 *.log
 *.tmp
 *.o
