@@ -29,9 +29,38 @@ goldcoin/
 └── src/                    # Source code
 ```
 
+## First Time Setup
+
+### Step 1: Build Dependencies (Required)
+
+**For Linux builds:**
+```bash
+make deps-linux
+```
+
+**For Windows builds (without Qt GUI):**
+```bash
+make deps-windows-no-qt
+```
+
+**For Windows builds (with Qt GUI):**
+```bash
+make deps-windows
+```
+
+**Note:** Dependencies only need to be built once and are preserved between builds.
+
+### Step 2: Build Binaries
+
+```bash
+make linux              # Linux binaries → build/linux/bin/
+make windows             # Windows binaries → build/windows/bin/
+make windows-qt          # Windows GUI → build/windows-qt/bin/
+```
+
 ## Enterprise Build System Commands
 
-### Available Targets (run from build/ directory)
+### Available Targets (run from repository root)
 
 - `make linux` - Build Linux binaries
 - `make windows` - Build Windows binaries  
@@ -39,7 +68,6 @@ goldcoin/
 - `make deps-linux` - Build Linux dependencies only
 - `make deps-windows` - Build Windows dependencies with Qt
 - `make deps-windows-no-qt` - Build Windows dependencies without Qt
-- `make clean` - Clean build artifacts
 - `make status` - Show build status
 
 ### Build Flow Logic: Separation of Concerns
@@ -47,8 +75,8 @@ goldcoin/
 The build system implements a clean **two-phase approach** to prevent cross-contamination:
 
 #### Phase 1: Dependency Building
-1. **User Command**: `make deps-windows-no-qt JOBS=6` (from build/ directory)
-2. **GNUmakefile**: Calls `make -C ../depends HOST=x86_64-w64-mingw32 NO_QT=1 -j6`
+1. **User Command**: `make deps-windows-no-qt` (from repository root)
+2. **GNUmakefile**: Calls `make -C depends HOST=x86_64-w64-mingw32 NO_QT=1 -j8`
 3. **Depends Makefile**: 
    - Target: `all` → `install` → `$(host_prefix)/share/config.site`
    - Dependency: `$(host_prefix)/.stamp_$(final_build_id)`
@@ -59,11 +87,11 @@ The build system implements a clean **two-phase approach** to prevent cross-cont
 5. **Final Output**: `depends/x86_64-w64-mingw32/` with complete toolchain
 
 #### Phase 2: Binary Compilation
-1. **User Command**: `make windows JOBS=6` (from build/ directory)
+1. **User Command**: `make windows` or `make windows-qt` (from repository root)
 2. **Dependency Verification**: Checks for required libraries, fails fast if missing
 3. **Read-Only Access**: Uses existing `depends/` libraries without modification
 4. **CMake Build**: Compiles Goldcoin Core binaries using pre-built dependencies
-5. **Final Output**: Binaries in `build/bin/windows/`
+5. **Final Output**: Binaries in `build/windows/bin/` or `build/windows-qt/bin/`
 
 #### Critical Engineering Principle
 **Binary compilation commands cannot modify the depends system.** This prevents:
@@ -72,7 +100,7 @@ The build system implements a clean **two-phase approach** to prevent cross-cont
 - Cross-contamination between dependency building and binary compilation phases
 - 40+ minute OpenSSL rebuilds when only compiling binaries
 
-The `make windows` command has **read-only** access to `depends/` and will fail immediately if required dependencies are missing, directing users to run the appropriate `make deps-*` command first.
+The `make windows` and `make windows-qt` commands have **read-only** access to `depends/` and will fail immediately if required dependencies are missing, directing users to run the appropriate `make deps-*` command first.
 
 ## Current Status
 
@@ -152,8 +180,7 @@ sudo apt install gcc-mingw-w64 g++-mingw-w64 gcc-mingw-w64-x86-64-posix g++-ming
 
 3. **Hash Mismatches** (Rare)
    - Cause: Corrupted downloaded files or build modifications
-   - Solution: Clean and rebuild affected package
-   - Command: `rm -rf depends/built/x86_64-w64-mingw32/[package]` and retry
+   - Solution: Run `make linux`, `make windows`, or `make windows-qt` (clean builds by default will rebuild everything fresh)
 
 ### Debug Commands
 
@@ -207,7 +234,7 @@ make -C depends HOST=x86_64-w64-mingw32 NO_QT=1 V=1
 If builds become corrupted:
 1. Check git status for modifications
 2. Consider reverting to last known working state
-3. Clean build directories: `rm -rf depends/work/build/`
+3. Clean build directories: Use `make -C depends clean-sources` or restart depends build
 4. Preserve cached packages: `depends/built/` if valid
 5. Restart from clean state
 

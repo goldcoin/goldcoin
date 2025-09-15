@@ -63,36 +63,23 @@ Goldcoin is pioneering the transition from human-controlled to fully AI-autonomo
 
 ## Building from Source
 
-### Prerequisites (Ubuntu/Debian)
-```bash
-sudo apt-get install -y build-essential cmake pkg-config libssl-dev libevent-dev
-sudo apt-get install -y libdb-dev libdb++-dev
-sudo apt-get install -y qtbase5-dev qttools5-dev qttools5-dev-tools
-```
+For complete build instructions, see **[BUILD_GUIDE.md](BUILD_GUIDE.md)**
 
-### Quick Build (Unix)
+### Quick Start
 ```bash
-git clone https://github.com/goldcoin/goldcoin.git
-cd goldcoin
-mkdir build && cd build
-cmake ..
-make -j"$(nproc)"
-# Optional:
-sudo make install
-```
+# Show build options
+make help
 
-### Cross-Compile for Windows
-```bash
-make -C depends HOST=x86_64-w64-mingw32 -j"$(nproc)"
-mkdir build && cd build
-cmake -DCMAKE_TOOLCHAIN_FILE=../depends/x86_64-w64-mingw32/share/toolchain.cmake ..
-make -j"$(nproc)"
+# Build Linux binaries
+make linux
+
+# Build Windows binaries (requires dependencies)
+make windows
 ```
 
 ## Testing
-```bash
-# Unit tests
-make check
+
+Refer to [BUILD_GUIDE.md](BUILD_GUIDE.md) for testing instructions.
 
 # RPC tests
 qa/pull-tester/rpc-tests.py
