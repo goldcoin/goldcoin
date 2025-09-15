@@ -361,6 +361,12 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         -Wno-unused-function
         -Wno-nonnull-compare
     )
+	
+	# Suppress GCC 13 standard library false positive for MinGW
+      if(MINGW OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
+          add_compile_options(-Wno-stringop-overread)
+      endif()
+	
     # Stack protection unavailable in MinGW runtime
     if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
         add_compile_options(-fstack-protector-all)
@@ -370,6 +376,20 @@ endif()
 
 # ===== SUBDIRECTORIES FOR EXTERNAL LIBRARIES =====
 add_subdirectory(src/leveldb)
+
+# Suppress 3rd party LevelDB array bounds warnings (legacy skiplist negative indexing)
+  if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+      target_compile_options(leveldb PRIVATE -Wno-array-bounds)
+
+      # Additional suppressions for LevelDB Windows-specific warnings
+      if(MINGW OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
+          target_compile_options(leveldb PRIVATE
+              -Wno-reorder                      # Member initialization order
+              -Wno-missing-field-initializers   # OVERLAPPED struct initialization
+              -Wno-unused-variable              # Unused hasWritten variable
+          )
+      endif()
+  endif()
 
 # secp256k1 v0.6.0 with modern CMake integration - static build with recovery module
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Force static libraries for secp256k1" FORCE)
