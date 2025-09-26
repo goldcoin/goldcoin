@@ -510,6 +510,7 @@ struct QueuedBlockData {
     std::shared_ptr<const CBlock> block;
     const CChainParams& chainparams;
     CNode * pfrom;
+    uint256 tip_hash;
 
     QueuedBlockData(const CChainParams & params) : chainparams(params) {}
 };

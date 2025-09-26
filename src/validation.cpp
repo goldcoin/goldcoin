@@ -2940,25 +2940,27 @@ bool IsBlockQueued()
 
 void QueuedBlockHandler(QueuedBlockData * data)
 {
-    CBlockIndex * tip = chainActive.Tip();
     LogPrintf("QueuedBlockHandler: %d, %s\n", GetAdjustedTime(), data->block->GetHash().ToString());
 
-    // C++23: Replace boost timer with std::chrono
-    auto delay = std::chrono::seconds(data->block->GetBlockTime() - (GetAdjustedTime() + 45));
-    if (delay > std::chrono::seconds(0)) {
-        std::this_thread::sleep_for(delay);
+    const int64_t now = GetAdjustedTime();
+    const int64_t earliest_ok = data->block->GetBlockTime() - 45; // must be <= GetAdjustedTime()
+    int64_t wait_s = earliest_ok - now;
+    if (wait_s > 0) {
+        std::this_thread::sleep_for(std::chrono::seconds(wait_s));
     }
+    const uint256 queued_tip = data->tip_hash; // saved at queue time
+    const uint256 cur_tip   = chainActive.Tip()->GetBlockHash();
+    LogPrintf("QueuedBlockHandler: waited until %d for %s; queued_tip=%s cur_tip=%s\n",
+              GetAdjustedTime(),
+              data->block->GetHash().ToString(),
+              queued_tip.ToString(),
+              cur_tip.ToString());
 
-
-    LogPrintf("QueuedBlockHandler: waited until %d, %s\n", GetAdjustedTime(), data->block->GetHash().ToString());
-    if(tip->GetBlockHash() == chainActive.Tip()->GetBlockHash())
-    {
-        if(!ProcessNewBlock(data->pfrom, data->chainparams, data->block, false, nullptr))
-        {
-            LogPrintf("QueuedBlock:  ProcessNewBlock: FAILED\n");
-        }
+    // Always try; consensus decides if it connects (even if tip advanced).
+    if (!ProcessNewBlock(data->pfrom, data->chainparams, data->block, /*force_processing=*/true, nullptr)) {
+        LogPrintf("QueuedBlockHandler: ProcessNewBlock: FAILED for %s\n",
+                  data->block->GetHash().ToString());
     }
-    else LogPrintf("QueuedBlock:  FAILED, another block came in.");
 
     //LOCK(cs_blockqueue);
     waitingOnBlock = false;
@@ -3323,14 +3325,17 @@ bool CheckBlock51Percent(CNode * pfrom, const CBlock& block, CValidationState& s
                         copyBlock->Unserialize(stream);
                         data->block = copyBlock;
                         data->pfrom = pfrom;
+                        data->tip_hash = chainActive.Tip()->GetBlockHash();
                         queuedBlock = data;
                         std::thread thread([data]() { QueuedBlockHandler(data); }); // C++23 thread
                         thread.detach();
 
-                        LogPrintf("Local has found possible valid block... queueing (%d s) until timestamp is valid at %d: %s\n", block.GetBlockTime() - (GetAdjustedTime() + 45), block.GetBlockTime() - 45, block.GetHash().ToString());
+                        int64_t wait_s = block.GetBlockTime() - (GetAdjustedTime() + 45);
+                        int64_t valid_at = block.GetBlockTime() - 45;
+                        LogPrintf("QUEUE: local block will wait ~%d s (valid @ %d): %s\n", wait_s, valid_at, block.GetHash().ToString());
 
                         //To return availability to current thread
-                        return state.DoS(0, false, REJECT_INVALID, "rejected-by-def", false, "block timestamp too far for current network time, block queued", true);
+                        return state.DoS(0, false, REJECT_INVALID, "queued-by-def", false, "block timestamp too far for current network time, block queued", true);
                     }
                     return state.DoS(0, false, REJECT_INVALID, "rejected-by-def", false, "block timestamp too far for current network time", true);
                 } else {

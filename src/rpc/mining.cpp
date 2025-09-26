@@ -537,6 +537,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
         CBlockIndex* pindexPrevNew = chainActive.Tip();
         nStart = GetTime();
 
+
         // Create new block
         CScript scriptDummy = CScript() << OP_TRUE;
         pblocktemplate = BlockAssembler(Params()).CreateNewBlock(scriptDummy);
@@ -552,6 +553,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     // Update nTime
     UpdateTime(pblock, consensusParams, pindexPrev);
     pblock->nNonce = 0;
+
 
     UniValue aCaps(UniValue::VARR); aCaps.push_back("proposal");
 
@@ -674,7 +676,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     result.push_back(Pair("curtime", pblock->GetBlockTime()));
     result.push_back(Pair("bits", strprintf("%08x", pblock->nBits)));
     result.push_back(Pair("height", (int64_t)(pindexPrev->nHeight+1)));
-    
+
     return result;
 }
 

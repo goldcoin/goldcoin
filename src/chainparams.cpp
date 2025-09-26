@@ -129,12 +129,14 @@ public:
         assert(consensus.hashGenesisBlock == uint256S("0xdced3542896ed537cb06f9cb064319adb0da615f64dd8c5e5bad974398f44b24"));
         assert(genesis.hashMerkleRoot == uint256S("0xa215e67ba165202f75b6458d22fedd1a3ec4f03449a4c6b2a4b8130bfebd3b15"));
 
-        // Note that of those with the service bits flag, most only support a subset of possible options
-        vSeeds.push_back(CDNSSeedData("seed.microguy.net", "seed.microguy.net", true)); // MicroGuy
-        vSeeds.push_back(CDNSSeedData("cm.goldcoinproject.org", "cm.goldcoinproject.org", true)); // Community
-        vSeeds.push_back(CDNSSeedData("dnsseed.netseed.net", "dnsseed.netseed.net", true));
-        vSeeds.push_back(CDNSSeedData("seed.glcseed.net", "seed.glcseed.net", true));
-        vSeeds.push_back(CDNSSeedData("vps.netseed.net", "vps.netseed.net", true));
+        // Hardcoded seed IPs for instant startup (no DNS lookup delays)
+        vSeeds.push_back(CDNSSeedData("vps.netseed.net", "168.235.108.149", true));
+        vSeeds.push_back(CDNSSeedData("micro1.microguy.net", "185.52.0.211", true));
+        vSeeds.push_back(CDNSSeedData("micro2.microguy.net", "81.4.101.247", true));
+        vSeeds.push_back(CDNSSeedData("electrum1.netseed.net", "5.78.103.172", true));
+        vSeeds.push_back(CDNSSeedData("electrum2.netseed.net", "5.161.86.179", true));
+        vSeeds.push_back(CDNSSeedData("chainz.cryptoid.info", "91.121.45.202", true));
+        vSeeds.push_back(CDNSSeedData("gemini.netseed.net", "65.108.62.134", true));
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,32);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
         base58Prefixes[SCRIPT_ADDRESS2] = std::vector<unsigned char>(1,50);

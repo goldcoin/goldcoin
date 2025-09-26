@@ -310,7 +310,8 @@ public:
                 return medTime;
             }
         }
-        return std::max((unsigned int)medTime, cur->nTime + 60 * 10);
+        // Fix: Prevent 32-bit truncation that caused future timestamp drift in V17
+        return std::max<int64_t>(medTime, static_cast<int64_t>(cur->nTime) + int64_t{60 * 10});
     }
 
     int64_t GetMedianTimePast() const

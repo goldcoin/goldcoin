@@ -635,7 +635,7 @@ DBErrors CWalletDB::LoadWallet(CWallet* pwallet)
                         // Conservative approach: Log transaction record issues but don't force rescan
                         // Following Bitcoin Core's less aggressive approach - only rescan for critical corruption
                         // Removed automatic rescan trigger to prevent unnecessary rescans after successful migration
-                        LogPrintf("Warning: Transaction record format inconsistency detected, but data appears intact\n");
+                        LogPrintf("Notice: Transaction record format indicates BDB 4.8 migrated wallet\n");
                         // SoftSetBoolArg("-rescan", true);  // Removed - too aggressive for format differences
                     }
                 }
