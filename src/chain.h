@@ -310,8 +310,10 @@ public:
                 return medTime;
             }
         }
-        // Fix: Prevent 32-bit truncation that caused future timestamp drift in V17
-        return std::max<int64_t>(medTime, static_cast<int64_t>(cur->nTime) + int64_t{60 * 10});
+        // Prevent time-too-old cliff: minimum needed to avoid rejection
+        // Allows up to 44s below prev for pool competitiveness
+        const int64_t prevMinus45 = static_cast<int64_t>(cur->nTime) - 45 + 1;
+        return std::max<int64_t>(medTime, prevMinus45);
     }
 
     int64_t GetMedianTimePast() const

@@ -6,6 +6,7 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include <inttypes.h>
 
 #include "miner.h"
 
@@ -62,14 +63,30 @@ public:
 
 int64_t UpdateTime(CBlockHeader* pblock, const Consensus::Params& consensusParams, const CBlockIndex* pindexPrev)
 {
-    int64_t nOldTime = pblock->nTime;
-    int64_t nNewTime = pindexPrev->nHeight+1 > consensusParams.octoberFork ?
-                std::max(pindexPrev->GetMinTimeNext(), GetAdjustedTime()) :
-                std::max(pindexPrev->GetMedianTimePast()+1, GetAdjustedTime());
+    const int64_t nOldTime = pblock ? pblock->nTime : 0;
+    const int64_t now = GetAdjustedTime();
 
+    // Early init / IBD edge - safety guard for null pindexPrev
+    if (!pindexPrev) {
+        const int64_t nNewTime = std::max(now, nOldTime);
+        if (pblock && nOldTime < nNewTime) pblock->nTime = nNewTime;
+        return nNewTime - nOldTime;
+    }
 
-    if (nOldTime < nNewTime)
-        pblock->nTime = nNewTime;
+    // Use GetMinTimeNext() like V15 and HEAD
+    const int64_t nNewTime = pindexPrev->nHeight+1 > consensusParams.octoberFork ?
+                std::max(pindexPrev->GetMinTimeNext(), now) :
+                std::max(pindexPrev->GetMedianTimePast()+1, now);
+
+    // V15-consensus heads-up: warn if template will queue (no clamp)
+    const int64_t cap45 = now + 45;
+    if (nNewTime > cap45) {
+        LogPrintf("WARNING: mintime(%" PRIi64 ") > now+45(%" PRIi64 "). "
+                  "Template will queue on solve. Check NTP sync!\n",
+                  (int64_t)nNewTime, (int64_t)cap45);
+    }
+
+    if (pblock && nOldTime < nNewTime) pblock->nTime = nNewTime;
 
     // Updating time can change work required on testnet:
     if (consensusParams.fPowAllowMinDifficultyBlocks && pindexPrev->nHeight+1 < consensusParams.octoberFork)
