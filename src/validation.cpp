@@ -3367,52 +3367,6 @@ bool ProcessNewBlock(CNode* pfrom, const CChainParams& chainparams, const std::s
         LOCK(cs_main);
 
         if (ret) {
-            // Simplified rapid-block defense (pool version - local blocks allowed)
-            if (chainActive.Height() > chainparams.GetConsensus().octoberFork) {
-                CBlockIndex* theBlock = GetPreviousBlock(*pblock, 5);
-                if (theBlock) {
-                    int64_t timeDiff = pblock->nTime - theBlock->nTime;
-                    const int64_t rapidThreshold = 60 * 10; // 10 minutes
-
-                    LogPrintf("51DEF: rapid-block check: time_diff=%lld, threshold=%lld\\n",
-                        (long long)timeDiff, (long long)rapidThreshold);
-
-                    if (timeDiff < rapidThreshold) {
-                        // Determine if block is local
-                        bool isLocal = !pfrom; // null pfrom = local (RPC submission)
-                        if (pfrom) {
-                            std::string peerStr = pfrom->addr.ToString();
-                            isLocal = (peerStr.find("local") != std::string::npos ||
-                                       peerStr.find("127.0.0.") != std::string::npos);
-                        }
-
-                        if (!isLocal) {
-                            // Remote rapid block - trigger defense
-                            LogPrintf("51DEF: Banning remote rapid block from %s\\n",
-                                pfrom ? pfrom->addr.ToString() : "unknown");
-
-                            defenseDelayActive = true;
-                            time(&defenseStartTime);
-                            Checkpoints::AddBadPoint(chainparams.Badpoints(), chainActive.Height(), pblock->GetHash());
-                            checkpointBlockNum = chainActive.Height() + 12;
-
-                            state.DoS(100, false, REJECT_INVALID, "bad-time", true, "51% defense triggered");
-                            GetMainSignals().BlockChecked(*pblock, state);
-                            return error("%s: AcceptBlock FAILED - 51% defense triggered", __func__);
-                        } else {
-                            // Local rapid block - allow for pool competitiveness
-                            LogPrintf("51DEF: Local rapid block allowed (pool mode) - time_diff=%lld\\n",
-                                (long long)timeDiff);
-                        }
-                    } else {
-                        LogPrintf("51DEF: Block spacing OK - time_diff=%lld >= threshold=%lld\\n",
-                            (long long)timeDiff, (long long)rapidThreshold);
-                    }
-                } else {
-                    LogPrintf("51DEF: GetPreviousBlock(5) returned null - skipping rapid-block check\\n");
-                }
-            }
-
             // Store to disk
             ret = AcceptBlock(pblock, state, chainparams, &pindex, fForceProcessing, nullptr, fNewBlock);
         }
