@@ -3295,34 +3295,28 @@ bool CheckBlock51Percent(CNode* pfrom, const CBlock& block, CValidationState& st
             (long long)block.GetBlockTime(), (long long)futureLimit,
             isLocalBlock ? "yes" : "no");
 
-        // Race-proof waitingOnBlock check
-        bool canQueue = false;
+        // Prepare queue payload first (no locks held)
+        auto data = std::make_unique<QueuedBlockData>(chainparams);
+        auto copyBlock = std::make_shared<CBlock>(block);
+        data->block = copyBlock;
+        data->pfrom = nullptr; // UAF safety - don't hold pfrom in background thread
+        data->tip_hash = chainActive.Tip()->GetBlockHash();
+
+        // Atomic check-and-enqueue under single lock
+        bool enqueued = false;
         {
             LOCK(cs_blockqueue);
-            canQueue = (isLocalBlock && fQueueBlocks && !waitingOnBlock &&
-                        nextHeight > consensusParams.octoberFork);
-            if (canQueue) {
+            if (isLocalBlock && fQueueBlocks && !waitingOnBlock &&
+                nextHeight > consensusParams.octoberFork) {
                 waitingOnBlock = true;
+                queuedBlock = data.get();
+                enqueued = true;
             }
         }
 
-        if (canQueue) {
+        if (enqueued) {
             // Queue local blocks that are too far in future
             LogPrintf("51DEF: Queueing local block for later submission\\n");
-
-            auto data = std::make_unique<QueuedBlockData>(chainparams);
-
-            // Safely copy block data
-            auto copyBlock = std::make_shared<CBlock>(block);
-            data->block = copyBlock;
-            data->pfrom = nullptr; // UAF safety - don't hold pfrom in background thread
-            data->tip_hash = chainActive.Tip()->GetBlockHash();
-
-            // Assign queuedBlock under lock for consistency with readers
-            {
-                LOCK(cs_blockqueue);
-                queuedBlock = data.get();
-            }
 
             // Start background thread to handle delayed submission
             std::thread thread([d = std::move(data)]() {
