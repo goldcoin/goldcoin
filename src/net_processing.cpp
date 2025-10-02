@@ -2019,8 +2019,11 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
 
         {
         LOCK(cs_main);
-        // If AcceptBlockHeader returned true, it set pindex
-        assert(pindex);
+        // If AcceptBlockHeader returned true, it set pindex; otherwise just ignore.
+        if (!pindex) {
+            LogPrint("net", "cmpctblock: header rejected (non-invalid); skipping further processing\n");
+            return true;
+        }
         UpdateBlockAvailability(pfrom->GetId(), pindex->GetBlockHash());
 
         std::map<uint256, std::pair<NodeId, std::list<QueuedBlock>::iterator> >::iterator blockInFlightIt = mapBlocksInFlight.find(pindex->GetBlockHash());
@@ -2312,7 +2315,10 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         }
         nodestate->nUnconnectingHeaders = 0;
 
-        assert(pindexLast);
+        if (!pindexLast) {
+            LogPrint("net", "headers: header(s) rejected (non-invalid); skipping\n");
+            return true;
+        }
         UpdateBlockAvailability(pfrom->GetId(), pindexLast->GetBlockHash());
 
         if (nCount == MAX_HEADERS_RESULTS) {
