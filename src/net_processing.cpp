@@ -795,7 +795,7 @@ void PeerLogicValidation::NewPoWValidBlock(const CBlockIndex *pindex, const std:
         CNodeState &state = *State(pnode->GetId());
         // If the peer has, or we announced to them the previous block already,
         // but we don't think they have this one, go ahead and announce it
-        if (state.fPreferHeaderAndIDs &&
+        if (!defenseDelayActive && state.fPreferHeaderAndIDs &&
                 !PeerHasHeader(&state, pindex) && PeerHasHeader(&state, pindex->pprev)) {
 
             LogPrint("net", "%s sending header-and-ids %s to peer=%d\n", "PeerLogicValidation::NewPoWValidBlock",
@@ -2625,6 +2625,45 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         // message would be undesirable as we transmit it ourselves.
     }
 
+    else if (strCommand == NetMsgType::SENDADDRV2) {
+        // BIP155 defines feature negotiation of addrv2 and sendaddrv2, which must happen
+        // between VERSION and VERACK. For Android app compatibility.
+        if (pfrom->fSuccessfullyConnected) {
+            // Disconnect peers that send a SENDADDRV2 message after VERACK.
+            LogPrint("net", "sendaddrv2 received after verack from peer=%d; disconnecting\n", pfrom->id);
+            pfrom->fDisconnect = true;
+            return false;
+        }
+        // V17 doesn't have full addrv2 support, but accept the message for compatibility
+        LogPrint("net", "sendaddrv2 received from peer=%d (compatibility mode)\n", pfrom->id);
+        return true;
+    }
+
+    else if (strCommand == NetMsgType::WTXIDRELAY) {
+        // BIP339 defines feature negotiation of wtxidrelay, which must happen between
+        // VERSION and VERACK. For wallet compatibility.
+        if (pfrom->fSuccessfullyConnected) {
+            LogPrint("net", "wtxidrelay received after verack from peer=%d; disconnecting\n", pfrom->id);
+            pfrom->fDisconnect = true;
+            return false;
+        }
+        // V17 doesn't have full wtxidrelay support, but accept the message for compatibility
+        LogPrint("net", "wtxidrelay received from peer=%d (compatibility mode)\n", pfrom->id);
+        return true;
+    }
+
+    else if (strCommand == NetMsgType::SENDTXRCNCL) {
+        // BIP330 defines feature negotiation of transaction reconciliation
+        if (pfrom->fSuccessfullyConnected) {
+            LogPrint("net", "sendtxrcncl received after verack from peer=%d; disconnecting\n", pfrom->id);
+            pfrom->fDisconnect = true;
+            return false;
+        }
+        // V17 doesn't have transaction reconciliation, but accept the message for compatibility
+        LogPrint("net", "sendtxrcncl received from peer=%d (compatibility mode)\n", pfrom->id);
+        return true;
+    }
+
     else {
         // Ignore unknown commands for extensibility
         LogPrint("net", "Unknown command \"%s\" from peer=%d\n", SanitizeString(strCommand), pfrom->id);
@@ -2986,7 +3025,7 @@ bool SendMessages(CNode* pto, CConnman& connman, const std::atomic<bool>& interr
                 }
             }
             if (!fRevertToInv && !vHeaders.empty()) {
-                if (vHeaders.size() == 1 && state.fPreferHeaderAndIDs) {
+                if (vHeaders.size() == 1 && !defenseDelayActive && state.fPreferHeaderAndIDs) {
                     // We only send up to 1 block as header-and-ids, as otherwise
                     // probably means we're doing an initial-ish-sync or they're slow
                     LogPrint("net", "%s sending header-and-ids %s to peer=%d\n", __func__,

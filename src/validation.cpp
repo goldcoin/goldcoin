@@ -3120,6 +3120,17 @@ static bool AcceptBlockHeader(const CBlockHeader& block, CValidationState& state
 
         if (!ContextualCheckBlockHeader(block, state, chainparams.GetConsensus(), pindexPrev, GetAdjustedTime(), true))
             return error("%s: Consensus::ContextualCheckBlockHeader: %s, %s", __func__, hash.ToString(), FormatStateMessage(state));
+
+        // Restore goldcoin-master 51% defense at the HEADER stage:
+        // Reject if the new header's timestamp is < 600s after the 5th-previous block (post-October fork).
+        if (pindexPrev->nHeight > chainparams.GetConsensus().octoberFork) {
+            if (CBlockIndex* theBlock = GetPreviousBlock(block, 5)) {
+                const int64_t dt = (int64_t)block.nTime - (int64_t)theBlock->nTime;
+                if (dt < 600) {
+                    return error("\n AcceptBlock() : Possible Multipeer 51 percent detected, Denying chain switch.. \n");
+                }
+            }
+        }
     }
     if (pindex == nullptr)
         pindex = AddToBlockIndex(block);
@@ -3267,6 +3278,17 @@ bool CheckBlock51Percent(CNode* pfrom, const CBlock& block, CValidationState& st
     int64_t futureLimit = (nextHeight <= consensusParams.octoberFork) ?
                               (GetAdjustedTime() + 2 * 60 * 60) :
                               (GetAdjustedTime() + 45);
+
+    // Restore goldcoin-master 5-block / 600s spacing for LOCAL (queueing) path:
+    // If post-October fork and N vs N-5 spacing < 600s, treat as rapid-block per legacy rule.
+    if (pindexPrevLocal && pindexPrevLocal->nHeight > consensusParams.octoberFork) {
+        if (CBlockIndex* n5 = GetPreviousBlock(block, 5)) {
+            const int64_t dt = (int64_t)block.nTime - (int64_t)n5->nTime;
+            if (dt < 600) {
+                return error("CheckBlock51Percent: rapid-block spacing %d < 600 (N vs N-5)", (int)dt);
+            }
+        }
+    }
 
     if (block.GetBlockTime() > futureLimit) {
         LogPrintf("51DEF: future timestamp check: block_time=%lld, limit=%lld, local=%s\\n",
