@@ -248,6 +248,30 @@ extern const char *BLOCKTXN;
  * @since protocol version 61000
  */
 extern const char *CHECKPOINT;
+/**
+ * The addrv2 message relays connection information for peers on the network just
+ * like the addr message, but is extended to allow gossiping of longer node
+ * addresses (see BIP155).
+ */
+extern const char *ADDRV2;
+/**
+ * The sendaddrv2 message signals support for receiving ADDRV2 messages (BIP155).
+ * It also implies that its sender can encode as ADDRV2 and would send ADDRV2
+ * instead of ADDR to a peer that has signaled ADDRV2 support by sending SENDADDRV2.
+ */
+extern const char *SENDADDRV2;
+/**
+ * Indicates that a node prefers to relay transactions via wtxid, rather than
+ * txid.
+ * @since protocol version 70016 as described by BIP 339.
+ */
+extern const char *WTXIDRELAY;
+/**
+ * Contains a 4-byte version number and an 8-byte salt.
+ * The salt is used to compute short txids needed for efficient
+ * txreconciliation, as described by BIP 330.
+ */
+extern const char *SENDTXRCNCL;
 };
 
 /* Get a vector of all valid message types (see above) */

@@ -42,6 +42,10 @@ const char *CMPCTBLOCK="cmpctblock";
 const char *GETBLOCKTXN="getblocktxn";
 const char *BLOCKTXN="blocktxn";
 const char *CHECKPOINT="checkpoint";
+const char *ADDRV2="addrv2";
+const char *SENDADDRV2="sendaddrv2";
+const char *WTXIDRELAY="wtxidrelay";
+const char *SENDTXRCNCL="sendtxrcncl";
 };
 
 /** All known message types. Keep this in the same order as the list of
@@ -75,6 +79,10 @@ const static std::string allNetMessageTypes[] = {
     NetMsgType::GETBLOCKTXN,
     NetMsgType::BLOCKTXN,
     NetMsgType::CHECKPOINT,
+    NetMsgType::ADDRV2,
+    NetMsgType::SENDADDRV2,
+    NetMsgType::WTXIDRELAY,
+    NetMsgType::SENDTXRCNCL,
 };
 const static std::vector<std::string> allNetMessageTypesVec(allNetMessageTypes, allNetMessageTypes+ARRAYLEN(allNetMessageTypes));
 
