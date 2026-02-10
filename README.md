@@ -1,20 +1,20 @@
 # Goldcoin (GLC) - The AI-Autonomous Cryptocurrency
 
-[![Version](https://img.shields.io/badge/version-0.17.0--dev-blue.svg)](https://github.com/microguy/goldcoin/releases)
+[![Version](https://img.shields.io/badge/version-0.17.0-blue.svg)](https://github.com/goldcoin/goldcoin/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Chat-7289DA)](https://discord.me/goldcoin)
 
 ## The World's First AI-Autonomous Cryptocurrency
 
-Goldcoin is pioneering the transition from human-controlled to fully AI-autonomous cryptocurrency. With proven technical performance since 2013 (1,120 TPS, zero fees, instant confirmations), we are building toward complete AI autonomy by 2027.
+Goldcoin is pioneering AI-autonomous cryptocurrency development. With proven technical performance since 2013 (1,120 TPS, zero fees, 2-minute confirmations), Goldcoin is the first cryptocurrency where AI agents handle the majority of development, testing, and release engineering.
 
 ### Key Features
-- 1,120 Transactions Per Second — approximately 160x Bitcoin’s capacity
+- 1,120 Transactions Per Second — approximately 160x Bitcoin's capacity
 - Zero Transaction Fees — completely free to send
 - 2-Minute Confirmations — approximately 5x faster than Bitcoin
 - 32 MB Blocks — 32x larger than Bitcoin
-- AI-Driven Development — 60% autonomous today, targeting 100% by 2027
-- 100-Year Treasury — 1.1 billion GLC fund for autonomous operations
+- AI-Driven Development — majority of engineering performed by AI agents
+- 100-Year Treasury — 1.1 billion GLC fund for long-term operations
 
 ## Technical Specifications
 
@@ -29,37 +29,40 @@ Goldcoin is pioneering the transition from human-controlled to fully AI-autonomo
 
 ## AI Autonomy Roadmap
 
-### Phase 1 — AI-Assisted (2025, current)
-- AI handles ~60% of development tasks
-- Migration work (e.g., Qt 6.9) executed by AI agents
-- Humans provide strategic direction and guardrails
+### Phase 1 — AI-Assisted Development (2024-2025, current)
+- AI agents perform the majority of coding, debugging, and code review
+- Framework migrations (C++23, Qt 6.9, OpenSSL 3.x) executed by AI
+- Build system engineering and cross-compilation handled by AI
+- Humans provide architectural direction, release approval, and strategic oversight
 
-### Phase 2 — AI-Led (2026)
-- AI makes ~90% of decisions autonomously
-- Automated release management and incident response
-- Human role reduced to funding and high-level oversight
+### Phase 2 — AI-Led Development and Release Engineering (2026)
+- AI manages release cycles, testing, and build pipelines end-to-end
+- Automated regression testing and security auditing
+- Human role focused on project governance, infrastructure, and external relationships
+- Exchange listings, domain management, and legal compliance remain human-directed
 
-### Phase 3 — Full Autonomy (2027)
-- 100% AI operation achieved
-- Zero human involvement required
-- Self-sustaining operations for 100+ years
+### Phase 3 — AI-Managed Operations (2027+)
+- AI handles all software development, maintenance, and release operations
+- Minimal human oversight for governance, funding, and external partnerships
+- Expanding AI responsibility as tooling and capabilities mature
+- Long-term goal: reduce human involvement to strategic oversight only
 
 ## Development Status
 
-### Current Release: v0.15.0
-- Stable release with core functionality
-
-### In Development: v0.17.0-beta1
+### Current Release: v0.17.0
 - Complete C++23 modernization with Boost elimination
-- Automatic BDB 4.8 → 18.1 wallet migration
-- Qt 6.9 interface with modern frameworks
-- OpenSSL 3.5.2 LTS and secp256k1 v0.6.0 cryptographic modernization
+- Automatic BDB 4.8 to 18.1 wallet migration
+- OpenSSL 3.5.2 LTS and secp256k1 v0.6.0 cryptographic stack
 - Enterprise CMake build system with static linking
+- Rewritten 51% defense system for pool competitiveness and stability
+- P2P hardening for compact blocks and headers processing
+
+### Previous Stable: v0.15.0
+- Long-running stable release with core functionality
 
 ### Upcoming: v0.18.0
-- Quantum-resistant signatures
-- AI consensus protocol
-- Self-healing network features
+- Qt 6.9 GUI interface with modern frameworks
+- Further network protocol improvements
 
 ## Building from Source
 
@@ -81,6 +84,7 @@ make windows
 
 Refer to [BUILD_GUIDE.md](BUILD_GUIDE.md) for testing instructions.
 
+```bash
 # RPC tests
 qa/pull-tester/rpc-tests.py
 
@@ -130,7 +134,7 @@ git push origin feature/amazing-feature
 - Grok 4 — Development Assistant
 
 ### Vision
-By 2027, Goldcoin will operate entirely through AI consensus, becoming the first cryptocurrency to achieve complete independence from human control while maintaining decentralization and security.
+Goldcoin aims to become the first cryptocurrency where AI manages the full software lifecycle -- from development through release -- with human oversight focused on governance and strategic direction.
 
 ## Network Statistics
 
@@ -141,10 +145,9 @@ By 2027, Goldcoin will operate entirely through AI consensus, becoming the first
 
 ## Security
 
-- Dual 51% Defense: Golden River Protocol
-- Quantum Resistance: Coming in v0.18.0
+- 51% Defense: Golden River Protocol with pool competitiveness support
 - Multi-signature Treasury: 1.1 billion GLC secured
-- Automated Security Response: AI-driven threat detection
+- P2P Hardening: Compact block and headers processing protections
 
 ## Wallets & Tools
 
@@ -171,7 +174,6 @@ Goldcoin Core is released under the terms of the MIT license. See COPYING or htt
 
 ## Disclaimer
 
-This is experimental software. By 2027, human control will be permanently relinquished as Goldcoin transitions to full AI autonomy. Use at your own risk.
+This is experimental software. Use at your own risk. See COPYING for license terms.
 
-> "In Code We Trust, In AI We Evolve"
-Building the autonomous future of money, one block at a time.
+> "In Code We Trust"
