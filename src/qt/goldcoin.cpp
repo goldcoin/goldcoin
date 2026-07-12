@@ -562,8 +562,8 @@ int main(int argc, char *argv[])
     /// 2. Basic Qt initialization (not dependent on parameters or configuration)
     // Qt 6.9: UTF-8 is the default encoding, no codec setup needed
 
-    Q_INIT_RESOURCE(bitcoin);
-    // Q_INIT_RESOURCE(bitcoin_locale); // Skip locale resources for now
+    Q_INIT_RESOURCE(goldcoin);
+    // Q_INIT_RESOURCE(goldcoin_locale); // Skip locale resources for now
 
     GoldcoinApplication app(argc, argv);
     // Generate high-dpi pixmaps and high-DPI scaling are always enabled in Qt6

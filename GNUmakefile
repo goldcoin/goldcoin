@@ -2,7 +2,7 @@
 # Single command interface for end users
 # All commands run from repository root
 
-.PHONY: help deps-linux deps-windows linux windows windows-qt status
+.PHONY: help deps-linux deps-windows linux windows windows-qt windows-installer status
 
 # Auto-detect job count if not specified
 JOBS ?= $(shell nproc 2>/dev/null || echo 4)
@@ -24,6 +24,7 @@ help:
 	@echo "  make linux              Build Linux binaries (goldcoind, goldcoin-cli)"
 	@echo "  make windows            Build Windows binaries (goldcoind.exe, goldcoin-cli.exe)"
 	@echo "  make windows-qt         Build Windows GUI (goldcoin-qt.exe)"
+	@echo "  make windows-installer  Package Windows GUI build into a setup.exe installer"
 	@echo ""
 	@echo "Job Control:"
 	@echo "  make linux JOBS=4       Use 4 parallel jobs (default: $(JOBS))"
@@ -103,11 +104,11 @@ windows:
 		echo 'set(CMAKE_SYSTEM_PROCESSOR x86_64)' >> "$(REPO_ROOT)/depends/x86_64-w64-mingw32/share/toolchain.cmake"; \
 		echo '' >> "$(REPO_ROOT)/depends/x86_64-w64-mingw32/share/toolchain.cmake"; \
 		echo '# Explicit compiler settings for cross-compilation' >> "$(REPO_ROOT)/depends/x86_64-w64-mingw32/share/toolchain.cmake"; \
-		echo 'set(CMAKE_C_COMPILER x86_64-w64-mingw32-gcc-posix)' >> "$(REPO_ROOT)/depends/x86_64-w64-mingw32/share/toolchain.cmake"; \
-		echo 'set(CMAKE_CXX_COMPILER x86_64-w64-mingw32-g++-posix)' >> "$(REPO_ROOT)/depends/x86_64-w64-mingw32/share/toolchain.cmake"; \
+		echo 'set(CMAKE_C_COMPILER x86_64-w64-mingw32-gcc-win32)' >> "$(REPO_ROOT)/depends/x86_64-w64-mingw32/share/toolchain.cmake"; \
+		echo 'set(CMAKE_CXX_COMPILER x86_64-w64-mingw32-g++-win32)' >> "$(REPO_ROOT)/depends/x86_64-w64-mingw32/share/toolchain.cmake"; \
 		echo 'set(CMAKE_RC_COMPILER x86_64-w64-mingw32-windres)' >> "$(REPO_ROOT)/depends/x86_64-w64-mingw32/share/toolchain.cmake"; \
-		echo 'set(CMAKE_AR x86_64-w64-mingw32-gcc-ar-posix)' >> "$(REPO_ROOT)/depends/x86_64-w64-mingw32/share/toolchain.cmake"; \
-		echo 'set(CMAKE_RANLIB x86_64-w64-mingw32-gcc-ranlib-posix)' >> "$(REPO_ROOT)/depends/x86_64-w64-mingw32/share/toolchain.cmake"; \
+		echo 'set(CMAKE_AR x86_64-w64-mingw32-gcc-ar-win32)' >> "$(REPO_ROOT)/depends/x86_64-w64-mingw32/share/toolchain.cmake"; \
+		echo 'set(CMAKE_RANLIB x86_64-w64-mingw32-gcc-ranlib-win32)' >> "$(REPO_ROOT)/depends/x86_64-w64-mingw32/share/toolchain.cmake"; \
 		echo '' >> "$(REPO_ROOT)/depends/x86_64-w64-mingw32/share/toolchain.cmake"; \
 		echo '# Ensure cross-compilation is detected' >> "$(REPO_ROOT)/depends/x86_64-w64-mingw32/share/toolchain.cmake"; \
 		echo 'set(CMAKE_CROSSCOMPILING TRUE)' >> "$(REPO_ROOT)/depends/x86_64-w64-mingw32/share/toolchain.cmake"; \
@@ -153,5 +154,43 @@ windows-qt:
 	$(MAKE) -C build/windows-qt -j$(JOBS)
 	@echo "✓ Windows Qt build complete: build/windows-qt/bin/"
 
+windows-installer:
+	@echo "=== Packaging Windows Installer ==="
+	@if ! command -v makensis >/dev/null 2>&1; then \
+		echo "❌ makensis not found. Install NSIS: sudo apt install nsis"; \
+		exit 1; \
+	fi
+	@if [ ! -f "$(REPO_ROOT)/build/windows-qt/bin/goldcoin-qt.exe" ] || \
+	    [ ! -f "$(REPO_ROOT)/build/windows-qt/bin/goldcoind.exe" ] || \
+	    [ ! -f "$(REPO_ROOT)/build/windows-qt/bin/goldcoin-cli.exe" ]; then \
+		echo "❌ Windows Qt build missing. Run: make windows-qt"; \
+		exit 1; \
+	fi
+	@PACKAGE_NAME=$$(grep -m1 '^#define PACKAGE_NAME' src/version_info.h | sed 's/.*"\(.*\)"/\1/'); \
+	PACKAGE_TARNAME=$$(grep -m1 '^#define PACKAGE_TARNAME' src/version_info.h | sed 's/.*"\(.*\)"/\1/'); \
+	PACKAGE_URL=$$(grep -m1 '^#define PACKAGE_URL' src/version_info.h | sed 's/.*"\(.*\)"/\1/'); \
+	VMAJOR=$$(grep -m1 'set(CLIENT_VERSION_MAJOR' CMakeLists.txt | grep -o '[0-9]\+'); \
+	VMINOR=$$(grep -m1 'set(CLIENT_VERSION_MINOR' CMakeLists.txt | grep -o '[0-9]\+'); \
+	VREV=$$(grep -m1 'set(CLIENT_VERSION_REVISION' CMakeLists.txt | grep -o '[0-9]\+'); \
+	VBUILD=$$(grep -m1 'set(CLIENT_VERSION_BUILD' CMakeLists.txt | grep -o '[0-9]\+'); \
+	sed \
+		-e "s|@PACKAGE_NAME@|$$PACKAGE_NAME|g" \
+		-e "s|@PACKAGE_TARNAME@|$$PACKAGE_TARNAME|g" \
+		-e "s|@PACKAGE_URL@|$$PACKAGE_URL|g" \
+		-e "s|@CLIENT_VERSION_MAJOR@|$$VMAJOR|g" \
+		-e "s|@CLIENT_VERSION_MINOR@|$$VMINOR|g" \
+		-e "s|@CLIENT_VERSION_REVISION@|$$VREV|g" \
+		-e "s|@CLIENT_VERSION_BUILD@|$$VBUILD|g" \
+		-e "s|@WINDOWS_BITS@|64|g" \
+		-e "s|@EXEEXT@|.exe|g" \
+		-e "s|@BITCOIN_GUI_NAME@|goldcoin-qt|g" \
+		-e "s|@BITCOIN_DAEMON_NAME@|goldcoind|g" \
+		-e "s|@BITCOIN_CLI_NAME@|goldcoin-cli|g" \
+		-e "s|@abs_top_srcdir@|$(REPO_ROOT)|g" \
+		-e "s|$(REPO_ROOT)/doc/README_windows.txt|$(REPO_ROOT)/README.md|g" \
+		-e "s|$(REPO_ROOT)/release/|$(REPO_ROOT)/build/windows-qt/bin/|g" \
+		share/setup.nsi.in > share/setup.nsi; \
+	makensis share/setup.nsi
+	@echo "✓ Windows installer complete: goldcoin-*-win64-setup.exe"
 
 .DEFAULT_GOAL := help

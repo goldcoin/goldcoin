@@ -764,15 +764,7 @@ if(BUILD_GUI)
     endif()
     
     # Main Qt executable
-    if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
-        # Add minimal SSL symbol for Qt Network static linking
-        file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/qt_ssl_symbol.c 
-            "// Required symbol for Qt Network static linking\n"
-            "void q_ssl_sess_set_new_cb(void* ctx, void* cb) { (void)ctx; (void)cb; }\n")
-        add_executable(goldcoin-qt src/qt/goldcoin.cpp ${CMAKE_CURRENT_BINARY_DIR}/qt_ssl_symbol.c)
-    else()
-        add_executable(goldcoin-qt src/qt/goldcoin.cpp)
-    endif()
+    add_executable(goldcoin-qt src/qt/goldcoin.cpp)
     
     # Build library list with proper order
     set(QT_LINK_LIBS
