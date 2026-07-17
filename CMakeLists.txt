@@ -127,8 +127,29 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 # For native Linux builds: Use Qt6 from depends but SYSTEM OpenSSL/libs
 option(USE_DEPENDS_QT "Use Qt6 from depends (native builds)" OFF)
 
+# GOLDCOIN_TARGET_ARCH is the bare arch name (x86_64, i686, aarch64, ...).
+# CMake's own CMAKE_SYSTEM_PROCESSOR gets silently reset to the host's real
+# arch whenever CMAKE_CROSSCOMPILING is FALSE, so it can't be trusted for
+# same-OS/different-word-size targets like i686 - toolchain files set this
+# cache variable instead, which CMake's internals never touch.
+if(NOT DEFINED GOLDCOIN_TARGET_ARCH)
+    set(GOLDCOIN_TARGET_ARCH "${CMAKE_SYSTEM_PROCESSOR}")
+endif()
+
+# GOLDCOIN_DEPENDS_TRIPLE is the depends/ subdirectory name. Most Linux hosts
+# depends builds to <arch>-pc-linux-gnu, but Debian/Ubuntu's real multiarch
+# triplets for ARM don't include "-pc-" (aarch64-linux-gnu,
+# arm-linux-gnueabihf) - toolchain files for those override this directly
+# rather than have it derived from GOLDCOIN_TARGET_ARCH.
+if(NOT DEFINED GOLDCOIN_DEPENDS_TRIPLE)
+    set(GOLDCOIN_DEPENDS_TRIPLE "${GOLDCOIN_TARGET_ARCH}-pc-linux-gnu")
+endif()
+
 # Platform-specific dependency detection
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CMAKE_TOOLCHAIN_FILE)
+# NOTE: only match on CMAKE_SYSTEM_NAME, not merely "a toolchain file is set" -
+# non-Windows cross/32-bit targets (i686, aarch64, arm-linux-gnueabihf, ...)
+# also need a toolchain file and must not be routed into the Windows branch.
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     # Cross-compiling to Windows
     set(CROSS_COMPILING_TO_WINDOWS TRUE)
     set(DEPENDS_PREFIX "${CMAKE_SOURCE_DIR}/depends/x86_64-w64-mingw32")
@@ -152,36 +173,48 @@ elseif(USE_DEPENDS)
         set(DEPENDS_PREFIX "${CMAKE_SOURCE_DIR}/depends/x86_64-w64-mingw32")
         message(STATUS "Cross-compile mode - Using full depends: ${DEPENDS_PREFIX}")
     else()
-        set(DEPENDS_PREFIX "${CMAKE_SOURCE_DIR}/depends/${CMAKE_SYSTEM_PROCESSOR}-pc-linux-gnu")
+        set(DEPENDS_PREFIX "${CMAKE_SOURCE_DIR}/depends/${GOLDCOIN_DEPENDS_TRIPLE}")
         message(STATUS "Native static build - Using full depends: ${DEPENDS_PREFIX}")
     endif()
     list(APPEND CMAKE_PREFIX_PATH "${DEPENDS_PREFIX}")
     set(CMAKE_FIND_ROOT_PATH "${DEPENDS_PREFIX}")
     
     # Force depends libraries over system libraries for enterprise reproducibility
+    # Depends installs to lib64/ on 64-bit hosts but plain lib/ on 32-bit hosts (e.g. i686)
     set(OPENSSL_ROOT_DIR "${DEPENDS_PREFIX}")
     set(OPENSSL_USE_STATIC_LIBS ON)
-    set(OPENSSL_SSL_LIBRARY "${DEPENDS_PREFIX}/lib64/libssl.a")
-    set(OPENSSL_CRYPTO_LIBRARY "${DEPENDS_PREFIX}/lib64/libcrypto.a")
+    if(EXISTS "${DEPENDS_PREFIX}/lib64/libssl.a")
+        set(OPENSSL_SSL_LIBRARY "${DEPENDS_PREFIX}/lib64/libssl.a")
+        set(OPENSSL_CRYPTO_LIBRARY "${DEPENDS_PREFIX}/lib64/libcrypto.a")
+    else()
+        set(OPENSSL_SSL_LIBRARY "${DEPENDS_PREFIX}/lib/libssl.a")
+        set(OPENSSL_CRYPTO_LIBRARY "${DEPENDS_PREFIX}/lib/libcrypto.a")
+    endif()
     
-    # For Linux static builds, use system libevent (static .a files) for true static linking
+    # For x86_64 Linux static builds, use system libevent (static .a files) for true static linking
     # This allows proper glibc static linking to achieve 22MB binary
-    if(NOT WIN32)
+    if(NOT WIN32 AND GOLDCOIN_TARGET_ARCH STREQUAL "x86_64")
         # Use pkg-config to find system libevent - linker will use .a files with -static flag
         find_package(PkgConfig REQUIRED)
         pkg_check_modules(LIBEVENT REQUIRED libevent)
         pkg_check_modules(LIBEVENT_PTHREADS REQUIRED libevent_pthreads)
         # Don't override - let pkg-config and -static flag handle it
     else()
-        # Windows uses depends libevent
-        set(LIBEVENT_LIBRARIES "${DEPENDS_PREFIX}/lib/libevent.a")
-        set(LIBEVENT_PTHREADS_LIBRARIES "${DEPENDS_PREFIX}/lib/libevent_pthreads.a")
+        # Windows, and non-x86_64 Linux hosts (e.g. i686), use depends libevent -
+        # the system libevent is the wrong architecture for cross/32-bit builds
+        if(EXISTS "${DEPENDS_PREFIX}/lib64/libevent.a")
+            set(LIBEVENT_LIBRARIES "${DEPENDS_PREFIX}/lib64/libevent.a")
+            set(LIBEVENT_PTHREADS_LIBRARIES "${DEPENDS_PREFIX}/lib64/libevent_pthreads.a")
+        else()
+            set(LIBEVENT_LIBRARIES "${DEPENDS_PREFIX}/lib/libevent.a")
+            set(LIBEVENT_PTHREADS_LIBRARIES "${DEPENDS_PREFIX}/lib/libevent_pthreads.a")
+        endif()
         set(LIBEVENT_INCLUDE_DIRS "${DEPENDS_PREFIX}/include")
     endif()
     
 elseif(USE_DEPENDS_QT)
     # Native build with Qt6 from depends ONLY
-    set(DEPENDS_PREFIX "${CMAKE_SOURCE_DIR}/depends/${CMAKE_SYSTEM_PROCESSOR}-pc-linux-gnu")
+    set(DEPENDS_PREFIX "${CMAKE_SOURCE_DIR}/depends/${GOLDCOIN_DEPENDS_TRIPLE}")
     # Set Qt6_DIR and also add to CMAKE_PREFIX_PATH for bundled libraries
     set(Qt6_DIR "${DEPENDS_PREFIX}/lib/cmake/Qt6")
     list(APPEND CMAKE_PREFIX_PATH "${DEPENDS_PREFIX}/lib/cmake")
@@ -190,7 +223,7 @@ elseif(USE_DEPENDS_QT)
     message(STATUS "DEPENDS_PREFIX: ${DEPENDS_PREFIX}")
 else()
     # Native Linux build
-    set(DEPENDS_PREFIX "${CMAKE_SOURCE_DIR}/depends/${CMAKE_SYSTEM_PROCESSOR}-pc-linux-gnu")
+    set(DEPENDS_PREFIX "${CMAKE_SOURCE_DIR}/depends/${GOLDCOIN_DEPENDS_TRIPLE}")
     message(STATUS "Native build - Using system Qt6 and libraries")
 endif()
 
@@ -288,7 +321,7 @@ if(BUILD_WALLET)
         set(BDB_PREFIX "${DEPENDS_PREFIX}")
     else()
         # For Linux, use the Linux depends path
-        set(BDB_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/depends/x86_64-pc-linux-gnu")
+        set(BDB_PREFIX "${CMAKE_CURRENT_SOURCE_DIR}/depends/${GOLDCOIN_DEPENDS_TRIPLE}")
     endif()
     
     # Check for the appropriate BDB version
@@ -427,6 +460,12 @@ add_subdirectory(src/univalue)
 
 # bitcoin_crypto
 file(GLOB CRYPTO_SOURCES src/crypto/*.cpp)
+# scrypt-sse2.cpp unconditionally includes the x86-only <emmintrin.h> and is
+# dead code on every platform anyway: everything that calls into it is itself
+# gated behind #if defined(USE_SSE2), which nothing in this build ever
+# defines. Excluding it fixes non-x86 targets (aarch64, arm) with no change
+# in behavior on x86_64/i686.
+list(FILTER CRYPTO_SOURCES EXCLUDE REGEX "scrypt-sse2\\.cpp$")
 list(APPEND CRYPTO_SOURCES src/crypto/ctaes/ctaes.c)
 add_library(bitcoin_crypto STATIC ${CRYPTO_SOURCES})
 target_include_directories(bitcoin_crypto PUBLIC src/crypto)
