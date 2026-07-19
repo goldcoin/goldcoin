@@ -21,6 +21,16 @@ if(NOT GOLDCOIN_INTERNAL_BUILD)
       message(FATAL_ERROR "Do not call cmake directly! Use: make linux, make windows, or make windows-qt")
   endif()
 
+# RC (Windows resource) files embed the app icon and version info into the
+# .exe - without this, CMake has no rule for compiling .rc sources at all,
+# so the icon/version resources previously did nothing.
+# WINDRES_PREPROC tells clientversion.h (included from the .rc files) to
+# skip the C++-only declarations windres's preprocessor can't parse.
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    enable_language(RC)
+    set(CMAKE_RC_FLAGS "${CMAKE_RC_FLAGS} -DWINDRES_PREPROC")
+endif()
+
 # Force proper C++23 on MinGW (CMake 3.22 may not map it)
 if(MINGW OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
     # Honor the standard but also explicitly set the flag so CMake doesn't downshift to C++20
@@ -600,6 +610,9 @@ endif()
 
 # goldcoind
 add_executable(goldcoind src/goldcoind.cpp)
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    target_sources(goldcoind PRIVATE src/bitcoind-res.rc)
+endif()
 target_link_libraries(goldcoind
     bitcoin_server
     bitcoin_common
@@ -656,10 +669,13 @@ if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
 endif()
 
 # goldcoin-cli
-add_executable(goldcoin-cli 
+add_executable(goldcoin-cli
     src/goldcoin-cli.cpp
     src/rpc/client.cpp
 )
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    target_sources(goldcoin-cli PRIVATE src/bitcoin-cli-res.rc)
+endif()
 target_link_libraries(goldcoin-cli
     bitcoin_util
     bitcoin_crypto
@@ -697,6 +713,9 @@ endif()
 
 # goldcoin-tx
 add_executable(goldcoin-tx src/goldcoin-tx.cpp)
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    target_sources(goldcoin-tx PRIVATE src/bitcoin-tx-res.rc)
+endif()
 target_link_libraries(goldcoin-tx
     bitcoin_common
     bitcoin_util
@@ -804,7 +823,10 @@ if(BUILD_GUI)
     
     # Main Qt executable
     add_executable(goldcoin-qt src/qt/goldcoin.cpp)
-    
+    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+        target_sources(goldcoin-qt PRIVATE src/qt/res/bitcoin-qt-res.rc)
+    endif()
+
     # Build library list with proper order
     set(QT_LINK_LIBS
         bitcoin_qt
