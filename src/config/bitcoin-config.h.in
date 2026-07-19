@@ -369,10 +369,11 @@
 # endif
 #endif
 
-/* Number of bits in a file offset, on hosts where this is settable. */
-#undef _FILE_OFFSET_BITS
-
-/* Define for large files, on AIX-style hosts. */
-#undef _LARGE_FILES
+/* _FILE_OFFSET_BITS/_LARGE_FILES: unlike autoconf, CMake's configure_file()
+   doesn't substitute these based on a platform check, so bare #undef here
+   would unconditionally strip out _FILE_OFFSET_BITS even where a toolchain
+   file sets it via compile flags (breaks arm-linux-gnueabihf, whose sysroot
+   requires _FILE_OFFSET_BITS=64 alongside its default _TIME_BITS=64) -
+   toolchain files define these directly as compiler flags instead. */
 
 #endif //BITCOIN_CONFIG_H

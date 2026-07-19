@@ -30,7 +30,9 @@ namespace std {
         } else {
             // MinGW GCC 13 doesn't support format string as template parameter
             // Using vformat as workaround
-            printf("%s", vformat(fmt, make_format_args(forward<Args>(args)...)).c_str());
+            // NOTE: make_format_args needs lvalues - do not forward here, the
+            // named parameters are already lvalues regardless of Args's deduced type
+            printf("%s", vformat(fmt, make_format_args(args...)).c_str());
         }
     }
     template<typename... Args>
@@ -38,7 +40,7 @@ namespace std {
         if constexpr (sizeof...(args) == 0) {
             fprintf(stream, "%s", fmt.data());
         } else {
-            fprintf(stream, "%s", vformat(fmt, make_format_args(forward<Args>(args)...)).c_str());
+            fprintf(stream, "%s", vformat(fmt, make_format_args(args...)).c_str());
         }
     }
 }
