@@ -487,6 +487,26 @@ bool CWallet::Verify()
         }
     }
 
+    // Migrate legacy BDB 4.8 wallets to the native BDB 18.1 format BEFORE any
+    // native BDB engine call (verify/salvage/recover, below and in
+    // -salvagewallet) ever touches the file. BDB 18.1 cannot parse BDB 4.8's
+    // on-disk page format - that's why WalletMigration has its own byte-level
+    // BDB48Reader instead of relying on native BDB APIs. Calling native
+    // Db::verify() on an unmigrated 4.8 file misdiagnoses it as corrupt and
+    // triggers automatic recovery (rename + salvage + rewrite) using an
+    // engine that cannot actually read it, all against the same already-open,
+    // shared bitdb environment. On Windows this reliably fails with a file
+    // sharing/locking error (see issue #160): Windows enforces mandatory
+    // file-sharing semantics on every handle, unlike POSIX's advisory locks,
+    // so the rename/reopen dance that Linux tolerates is fatal there.
+    fs::path walletPath = GetDataDir() / walletFile;
+    if (fsbridge::Exists(walletPath) && WalletMigration::NeedsMigration(walletPath)) {
+        LogPrintf("Legacy BDB 4.8 wallet detected, migrating to BDB 18.1 before verification\n");
+        if (!WalletMigration::MigrateWallet(walletPath)) {
+            return InitError(strprintf(_("Wallet migration failed for %s"), walletFile));
+        }
+    }
+
     if (GetBoolArg("-salvagewallet", false))
     {
         // Recover readable keypairs:
@@ -2875,8 +2895,13 @@ DBErrors CWallet::LoadWallet(bool& fFirstRunRet)
         return DB_LOAD_OK;
     fFirstRunRet = false;
     
-    // SATOSHI'S APPROACH: Migrate wallet format before opening database
-    // This is the natural place where wallet format detection/migration belongs
+    // Defensive fallback: migration normally already happened in CWallet::Verify(),
+    // before bitdb.Verify()'s native BDB engine ever touched the file (see the
+    // comment there, and issue #160 for why ordering matters - native BDB 18.1
+    // can't parse BDB 4.8 pages, so it must never run first). This check is
+    // idempotent and cheap (NeedsMigration is just a 32-byte header read), kept
+    // here only in case some caller reaches LoadWallet() without going through
+    // Verify() first.
     fs::path walletPath = GetDataDir() / strWalletFile;
     if (fs::exists(walletPath)) {
         WalletMigration::WalletDBVersion dbFormat = WalletMigration::DetectWalletVersion(walletPath);

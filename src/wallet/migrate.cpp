@@ -350,12 +350,25 @@ public:
         // Read page size at offset 20
         pageSize = *reinterpret_cast<uint32_t*>(metaBuffer + 20);
         LogPrintf("BDB48Reader: Page size from header: %u\n", pageSize);
-        
+
+        // Guard against a corrupt/truncated metadata page: a zero or
+        // implausible page size would otherwise divide-by-zero or underflow
+        // numPages below and crash the whole process instead of failing
+        // this one migration gracefully.
+        if (pageSize == 0 || pageSize > (16 * 1024 * 1024)) {
+            LogPrintf("BDB48Reader: Invalid page size %u, refusing to parse\n", pageSize);
+            return false;
+        }
+
         // Calculate number of pages
         file.seekg(0, std::ios::end);
         size_t fileSize = file.tellg();
+        if (fileSize < pageSize) {
+            LogPrintf("BDB48Reader: File too small (%zu bytes) for page size %u\n", fileSize, pageSize);
+            return false;
+        }
         size_t numPages = fileSize / pageSize;
-        
+
         LogPrintf("BDB48Reader: Last page: %lu\n", numPages - 1);
         
         // Scan all pages for leaf pages
@@ -379,6 +392,15 @@ public:
     
     const std::vector<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>>& GetRecords() const {
         return records;
+    }
+
+    // Release the read handle on the original wallet file once extraction is
+    // complete. On Windows, ReplaceFileW() refuses to replace a file that any
+    // process - including this one - still has open; POSIX rename() doesn't
+    // care, which is why this only breaks on Windows (see issue #160).
+    void Close() {
+        if (file.is_open())
+            file.close();
     }
 };
 
@@ -502,7 +524,13 @@ bool MigrateWallet(const fs::path& walletPath)
     
     const auto& records = reader.GetRecords();
     LogPrintf("Extracted %lu records from BDB 4.8 format\n", records.size());
-    
+
+    // Close the read handle on the original wallet file now - everything from
+    // here on operates on the in-memory `records` vector, not the file itself.
+    // Must happen before AtomicReplace()'s ReplaceFileW() call later in this
+    // function, or Windows refuses the replace with "file in use" (issue #160).
+    reader.Close();
+
     // ========================================================================
     // HD WALLET DETECTION - Critical for migration strategy
     // ========================================================================
