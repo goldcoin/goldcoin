@@ -310,10 +310,9 @@ public:
                 return medTime;
             }
         }
-        // Prevent time-too-old cliff: minimum needed to avoid rejection
-        // Allows up to 44s below prev for pool competitiveness
-        const int64_t prevMinus45 = static_cast<int64_t>(cur->nTime) - 45 + 1;
-        return std::max<int64_t>(medTime, prevMinus45);
+        // Match V15 51% defense: new block must be >= 600s after 5th previous block
+        const int64_t v15_min_time = static_cast<int64_t>(cur->nTime) + 600;
+        return std::max<int64_t>(medTime, v15_min_time);
     }
 
     int64_t GetMedianTimePast() const
