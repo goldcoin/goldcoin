@@ -19,7 +19,7 @@ const std::string CLIENT_NAME("GoldcoinCore");
 /**
  * Client version number
  */
-#define CLIENT_VERSION_SUFFIX ""
+#define CLIENT_VERSION_SUFFIX "-beta1"
 
 
 /**
