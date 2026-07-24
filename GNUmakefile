@@ -325,6 +325,7 @@ windows-installer:
 	VMINOR=$$(grep -m1 'set(CLIENT_VERSION_MINOR' CMakeLists.txt | grep -o '[0-9]\+'); \
 	VREV=$$(grep -m1 'set(CLIENT_VERSION_REVISION' CMakeLists.txt | grep -o '[0-9]\+'); \
 	VBUILD=$$(grep -m1 'set(CLIENT_VERSION_BUILD' CMakeLists.txt | grep -o '[0-9]\+'); \
+	VSUFFIX=$$(grep -m1 '^#define CLIENT_VERSION_SUFFIX' src/clientversion.cpp | sed 's/.*"\(.*\)"/\1/'); \
 	sed \
 		-e "s|@PACKAGE_NAME@|$$PACKAGE_NAME|g" \
 		-e "s|@PACKAGE_TARNAME@|$$PACKAGE_TARNAME|g" \
@@ -333,6 +334,7 @@ windows-installer:
 		-e "s|@CLIENT_VERSION_MINOR@|$$VMINOR|g" \
 		-e "s|@CLIENT_VERSION_REVISION@|$$VREV|g" \
 		-e "s|@CLIENT_VERSION_BUILD@|$$VBUILD|g" \
+		-e "s|@CLIENT_VERSION_SUFFIX@|$$VSUFFIX|g" \
 		-e "s|@WINDOWS_BITS@|64|g" \
 		-e "s|@EXEEXT@|.exe|g" \
 		-e "s|@BITCOIN_GUI_NAME@|goldcoin-qt|g" \

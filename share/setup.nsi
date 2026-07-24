@@ -1,4 +1,4 @@
-Name "Goldcoin Core (64-bit)"
+Name "Goldcoin Core ${VERSION_DISPLAY} (64-bit)"
 
 RequestExecutionLevel highest
 SetCompressor /SOLID lzma
@@ -6,6 +6,11 @@ SetCompressor /SOLID lzma
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
 !define VERSION 0.17.0
+# VERSION stays plain numeric (Windows VERSIONINFO resource fields require
+# this format); VERSION_DISPLAY adds the human-readable suffix (e.g. -beta1)
+# for anywhere users actually see the version - filename, title bar, registry.
+!define VERSION_SUFFIX "-beta1"
+!define VERSION_DISPLAY "${VERSION}${VERSION_SUFFIX}"
 !define COMPANY "Goldcoin Core project"
 !define URL https://www.goldcoinproject.org
 
@@ -48,7 +53,7 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile /home/reaper/goldcoin/goldcoin-${VERSION}-win64-setup.exe
+OutFile /home/reaper/goldcoin/goldcoin-${VERSION_DISPLAY}-win64-setup.exe
 !if "64" == "64"
 InstallDir "$PROGRAMFILES64\Goldcoin"
 !else
@@ -96,7 +101,7 @@ Section -post SEC0001
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk" $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_END
     WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
-    WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayVersion "${VERSION}"
+    WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayVersion "${VERSION_DISPLAY}"
     WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" Publisher "${COMPANY}"
     WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" URLInfoAbout "${URL}"
     WriteRegStr HKCU "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayIcon $INSTDIR\uninstall.exe
