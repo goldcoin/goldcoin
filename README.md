@@ -1,4 +1,4 @@
-# Goldcoin (GLC) - The Gold Standard of Digital Currency
+# Goldcoin (GLC)
 
 [![Version](https://img.shields.io/badge/version-0.17.0-blue.svg)](https://github.com/goldcoin/goldcoin/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
