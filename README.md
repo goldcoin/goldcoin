@@ -1,10 +1,10 @@
-# Goldcoin (GLC) - Gold Standard of Digital Currency
+# Goldcoin (GLC) - The Gold Standard of Digital Currency
 
 [![Version](https://img.shields.io/badge/version-0.17.0-blue.svg)](https://github.com/goldcoin/goldcoin/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Chat-7289DA)](https://discord.me/goldcoin)
 
-## Gold Standard of Digital Currency
+## The Gold Standard of Digital Currency
 
 Goldcoin is pioneering AI-autonomous cryptocurrency development. With proven technical performance since 2013 (1,120 TPS, zero fees, 2-minute confirmations), Goldcoin is the first cryptocurrency where AI agents handle the majority of development, testing, and release engineering.
 
